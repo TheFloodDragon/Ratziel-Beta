@@ -1,0 +1,9 @@
+#请必须安装PlaceholderAPI使用！！！
+
+TestMap:
+  - condition: 'ke: print "hello world"'
+    print:
+      - condition: 'awa'
+        text: 'a1'
+      - condition: 'qwq'
+        text: 'q1'
