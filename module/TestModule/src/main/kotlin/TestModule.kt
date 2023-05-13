@@ -1,4 +1,4 @@
-import cn.fd.fdutilities.module.ModuleExpansion
+import cn.fd.utilities.module.ModuleExpansion
 
 class TestModule : ModuleExpansion() {
 

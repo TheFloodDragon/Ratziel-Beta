@@ -1,6 +1,6 @@
-import cn.fd.fdutilities.module.ModuleConfig
-import cn.fd.fdutilities.module.ModuleManager
-import cn.fd.fdutilities.util.Loader
+import cn.fd.utilities.module.ModuleConfig
+import cn.fd.utilities.module.ModuleManager
+import cn.fd.utilities.util.Loader
 import java.io.File
 
 object TestConfig : ModuleConfig("ServerTeleport.yml") {

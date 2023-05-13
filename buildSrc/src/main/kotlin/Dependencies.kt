@@ -1,11 +1,11 @@
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.artifacts.dsl.RepositoryHandler
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.plugins.PluginAware
 import org.gradle.api.tasks.compile.JavaCompile
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.maven
+import org.gradle.kotlin.dsl.withType
 
 fun PluginAware.applyPlugins() {
     apply(plugin = "maven-publish")
@@ -13,68 +13,42 @@ fun PluginAware.applyPlugins() {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 }
 
-fun Project.buildDirClean() {
-    @Suppress("DEPRECATION")
-    gradle.buildFinished { buildDir.deleteRecursively() }
-}
-
 fun Project.initSubProject(publish: Project.() -> Unit) {
     group = rootGroup
     version = rootVersion
 
     tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
-    @Suppress("DEPRECATION")
-    configure<JavaPluginConvention> {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
+//    @Suppress("DEPRECATION")
+//    configure<JavaPluginConvention> {
+//        sourceCompatibility = JavaVersion.VERSION_17
+//        targetCompatibility = JavaVersion.VERSION_17
+//    }
 
     if (parent?.name != "plugin") {
         buildDirClean()
     }
-    if (project.parent?.name == "project" || project.name == "project") {
+    if (project.parent?.name == "module" || project.name == "module") {
         publish()
     }
 }
 
+fun Project.buildDirClean() {
+    @Suppress("DEPRECATION")
+    gradle.buildFinished { buildDir.deleteRecursively() }
+}
+
 fun RepositoryHandler.projectRepositories() {
     maven(repoTabooProject) {
-        setAllowInsecureProtocol(true)
+        isAllowInsecureProtocol = true
     }
     mavenCentral()
 }
 
-fun DependencyHandler.`framework`() {
-    compileModule("framework-common", "framework-bukkit")
-}
-
-fun DependencyHandler.`adventure`() {
-    usedAdventureModules.forEach {
-        add("implementation", it)
-    }
-}
-
-fun DependencyHandler.`serialization`() {
-    add("compileOnly", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
-}
-
-fun DependencyHandler.`compileLocal`(project: Project, vararg dir: String) {
-    dir.forEach { add("compileOnly", project.fileTree(it)) }
-}
-
-fun DependencyHandler.`compileModule`(vararg name: String) {
-    name.forEach { add("compileOnly", project(":project:$it")) }
-}
-
-fun DependencyHandler.`implementateModule`(vararg name: String) {
-    name.forEach { add("implementation", project(":project:$it")) }
-}
-
-fun DependencyHandler.`compileNMS`() {
+fun DependencyHandler.compileNMS() {
     add("compileOnly", "ink.ptms:nms-all:1.0.0")
 }
 
-fun DependencyHandler.`compileCore`(
+fun DependencyHandler.compileCore(
     version: Int,
     minimize: Boolean = true,
     mapped: Boolean = false,
@@ -85,8 +59,15 @@ fun DependencyHandler.`compileCore`(
     add("compileOnly", notation)
 }
 
+
+fun DependencyHandler.adventure() {
+    adventureModules.forEach {
+        add("implementation", it)
+    }
+}
+
 fun DependencyHandler.compileTabooLib() {
-    usedTaboolibModules.forEach { installTaboo(it) }
+    taboolibModules.forEach { installTaboo(it) }
 }
 
 fun DependencyHandler.installTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {

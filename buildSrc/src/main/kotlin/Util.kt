@@ -10,7 +10,7 @@ val systemUserName: String
     get() = System.getProperty("user.name")
 
 val systemOS: String
-    get() = System.getProperty("os.name").toLowerCase()
+    get() = System.getProperty("os.name").lowercase()
 
 val systemIP: String
     get() = URL("http://ipinfo.io/ip").readText()

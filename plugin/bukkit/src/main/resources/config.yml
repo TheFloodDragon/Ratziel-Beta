@@ -2,3 +2,11 @@
 #作者: MC~蛟龙
 #QQ: 1610105206
 #邮箱: 1610105206@qq.com
+
+Settings:
+  language: zh_CN
+  Multi-Thread: true
+
+Workspaces:
+  paths:
+    - 'plugins/FDUtilities/workspace'
