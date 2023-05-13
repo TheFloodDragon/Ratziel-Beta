@@ -20,7 +20,8 @@ taboolib {
     taboolibModules.forEach { install(it) }
 
     description {
-        name = rootName
+        name(rootName)
+        desc("我不知道~")
 
         contributors {
             name("TheFloodDragon")
@@ -36,5 +37,5 @@ taboolib {
     }
 
     classifier = null
-    options("skip-minimize", "keep-kotlin-module", "skip-taboolib-relocate")
+    //options("skip-minimize", "keep-kotlin-module", "skip-taboolib-relocate")
 }

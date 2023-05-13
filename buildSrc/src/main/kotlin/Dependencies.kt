@@ -13,23 +13,12 @@ fun PluginAware.applyPlugins() {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 }
 
-fun Project.initSubProject(publish: Project.() -> Unit) {
+fun Project.initSubProject() {
     group = rootGroup
     version = rootVersion
 
     tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
-//    @Suppress("DEPRECATION")
-//    configure<JavaPluginConvention> {
-//        sourceCompatibility = JavaVersion.VERSION_17
-//        targetCompatibility = JavaVersion.VERSION_17
-//    }
 
-    if (parent?.name != "plugin") {
-        buildDirClean()
-    }
-    if (project.parent?.name == "module" || project.name == "module") {
-        publish()
-    }
 }
 
 fun Project.buildDirClean() {
