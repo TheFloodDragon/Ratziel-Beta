@@ -1,6 +1,7 @@
 package cn.fd.utilities.module
 
-import java.util.*
+import cn.fd.utilities.module.ModuleLoader.register
+import cn.fd.utilities.module.ModuleLoader.unregister
 
 abstract class ModuleExpansion {
 
@@ -8,14 +9,10 @@ abstract class ModuleExpansion {
     abstract val name: String
 
     //模块作者
-    open val author: String = if (Locale.getDefault().language == "zh_CN") "未知" else "UNKNOWN"
+    open val author: String = "UNKNOWN"
 
     //模块版本
-    open val version: String = if (Locale.getDefault().language == "zh_CN") "未知" else "UNKNOWN"
-
-    //是否启用模块
-    open val enable: Boolean = true
-
+    open val version: String = "UNKNOWN"
 
     /*
       模块初始化方法,在模块启用前调用
@@ -45,23 +42,21 @@ abstract class ModuleExpansion {
         this.unregister()
         //初始化方法
         init()
-        //如果模块启用,就重新注册该模块
-        if (enable) {
-            this.register()
-            //加载方法
-            load()
-        }
+        this.register()
+        //加载方法
+        load()
+
     }
 
-    //注册此模块
-    fun register(): Boolean {
-        return ModuleManager.register(this)
-    }
-
-    //取消注册此模块
-    fun unregister(): Boolean {
-        return ModuleManager.unregister(this)
-    }
+//    //注册此模块
+//    fun register(): Boolean {
+//        return ModuleManager.register(this)
+//    }
+//
+//    //取消注册此模块
+//    fun unregister(): Boolean {
+//        return ModuleManager.unregister(this)
+//    }
 
 
 }

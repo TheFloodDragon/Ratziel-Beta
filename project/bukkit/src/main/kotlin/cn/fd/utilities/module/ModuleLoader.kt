@@ -12,16 +12,16 @@ import java.util.stream.Collectors
 object ModuleLoader {
 
     /**
-     * 从模块文件夹内寻找所有文件
+     * 从文件夹内寻找所有文件
      */
-    fun findModules(): List<Class<out ModuleExpansion?>?> {
+    fun findModulesInDirs(dirs: List<File>): List<Class<out ModuleExpansion?>?> {
 
         /*
           获取模块文件下所有JAR后缀的文件
           如果一个文件都没有，就返回一个空的列表
          */
         val files: List<File> = arrayListOf<File>().also { list ->
-            ModuleManager.getWorkspaces().forEach { ws ->
+            dirs.forEach { ws ->
                 ws.listFiles { _, name: String ->
                     name.endsWith(".jar")
                 }?.forEach { list.add(it) }
@@ -37,11 +37,34 @@ object ModuleLoader {
         }
     }
 
+
+    //注册模块
+    fun ModuleExpansion.register(): Boolean {
+        //获取模块标识符
+        val identifier = this.name
+
+//        val removed: ModuleExpansion? = ModuleManager.getModule(identifier)
+//        if (removed != null && !removed.unregister()) {
+//            return false
+//        }
+
+        ModuleManager.getEnabledModules()[identifier] = this
+
+        console().sendLang("Module-Loader-Success", identifier, this.version)
+        return true
+    }
+
+    //卸载模块
+    fun ModuleExpansion.unregister() {
+        ModuleManager.getEnabledModules().remove(this.name)
+        console().sendLang("Module-Loader-Unregistered", this.name, this.version)
+    }
+
     /**
      * 从单个文件中寻找模块扩展类
      * @param file 要被寻找的单个文件
      */
-    private fun findModuleInFile(file: File): Class<out ModuleExpansion>? {
+    fun findModuleInFile(file: File): Class<out ModuleExpansion>? {
         try {
             //获取继承的子类
             val mClass = ClassUtil.findClass(file, ModuleExpansion::class.java)
@@ -81,6 +104,37 @@ object ModuleLoader {
             ex.printStackTrace()
         }
         return null
+    }
+
+    fun getModuleInstance(clazz: Class<out ModuleExpansion?>): Optional<ModuleExpansion> {
+        try {
+            //创建实例
+            val module: ModuleExpansion = clazz.createInstance() ?: return Optional.empty()
+            //需要模块的标识符不是空,否则就报错
+            Objects.requireNonNull(module.name)
+            //如果模块没注册
+            return if (!module.register()) {
+                Optional.empty()
+            } else Optional.of(module)
+        } catch (ex: LinkageError) {
+            console().sendLang("Module-Loader-NotDependencyError", clazz.simpleName)
+        } catch (ex: NullPointerException) {
+            console().sendLang("Module-Loader-NullIdentifierError", clazz.simpleName)
+        }
+        return Optional.empty()
+    }
+
+    @Throws(LinkageError::class)
+    fun <T> Class<out T?>.createInstance(): T? {
+        return try {
+            this.getDeclaredConstructor().newInstance()
+        } catch (ex: java.lang.Exception) {
+            if (ex.cause is LinkageError) {
+                throw (ex.cause as LinkageError?)!!
+            }
+            console().sendLang("Module-Loader-UnknownError")
+            null
+        }
     }
 
 }

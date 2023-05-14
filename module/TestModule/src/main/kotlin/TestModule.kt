@@ -12,7 +12,8 @@ class TestModule : ModuleExpansion() {
     }
 
     override fun load() {
-        TestConfig.reload()
+        //TestConfig.reload()
+        printMyself()
     }
 
 }
