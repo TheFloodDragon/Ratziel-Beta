@@ -3,9 +3,9 @@ package cn.fd.utilities;
 import taboolib.common.env.RuntimeDependency;
 
 /**
- * @author MC~蛟龙
- * @since 2022/6/30 13:26
- * 自动安装依赖
+ * @author MC~铔熼緳
+ * @since 2023/5/14 9:51
+ * 鑷姩瀹夎渚濊禆
  */
 @RuntimeDependency(
         value = "!net.kyori:adventure-api:4.12.0",

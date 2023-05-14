@@ -1,6 +1,5 @@
 package cn.fd.utilities.command
 
-import cn.fd.utilities.module.outdated.PlaceholderAPIExtension
 import cn.fd.utilities.util.KetherParser.eval
 import cn.fd.utilities.util.Loader
 import org.bukkit.command.CommandSender
@@ -8,7 +7,6 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
 import taboolib.common.platform.function.adaptCommandSender
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.pluginVersion
 import taboolib.common5.Coerce
 import taboolib.module.kether.parseKetherScript
@@ -42,19 +40,19 @@ object MainCommand {
 
             }
 
-            val mapList = PlaceholderAPIExtension.conf.getMapList("TestMap")
-            info(mapList)
-            for (map in mapList) {
-                val c = map["condition"]
-                info(map)
-                info(c)
-                if (sender is Player) {
-                    val player: Player = sender
-                    val msg = player.eval(c.toString()).thenApply { Coerce.toString(it) }.get()
-                    player.sendMessage(msg)
-
-                }
-            }
+            //val mapList = PlaceholderAPIExtension.conf.getMapList("TestMap")
+            //info(mapList)
+//            for (map in mapList) {
+//                val c = map["condition"]
+//                info(map)
+//                info(c)
+//                if (sender is Player) {
+//                    val player: Player = sender
+//                    val msg = player.eval(c.toString()).thenApply { Coerce.toString(it) }.get()
+//                    player.sendMessage(msg)
+//
+//                }
+//            }
 
 
         }

@@ -1,6 +1,6 @@
 package cn.fd.utilities.module
 
-import java.nio.file.Path
+import java.io.File
 
 class ModuleInfo(
     //模块标识符
@@ -8,5 +8,5 @@ class ModuleInfo(
     //是否启用
     val isEnabled: Boolean = true,
     //模块所在的文件(.jar或.class)
-    val filePath: Path? = null
+    val filePath: File? = null
 )

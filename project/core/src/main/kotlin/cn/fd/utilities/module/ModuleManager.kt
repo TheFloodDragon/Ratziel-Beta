@@ -1,11 +1,11 @@
 package cn.fd.utilities.module
 
-import cn.fd.utilities.module.ModuleLoader.createInstance
 import cn.fd.utilities.module.ModuleLoader.findModulesInDirs
 import cn.fd.utilities.module.ModuleLoader.register
 import cn.fd.utilities.module.ModuleLoader.unregister
-import org.bukkit.command.CommandSender
-import taboolib.platform.util.sendLang
+import taboolib.common.io.getInstance
+import taboolib.common.platform.function.console
+import taboolib.module.lang.sendLang
 import java.io.File
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -66,9 +66,9 @@ class ModuleManager(
      * 注册所有模块
      * @param sender 发送消息的命令发送者(就是注册模块的消息提示发给谁)
      */
-    fun registerAll(sender: CommandSender) {
+    fun registerAll() {
         val run = {
-            sender.sendLang("Module-Loader-Loading")
+            console().sendLang("Module-Loader-Loading")
 //            val registered = ModuleLoader.findModules().stream().filter { obj: Class<out ModuleExpansion?>? ->
 //                Objects.nonNull(obj)
 //            }.map { clazz: Class<out ModuleExpansion?>? ->
@@ -78,10 +78,10 @@ class ModuleManager(
 //            }.filter { obj: Optional<ModuleExpansion> -> obj.isPresent }
 //                .map { obj: Optional<ModuleExpansion> -> obj.get() }.collect(Collectors.toList())
             val registered = findModulesInDirs(getWorkspaces()).map {
-                it?.createInstance()?.register()
+                it?.getInstance(true)?.get()?.register()
             }
 
-            sender.sendLang("Module-Loader-Finished", registered.size)
+            console().sendLang("Module-Loader-Finished", registered.size)
         }
         //如果开启多线程，就创建一个新线程用来加载类
         if (isMultiThread) {

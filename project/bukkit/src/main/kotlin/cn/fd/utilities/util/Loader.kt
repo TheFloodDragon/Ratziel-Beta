@@ -2,12 +2,11 @@ package cn.fd.utilities.util
 
 import cn.fd.utilities.channel.BungeeChannel
 import cn.fd.utilities.config.ConfigYaml
+import cn.fd.utilities.module.ModuleLoader
+import cn.fd.utilities.module.ModuleLoader.getModuleManager
 import cn.fd.utilities.module.ModuleManager
 import cn.fd.utilities.module.outdated.Module
-import cn.fd.utilities.module.outdated.PlaceholderAPIExtension
-import cn.fd.utilities.module.outdated.ServerTeleportModule
 import cn.fd.utilities.util.FileListener.unlisten
-import org.bukkit.Bukkit
 import taboolib.common.platform.function.console
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.module.lang.Language
@@ -18,34 +17,33 @@ import java.util.function.Consumer
 object Loader {
 
 
-    fun reloadModules() {
-        arrayOf(
-            ServerTeleportModule, PlaceholderAPIExtension
-        ).forEach {
-            it.reload()
-            //检测是否启用，如果不启用，就不需要监听文件变化
-            if (it.isEnabled) {
-                //监听此文件
-                //listen(it.file, it)
-//                listen(it.file) {
-//                    it.reload()
-//                }
-                listen<Module>(it.file) {
-                }
-            } else {
-                unlisten(it)
-            }
-        }
-
-        //重新加载所有模块
-        ModuleManager.apply {
-            unregisterAll()
-            registerAll(Bukkit.getConsoleSender())
-            getEnabledModules().values.forEach {
-                it.reload()
-            }
-        }
-    }
+//    fun reloadModules() {
+//        arrayOf(
+//            ServerTeleportModule, PlaceholderAPIExtension
+//        ).forEach {
+//            it.reload()
+//            //检测是否启用，如果不启用，就不需要监听文件变化
+//            if (it.isEnabled) {
+//                //监听此文件
+//                //listen(it.file, it)
+////                listen(it.file) {
+////                    it.reload()
+////                }
+//                listen<Module>(it.file) {}
+//            } else {
+//                unlisten(it)
+//            }
+//        }
+//
+//        //重新加载所有模块
+//        ModuleManager.apply {
+//            unregisterAll()
+//            registerAll(Bukkit.getConsoleSender())
+//            getEnabledModules().values.forEach {
+//                it.reload()
+//            }
+//        }
+//    }
 
 
     fun reloadConfigs() {
@@ -54,16 +52,26 @@ object Loader {
     }
 
     fun reloadAll() {
+
+        ModuleLoader.setModuleManager(ModuleManager(
+            arrayListOf<File>().apply {
+                ConfigYaml.WORKSPACES_PATHS.forEach {
+                    add(File(it))
+                }
+            }, ConfigYaml.MULTI_THREAD
+        )
+        )
+
         //重载语言
         Language.reload()
         //重载所有配置文件
         reloadConfigs()
         //重载所有模块
-        reloadModules()
+        //reloadModules()
         //测试
         BungeeChannel.printServers()
-        ModuleManager.registerAll(Bukkit.getConsoleSender())
-        for (module in ModuleManager.getEnabledModules()) {
+        getModuleManager().registerAll()
+        for (module in getModuleManager().getModules()) {
             module.value.printMyself()
         }
     }
@@ -74,12 +82,10 @@ object Loader {
      */
     fun <T> listen(file: File, function: Consumer<T> /*() -> Unit*/) {
         //如果未开启多线程，就不监听文件了
-        if (!ConfigYaml.MULTI_THREAD)
-            return
+        if (!ConfigYaml.MULTI_THREAD) return
         println("测试1")
         //如果未开启多线程，就不监听文件了
-        if (!ConfigYaml.MULTI_THREAD)
-            return
+        if (!ConfigYaml.MULTI_THREAD) return
 
         /**
          * 当文件变化时，重新加载模块

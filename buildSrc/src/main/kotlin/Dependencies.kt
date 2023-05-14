@@ -51,7 +51,7 @@ fun DependencyHandler.compileCore(
 
 fun DependencyHandler.adventure() {
     adventureModules.forEach {
-        add("implementation", it)
+        add("compileOnly", it)
     }
 }
 
