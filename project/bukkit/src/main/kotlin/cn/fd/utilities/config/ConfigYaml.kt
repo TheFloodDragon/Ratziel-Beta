@@ -11,7 +11,7 @@ import taboolib.module.configuration.Configuration
  */
 object ConfigYaml {
 
-    @Config(value = "config.yml", autoReload = true)
+    @Config(autoReload = true)
     lateinit var conf: Configuration
         private set
 

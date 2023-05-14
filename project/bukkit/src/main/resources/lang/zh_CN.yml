@@ -11,7 +11,7 @@ Module-Config-Failed:
   - '&8[&6FD&eUtilities&r&8] &c错误 &8| &4载入模块配置文件 &c{0} &4过程中出现意外错误:'
   - '        &8{1}'
 Module-Config-Reloaded: '&8[&6FD&eUtilities&r&8] &6模块 &8| &7监听到模块配置文件 &f{0} 改动, 已自动载入相关配置等... &8({1}ms)'
-Module-Loader-Loading: '&8[&6FD&eUtilities&r&8] &6模块 &8| &7正在夹杂模块...'
+Module-Loader-Loading: '&8[&6FD&eUtilities&r&8] &6模块 &8| &7正在加载模块...'
 Module-Loader-Success: '&8[&6FD&eUtilities&r&8] &6模块 &8| &a成功加载模块 &6{0} &a!'
 Module-Loader-Unregistered: '&8[&6FD&eUtilities&r&8] &6模块 &8| &a已卸载模块 &6{0} &a!'
 Module-Loader-Finished: '&8[&6FD&eUtilities&r&8] &6模块 &8| &a成功注册并加载了 &6{0} &a个模块!'

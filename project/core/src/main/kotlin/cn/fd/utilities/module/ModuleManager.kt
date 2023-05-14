@@ -7,13 +7,10 @@ import taboolib.common.io.getInstance
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
 import java.io.File
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
 import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
-import java.util.stream.Collectors
 
 class ModuleManager(
     private val workspacePaths: List<File>,
@@ -42,25 +39,17 @@ class ModuleManager(
     }
 
     //通过标识符找到模块
-    fun findModuleById(identifier: String): ModuleExpansion {
-        return modules.filter { it.key.identifier == identifier }.values.first()
+    fun getModuleById(identifier: String): ModuleExpansion {
+        return modules.filter { it.key.identifier == identifier }.values.first().javaClass.getInstance(true)!!.get()
     }
 
     //通过路径找到模块
-    fun findModuleByPath(path: Path): ModuleExpansion {
-        return modules.filter { it.key.filePath == path }.values.first()
+    fun getModuleByPath(path: Path): ModuleExpansion {
+        return modules.filter { it.key.filePath == path }.values.first().javaClass.getInstance(true)!!.get()
     }
 
     //模块锁
     private val modulesLock = ReentrantLock()
-
-
-    private val ABSTRACT_MODULE_METHODS =
-        Arrays.stream(ModuleExpansion::class.java.declaredMethods).filter { method: Method ->
-            Modifier.isAbstract(method.modifiers)
-        }.map { method: Method ->
-            MethodSignature(method.name, method.parameterTypes)
-        }.collect(Collectors.toSet())
 
     /**
      * 注册所有模块
@@ -69,14 +58,7 @@ class ModuleManager(
     fun registerAll() {
         val run = {
             console().sendLang("Module-Loader-Loading")
-//            val registered = ModuleLoader.findModules().stream().filter { obj: Class<out ModuleExpansion?>? ->
-//                Objects.nonNull(obj)
-//            }.map { clazz: Class<out ModuleExpansion?>? ->
-//                clazz?.let {
-//                    register(it)
-//                }
-//            }.filter { obj: Optional<ModuleExpansion> -> obj.isPresent }
-//                .map { obj: Optional<ModuleExpansion> -> obj.get() }.collect(Collectors.toList())
+
             val registered = findModulesInDirs(getWorkspaces()).map {
                 it?.getInstance(true)?.get()?.register()
             }

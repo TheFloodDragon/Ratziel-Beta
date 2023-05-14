@@ -1,9 +1,7 @@
 package cn.fd.utilities
 
-import cn.fd.utilities.channel.BungeeChannel
 import cn.fd.utilities.config.ConfigYaml
 import cn.fd.utilities.module.outdated.Extension
-import cn.fd.utilities.util.Adventure
 import cn.fd.utilities.util.FileListener
 import cn.fd.utilities.util.Loader
 import org.bukkit.Bukkit
@@ -32,7 +30,7 @@ object FDUtilities : Plugin() {
     }
 
     override fun onLoad() {
-        BungeeChannel.init()
+        //BungeeChannel.init()
         //插件语言设置
         Language.default = ConfigYaml.LANGUAGE
         //加载模块配置文件
@@ -41,16 +39,14 @@ object FDUtilities : Plugin() {
     }
 
     override fun onEnable() {
-        //开启并创建 BukkitAudiences
-        Adventure.enable()
+//        //开启并创建 BukkitAudiences
+//        Adventure.enable()
 
         Extension.printInfo()
         console().sendLang("Plugin-Enabled", pluginVersion)
     }
 
     override fun onDisable() {
-        //关闭 BukkitAudiences
-        Adventure.disable()
         //关闭配置文件监听器
         FileListener.uninstall()
     }

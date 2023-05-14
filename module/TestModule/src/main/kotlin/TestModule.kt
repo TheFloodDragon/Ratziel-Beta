@@ -9,6 +9,7 @@ class TestModule : ModuleExpansion() {
     override fun printMyself() {
         super.printMyself()
         println("测试awa")
+        println(Test2.abc)
     }
 
     override fun load() {

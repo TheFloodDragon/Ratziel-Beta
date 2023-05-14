@@ -1,24 +1,15 @@
+
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginAware
-import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.maven
-import org.gradle.kotlin.dsl.withType
 
 fun PluginAware.applyPlugins() {
     apply(plugin = "maven-publish")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "org.jetbrains.kotlin.jvm")
-}
-
-fun Project.initSubProject() {
-    group = rootGroup
-    version = rootVersion
-
-    tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
-
 }
 
 fun Project.buildDirClean() {

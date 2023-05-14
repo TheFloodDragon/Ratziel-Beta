@@ -1,6 +1,5 @@
 package cn.fd.utilities.util
 
-import cn.fd.utilities.channel.BungeeChannel
 import cn.fd.utilities.config.ConfigYaml
 import cn.fd.utilities.module.ModuleLoader
 import cn.fd.utilities.module.ModuleLoader.getModuleManager
@@ -48,7 +47,6 @@ object Loader {
 
     fun reloadConfigs() {
         ConfigYaml.conf.reload()
-        ConfigYaml.conf.reload()
     }
 
     fun reloadAll() {
@@ -69,10 +67,10 @@ object Loader {
         //重载所有模块
         //reloadModules()
         //测试
-        BungeeChannel.printServers()
+        //BungeeChannel.printServers()
         getModuleManager().registerAll()
-        for (module in getModuleManager().getModules()) {
-            module.value.printMyself()
+        getModuleManager().getModules().values.forEach {
+            it.printMyself()
         }
     }
 

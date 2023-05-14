@@ -22,7 +22,11 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    initSubProject()
+    group = rootGroup
+    version = rootVersion
+
+    tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
+
 }
 
 buildDirClean()

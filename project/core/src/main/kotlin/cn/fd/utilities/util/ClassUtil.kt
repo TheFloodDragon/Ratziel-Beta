@@ -3,8 +3,9 @@ package cn.fd.utilities.util
 import java.io.File
 import java.io.IOException
 import java.net.URLClassLoader
+import java.util.*
 import java.util.jar.JarEntry
-import java.util.jar.JarInputStream
+import java.util.jar.JarFile
 
 object ClassUtil {
 
@@ -17,31 +18,44 @@ object ClassUtil {
 
         val jar = file.toURI().toURL()
         val loader = URLClassLoader(arrayOf(jar), clazz.classLoader)
-        val matches: MutableList<String> = ArrayList()
         val classes: MutableList<Class<out T>> = ArrayList()
-        JarInputStream(jar.openStream()).use { stream ->
-            var entry: JarEntry
-            while (stream.nextJarEntry.also { entry = it } != null) {
-                val name = entry.name
-                if (name.isEmpty() || !name.endsWith(".class")) {
-                    continue
-                }
-                matches.add(name.substring(0, name.lastIndexOf('.')).replace('/', '.'))
-            }
-            for (match in matches) {
-                try {
-                    val loaded = loader.loadClass(match)
-                    if (clazz.isAssignableFrom(loaded)) {
-                        classes.add(loaded.asSubclass(clazz))
-                    }
-                } catch (ignored: NoClassDefFoundError) {
+
+        val entries: MutableList<JarEntry> = arrayListOf()
+
+        JarFile(file).entries().let { e ->
+            while (e.hasMoreElements()) {
+                e.nextElement().let {
+                    if (it.name.endsWith(".class")) entries.add(it)
                 }
             }
         }
+
+        entries.forEach {
+            val className = it.name.replace('/', '.').substring(0, it.name.length - 6)
+            try {
+                //val loaded = loadClass(name)
+                val loaded = loader.loadClass(className)
+                if (clazz.isAssignableFrom(loaded)) {
+                    classes.add(loaded.asSubclass(clazz))
+                }
+            } catch (ignored: NoClassDefFoundError) {
+            }
+        }
+
         if (classes.isEmpty()) {
-            loader.close()
             return null
         }
         return classes[0]
     }
+
+
+    /**
+     * 加载类
+     */
+    @Throws(ClassNotFoundException::class)
+    fun loadClass(className: String, isInitialized: Boolean = false): Class<*> {
+        return Class.forName(className, isInitialized, Thread.currentThread().contextClassLoader)
+    }
+
+
 }
