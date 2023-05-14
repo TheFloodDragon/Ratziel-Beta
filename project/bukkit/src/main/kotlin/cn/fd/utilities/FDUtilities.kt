@@ -28,7 +28,7 @@ object FDUtilities : Plugin() {
      */
     @Awake
     fun loadDependency() {
-        RuntimeEnv.ENV.loadDependency(BukkitEnv::class.java, true)
+        RuntimeEnv.ENV.loadDependency(CommonEnv::class.java, true)
     }
 
     override fun onLoad() {

@@ -2,6 +2,7 @@ package cn.fd.utilities.module
 
 import cn.fd.utilities.util.ClassUtil
 import taboolib.common.platform.function.console
+import taboolib.common.platform.function.getDataFolder
 import taboolib.module.lang.sendLang
 import java.io.File
 import java.lang.reflect.Method
@@ -10,6 +11,9 @@ import java.util.*
 import java.util.stream.Collectors
 
 object ModuleLoader {
+
+
+    private var moduleManager = ModuleManager(listOf(File(getDataFolder().path, "workspace")))
 
     /**
      * 从文件夹内寻找所有文件
@@ -48,7 +52,7 @@ object ModuleLoader {
 //            return false
 //        }
 
-        ModuleManager.getEnabledModules()[identifier] = this
+        moduleManager.getModules()[ModuleInfo(identifier)] = this
 
         console().sendLang("Module-Loader-Success", identifier, this.version)
         return true
@@ -56,7 +60,7 @@ object ModuleLoader {
 
     //卸载模块
     fun ModuleExpansion.unregister() {
-        ModuleManager.getEnabledModules().remove(this.name)
+        moduleManager.getModules().remove(ModuleInfo(this.name))
         console().sendLang("Module-Loader-Unregistered", this.name, this.version)
     }
 
@@ -135,6 +139,10 @@ object ModuleLoader {
             console().sendLang("Module-Loader-UnknownError")
             null
         }
+    }
+
+    fun setModuleManager(mm: ModuleManager) {
+        moduleManager = mm
     }
 
 }

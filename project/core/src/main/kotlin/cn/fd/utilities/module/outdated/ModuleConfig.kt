@@ -1,4 +1,4 @@
-package cn.fd.utilities.module
+package cn.fd.utilities.module.outdated
 
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
@@ -6,6 +6,7 @@ import taboolib.module.configuration.Configuration
 import java.io.File
 import java.util.*
 
+@Deprecated("烂的一批没有用")
 abstract class ModuleConfig(val resourcePath: String /*文件资源位置,就是jar包内的文件的路径*/) {
 
     //根据这个路径初始化文件的储存位置

@@ -3,9 +3,9 @@ package cn.fd.utilities;
 import taboolib.common.env.RuntimeDependency;
 
 /**
- * @author MC~铔熼緳
+ * @author MC~蛟龙
  * @since 2022/6/30 13:26
- * 鑷姩瀹夎渚濊禆
+ * 自动安装依赖
  */
 @RuntimeDependency(
         value = "!net.kyori:adventure-api:4.12.0",
@@ -25,5 +25,5 @@ import taboolib.common.env.RuntimeDependency;
         initiative = true
 )
 
-public class BukkitEnv {
+public class CommonEnv {
 }

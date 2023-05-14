@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
+    implementation(project(":project:core"))
     implementation(project(":project:bukkit"))
 }
 

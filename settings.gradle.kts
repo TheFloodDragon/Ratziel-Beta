@@ -1,5 +1,6 @@
 rootProject.name = "FDUtilities"
 
+include("project:core")
 include("project:bukkit")
 include("plugin")
 //包含所有模块

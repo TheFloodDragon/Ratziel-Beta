@@ -1,57 +1,55 @@
 package cn.fd.utilities.module
 
-import cn.fd.utilities.config.ConfigYaml
 import cn.fd.utilities.module.ModuleLoader.createInstance
+import cn.fd.utilities.module.ModuleLoader.findModulesInDirs
 import cn.fd.utilities.module.ModuleLoader.register
 import cn.fd.utilities.module.ModuleLoader.unregister
 import org.bukkit.command.CommandSender
-import taboolib.common.platform.function.getDataFolder
 import taboolib.platform.util.sendLang
 import java.io.File
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import java.util.stream.Collectors
 
-object ModuleManager {
+class ModuleManager(
+    private val workspacePaths: List<File>,
+    private val isMultiThread: Boolean = true
+) {
 
     /**
      * 储存着加载的所有模块
      * String 模块名称
-     * ModuleExpansion 模块类
+     * ModuleExpansion 模块对象
      */
-    private var modules: MutableMap<String, ModuleExpansion> = ConcurrentHashMap()
+    private var modules: MutableMap<ModuleInfo, ModuleExpansion> = ConcurrentHashMap()
 
     fun getWorkspaces(): List<File> {
-        return arrayListOf<File>().apply {
-            ConfigYaml.WORKSPACES_PATHS.forEach {
-                add(File(it))
-            }
-        }
+        return workspacePaths
     }
 
-    fun getEnabledModules(): MutableMap<String, ModuleExpansion> {
+    //获取所有模块
+    fun getModules(): MutableMap<ModuleInfo, ModuleExpansion> {
         return this.modules
     }
 
-    fun getModule(identifier: String): ModuleExpansion? {
-        return modules[identifier]
+    //获取启用的所有模块
+    fun getEnabledModules(): Map<ModuleInfo, ModuleExpansion> {
+        return this.modules.filter { it.key.isEnabled }
     }
 
+    //通过标识符找到模块
+    fun findModuleById(identifier: String): ModuleExpansion {
+        return modules.filter { it.key.identifier == identifier }.values.first()
+    }
 
-    private const val MODULE_FOLDER = "module"
-
-    //模块文件存放目录
-    val folder = File(getDataFolder(), MODULE_FOLDER)
-
-    /**
-     * 储存着启用的所有模块
-     * String 模块名称
-     * ModuleExpansion 模块类
-     */
-    //var modules: MutableMap<String, ModuleExpansion> = ConcurrentHashMap()
+    //通过路径找到模块
+    fun findModuleByPath(path: Path): ModuleExpansion {
+        return modules.filter { it.key.filePath == path }.values.first()
+    }
 
     //模块锁
     private val modulesLock = ReentrantLock()
@@ -79,14 +77,14 @@ object ModuleManager {
 //                }
 //            }.filter { obj: Optional<ModuleExpansion> -> obj.isPresent }
 //                .map { obj: Optional<ModuleExpansion> -> obj.get() }.collect(Collectors.toList())
-            val registered = ModuleLoader.findModulesInDirs(getWorkspaces()).map {
+            val registered = findModulesInDirs(getWorkspaces()).map {
                 it?.createInstance()?.register()
             }
 
             sender.sendLang("Module-Loader-Finished", registered.size)
         }
         //如果开启多线程，就创建一个新线程用来加载类
-        if (ConfigYaml.MULTI_THREAD) {
+        if (isMultiThread) {
             Thread {
                 modulesLock.lock()
                 run()

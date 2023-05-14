@@ -41,7 +41,7 @@ object Loader {
         ModuleManager.apply {
             unregisterAll()
             registerAll(Bukkit.getConsoleSender())
-            getModules().values.forEach {
+            getEnabledModules().values.forEach {
                 it.reload()
             }
         }
@@ -63,7 +63,7 @@ object Loader {
         //测试
         BungeeChannel.printServers()
         ModuleManager.registerAll(Bukkit.getConsoleSender())
-        for (module in ModuleManager.getModules()) {
+        for (module in ModuleManager.getEnabledModules()) {
             module.value.printMyself()
         }
     }
