@@ -1,8 +1,13 @@
-# Building
+# FDUtilities
 
-* [Gradle](https://gradle.org/) - Dependency Management
+基于Taboolib开发的一个动态类、模组加载插件。
 
-The GradleWrapper in included in this project.
+
+---
+
+### 构建
+
+* [Gradle](https://gradle.org/) - 依赖关系管理
 
 **Windows:**
 
@@ -16,4 +21,4 @@ gradlew.bat clean build
 ./gradlew clean build
 ```
 
-Build artifacts should be found in `./build/libs` folder.
+构建工件在 `./outs` 文件夹中
