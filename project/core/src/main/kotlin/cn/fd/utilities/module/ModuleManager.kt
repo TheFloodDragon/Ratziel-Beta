@@ -60,7 +60,7 @@ class ModuleManager(
             console().sendLang("Module-Loader-Loading")
 
             val registered = findModulesInDirs(getWorkspaces()).map {
-                it?.getInstance(true)?.get()?.register()
+                it.getInstance(true)?.get()?.register()
             }
 
             console().sendLang("Module-Loader-Finished", registered.size)

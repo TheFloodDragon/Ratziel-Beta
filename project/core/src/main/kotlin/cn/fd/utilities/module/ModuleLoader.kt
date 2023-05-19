@@ -1,6 +1,8 @@
 package cn.fd.utilities.module
 
-import cn.fd.utilities.util.ClassUtil
+import cn.fd.utilities.clsload.ClassUtil
+import cn.fd.utilities.clsload.ClassUtil.findSubClass
+import cn.fd.utilities.util.toSimple
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getDataFolder
 import taboolib.module.lang.sendLang
@@ -14,7 +16,7 @@ object ModuleLoader {
     /**
      * 从文件夹内寻找所有文件
      */
-    fun findModulesInDirs(dirs: List<File>): List<Class<out ModuleExpansion?>?> {
+    fun findModulesInDirs(dirs: List<File>): List<Class<out ModuleExpansion>> {
         /*
           获取模块文件下所有JAR后缀的文件
           如果一个文件都没有，就返回一个空的列表
@@ -32,7 +34,7 @@ object ModuleLoader {
             //返回所有文件内模块扩展类的集合
             files.map { file: File? ->
                 findModuleClass(file!!)
-            }.toList()
+            }.toSimple()
         }
     }
 
@@ -63,14 +65,14 @@ object ModuleLoader {
      * 从单个文件中寻找模块扩展类
      * @param file 要被寻找的单个文件
      */
-    fun findModuleClass(file: File): Class<out ModuleExpansion>? {
+    fun findModuleClass(file: File): List<Class<out ModuleExpansion>> {
         try {
-            //获取继承的子类
-            val mClass = ClassUtil.findClass(file, ModuleExpansion::class.java)
+            //获取继承的子类 (先加载,后获取子类)
+            val mClass = ClassUtil.loadClasses(file).findSubClass(file, ModuleExpansion::class.java)
             //如果是JAR文件且找不到模块扩展类
-            if (file.endsWith(".jar") && mClass == null) {
+            if (file.endsWith(".jar") && mClass.isEmpty()) {
                 console().sendLang("Module-Loader-NotClassError", file.name)
-                return null
+                return listOf()
             }
             //::Begin 似乎没什么用
             //获取模块扩展类内声明的方法
@@ -95,11 +97,11 @@ object ModuleLoader {
 
         } catch (ex: VerifyError) {
             console().sendLang("Module-Loader-VerifyError", file.name, ex.javaClass.simpleName, ex.message ?: "UNKNOWN")
-            return null
+            return listOf()
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        return null
+        return listOf()
     }
 
     fun setModuleManager(mm: ModuleManager) {
