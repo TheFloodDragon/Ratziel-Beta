@@ -46,11 +46,11 @@ jobs:
           name: Plugin Artifact
           path: outs/
       - name: Automatic Releases
-        uses: marvinpinto/action-automatic-releases@v1.2.1
+        uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           prerelease: false
           title: "FDUtilities 自动构建最新版本"
           files: |
-            outs/
+            outs/*.*
