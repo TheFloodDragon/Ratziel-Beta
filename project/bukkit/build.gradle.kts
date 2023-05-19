@@ -15,6 +15,7 @@ taboolib {
     version = taboolibVersion
 
     taboolibModules.forEach { install(it) }
+    install("platform-bukkit")
 
     description {
         name(rootName)
