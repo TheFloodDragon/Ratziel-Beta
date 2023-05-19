@@ -15,36 +15,6 @@ import java.util.function.Consumer
 
 object Loader {
 
-
-//    fun reloadModules() {
-//        arrayOf(
-//            ServerTeleportModule, PlaceholderAPIExtension
-//        ).forEach {
-//            it.reload()
-//            //检测是否启用，如果不启用，就不需要监听文件变化
-//            if (it.isEnabled) {
-//                //监听此文件
-//                //listen(it.file, it)
-////                listen(it.file) {
-////                    it.reload()
-////                }
-//                listen<Module>(it.file) {}
-//            } else {
-//                unlisten(it)
-//            }
-//        }
-//
-//        //重新加载所有模块
-//        ModuleManager.apply {
-//            unregisterAll()
-//            registerAll(Bukkit.getConsoleSender())
-//            getEnabledModules().values.forEach {
-//                it.reload()
-//            }
-//        }
-//    }
-
-
     fun reloadConfigs() {
         ConfigYaml.conf.reload()
     }
@@ -56,7 +26,7 @@ object Loader {
                 ConfigYaml.WORKSPACES_PATHS.forEach {
                     add(File(it))
                 }
-            }, ConfigYaml.MULTI_THREAD
+            }
         )
         )
 
@@ -68,16 +38,21 @@ object Loader {
         //reloadModules()
         //测试
         //BungeeChannel.printServers()
+        //TODO 多线程
         getModuleManager().registerAll()
-        getModuleManager().getModules().values.forEach {
-            it.printMyself()
+        println(getModuleManager().modules)
+        getModuleManager().modules.keys.forEach {
+            println(it)
+            getModuleManager().getModuleById(it.identifier).printMyself()
         }
     }
+
 
     /**
      * 监听文件
      * @param file 要监听的文件
      */
+    @Deprecated("后面会改")
     fun <T> listen(file: File, function: Consumer<T> /*() -> Unit*/) {
         //如果未开启多线程，就不监听文件了
         if (!ConfigYaml.MULTI_THREAD) return
@@ -111,6 +86,7 @@ object Loader {
     /**
      * 取消监听模块
      */
+    @Deprecated("后面会改")
     fun unlisten(module: Module) {
         if (FileListener.isListening(module.file)) unlisten(module.file)
     }

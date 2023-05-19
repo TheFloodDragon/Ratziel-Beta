@@ -1,7 +1,7 @@
 package cn.fd.utilities.module
 
-import cn.fd.utilities.clsload.ClassUtil
 import cn.fd.utilities.clsload.ClassUtil.findSubClass
+import cn.fd.utilities.clsload.ClassUtil.loadClasses
 import cn.fd.utilities.util.toSimple
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getDataFolder
@@ -24,7 +24,7 @@ object ModuleLoader {
         val files: List<File> = arrayListOf<File>().also { list ->
             dirs.forEach { ws ->
                 ws.listFiles { _, name: String ->
-                    name.endsWith(".jar")
+                    name.endsWith(".jar") || name.endsWith(".class")
                 }?.forEach { list.add(it) }
             }
         }
@@ -49,7 +49,7 @@ object ModuleLoader {
 //            return false
 //        }
 
-        moduleManager.getModules()[ModuleInfo(identifier)] = this
+        moduleManager.modules[ModuleInfo(identifier)] = this
 
         console().sendLang("Module-Loader-Success", identifier, this.version)
         return true
@@ -57,7 +57,7 @@ object ModuleLoader {
 
     //卸载模块
     fun ModuleExpansion.unregister() {
-        moduleManager.getModules().remove(ModuleInfo(this.name))
+        moduleManager.modules.remove(ModuleInfo(this.name))
         console().sendLang("Module-Loader-Unregistered", this.name, this.version)
     }
 
@@ -68,9 +68,12 @@ object ModuleLoader {
     fun findModuleClass(file: File): List<Class<out ModuleExpansion>> {
         try {
             //获取继承的子类 (先加载,后获取子类)
-            val mClass = ClassUtil.loadClasses(file).findSubClass(file, ModuleExpansion::class.java)
+            val subClasses = loadClasses(file, ModuleExpansion::class.java.classLoader).findSubClass(
+                file,
+                ModuleExpansion::class.java
+            )
             //如果是JAR文件且找不到模块扩展类
-            if (file.endsWith(".jar") && mClass.isEmpty()) {
+            if (file.endsWith(".jar") && subClasses.isEmpty()) {
                 console().sendLang("Module-Loader-NotClassError", file.name)
                 return listOf()
             }
@@ -93,7 +96,7 @@ object ModuleLoader {
 //            }
             //::END
 
-            return mClass
+            return subClasses
 
         } catch (ex: VerifyError) {
             console().sendLang("Module-Loader-VerifyError", file.name, ex.javaClass.simpleName, ex.message ?: "UNKNOWN")

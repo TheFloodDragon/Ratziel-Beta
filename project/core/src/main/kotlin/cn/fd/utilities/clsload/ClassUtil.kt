@@ -1,7 +1,8 @@
 package cn.fd.utilities.clsload
 
-import cn.fd.utilities.clsload.FClassLoader.loadClass
+import taboolib.common5.util.getStackTraceString
 import java.io.File
+import java.net.URLClassLoader
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 
@@ -9,22 +10,36 @@ object ClassUtil {
 
     fun loadClasses(
         file: File, /*获取所有包名*/
-        pkgNames: List<String> = getClasses(file),
-        initialize: Boolean = false
+        classLoader: ClassLoader
     ): List<Class<*>> {
+        //如果文件不存在
         if (!file.exists()) return listOf()
-        return mutableListOf<Class<*>>().apply {
-            pkgNames.forEach {
+
+        val classes: MutableList<Class<*>> = mutableListOf()
+        //如果是jar文件
+        if (file.extension == "jar") {
+            getClassesName(file).forEach {
                 //加载类(不初始化)
-                add(loadClass(it, initialize))
+                try {
+                    val loader = URLClassLoader(arrayOf(file.toURI().toURL()), classLoader)
+                    //classes.add(loadClass(it, initialize))
+                    classes.add(loader.loadClass(it))
+                } catch (ex: Exception) {
+                    println("发现错误: ${ex.getStackTraceString()}")
+                }
             }
         }
+        //如果是class文件
+        else if (file.extension == "class") {
+        }//TODO
+
+        return classes
     }
 
-    fun getClasses(file: File): List<String> {
-        if (!file.exists()) return listOf()
+    fun getClassesName(file: File): List<String> {
+        val cns: MutableList<String> = mutableListOf()
 
-        val entries: MutableList<JarEntry> = arrayListOf()
+        val entries: MutableList<JarEntry> = mutableListOf()
 
         JarFile(file).entries().let { e ->
             while (e.hasMoreElements()) {
@@ -34,12 +49,12 @@ object ClassUtil {
             }
         }
 
-        return mutableListOf<String>().apply {
-            entries.forEach {
-                //采用一般文件名替换的方式获取class包名
-                add(it.name.replace('/', '.').substring(0, it.name.length - 6))
-            }
+        entries.forEach {
+            //采用一般文件名替换的方式获取class包名
+            cns.add(it.name.toPackageName())
         }
+
+        return cns
     }
 
 
@@ -47,16 +62,20 @@ object ClassUtil {
         //检查文件是否存在
         if (!file.exists()) return listOf()
 
-        val classes: List<Class<*>> = this
+        val classes: MutableList<Class<out T>> = mutableListOf()
 
-        return mutableListOf<Class<out T>>().apply {
-            //加载所有类(不初始化)
-            classes.forEach {
-                if (clazz.isAssignableFrom(it)) {
-                    add(it.asSubclass(clazz))
-                }
+        //加载所有类(不初始化)
+        this.forEach {
+            if (clazz.isAssignableFrom(it)) {
+                classes.add(it.asSubclass(clazz))
             }
         }
+
+        return classes
+    }
+
+    private fun String.toPackageName(): String {
+        return this.replace('/', '.').substring(0, this.length - 6)
     }
 
 

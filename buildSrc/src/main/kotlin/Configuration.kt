@@ -16,7 +16,7 @@ val isoInstantFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 val taboolibModules = setOf(
     "common",
     "common-5",
-    "platform-bukkit",
+//    "platform-bukkit",
 //    "platform-bungee",
     "module-nms",
 //    "module-nms-util",

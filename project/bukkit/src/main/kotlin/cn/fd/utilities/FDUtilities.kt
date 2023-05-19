@@ -1,7 +1,6 @@
 package cn.fd.utilities
 
 import cn.fd.utilities.config.ConfigYaml
-import cn.fd.utilities.module.outdated.Extension
 import cn.fd.utilities.util.FileListener
 import cn.fd.utilities.util.Loader
 import org.bukkit.Bukkit
@@ -42,7 +41,7 @@ object FDUtilities : Plugin() {
 //        //开启并创建 BukkitAudiences
 //        Adventure.enable()
 
-        Extension.printInfo()
+        //Extension.printInfo()
         console().sendLang("Plugin-Enabled", pluginVersion)
     }
 

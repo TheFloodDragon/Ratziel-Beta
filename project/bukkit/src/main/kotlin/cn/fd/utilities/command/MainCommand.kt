@@ -15,11 +15,9 @@ import taboolib.module.lang.sendLang
 import taboolib.platform.util.broadcast
 
 @CommandHeader(
-    "fdutilities",
-    ["fd", "fdu"],
-    "FDUtilities插件主命令",
-    permission = "fdutilities.access",
-    permissionDefault = PermissionDefault.TRUE
+    name = "fdutilities",
+    aliases = ["fd", "fdu"],
+    description = "FDUtilities插件主命令"
 )
 object MainCommand {
 
@@ -86,7 +84,7 @@ object MainCommand {
     /**
      * 重载插件的命令
      */
-    @CommandBody(permission = "fdutilities.command.reload", permissionDefault = PermissionDefault.OP, optional = true)
+    @CommandBody(optional = true)
     val reload = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
             //时间计算
