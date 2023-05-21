@@ -9,7 +9,7 @@ dependencies {
 
     rootProject
         .childProjects["project"]!!.childProjects
-        .values.filter { !it.name.contains("bungee") }
+        .values//.filter { !it.name.contains("bungee") }
         .forEach { implementation(it) }
 }
 
