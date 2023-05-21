@@ -5,10 +5,7 @@ on:
       - master
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -24,14 +21,10 @@ jobs:
       - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: adopt
+          distribution: oracle
           java-version: 17
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-      - name: Execute Gradle build
-        run: ./gradlew build
       - name: Build
         id: build_1
         run: ./gradlew clean build
