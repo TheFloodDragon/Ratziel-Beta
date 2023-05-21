@@ -28,7 +28,7 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build
         id: build_1
-        run: gradlew clean build
+        run: ./gradlew clean build
       - name: Build (retry 1)
         id: build_2
         if: steps.build_1.outcome == 'failure'
