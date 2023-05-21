@@ -9,15 +9,15 @@ dependencies {
 
     rootProject
         .childProjects["project"]!!.childProjects
-        .values//.filter { !it.name.contains("bungee") }
+        .values.filter { !it.name.contains("bungee") }
         .forEach { implementation(it) }
 }
 
 tasks {
     withType<ShadowJar> {
         // Options
-//        archiveAppendix.set("")
-//        archiveClassifier.set("")
+        archiveAppendix.set("")
+        archiveClassifier.set("")
         archiveVersion.set(rootVersion)
         //archiveBaseName.set("$rootName-Bukkit")
         archiveBaseName.set(rootName)
