@@ -16,7 +16,8 @@ dependencies {
 tasks {
     withType<ShadowJar> {
         // Options
-        archiveClassifier.set("")
+//        archiveAppendix.set("")
+//        archiveClassifier.set("")
         archiveVersion.set(rootVersion)
         //archiveBaseName.set("$rootName-Bukkit")
         archiveBaseName.set(rootName)
