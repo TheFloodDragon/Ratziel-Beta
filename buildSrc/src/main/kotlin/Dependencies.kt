@@ -5,6 +5,7 @@ import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginAware
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.maven
+import org.gradle.kotlin.dsl.project
 
 fun PluginAware.applyPlugins() {
     apply(plugin = "maven-publish")
@@ -48,6 +49,14 @@ fun DependencyHandler.adventure() {
 
 fun DependencyHandler.compileTabooLib() {
     taboolibModules.forEach { installTaboo(it) }
+}
+
+fun DependencyHandler.compileModule(vararg name: String) {
+    name.forEach { add("compileOnly", project(":project:$it")) }
+}
+
+fun DependencyHandler.implementModule(vararg name: String) {
+    name.forEach { add("implementation", project(":project:$it")) }
 }
 
 fun DependencyHandler.installTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {

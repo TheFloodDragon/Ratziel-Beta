@@ -1,4 +1,4 @@
-import cn.fd.utilities.module.ModuleExpansion
+import cn.fd.utilities.core.module.ModuleExpansion
 
 class TestModule : ModuleExpansion() {
 
@@ -8,7 +8,7 @@ class TestModule : ModuleExpansion() {
 
     override fun printMyself() {
         super.printMyself()
-        println("测试awa")
+        println("测试awa2")
         println(Test2.abc)
     }
 

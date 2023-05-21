@@ -16,8 +16,6 @@ val isoInstantFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 val taboolibModules = setOf(
     "common",
     "common-5",
-//    "platform-bukkit",
-//    "platform-bungee",
     "module-nms",
 //    "module-nms-util",
     "module-kether",
@@ -30,11 +28,11 @@ val taboolibModules = setOf(
 )
 
 val adventureModules = setOf(
-    "net.kyori:adventure-api:4.12.0",
+    "net.kyori:adventure-api:4.3.0",
     "net.kyori:adventure-platform-api:4.2.0",
-    "net.kyori:adventure-platform-bukkit:4.2.0",
+    "net.kyori:adventure-platform-bukkit:4.3.0",
     "net.kyori:adventure-platform-facet:4.2.0",
-    "net.kyori:adventure-text-minimessage:4.12.0",
+    "net.kyori:adventure-text-minimessage:4.13.1",
     "net.kyori:adventure-text-serializer-gson:4.2.0",
     "net.kyori:adventure-text-serializer-bungeecord:4.2.0",
     "net.kyori:adventure-text-serializer-legacy:4.2.0"

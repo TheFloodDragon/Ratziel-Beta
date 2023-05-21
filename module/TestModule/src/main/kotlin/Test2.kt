@@ -1,5 +1,5 @@
 object Test2 {
 
-    val abc = "6666666666666666"
+    val abc = "66666666sadasaaaaaaadsada666"
 
 }

@@ -14,6 +14,13 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
+
+        if (parent?.name == "plugin" || parent?.name == "project") {
+            compileCore(11903)
+            compileTabooLib()
+            //MiniMessage: https://docs.adventure.kyori.net/minimessage/api.html
+            adventure()
+        }
     }
 
     java {
@@ -22,28 +29,35 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
+
     group = rootGroup
     version = rootVersion
 
-    tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
+    if (parent?.name != "plugin" && parent?.name != "module") {
+        buildDirClean()
+    }
 
 }
 
 buildDirClean()
 
 gradle.buildFinished {
-    project.allprojects.forEach {
-        if (it.name.equals("plugin")) copyByProject(it, rootName)
-        else if (it.name.equals("module")) it.childProjects.values.forEach { p -> copyByProject(p) }
-    }
+    rootProject
+        .childProjects["plugin"]!!.childProjects.values
+        .forEach { copyByProject(it, "${rootName}-${it.version}") }
+
+    rootProject
+        .childProjects["module"]!!.childProjects.values
+        .forEach { copyByProject(it) }
 }
 
-fun copyByProject(p: Project, fn: String = p.name) {
+fun copyByProject(p: Project, caught: String = "${p.name}-${p.version}") {
     val outDir = File(rootDir, "outs")
     outDir.mkdirs().takeIf { !outDir.exists() }
 
     File(p.buildDir, "libs").listFiles { file ->
-        file.name == "$fn-${p.version}.jar"
+        file.name == "$caught.jar"
     }?.forEach {
         it.copyTo(File(outDir, it.name), true)
     }
