@@ -5,7 +5,10 @@ on:
       - master
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -25,6 +28,10 @@ jobs:
           java-version: 17
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Execute Gradle build
+        run: ./gradlew build
       - name: Build
         id: build_1
         run: ./gradlew clean build
