@@ -34,7 +34,8 @@ subprojects {
     group = rootGroup
     version = rootVersion
 
-    if (parent?.name != "plugin" && parent?.name != "module") {
+    //TODO 八千年后再干
+    if (parent?.name != "plugin" /*&& parent?.name != "module"*/) {
         buildDirClean()
     }
 
@@ -47,9 +48,9 @@ gradle.buildFinished {
         .childProjects["plugin"]!!.childProjects.values
         .forEach { copyByProject(it, "${rootName}-${it.version}") }
 
-    rootProject
-        .childProjects["module"]!!.childProjects.values
-        .forEach { copyByProject(it) }
+//    rootProject TODO do after 8000 years
+//        .childProjects["module"]!!.childProjects.values
+//        .forEach { copyByProject(it) }
 }
 
 fun copyByProject(p: Project, caught: String = "${p.name}-${p.version}") {
