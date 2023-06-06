@@ -1,24 +1,28 @@
 # FDUtilities
 
-»ùÓÚTaboolib¿ª·¢µÄÒ»¸ö¶¯Ì¬Àà¡¢Ä£×é¼ÓÔØ²å¼ş¡£
+åŸºäºTaboolibå¼€å‘çš„ä¸€ä¸ªåŠ¨æ€ç±»ã€æ¨¡ç»„åŠ è½½æ’ä»¶ã€‚
 
+***
 
----
+## è®¡åˆ’
 
-### ¹¹½¨
+- [ ] å†™FClassLoader
+- [ ] æŠ„Artifexä»£ç 
+- [ ] é‡å†™Taboolibçš„Configä»£ç 
+- [x] ä¸çŸ¥é“
 
-* [Gradle](https://gradle.org/) - ÒÀÀµ¹ØÏµ¹ÜÀí
+***
+
+### æ„å»º
+
+* [Gradle](https://gradle.org/) - ä¾èµ–å…³ç³»ç®¡ç†
 
 **Windows:**
 
-```
-gradlew.bat clean build
-```
+    gradlew.bat clean build
 
 **macOS/Linux:**
 
-```
-./gradlew clean build
-```
+    ./gradlew clean build
 
-¹¹½¨¹¤¼şÔÚ `./outs` ÎÄ¼ş¼ĞÖĞ
+æ„å»ºå·¥ä»¶åœ¨ `./outs` æ–‡ä»¶å¤¹ä¸­

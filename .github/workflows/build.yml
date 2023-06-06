@@ -42,7 +42,7 @@ jobs:
         if: steps.build_3.outcome == 'failure'
         run: ./gradlew clean build
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Plugin Artifact
           path: outs/
