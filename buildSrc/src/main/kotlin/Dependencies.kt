@@ -1,5 +1,5 @@
-
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginAware
@@ -51,12 +51,12 @@ fun DependencyHandler.compileTabooLib() {
     taboolibModules.forEach { installTaboo(it) }
 }
 
-fun DependencyHandler.compileModule(vararg name: String) {
-    name.forEach { add("compileOnly", project(":project:$it")) }
+fun DependencyHandler.installModule(dependency: Dependency) {
+    add("implementation", dependency)
 }
 
-fun DependencyHandler.implementModule(vararg name: String) {
-    name.forEach { add("implementation", project(":project:$it")) }
+fun DependencyHandler.installModule(name: String) {
+    installModule(project(":project:$name"))
 }
 
 fun DependencyHandler.installTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {

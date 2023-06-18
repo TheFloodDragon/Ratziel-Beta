@@ -43,23 +43,4 @@ subprojects {
 
 buildDirClean()
 
-gradle.buildFinished {
-    rootProject
-        .childProjects["plugin"]!!.childProjects.values
-        .forEach { copyByProject(it, "${rootName}-${it.version}") }
-
-//    rootProject TODO do after 8000 years
-//        .childProjects["module"]!!.childProjects.values
-//        .forEach { copyByProject(it) }
-}
-
-fun copyByProject(p: Project, caught: String = "${p.name}-${p.version}") {
-    val outDir = File(rootDir, "outs")
-    outDir.mkdirs().takeIf { !outDir.exists() }
-
-    File(p.buildDir, "libs").listFiles { file ->
-        file.name == "$caught.jar"
-    }?.forEach {
-        it.copyTo(File(outDir, it.name), true)
-    }
-}
+output()

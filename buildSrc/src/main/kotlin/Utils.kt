@@ -33,6 +33,3 @@ fun getLatestRelease(repoOwner: String, repoName: String): String {
     val tagName = response.substring(index, response.indexOf(",", index))
     return tagName.replace("\"", "")
 }
-
-val taboolibLatestVersion: String
-    get() = getLatestRelease("TabooLib", "taboolib")

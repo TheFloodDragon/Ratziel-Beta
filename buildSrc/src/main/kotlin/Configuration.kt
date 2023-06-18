@@ -4,11 +4,11 @@ const val rootName = "FDUtilities"
 const val rootGroup = "cn.fd.utilities"
 const val rootVersion = "0.0.1-BETA"
 
-const val kotlinVersion = "1.8.10"
+const val kotlinVersion = "1.8.20"
 const val shadowJarVersion = "8.1.0"
 const val taboolibPluginVersion = "1.56"
 
-val taboolibVersion = taboolibLatestVersion.also { println("Using taboolib-version = $it") }
+val taboolibVersion = getLatestRelease("TabooLib", "taboolib").also { println("Using taboolib-version = $it") }
 const val repoTabooProject = "http://ptms.ink:8081/repository/releases"
 
 val isoInstantFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")

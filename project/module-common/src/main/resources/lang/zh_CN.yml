@@ -1,9 +1,25 @@
-##语言文件
-#Plugin-Loading:
-#  - '&r'
-#  - '&7正在加载 &6FD&eUtilities&7... &8{0}'
-#  - '&r'
-#Plugin-Enabled: '&8[&6FD&eUtilities&r&8] &b信息 &8| &3加载完毕. FDUtilities &av{0} &3现已启用, 敬请使用.'
+#语言文件——简体中文
+#最后一次更新: 2023/6/18
+
+#因为不可抗力(我不会)的原因,Bukkit和Bungee的配置文件是同一个
+
+#以下是通用内容
+Plugin-Loading:
+  - '&r'
+  - '&7正在加载 &6FD&eUtilities&7... &8{0}'
+  - '&r'
+Plugin-Enabled: '&8[&6FD&eUtilities&r&8] &b信息 &8| &3加载完毕. FDUtilities &av{0} &3现已启用, 敬请使用.'
+
+#以下是Bukkit专有内容
+
+##暂无##
+
+#以下是Bungee专有内容
+
+##暂无##
+
+
+#版本更新的弃子
 #Plugin-Reload: '&8[&6FD&eUtilities&r&8] &a良好 &8| &3成功重载所有配置文件 &8({0}ms)'
 #Plugin-Dependency-Hooked: '&8[&6FD&eUtilities&r&8] &6挂钩 &8| &7软依赖 &f{0} &7已兼容.'
 #
