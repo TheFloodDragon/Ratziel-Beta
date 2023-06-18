@@ -5,8 +5,8 @@ on:
       - master
 jobs:
   build:
-    #runs-on: ubuntu-latest
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    #runs-on: windows-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
