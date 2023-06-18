@@ -7,10 +7,10 @@ dependencies {
 
     compileOnly("com.google.guava:guava:31.1-jre")
 
-    rootProject
-        .childProjects["project"]?.childProjects
-        ?.values?.filter { !it.name.contains("bungee") }
-        ?.forEach { implementation(it) }
+    rootProject.allprojects.forEach {
+        if (it.parent?.name == "project" && !it.name.contains("bungee"))
+            implementation(it)
+    }
 }
 
 tasks {
