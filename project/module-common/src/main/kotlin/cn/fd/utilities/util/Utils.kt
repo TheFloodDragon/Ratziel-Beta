@@ -2,14 +2,14 @@ package cn.fd.utilities.util
 
 import taboolib.module.lang.Level
 
-fun debug(info: Any?, auto: Boolean = true, level: Level = Level.INFO) {
+fun debug(info: Any? = Any(), auto: Boolean = true, level: Level = Level.INFO) {
     if (auto) {
         when (info) {
             is Iterable<*> -> info.forEach { println(it) }
+            is Map<*, *> -> info.forEach { println(it.key.toString() + "  |  " + it.value.toString()) }
             else -> println(info)
         }
-    }
-    println(info)
+    } else println(info)
 }
 
 /**

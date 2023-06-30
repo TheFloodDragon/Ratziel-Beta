@@ -24,7 +24,13 @@ object MainCommand {
         }
     }
 
-    //≤‚ ‘√¸¡Ó
+    @CommandBody
+    val test = subCommand {
+        execute<ProxyCommandSender> { sender, _, _ ->
+            debug()
+        }
+    }
+
     @CommandBody
     val classes = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
