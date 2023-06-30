@@ -5,8 +5,6 @@ dependencies {
         if (it.parent?.name == "project" && !it.name.contains("bungee"))
             implementation(it)
     }
-
-    shadowTaboo("platform-bukkit")
 }
 
 tasks {
