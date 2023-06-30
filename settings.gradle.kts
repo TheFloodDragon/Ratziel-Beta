@@ -2,6 +2,7 @@ rootProject.name = "FDUtilities"
 
 //Bukkit实现
 include("plugin:platform-bukkit")
+include("plugin:all")
 
 //所有字项目的加载(懒得自己一个一个打)
 File("${rootDir}\\project").listFiles()?.filter { it.isDirectory }?.forEach {

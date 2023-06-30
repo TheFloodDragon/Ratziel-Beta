@@ -2,11 +2,23 @@ plugins {
     id("io.izzel.taboolib") version taboolibPluginVersion
 }
 
+dependencies {
+
+    compileOnly("com.google.guava:guava:31.1-jre")
+
+//    rootProject.allprojects.forEach {
+//        if (it.parent?.name == "project" && !it.name.contains("bungee"))
+//            implementation(it)
+//    }
+    parent!!.childProjects.values.filter {
+        it.name.contains("module")
+    }.forEach { implementation(it) }
+}
+
 taboolib {
     version = taboolibVersion
     taboolibModules.forEach { install(it) }
-    //Bukkit
-    install("platform-bukkit")
+    install("platform-bukkit") //Bukkit
 
     description {
         name = rootName
