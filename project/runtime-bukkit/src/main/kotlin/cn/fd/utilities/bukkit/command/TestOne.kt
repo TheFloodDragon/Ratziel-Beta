@@ -1,5 +1,6 @@
 package cn.fd.utilities.bukkit.command
 
+import cn.fd.utilities.common.util.debug
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.command.CommandBody
@@ -21,7 +22,7 @@ object MainCommand {
     //≤‚ ‘√¸¡Ó
     @CommandBody
     val test = subCommand {
-
+        debug("≤‚ ‘")
     }
 
 }

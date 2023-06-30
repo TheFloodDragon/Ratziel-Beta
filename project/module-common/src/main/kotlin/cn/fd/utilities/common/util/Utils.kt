@@ -4,7 +4,7 @@ import taboolib.common.platform.function.console
 import taboolib.module.lang.Level
 import taboolib.module.lang.sendMessage
 
-fun debug(level: Level = Level.INFO, message: String, vararg args: Any) {
+fun debug(message: String, level: Level = Level.INFO, vararg args: Any) {
     console().sendMessage(level, message, args)
 }
 
