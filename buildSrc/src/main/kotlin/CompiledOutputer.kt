@@ -11,9 +11,10 @@ fun Project.output() {
         rootProject
             .childProjects["plugin"]!!.childProjects.values
             .forEach {
-                val target = "$rootName-${it.name.split('-')[1].capitalized()}.jar"
+                val platformStr =
+                    if (it.name.equals("all")) "" else "-${it.name.split('-')[1].capitalized()}"
                 it.outCopy(
-                    File(outDir, target)
+                    File(outDir, "$rootName$platformStr-${it.version}.jar")
                 )
             }
     }
