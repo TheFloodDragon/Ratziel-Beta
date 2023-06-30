@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     java
     `maven-publish`
@@ -29,14 +31,36 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
-
     group = rootGroup
     version = rootVersion
 
     //TODO 八千年后再干
     if (parent?.name != "plugin" /*&& parent?.name != "module"*/) {
         buildDirClean()
+    }
+
+    tasks {
+        withType<JavaCompile> { options.encoding = "UTF-8" }
+        //一般配置
+        withType<ShadowJar> {
+            // Options
+            archiveAppendix.set("")
+            archiveClassifier.set("")
+            archiveVersion.set(rootVersion)
+            //archiveBaseName.set("$rootName-Bukkit")
+            // Exclude
+            exclude("META-INF/**")
+            exclude("com/**", "org/**")
+            // Adventure (不需要,因为是动态加载)
+            //relocate("net.kyori", "$rootGroup.common.adventure")
+            // Taboolib
+            relocate("taboolib", "$rootGroup.taboolib")
+            relocate("tb", "$rootGroup.taboolib")
+            relocate("org.tabooproject", "$rootGroup.taboolib.library")
+            // Kotlin
+            relocate("kotlin.", "kotlin1820.") { exclude("kotlin.Metadata") }
+            relocate("kotlinx.serialization", "kotlinx150.serialization")
+        }
     }
 
 }
