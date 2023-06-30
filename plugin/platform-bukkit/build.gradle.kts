@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
 dependencies {
 
@@ -7,10 +8,13 @@ dependencies {
 
     compileOnly("com.google.guava:guava:31.1-jre")
 
-    rootProject.allprojects.forEach {
-        if (it.parent?.name == "project" && !it.name.contains("bungee"))
-            implementation(it)
-    }
+//    rootProject.allprojects.forEach {
+//        if (it.parent?.name == "project" && !it.name.contains("bungee"))
+//            implementation(it)
+//    }
+    rootProject
+        .childProjects["project"]!!.childProjects.values
+        .forEach { if (!it.name.contains("bungee")) implementation(it) }
 }
 
 tasks {
@@ -20,7 +24,9 @@ tasks {
         archiveClassifier.set("")
         archiveVersion.set(rootVersion)
         //archiveBaseName.set("$rootName-Bukkit")
-        archiveBaseName.set(rootName)
+        //archiveBaseName.set(rootName)
+        println(archiveFile)
+        archivesName.set(rootName)
         // Exclude
         exclude("META-INF/**")
         exclude("com/**", "org/**")
