@@ -1,5 +1,13 @@
 package cn.fd.utilities.common.util
 
+import taboolib.common.platform.function.console
+import taboolib.module.lang.Level
+import taboolib.module.lang.sendMessage
+
+fun debug(level: Level = Level.INFO, message: String, vararg args: Any) {
+    console().sendMessage(level, message, args)
+}
+
 /**
  * 从一个含有列表(元素)的列表中合并子列表(元素)
  * 效果:
