@@ -1,11 +1,9 @@
-package cn.fd.utilities.common.util
+package cn.fd.utilities.util
 
-import taboolib.common.platform.function.console
 import taboolib.module.lang.Level
-import taboolib.module.lang.sendMessage
 
-fun debug(message: String, level: Level = Level.INFO, vararg args: Any) {
-    console().sendMessage(level, message, args)
+fun debug(info: Any?, level: Level = Level.INFO) {
+    println(info)
 }
 
 /**

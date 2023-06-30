@@ -1,8 +1,10 @@
 package cn.fd.utilities.bukkit.command
 
-import cn.fd.utilities.common.util.debug
+import cn.fd.utilities.util.debug
+import cn.fd.utilities.util.getRunningClasses
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.mainCommand
@@ -17,12 +19,17 @@ object MainCommand {
      */
     @CommandBody
     val main = mainCommand {
+        execute<ProxyCommandSender> { sender, _, _ ->
+            debug("Test")
+        }
     }
 
     //≤‚ ‘√¸¡Ó
     @CommandBody
     val test = subCommand {
-        debug("≤‚ ‘")
+        execute<ProxyCommandSender> { sender, _, _ ->
+            debug(getRunningClasses())
+        }
     }
 
 }

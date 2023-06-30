@@ -6,8 +6,8 @@ on:
 jobs:
   build:
     #奇怪的问题——ubuntu就是构建不了
-    runs-on: ubuntu-latest
-    #runs-on: windows-latest
+    #runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
