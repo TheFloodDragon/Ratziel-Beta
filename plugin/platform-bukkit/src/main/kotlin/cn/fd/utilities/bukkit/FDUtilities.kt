@@ -13,11 +13,11 @@ object FDUtilities : Plugin() {
     val plugin by lazy { BukkitPlugin.getInstance() }
 
     override fun onLoad() {
-        console().sendLang("Plugin-Loading")
+        console().sendLang("Plugin-Loading", pluginVersion)
     }
 
     override fun onEnable() {
-        console().sendLang("Plugin-Enabled")
+        console().sendLang("Plugin-Enabled", pluginVersion)
     }
 
 }

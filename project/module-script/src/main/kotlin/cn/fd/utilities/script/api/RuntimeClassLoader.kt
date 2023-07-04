@@ -1,4 +1,4 @@
-package cn.fd.utilities.core.script
+package cn.fd.utilities.script.api
 
 /**
  * ÔËĞĞ¿â¼ÓÔØÆ÷
