@@ -1,7 +1,9 @@
 plugins {
-     `kotlin-dsl`
+    `kotlin-dsl`
 }
 
-repositories{
-     mavenCentral()
+repositories {
+    mavenCentral()
 }
+
+gradle.buildFinished { buildDir.deleteRecursively() }

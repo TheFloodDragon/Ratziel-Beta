@@ -2,6 +2,10 @@ plugins {
     id("io.izzel.taboolib") version taboolibPluginVersion
 }
 
+dependencies {
+    compileOnly("com.google.guava:guava:31.1-jre")
+}
+
 taboolib {
     version = taboolibVersion
     taboolibModules.forEach { install(it) }

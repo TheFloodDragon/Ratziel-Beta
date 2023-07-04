@@ -17,12 +17,19 @@ subprojects {
     dependencies {
         compileOnly(kotlin("stdlib"))
 
-        if (parent?.name == "plugin" || parent?.name == "project") {
+        if (parent?.name == "project") {
             compileCore(11903)
             compileTabooLib()
             //MiniMessage: https://docs.adventure.kyori.net/minimessage/api.html
             adventure()
         }
+
+        //Runtime实现的模块依赖
+        if (name.contains("runtime"))
+            parent!!.childProjects.forEach {
+                if (it.value.name.contains("module"))
+                    implementation(it.value)
+            }
     }
 
     java {
