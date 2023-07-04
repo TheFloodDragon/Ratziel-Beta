@@ -9,7 +9,7 @@ import taboolib.module.nms.MinecraftVersion
  * Invero
  * cc.trixey.invero.common.adventure.AdventureKT
  *
- * @author Arasple, TheFloodDragon
+ * @author Arasple
  * @since 2023/3/9 8:06
  */
 private const val SECTION_CHAR = '§'

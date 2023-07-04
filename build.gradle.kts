@@ -41,8 +41,7 @@ subprojects {
     group = rootGroup
     version = rootVersion
 
-    //TODO 八千年后再干
-    if (parent?.name != "plugin" /*&& parent?.name != "module"*/) {
+    if (parent?.name != "plugin" && parent?.name != "script") {
         buildDirClean()
     }
 
@@ -65,7 +64,7 @@ subprojects {
             relocate("tb", "$rootGroup.taboolib")
             relocate("org.tabooproject", "$rootGroup.taboolib.library")
             // Kotlin
-            relocate("kotlin.", "kotlin1820.") { exclude("kotlin.Metadata") }
+            relocate("kotlin.", "kotlin1822.") { exclude("kotlin.Metadata") }
             relocate("kotlinx.serialization", "kotlinx150.serialization")
         }
     }

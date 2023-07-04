@@ -2,10 +2,10 @@ import java.text.SimpleDateFormat
 
 const val rootName = "FDUtilities"
 const val rootGroup = "cn.fd.utilities"
-const val rootVersion = "A.0.0.0.1"
+const val rootVersion = "A.0.0.0.2"
 
-const val kotlinVersion = "1.8.20"
-const val shadowJarVersion = "8.1.0"
+const val kotlinVersion = "1.8.22"
+const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "1.56"
 
 val taboolibVersion = getLatestRelease("TabooLib", "taboolib").also { println("Using taboolib-version = $it") }
@@ -22,18 +22,18 @@ val taboolibModules = setOf(
     "module-configuration",
     "module-lang",
     "module-chat",
-    "module-database",
-    "expansion-javascript",
-    "expansion-player-database",
+//    "module-database",
+//    "expansion-javascript",
+//    "expansion-player-database",
 )
 
 val adventureModules = setOf(
-    "net.kyori:adventure-api:4.3.0",
-    "net.kyori:adventure-platform-api:4.2.0",
+    "net.kyori:adventure-api:4.14.0",
+//    "net.kyori:adventure-platform-api:4.3.0",
     "net.kyori:adventure-platform-bukkit:4.3.0",
-    "net.kyori:adventure-platform-facet:4.2.0",
-    "net.kyori:adventure-text-minimessage:4.13.1",
-    "net.kyori:adventure-text-serializer-gson:4.2.0",
-    "net.kyori:adventure-text-serializer-bungeecord:4.2.0",
-    "net.kyori:adventure-text-serializer-legacy:4.2.0"
+//    "net.kyori:adventure-platform-facet:4.3.0",
+    "net.kyori:adventure-text-minimessage:4.14.0",
+//    "net.kyori:adventure-text-serializer-gson:4.14.0",
+//    "net.kyori:adventure-text-serializer-bungeecord:4.3.0",
+//    "net.kyori:adventure-text-serializer-legacy:4.14.0"
 )

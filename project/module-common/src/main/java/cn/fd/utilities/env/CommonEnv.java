@@ -8,12 +8,11 @@ import taboolib.common.env.RuntimeDependency;
  * 自动安装依赖
  */
 @RuntimeDependency(
-        value = "!net.kyori:adventure-api:4.3.0",
-        test = "!net.kyori.adventure.Adventure",
+        value = "!net.kyori:adventure-api:4.14.0",
         initiative = true
 )
 @RuntimeDependency(
-        value = "!net.kyori:adventure-text-minimessage:4.13.1",
+        value = "!net.kyori:adventure-text-minimessage:4.14.0",
         //repository = "https://repo.maven.apache.org/maven2",
         //repository = "https://s01.oss.sonatype.org/content/repositories/snapshots",
         initiative = true

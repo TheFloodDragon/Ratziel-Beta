@@ -1,17 +1,5 @@
 package cn.fd.utilities.util
 
-import taboolib.module.lang.Level
-
-fun debug(info: Any? = Any(), auto: Boolean = true, level: Level = Level.INFO) {
-    if (auto) {
-        when (info) {
-            is Iterable<*> -> info.forEach { println(it) }
-            is Map<*, *> -> info.forEach { println(it.key.toString() + "  |  " + it.value.toString()) }
-            else -> println(info)
-        }
-    } else println(info)
-}
-
 /**
  * 从一个含有列表(元素)的列表中合并子列表(元素)
  * 效果:
