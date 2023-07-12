@@ -12,11 +12,8 @@ import taboolib.common.platform.command.subCommand
 
 @PlatformSide([Platform.BUKKIT])
 @CommandHeader(name = "fdutilities")
-object MainCommand {
+object TestCommand {
 
-    /**
-     * ÖØÔØ²å¼şµÄÃüÁî
-     */
     @CommandBody
     val main = mainCommand {
         execute<ProxyCommandSender> { sender, _, _ ->

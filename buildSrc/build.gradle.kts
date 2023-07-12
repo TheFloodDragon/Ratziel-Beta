@@ -5,5 +5,3 @@ plugins {
 repositories {
     mavenCentral()
 }
-
-gradle.buildFinished { buildDir.deleteRecursively() }

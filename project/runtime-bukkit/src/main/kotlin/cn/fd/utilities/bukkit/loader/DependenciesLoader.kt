@@ -5,11 +5,11 @@ import cn.fd.utilities.env.CommonEnv
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 
-//¸Ğ¾õÓĞµãĞ¡Ìâ´ó×ö
+//æ„Ÿè§‰æœ‰ç‚¹å°é¢˜å¤§åš
 object DependenciesLoader {
 
     /**
-     * ¼ÓÔØÒÀÀµÏî
+     * åŠ è½½ä¾èµ–é¡¹
      */
     @Awake
     fun loadDependency() {

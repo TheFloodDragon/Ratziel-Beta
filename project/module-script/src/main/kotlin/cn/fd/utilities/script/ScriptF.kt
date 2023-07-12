@@ -3,22 +3,22 @@ package cn.fd.utilities.script
 abstract class ScriptF {
 
     /**
-     * ½Å±¾±êÊ¶·û(Ãû³Æ)
+     * è„šæœ¬æ ‡è¯†ç¬¦(åç§°)
      */
     val name: String = this.javaClass.name
 
     /**
-     * ½Å±¾±»¼ÓÔØÊ±´¥·¢
+     * è„šæœ¬è¢«åŠ è½½æ—¶è§¦å‘
      */
     abstract fun init()
 
     /**
-     * ½Å±¾ÆôÓÃÊ±´¥·¢
+     * è„šæœ¬å¯ç”¨æ—¶è§¦å‘
      */
     abstract fun enable()
 
     /**
-     * ½Å±¾½ûÓÃÊ±´¥·¢
+     * è„šæœ¬ç¦ç”¨æ—¶è§¦å‘
      */
     abstract fun disable()
 

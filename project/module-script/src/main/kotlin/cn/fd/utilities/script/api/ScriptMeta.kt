@@ -5,17 +5,17 @@ import java.io.File
 interface ScriptMeta {
 
     /**
-     * ½Å±¾Ãû³Æ
+     * è„šæœ¬åç§°
      */
     fun name(): String
 
     /**
-     * ½Å±¾Ô´ÎÄ¼ş
+     * è„šæœ¬æºæ–‡ä»¶
      */
     fun source(file: File)
 
     /**
-     * ½Å±¾±àÒëºóµÄ»º´æÎÄ¼ş
+     * è„šæœ¬ç¼–è¯‘åçš„ç¼“å­˜æ–‡ä»¶
      */
     fun compiled(file: File)
 

@@ -1,20 +1,20 @@
 package cn.fd.utilities.script.api
 
 /**
- * ÔËĞĞ¿â¼ÓÔØÆ÷
+ * è¿è¡Œåº“åŠ è½½å™¨
  *
- * @author »µºÚ
+ * @author åé»‘
  * @since 2022/5/16 01:01
  */
 interface RuntimeClassLoader {
 
     /**
-     * »ñÈ¡ËùÓĞÒÑ¼ÓÔØµÄÀà
+     * è·å–æ‰€æœ‰å·²åŠ è½½çš„ç±»
      */
     fun runningClasses(): Map<String, Class<*>>
 
     /**
-     * »ñÈ¡Àà
+     * è·å–ç±»
      */
     fun findClass(name: String): Class<*>
 }

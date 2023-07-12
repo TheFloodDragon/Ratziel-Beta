@@ -17,6 +17,7 @@ subprojects {
     dependencies {
         compileOnly(kotlin("stdlib"))
 
+        //é¡¹ç›®ä¸€èˆ¬ä¾èµ–
         if (parent?.name == "project") {
             compileCore(11903)
             compileTabooLib()
@@ -24,7 +25,12 @@ subprojects {
             adventure()
         }
 
-        //RuntimeÊµÏÖµÄÄ£¿éÒÀÀµ
+        //æ¨¡å—ä¸€èˆ¬ä¾èµ–â€”â€”æ‰€æœ‰
+        if (parent?.name == "script") {
+            compileAll()
+        }
+
+        //Runtimeå®ç°çš„æ¨¡å—ä¾èµ–
         if (name.contains("runtime"))
             parent!!.childProjects.forEach {
                 if (it.value.name.contains("module"))
@@ -46,8 +52,8 @@ subprojects {
     }
 
     tasks {
-        withType<JavaCompile> { options.encoding = "UTF-8" }
-        //Ò»°ãÅäÖÃ
+        withType<JavaCompile> { options.encoding = "UTF-8" } //UTF-8 ç¼–ç 
+        //ä¸€èˆ¬é…ç½®
         withType<ShadowJar> {
             // Options
             archiveAppendix.set("")
@@ -57,7 +63,7 @@ subprojects {
             // Exclude
             exclude("META-INF/**")
             exclude("com/**", "org/**")
-            // Adventure (²»ĞèÒª,ÒòÎªÊÇ¶¯Ì¬¼ÓÔØ)
+            // Adventure (ä¸éœ€è¦,å› ä¸ºæ˜¯åŠ¨æ€åŠ è½½)
             //relocate("net.kyori", "$rootGroup.common.adventure")
             // Taboolib
             relocate("taboolib", "$rootGroup.taboolib")
@@ -73,4 +79,5 @@ subprojects {
 
 buildDirClean()
 
+//å·¥ä»¶è¾“å‡º
 output()

@@ -6,8 +6,8 @@ import java.io.File
 object WorkSpaceLoader {
 
     /**
-     * 获取工作空间
-     * @param paths 工作空间路径的字符串表现
+     * 鑾峰彇宸ヤ綔绌洪棿
+     * @param paths 宸ヤ綔绌洪棿璺緞鐨勫瓧绗︿覆琛ㄧ幇
      */
     fun getWorkSpaces(paths: Iterable<String>): List<WorkSpace> {
         return paths.map { WorkSpace(File(it)) }
