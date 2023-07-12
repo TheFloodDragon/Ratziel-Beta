@@ -1,6 +1,6 @@
 package cn.fd.utilities.core.api
 
-import cn.fd.utilities.core.util.listFilesDeep
+import util.listFilesDeep
 import java.io.File
 
 class Workspace(

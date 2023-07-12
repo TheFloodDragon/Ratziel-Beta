@@ -23,6 +23,7 @@ fun RepositoryHandler.projectRepositories() {
     maven(repoTabooProject) {
         isAllowInsecureProtocol = true
     }
+    maven("https://papermc.io/repo/repository/maven-public/")
     mavenCentral()
 }
 

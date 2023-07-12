@@ -1,8 +1,8 @@
 package cn.fd.utilities.common.config
 
-import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
+import tb.module.configuration.Config
 
 object Settings {
 

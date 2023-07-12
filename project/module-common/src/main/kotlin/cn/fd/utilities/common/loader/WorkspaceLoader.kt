@@ -20,7 +20,7 @@ object WorkspaceLoader {
      */
     fun loadWorkspace(path: File, create: Boolean = true) {
         workspaces.add(Workspace(path))
-        if (create && !path.exists()) path.createNewFile()
+        if (create && !path.exists()) path.mkdirs()
     }
 
     /**
