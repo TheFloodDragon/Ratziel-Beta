@@ -5,20 +5,20 @@ import cn.fd.utilities.script.ScriptF
 object TestScript : ScriptF() {
 
     init {
-        println("static test-01")
+        println("static test-02")
     }
 
     override fun init() {
-        println("init-01")
+        println("init-02")
         println(name)
     }
 
     override fun enable() {
-        println("enable-01")
+        println("enable-02")
     }
 
     override fun disable() {
-        println("disable-01")
+        println("disable-02")
     }
 
 }

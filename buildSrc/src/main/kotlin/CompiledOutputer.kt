@@ -6,32 +6,35 @@ const val outputFolder = "outs"
 
 //输出编译后的文件到./outs
 fun Project.output() {
-    gradle.buildFinished {
+    @Suppress("DEPRECATION") gradle.buildFinished {
         val outDir = File(rootDir, outputFolder)
-        rootProject
-            .childProjects["plugin"]!!.childProjects.values
-            .forEach {
-                val platformStr =
-                    if (it.name.equals("all")) "" else "-${it.name.split('-')[1].capitalized()}"
-                it.outCopy(
-                    File(outDir, "$rootName$platformStr-${it.version}.jar")
-                )
+        allprojects.forEach {
+            if (it.parent?.name.equals("plugin")) {
+                it.outCopy(File(outDir, nameOfPlugin(it)))
+            } else if (it.parent?.name.equals("script")) {
+                it.outCopy(File(outDir, nameOfScript(it)))
             }
+        }
     }
+}
 
-    //    rootProject TODO do after 8000 years
-    //        .childProjects["module"]!!.childProjects.values
-    //        .forEach { copyByProject(it) }
+fun nameOfPlugin(p: Project): String {
+    return if (p.name.equals("all"))
+        "$rootName-${p.version}.jar"
+    else "$rootName-${p.name.split('-')[1].capitalized()}-${p.version}.jar"
+}
+
+fun nameOfScript(p: Project): String {
+    return "Script-${p.name.capitalized()}-${p.version}.jar"
 }
 
 /**
  * 复制项目输出文件到指定目录
  */
 fun Project.outCopy(
-    target: File,//输出目标
-    source: File? = this.catchOut()//源
+    target: File,
+    source: File? = this.catchOut()
 ) {
-    //outDir.mkdirs().takeIf { !outDir.exists() } //先创建文件
     //复制
     source?.copyTo(target, true)
 }

@@ -1,15 +1,15 @@
 rootProject.name = "FDUtilities"
 
-applyAll("project")
-applyAll("script")
+apply("project")
+apply("script")
 
 //Bukkit
 include("plugin:platform-bukkit")
-//È«²¿¾ÛºÏ°æ
+//å…¨éƒ¨èšåˆç‰ˆ
 include("plugin:all")
 
-//ËùÓĞ×ÖÏîÄ¿µÄ¼ÓÔØ(ÀÁµÃ×Ô¼ºÒ»¸öÒ»¸ö´ò)
-fun applyAll(name: String) {
+//æ‰€æœ‰å­—é¡¹ç›®çš„åŠ è½½(æ‡’å¾—è‡ªå·±ä¸€ä¸ªä¸€ä¸ªæ‰“)
+fun apply(name: String) {
     File("${rootDir}\\$name").listFiles()?.filter { it.isDirectory }?.forEach {
         include("$name:${it.name}")
     }
