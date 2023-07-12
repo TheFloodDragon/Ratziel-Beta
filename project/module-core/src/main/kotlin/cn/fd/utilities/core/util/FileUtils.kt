@@ -1,4 +1,4 @@
-package cn.fd.utilities.util
+package cn.fd.utilities.core.util
 
 import java.io.File
 

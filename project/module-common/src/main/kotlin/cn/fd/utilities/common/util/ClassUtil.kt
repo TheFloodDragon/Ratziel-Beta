@@ -1,14 +1,14 @@
-package cn.fd.utilities.util
+package cn.fd.utilities.common.util
 
 import taboolib.common.io.runningClassMap
 import taboolib.common.util.unsafeLazy
 
 /**
- * µ±Ç°²å¼şµÄËùÓĞÀà (ÅÅ³ıTaboolib±¾ÉíµÄ)
+ * å½“å‰æ’ä»¶çš„æ‰€æœ‰ç±» (æ’é™¤Taboolibæœ¬èº«çš„)
  */
 val runningClassMapWithoutTaboolib by unsafeLazy { runningClassMap.filter { !it.key.startsWith("tb") } }
 
 /**
- * µ±Ç°²å¼şµÄËùÓĞÀàµÄ¼¯ºÏ (ÅÅ³ıTaboolib±¾ÉíµÄ)
+ * å½“å‰æ’ä»¶çš„æ‰€æœ‰ç±»çš„é›†åˆ (æ’é™¤Taboolibæœ¬èº«çš„)
  */
 val runningClassesWithoutTaboolib by unsafeLazy { runningClassMapWithoutTaboolib.values }

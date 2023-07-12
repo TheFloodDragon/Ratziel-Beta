@@ -1,7 +1,7 @@
 package cn.fd.utilities.bukkit.command
 
 import cn.fd.utilities.common.debug
-import cn.fd.utilities.util.runningClassesWithoutTaboolib
+import cn.fd.utilities.common.util.runningClassesWithoutTaboolib
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.ProxyCommandSender

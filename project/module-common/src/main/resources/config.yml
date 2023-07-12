@@ -1,0 +1,6 @@
+Settings:
+  language: zh_CN
+
+Workspaces:
+  paths:
+    - 'plugins/FDUtilities/workspace'

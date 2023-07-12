@@ -1,9 +1,9 @@
 package cn.fd.utilities.core.api
 
-import cn.fd.utilities.util.listFilesDeep
+import cn.fd.utilities.core.util.listFilesDeep
 import java.io.File
 
-class WorkSpace(
+class Workspace(
     /**
      * 工作空间路径
      */
@@ -15,6 +15,10 @@ class WorkSpace(
      */
     fun getFiles(): Iterator<File> {
         return path.listFilesDeep()
+    }
+
+    override fun toString(): String {
+        return "Workspace Path: $path"
     }
 
 }
