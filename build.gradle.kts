@@ -59,7 +59,7 @@ subprojects {
             archiveAppendix.set("")
             archiveClassifier.set("")
             archiveVersion.set(rootVersion)
-            //archiveBaseName.set("$rootName-Bukkit")
+            destinationDirectory.set(file("$rootDir/outs")) //输出路径
             // Exclude
             exclude("META-INF/**")
             exclude("com/**", "org/**")
@@ -78,6 +78,3 @@ subprojects {
 }
 
 buildDirClean()
-
-//工件输出
-output()

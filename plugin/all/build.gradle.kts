@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 dependencies {
     parent!!.childProjects.values.filter {
         it.name.contains("platform")
@@ -7,5 +9,8 @@ dependencies {
 tasks {
     build {
         dependsOn(shadowJar)
+    }
+    withType<ShadowJar> {
+        archiveFileName.set("$rootName-$rootVersion.jar") //输出名称
     }
 }
