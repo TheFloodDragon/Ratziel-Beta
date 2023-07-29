@@ -1,4 +1,9 @@
+plugins {
+    kotlin("plugin.serialization") version "1.8.21"
+}
+
 dependencies {
+    serialization()
     installTaboo("platform-bukkit")
     installTaboo("platform-bungee")
     installTaboo("platform-velocity")
