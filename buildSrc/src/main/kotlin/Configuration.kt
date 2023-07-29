@@ -17,7 +17,7 @@ val taboolibModules = setOf(
     "common",
     "common-5",
     "module-nms",
-//    "module-nms-util",
+    "module-nms-util",
     "module-kether",
     "module-configuration",
     "module-lang",

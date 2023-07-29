@@ -28,6 +28,13 @@ fun RepositoryHandler.projectRepositories() {
 }
 
 /**
+ * KotlinJson序列化工具
+ */
+fun DependencyHandler.serialization() {
+    add("compileOnly", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+}
+
+/**
  * NMS依赖
  */
 fun DependencyHandler.compileNMS() {
@@ -85,7 +92,7 @@ fun DependencyHandler.compileAll() {
 /**
  * 依赖Taboolib模块——仅编译时
  * @param module Taboolib模块名称
- * @param version Taboolib模块版本，默认为Taboolib班恩
+ * @param version Taboolib模块版本，默认为Taboolib版本
  */
 fun DependencyHandler.installTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {
     add("compileOnly", "io.izzel.taboolib:$it:$version")

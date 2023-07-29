@@ -1,6 +1,10 @@
+plugins {
+    kotlin("plugin.serialization") version "1.8.21"
+}
+
 dependencies {
+    serialization()
     compileModule("module-core")
     compileModule("module-common")
-    compileModule("runtime-bukkit")
     installTaboo("platform-bukkit")
 }
