@@ -20,9 +20,10 @@ class KetherLoaderF : ClassVisitor(0) {
         if (method.isAnnotationPresent(KetherParserF::class.java) && method.returnType == ScriptActionParser::class.java) {
             val parser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get()))
             val annotation = method.getAnnotation(KetherParserF::class.java)
-            val value = annotation.property<Array<String>>("name") ?: emptyArray()
+            val name = annotation.property<Array<String>>("name") ?: emptyArray()
+            val namespace = annotation.property<Boolean>("keNameSpace") ?: false
 
-            registerParser(parser as ScriptActionParser<*>, value, "fdutilities", true)
+            registerParser(parser as ScriptActionParser<*>, name, if (namespace) "kether" else "fdutilities", true)
         }
     }
 
