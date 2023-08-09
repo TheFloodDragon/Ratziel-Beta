@@ -6,7 +6,7 @@ package cn.fd.utilities.core.api.kether
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class KetherParserF(
+annotation class KetherAction(
     val name: Array<String>,
-    val keNameSpace: Boolean = false
+    val namespace: String = "fdutilities"
 )

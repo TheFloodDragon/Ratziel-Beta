@@ -6,11 +6,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import taboolib.module.nms.MinecraftVersion
 
 /**
- * Invero
- * cc.trixey.invero.common.adventure.AdventureKT
- *
- * @author Arasple
- * @since 2023/3/9 8:06
+ * @author Arasple, TheFloodDragon
+ * @since 2023/8/9 20:58
  */
 private const val SECTION_CHAR = '§'
 

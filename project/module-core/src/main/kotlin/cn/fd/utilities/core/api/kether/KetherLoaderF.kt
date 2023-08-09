@@ -1,6 +1,5 @@
-package cc.trixey.invero.core.script.loader
+package cn.fd.utilities.core.api.kether
 
-import cn.fd.utilities.core.api.kether.KetherParserF
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
@@ -17,13 +16,13 @@ import java.util.function.Supplier
 class KetherLoaderF : ClassVisitor(0) {
 
     override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
-        if (method.isAnnotationPresent(KetherParserF::class.java) && method.returnType == ScriptActionParser::class.java) {
+        if (method.isAnnotationPresent(KetherAction::class.java) && method.returnType == ScriptActionParser::class.java) {
             val parser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get()))
-            val annotation = method.getAnnotation(KetherParserF::class.java)
+            val annotation = method.getAnnotation(KetherAction::class.java)
             val name = annotation.property<Array<String>>("name") ?: emptyArray()
-            val namespace = annotation.property<Boolean>("keNameSpace") ?: false
+            val namespace = annotation.property<String>("namespace") ?: "kether"
 
-            registerParser(parser as ScriptActionParser<*>, name, if (namespace) "kether" else "fdutilities", true)
+            registerParser(parser as ScriptActionParser<*>, name, namespace, true)
         }
     }
 
