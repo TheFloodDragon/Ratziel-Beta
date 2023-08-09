@@ -1,6 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-dependencies { implementation(project(":project:runtime-bukkit")) }
+dependencies { installModule("runtime-bukkit") }
 
 tasks {
     build {
