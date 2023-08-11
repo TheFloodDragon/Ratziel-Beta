@@ -1,5 +1,6 @@
 package cn.fd.utilities.common.config
 
+import taboolib.common.platform.function.getDataFolder
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
 import tb.module.configuration.Config
@@ -17,6 +18,6 @@ object Settings {
 //    var MULTI_THREAD = true
 
     @ConfigNode(value = "Workspaces.paths")
-    var WORKSPACES_PATHS = listOf("plugins/FDUtilities/workspace")
+    var WORKSPACES_PATHS = listOf("${getDataFolder()}/workspace")
 
 }

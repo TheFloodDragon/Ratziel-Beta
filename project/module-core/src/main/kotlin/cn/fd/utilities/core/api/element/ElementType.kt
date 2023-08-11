@@ -1,5 +1,7 @@
 package cn.fd.utilities.core.api.element
 
+import cn.fd.utilities.core.api.element.parser.ElementParser
+
 interface ElementType {
 
     /**
