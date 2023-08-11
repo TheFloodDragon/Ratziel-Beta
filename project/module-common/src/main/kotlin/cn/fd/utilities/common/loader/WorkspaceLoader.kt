@@ -28,7 +28,7 @@ object WorkspaceLoader {
      */
     fun load(sender: ProxyCommandSender) {
         init(sender)
-        val loader = ElementFileLoader() //创建一个加载器对象
+        val loader = DefaultElementLoader() //创建一个加载器对象
         getAllFiles().forEach {
             loader.load(it)
         }

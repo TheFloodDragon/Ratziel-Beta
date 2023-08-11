@@ -1,31 +1,32 @@
 package cn.fd.utilities.common.loader
 
-import cn.fd.utilities.common.debug
 import cn.fd.utilities.core.api.element.loader.FileElementLoader
 import java.io.File
 
 class DefaultElementLoader {
 
-    val count = 0
+    //TODO (是否要返回元素)
 
-    fun loadFromFile(file: File) {
-        when (file.extension) {
-            "yaml", "yml" -> YamlElementLoader.load(file)
+    private var counter = 0
+
+    fun load(file: File) {
+        file.apply {
+            when (extension) {
+                "yaml", "yml" -> runLoader(YamlElementLoader)
+            }
         }
     }
 
-    fun runLoader(loader: FileElementLoader) {
-        loader.load()
+    fun File.runLoader(loader: FileElementLoader) {
+        count(loader.load(this))
     }
 
-}
+    fun getSuccesses(): Int {
+        return counter
+    }
 
-object YamlElementLoader : FileElementLoader {
-
-    override fun load(file: File): Boolean {
-        debug("Loading $file")
-        return true
-        //TODO
+    private fun count(success: Boolean = true) {
+        if (success) counter += 1
     }
 
 }
