@@ -6,6 +6,7 @@ import cn.fd.utilities.common.WorkspaceManager.workspaces
 import cn.fd.utilities.common.config.Settings.WORKSPACES_PATHS
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.module.lang.sendLang
+import kotlin.system.measureNanoTime
 
 object WorkspaceLoader {
 
@@ -29,9 +30,12 @@ object WorkspaceLoader {
     fun load(sender: ProxyCommandSender) {
         init(sender)
         val loader = DefaultElementLoader() //创建一个加载器对象
-        getAllFiles().forEach {
-            loader.load(it)
+        val elapsed = measureNanoTime {
+            getAllFiles().forEach {
+                loader.load(it)
+            }
         }
+        sender.sendLang("Workspace-Finished", loader.getSuccesses(), elapsed)
     }
 
     /**

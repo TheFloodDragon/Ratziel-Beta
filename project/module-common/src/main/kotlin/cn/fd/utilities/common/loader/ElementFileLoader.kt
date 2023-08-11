@@ -1,6 +1,8 @@
 package cn.fd.utilities.common.loader
 
+import cn.fd.utilities.core.api.element.Element
 import cn.fd.utilities.core.api.element.loader.FileElementLoader
+import cn.fd.utilities.core.api.util.ResultFuture
 import java.io.File
 
 class DefaultElementLoader {
@@ -9,16 +11,20 @@ class DefaultElementLoader {
 
     private var counter = 0
 
-    fun load(file: File) {
+    fun load(file: File): ResultFuture<Element?> {
         file.apply {
-            when (extension) {
+            return when (extension) {
                 "yaml", "yml" -> runLoader(YamlElementLoader)
+                else -> ResultFuture(null)
             }
         }
     }
 
-    fun File.runLoader(loader: FileElementLoader) {
-        count(loader.load(this))
+    private fun File.runLoader(loader: FileElementLoader): ResultFuture<Element?> {
+        loader.load(this).let {
+            count(it.getResultB())
+            return it
+        }
     }
 
     fun getSuccesses(): Int {
