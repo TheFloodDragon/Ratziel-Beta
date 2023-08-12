@@ -1,14 +1,14 @@
 package cn.fd.utilities.common.config
 
+import taboolib.common.io.newFolder
 import taboolib.common.platform.function.getDataFolder
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
 import tb.module.configuration.Config
-import java.io.File
 
 object Settings {
 
-    val defaultWorkspace by lazy { File(getDataFolder(), "workspace") }
+    val defaultWorkspace = newFolder("${getDataFolder()}/workspace", false)
 
     @Config
     lateinit var conf: Configuration

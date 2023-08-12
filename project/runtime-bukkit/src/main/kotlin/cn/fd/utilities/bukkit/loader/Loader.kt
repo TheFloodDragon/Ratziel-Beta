@@ -5,7 +5,6 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.module.lang.Language
 
-//TODO 不大喜欢这种方式
 object Loader {
 
     @Awake(LifeCycle.LOAD)

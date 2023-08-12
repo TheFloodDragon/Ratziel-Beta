@@ -27,8 +27,10 @@ object WorkspaceManager {
     /**
      * 复制默认工作空间内文件到默认工作空间
      */
-    fun releaseWorkspace(target: String) {
-        releaseResourceFile("default", target, false)
+    fun releaseWorkspace(files: Array<String> = DefaultFiles.files, target: String) {
+        files.forEach {
+            releaseResourceFile("${DefaultFiles.PATH}/$it", "$target/$it")
+        }
     }
 
 }

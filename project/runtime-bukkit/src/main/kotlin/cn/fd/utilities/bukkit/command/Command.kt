@@ -8,7 +8,7 @@ import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.expansion.createHelper
 import taboolib.module.lang.sendLang
-import kotlin.system.measureNanoTime
+import kotlin.system.measureTimeMillis
 
 @CommandHeader(
     name = "fdutilities",
@@ -27,13 +27,14 @@ object Command {
     @CommandBody
     val reload = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            val elapsed = measureNanoTime {
+            measureTimeMillis {
                 /**
                  * 重载函数内容
                  */
                 WorkspaceLoader.reload(sender)
+            }.let {
+                sender.sendLang("Plugin-Reloaded", it)
             }
-            sender.sendLang("Plugin-Reloaded", elapsed)
         }
     }
 
