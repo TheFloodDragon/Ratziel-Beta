@@ -1,4 +1,4 @@
-package cn.fd.utilities.core.api.kether
+package cn.fd.utilities.kether.api
 
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
@@ -20,9 +20,12 @@ class KetherLoaderF : ClassVisitor(0) {
             val parser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get()))
             val annotation = method.getAnnotation(KetherAction::class.java)
             val name = annotation.property<Array<String>>("name") ?: emptyArray()
-            val namespace = annotation.property<String>("namespace") ?: "cn/fd/utilities/kether"
+            val namespace = annotation.property<Array<String>>("namespace") ?: emptyArray()
 
-            registerParser(parser as ScriptActionParser<*>, name, namespace, true)
+            // 批量注册
+            namespace.forEach {
+                registerParser(parser as ScriptActionParser<*>, name, it, true)
+            }
         }
     }
 

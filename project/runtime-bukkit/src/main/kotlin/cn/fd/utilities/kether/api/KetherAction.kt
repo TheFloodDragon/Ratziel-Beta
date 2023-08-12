@@ -1,4 +1,4 @@
-package cn.fd.utilities.core.api.kether
+package cn.fd.utilities.kether.api
 
 /**
  * @author 蛟龙
@@ -8,5 +8,5 @@ package cn.fd.utilities.core.api.kether
 @Retention(AnnotationRetention.RUNTIME)
 annotation class KetherAction(
     val name: Array<String>,
-    val namespace: String = "fdutilities"
+    val namespace: Array<String> = ["fdu", "kether"],
 )

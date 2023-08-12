@@ -38,8 +38,7 @@ object WorkspaceLoader {
     /**
      * 加载命名空间 (在插件加载时)
      */
-    @Awake(LifeCycle.LOAD)
-    fun load(sender: ProxyCommandSender = console()) {
+    fun load(sender: ProxyCommandSender) {
         init()
         val loader = DefaultElementLoader() //创建一个加载器对象
         val elapsed = measureNanoTime {
@@ -56,6 +55,14 @@ object WorkspaceLoader {
     fun reload(sender: ProxyCommandSender) {
         workspaces.clear()
         load(sender)
+    }
+
+    /**
+     * 在插件加载时加载命名空间
+     */
+    @Awake(LifeCycle.LOAD)
+    private fun load() {
+        load(console())
     }
 
 }
