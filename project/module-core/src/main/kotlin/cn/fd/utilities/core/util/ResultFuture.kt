@@ -1,4 +1,4 @@
-package cn.fd.utilities.core.api.util
+package cn.fd.utilities.core.util
 
 /**
  * 该结果的成功与否在未来

@@ -11,7 +11,7 @@ import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 
 @PlatformSide([Platform.BUKKIT])
-@CommandHeader(name = "fdutilities")
+@CommandHeader(name = "ftest")
 object TestCommand {
 
     @CommandBody

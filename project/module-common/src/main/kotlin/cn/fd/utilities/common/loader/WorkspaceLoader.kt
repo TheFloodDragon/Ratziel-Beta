@@ -35,7 +35,7 @@ object WorkspaceLoader {
                 loader.load(it)
             }
         }
-        sender.sendLang("Workspace-Finished", loader.getSuccesses(), elapsed)
+        sender.sendLang("Workspace-Finished", loader.getCount(), elapsed)
     }
 
     /**

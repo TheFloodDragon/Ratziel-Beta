@@ -1,4 +1,4 @@
-package cn.fd.utilities.core.api.util
+package cn.fd.utilities.core.util
 
 enum class ResultType {
     SUCCESS, //成功

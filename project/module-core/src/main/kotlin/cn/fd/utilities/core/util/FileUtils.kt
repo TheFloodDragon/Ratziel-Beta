@@ -1,4 +1,4 @@
-package util
+package cn.fd.utilities.core.util
 
 import taboolib.common.platform.PlatformFactory
 import tb.common.platform.service.PlatformIO

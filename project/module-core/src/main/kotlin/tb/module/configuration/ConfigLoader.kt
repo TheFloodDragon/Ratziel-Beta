@@ -1,5 +1,6 @@
 package tb.module.configuration
 
+import cn.fd.utilities.core.util.releaseResourceFile
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLibCommon
 import taboolib.common.env.RuntimeDependencies
@@ -13,7 +14,6 @@ import taboolib.module.configuration.ConfigNodeFile
 import taboolib.module.configuration.ConfigNodeLoader
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.SecuredFile
-import util.releaseResourceFile
 import java.util.function.Supplier
 
 @RuntimeDependencies(

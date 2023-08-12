@@ -1,4 +1,4 @@
-package cn.fd.utilities.bukkit.kether
+package cn.fd.utilities.kether
 
 import cn.fd.utilities.bukkit.util.alert
 import org.bukkit.entity.Player
