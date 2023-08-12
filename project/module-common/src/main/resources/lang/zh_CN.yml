@@ -11,7 +11,6 @@ Plugin-Loading:
 Plugin-Enabled: '&8[&6FD&eUtilities&8] &b信息 &8| &3加载完毕. FDUtilities &av{0} &3现已启用, 敬请使用.'
 Plugin-Reloaded: '&8[&6F&8] &7插件已重载完毕 &8({0}ms)'
 
-Workspace-Empty: '&8[&6F&8] &c没有找到有效的工作空间!'
 Workspace-Inited: '&8[&6F&8] &7已初始化 &a{0} &7个工作空间... 开始加载配置 &8({1}ms)'
 Workspace-Finished: '&8[&6F&8] &7成功载入 &a{0} &7个有效元素... &8({1}ms)'
 

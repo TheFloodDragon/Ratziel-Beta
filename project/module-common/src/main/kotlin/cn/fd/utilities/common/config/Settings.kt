@@ -4,8 +4,11 @@ import taboolib.common.platform.function.getDataFolder
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
 import tb.module.configuration.Config
+import java.io.File
 
 object Settings {
+
+    val defaultWorkspace by lazy { File(getDataFolder(), "workspace") }
 
     @Config
     lateinit var conf: Configuration
@@ -18,6 +21,6 @@ object Settings {
 //    var MULTI_THREAD = true
 
     @ConfigNode(value = "Workspaces.paths")
-    var WORKSPACES_PATHS = listOf("${getDataFolder()}/workspace")
+    var WORKSPACES_PATHS = listOf(defaultWorkspace.path)
 
 }
