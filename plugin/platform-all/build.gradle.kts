@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
     parent!!.childProjects.values.filter {
-        it.name.contains("platform")
+        it != project //排除自身
     }.forEach { implementation(it) }
 }
 

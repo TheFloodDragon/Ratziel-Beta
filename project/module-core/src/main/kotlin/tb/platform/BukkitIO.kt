@@ -50,12 +50,7 @@ class BukkitIO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(getDataFolder(), path)
-        if (file.exists() && !replace) {
-            return file
-        }
-        newFile(file).writeBytes(plugin.getResource(path)?.readBytes() ?: error("resource not found: $path"))
-        return file
+        return releaseResourceFile(path, path, replace) //修改部分
     }
 
     //修改部分——添加

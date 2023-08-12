@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package tb.module.configuration
 
 import cn.fd.utilities.core.util.releaseResourceFile
