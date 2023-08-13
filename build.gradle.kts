@@ -17,7 +17,6 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
-        compileOnly("org.yaml:snakeyaml:2.1")
 
         //项目一般依赖
         if (parent?.name == "project") {

@@ -1,16 +1,7 @@
-import org.gradle.internal.impldep.org.yaml.snakeyaml.DumperOptions
-import org.gradle.internal.impldep.org.yaml.snakeyaml.Yaml
-import java.io.FileInputStream
-import java.io.FileWriter
-
 // 平台运行模块名称
 val runtime: String by extra
 
-dependencies { compileOnly("org.yaml:snakeyaml:2.1") }
-
 subprojects {
-
-    dependencies { compileOnly("org.yaml:snakeyaml:2.1") }
 
     tasks.jar {
         // 添加通用语言
@@ -39,28 +30,6 @@ subprojects {
                     }
                 }
         }
-    }
-}
-
-/**
- * 合并两个YAML文件
- * 若有冲突则保留被合并的
- * @param merger 合并者
- * @param merged 被合并的
- */
-fun mergeYaml(merger: File, merged: File, out: File) {
-    val options = DumperOptions()
-    options.isPrettyFlow = true
-    options.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
-    val yaml = Yaml(options)
-
-    val data1 = yaml.loadAs(FileInputStream(merger), Map::class.java)
-    val data2 = yaml.loadAs(FileInputStream(merged), Map::class.java)
-    // data2优先级高于data1
-    val mergedData = data1.toMutableMap().putAll(data2)
-
-    FileWriter(out).use {
-        yaml.dump(mergedData, it)
     }
 }
 
