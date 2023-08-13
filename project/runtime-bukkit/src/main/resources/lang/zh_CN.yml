@@ -1,0 +1,63 @@
+#语言文件——简体中文
+
+# Bukkit
+
+Bukkit-Test: '我草你妈'
+
+##暂无##
+
+
+#版本更新的弃子
+#Plugin-Reload: '&8[&6FD&eUtilities&r&8] &a良好 &8| &3成功重载所有配置文件 &8({0}ms)'
+#Plugin-Dependency-Hooked: '&8[&6FD&eUtilities&r&8] &6挂钩 &8| &7软依赖 &f{0} &7已兼容.'
+#
+#Module-Config-Failed:
+#  - '&8[&6FD&eUtilities&r&8] &c错误 &8| &4载入模块配置文件 &c{0} &4过程中出现意外错误:'
+#  - '        &8{1}'
+#Module-Config-Reloaded: '&8[&6FD&eUtilities&r&8] &6模块 &8| &7监听到模块配置文件 &f{0} 改动, 已自动载入相关配置等... &8({1}ms)'
+#Module-Loader-Loading: '&8[&6FD&eUtilities&r&8] &6模块 &8| &7正在加载模块...'
+#Module-Loader-Success: '&8[&6FD&eUtilities&r&8] &6模块 &8| &a成功加载模块 &6{0} &a!'
+#Module-Loader-Unregistered: '&8[&6FD&eUtilities&r&8] &6模块 &8| &a已卸载模块 &6{0} &a!'
+#Module-Loader-Finished: '&8[&6FD&eUtilities&r&8] &6模块 &8| &a成功注册并加载了 &6{0} &a个模块!'
+#Module-Loader-UnknownError: '&8[&6FD&eUtilities&r&8] &c错误 &8| &4创建扩展模块实例时出现未知的问题.'
+#Module-Loader-NotClassError: '&8[&6FD&eUtilities&r&8] &c错误 &8| &4无法加载扩展模块 &c{0} &4, 未能找到相关类的继承.'
+#Module-Loader-NotRequiredMethodError: '&8[&6FD&eUtilities&r&8] &c错误 &8| &4无法加载扩展模块 &c{0} &4, 未能找到必要方法的声明.'
+#Module-Loader-NotDependencyError: '&8[&6FD&eUtilities&r&8] &c错误 &8| &4加载扩展模块类 &c{0} &4时失败 &7(是否缺少依赖项?)'
+#Module-Loader-NullIdentifierError: '&8[&6FD&eUtilities&r&8] &c错误 &8| &4加载扩展模块类 &c{0} &4时失败, 扩展模块的标识符(名称)为空!'
+#Module-Loader-VerifyError:
+#  - '&8[&6FD&eUtilities&r&8] &c错误 &8| &4无法加载扩展模块: &c{0} &7(是否缺少依赖项?)'
+#  - '        &8{1} {2}'
+#
+#
+##命令方面
+#Command-Help:
+#  - '&r'
+#  - type: JSON
+#    text: '  [&6FDUtilities] [&f{0}]'
+#    args:
+#      - hover: '&7FDUtilities 是一个多功能插件'
+#      - hover: '&7插件版本: &a{0}'
+#  - '&r'
+#  - type: JSON
+#    text: '  &7命令: [&f/fdutilities]'
+#    args:
+#      - hover: '&f/fdutilities &8[...]'
+#        suggest: '/fdutilities '
+#  - '  &7参数:'
+#  - type: JSON
+#    text: '    &8- [&fhelp]'
+#    args:
+#      - hover: '&f/fdutilities help &8- &7显示帮助信息'
+#        suggest: '/fdutilities help '
+#  - '      &7显示帮助信息'
+#  - type: JSON
+#    text: '    &8- [&freload]'
+#    args:
+#      - hover: '&f/fdutilities reload &8- &7重载配置文件'
+#        suggest: '/fdutilities reload '
+#  - '      &7重载配置文件'
+#  - '&r'
+#
+#Kether-Shell-Exception:
+#  - '&8[&6FD&eUtilities&r&8] &c错误 &8| &7解析 Kether Shell 时出现意外异常:'
+#  - '        &8{0}'

@@ -8,6 +8,7 @@ plugins {
 }
 
 subprojects {
+
     applyPlugins()
 
     repositories {
@@ -16,6 +17,7 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
+        compileOnly("org.yaml:snakeyaml:2.0")
 
         //项目一般依赖
         if (parent?.name == "project") {
