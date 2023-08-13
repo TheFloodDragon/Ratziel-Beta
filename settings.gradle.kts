@@ -3,9 +3,9 @@ rootProject.name = "FDUtilities"
 apply("project")
 apply("script")
 
-//Bukkit
+// Bukkit
 include("plugin:platform-bukkit")
-//全部聚合版
+// 全部聚合版
 include("plugin:platform-all")
 
 //所有字项目的加载(懒得自己一个一个打)

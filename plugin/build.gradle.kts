@@ -2,9 +2,7 @@
 val runtime: String by extra
 
 subprojects {
-
     tasks.jar {
-        dependsOn(":buildSrc:compileKotlin")
         // 添加通用语言
         doLast { // 编译完成后,打包前
             val langPath = "src/main/resources/lang" // 语言文件所在文件夹目录

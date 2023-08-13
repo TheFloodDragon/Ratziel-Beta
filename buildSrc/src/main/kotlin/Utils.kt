@@ -52,7 +52,7 @@ fun mergeYaml(merger: File, merged: File, out: File) {
     // data2优先级高于data1
     val mergedData = data1.toMutableMap().putAll(data2)
 
-    FileWriter(out).use {
+    FileWriter(out.also { it.parentFile.mkdirs() }).use {
         yaml.dump(mergedData, it)
     }
 }
