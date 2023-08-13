@@ -1,12 +1,10 @@
-import java.io.FileWriter
-import java.io.IOException
-
 // 平台运行模块名称
 val runtime: String by extra
 
 subprojects {
 
     tasks.jar {
+        dependsOn(":buildSrc:compileKotlin")
         // 添加通用语言
         doLast { // 编译完成后,打包前
             val langPath = "src/main/resources/lang" // 语言文件所在文件夹目录
@@ -24,17 +22,7 @@ subprojects {
                                 if (merged.name == merger.name) { // 匹配相同语言的文本
                                     val out = File(project.buildDir, "cache/lang/${merged.name}")
                                     // 合并文件
-                                    //mergeYaml(merger, merged, out) 不知道为什么用不了
-                                    try {
-                                        merger.copyTo(out)
-                                        merged.readLines().forEach { str ->
-                                            FileWriter(out, true).use {
-                                                it.write(str)
-                                            }
-                                        }
-                                    } catch (e: IOException) {
-                                        e.printStackTrace()
-                                    }
+                                    mergeYaml(merger, merged, out)
                                     // 加入打包文件中
                                     from(out) {
                                         into("resources/lang")
