@@ -1,4 +1,3 @@
-
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 import java.io.BufferedReader
@@ -46,22 +45,15 @@ fun getLatestRelease(repoOwner: String, repoName: String): String {
  * @param merged 被合并的
  */
 fun mergeYaml(merger: File, merged: File, out: File) {
-    val options = DumperOptions()
-    options.isPrettyFlow = true
-    options.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
-    val yaml = Yaml(options)
+    val yaml = Yaml(DumperOptions().apply {
+        isPrettyFlow = true
+        defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
+    })
 
-    val data1 = yaml.load(merger.reader()) as? MutableMap<String, Any>
-    val data2 = yaml.load(merged.reader()) as? Map<String, Any>
+    val data1 = yaml.load(merger.reader()) as MutableMap<String, Any>
+    val data2 = yaml.load(merged.reader()) as MutableMap<String, Any>
 
-    if (data1 != null && data2 != null) {
-        val mergedData = (data1.toMutableMap() + data2).toMutableMap()
-
-        FileWriter(out.also { it.parentFile.mkdirs() }).use {
-            yaml.dump(mergedData, it)
-        }
-
-    } else {
-        println("Error: Unable to load or cast YAML data.")
+    FileWriter(out.also { it.parentFile.mkdirs() }).use {
+        yaml.dump(data1.putAll(data2), it)
     }
 }

@@ -11,7 +11,9 @@ subprojects {
             dependsOn(shadowJar)
         }
         withType<ShadowJar> {
-            // 加入打包的文件中
+            // 删除原有的
+            exclude("lang/*")
+            // 加入合并后的语言文件
             from(outDir) {
                 into("lang")
             }
