@@ -2,7 +2,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val runtime: String by extra { "runtime-bukkit" }
 
-dependencies { installModule(runtime) }
+dependencies {
+    installModule(runtime)
+}
 
 tasks {
     build {

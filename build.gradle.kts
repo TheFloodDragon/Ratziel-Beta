@@ -17,7 +17,6 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
-        compileOnly("org.yaml:snakeyaml:2.0")
 
         //项目一般依赖
         if (parent?.name == "project") {
@@ -72,7 +71,7 @@ subprojects {
             relocate("tb", "$rootGroup.taboolib")
             relocate("org.tabooproject", "$rootGroup.taboolib.library")
             // Kotlin
-            relocate("kotlin.", "kotlin1822.") { exclude("kotlin.Metadata") }
+            relocate("kotlin.", "kotlin1820.") { exclude("kotlin.Metadata") }
             relocate("kotlinx.serialization", "kotlinx150.serialization")
         }
     }
