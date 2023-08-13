@@ -19,7 +19,6 @@ subprojects {
             project(":project:module-common") // 通用语言文件所在模块
                 .file(langPath)
                 .listFiles().forEach { merger ->
-                    //println(project.file(langPath).listFiles())
                     // 获取Runtime模块
                     val runtimes: List<Project> =
                         if (project.hasProperty("runtime"))
