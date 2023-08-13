@@ -6,6 +6,6 @@ repositories {
     mavenCentral()
 }
 
-dependencies { compileOnly("org.yaml:snakeyaml:2.0") }
+dependencies { compileOnly("org.yaml:snakeyaml:2.1") }
 
 @Suppress("DEPRECATION") gradle.buildFinished { buildDir.deleteRecursively() }

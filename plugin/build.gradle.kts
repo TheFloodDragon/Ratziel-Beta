@@ -1,3 +1,6 @@
+import java.io.FileWriter
+import java.io.IOException
+
 // 平台运行模块名称
 val runtime: String by extra
 
@@ -18,13 +21,24 @@ subprojects {
                     runtimes.forEach {
                         it.file(langPath).listFiles() //获取该Runtime下的所有语言文件
                             .forEach { merged ->
-                                val out = File(project.buildDir, "cache/lang/${merged.name}")
-                                println(out)
-                                // 合并文件
-                                mergeYaml(merger, merged, out)
-                                // 加入打包文件中
-                                from(out) {
-                                    into("resources/lang")
+                                if (merged.name == merger.name) { // 匹配相同语言的文本
+                                    val out = File(project.buildDir, "cache/lang/${merged.name}")
+                                    // 合并文件
+                                    //mergeYaml(merger, merged, out) 不知道为什么用不了
+                                    try {
+                                        merger.copyTo(out)
+                                        merged.readLines().forEach { str ->
+                                            FileWriter(out, true).use {
+                                                it.write(str)
+                                            }
+                                        }
+                                    } catch (e: IOException) {
+                                        e.printStackTrace()
+                                    }
+                                    // 加入打包文件中
+                                    from(out) {
+                                        into("resources/lang")
+                                    }
                                 }
                             }
                     }
