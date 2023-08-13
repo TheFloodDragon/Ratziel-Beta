@@ -1,6 +1,10 @@
+
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileWriter
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -47,12 +51,17 @@ fun mergeYaml(merger: File, merged: File, out: File) {
     options.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
     val yaml = Yaml(options)
 
-    val data1 = yaml.loadAs(FileInputStream(merger), Map::class.java)
-    val data2 = yaml.loadAs(FileInputStream(merged), Map::class.java)
-    // data2优先级高于data1
-    val mergedData = data1.toMutableMap().putAll(data2)
+    val data1 = yaml.load(merger.reader()) as? MutableMap<String, Any>
+    val data2 = yaml.load(merged.reader()) as? Map<String, Any>
 
-    FileWriter(out.also { it.parentFile.mkdirs() }).use {
-        yaml.dump(mergedData, it)
+    if (data1 != null && data2 != null) {
+        val mergedData = (data1.toMutableMap() + data2).toMutableMap()
+
+        FileWriter(out.also { it.parentFile.mkdirs() }).use {
+            yaml.dump(mergedData, it)
+        }
+
+    } else {
+        println("Error: Unable to load or cast YAML data.")
     }
 }

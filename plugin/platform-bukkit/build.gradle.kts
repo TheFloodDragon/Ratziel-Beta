@@ -8,9 +8,6 @@ dependencies {
 }
 
 tasks {
-    build {
-        dependsOn(shadowJar)
-    }
     withType<ShadowJar> {
         archiveFileName.set("$rootName-Bukkit-$rootVersion.jar") //输出名称
     }
