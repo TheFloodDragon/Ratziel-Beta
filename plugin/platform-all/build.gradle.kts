@@ -1,10 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-dependencies {
-    parent!!.childProjects.values.filter {
-        it != project //排除自身
-    }.forEach { implementation(it) }
-}
+extra["runtimes"] =
+    rootProject.allprojects
+        .filter { it.name.contains("runtime") }
+        .map { it.name }
 
 tasks {
     build {

@@ -1,11 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val runtime: String by extra { "runtime-bukkit" }
-
-dependencies {
-    compileOnly("org.yaml:snakeyaml:2.1")
-    installModule(runtime)
-}
+extra["runtimes"] = listOf("runtime-bukkit")
 
 tasks {
     withType<ShadowJar> {

@@ -12,7 +12,13 @@ subprojects {
     applyPlugins()
 
     repositories {
-        projectRepositories()
+        mavenCentral()
+        // 坏黑私人库
+        maven("http://ptms.ink:8081/repository/releases") {
+            isAllowInsecureProtocol = true
+        }
+        // PaperMC
+        maven("https://papermc.io/repo/repository/maven-public/")
     }
 
     dependencies {
@@ -20,7 +26,7 @@ subprojects {
 
         //项目一般依赖
         if (parent?.name == "project") {
-            compileCore(11903)
+            compileCore(12001)
             compileTabooLib()
             //MiniMessage: https://docs.adventure.kyori.net/minimessage/api.html
             adventure()

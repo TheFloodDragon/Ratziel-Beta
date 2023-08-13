@@ -1,9 +1,8 @@
+
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
-import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginAware
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.project
 
 fun PluginAware.applyPlugins() {
@@ -14,17 +13,6 @@ fun PluginAware.applyPlugins() {
 
 fun Project.buildDirClean() {
     @Suppress("DEPRECATION") gradle.buildFinished { buildDir.deleteRecursively() }
-}
-
-/**
- * 项目通用储存库
- */
-fun RepositoryHandler.projectRepositories() {
-    maven(repoTabooProject) {
-        isAllowInsecureProtocol = true
-    }
-    maven("https://papermc.io/repo/repository/maven-public/")
-    mavenCentral()
 }
 
 /**

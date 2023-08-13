@@ -1,9 +1,16 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-// 平台运行模块名称
-val runtime: String by extra
-
 subprojects {
+
+    val runtimes: List<String> by extra
+
+    /**
+     * Runtime依赖 子项目必须写
+     */
+    afterEvaluate {
+        dependencies { runtimes.forEach { installModule(it) } }
+    }
+
     val outDir = File(project.buildDir, "cache/lang")
 
     tasks {
@@ -20,27 +27,22 @@ subprojects {
         }
         // Yaml合并
         jar {
-            doFirst { // 编译完成后,打包前
-                val langPath = "src/main/resources/lang" // 语言文件所在文件夹目录
-                // 通用语言文件所在模块
-                val commonFiles = project(":project:module-common")
-                    .file(langPath)
-                    .listFiles()
+            doFirst {
+                // 语言文件所在文件夹目录
+                val langPath = "src/main/resources/lang"
+                // 通用语言文件夹
+                val commonFiles = project(":project:module-common").file(langPath).listFiles()
                 // 获取Runtime模块
-                val runtimes: List<Project> =
-                    if (project.hasProperty("runtime"))
-                        listOf(project(":project:${project.property("runtime") as String}"))
-                    else rootProject.allprojects.filter { p -> p.name.contains("runtime") }
+                val rts: List<Project> = runtimes.map { project(":project:${it}") }
                 // 准备合并文件
-                commonFiles.forEach { merger ->
-                    runtimes.forEach {
-                        it.file(langPath).listFiles() //获取该Runtime下的所有语言文件
-                            .forEach { merged ->
-                                if (merged.name == merger.name) { // 匹配相同语言的文本
-                                    val out = File(outDir, merged.name)
-                                    // 合并文件
-                                    mergeYaml(merger, merged, out)
-                                }
+                commonFiles.forEach { common ->
+                    rts.forEach {
+                        it.file(langPath).listFiles()
+                            .find { f -> f.name == common.name } // 匹配相同语言
+                            ?.let { merged ->
+                                mergeYaml( // 合并文件
+                                    common, merged, File(outDir, merged.name)
+                                )
                             }
                     }
                 }

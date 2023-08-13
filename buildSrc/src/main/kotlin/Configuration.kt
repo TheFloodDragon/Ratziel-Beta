@@ -9,7 +9,6 @@ const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "1.56"
 
 val taboolibVersion = getLatestRelease("TabooLib", "taboolib").also { println("Using taboolib-version = $it") }
-const val repoTabooProject = "http://ptms.ink:8081/repository/releases"
 
 val isoInstantFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
