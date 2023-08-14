@@ -1,4 +1,4 @@
-package cn.fd.utilities.core.api
+package cn.fd.utilities.core
 
 import cn.fd.utilities.core.util.listFilesDeep
 import java.io.File

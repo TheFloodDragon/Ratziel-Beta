@@ -1,7 +1,7 @@
 package cn.fd.utilities.common.loader
 
-import cn.fd.utilities.core.api.element.Element
-import cn.fd.utilities.core.api.element.loader.FileElementLoader
+import cn.fd.utilities.core.element.Element
+import cn.fd.utilities.core.element.loader.FileElementLoader
 import cn.fd.utilities.core.util.ResultFuture
 import java.io.File
 

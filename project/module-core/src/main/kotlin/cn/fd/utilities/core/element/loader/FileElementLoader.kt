@@ -1,6 +1,6 @@
-package cn.fd.utilities.core.api.element.loader
+package cn.fd.utilities.core.element.loader
 
-import cn.fd.utilities.core.api.element.Element
+import cn.fd.utilities.core.element.Element
 import cn.fd.utilities.core.util.ResultFuture
 import java.io.File
 

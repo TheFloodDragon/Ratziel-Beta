@@ -1,6 +1,6 @@
 package cn.fd.utilities.common
 
-import cn.fd.utilities.core.api.Workspace
+import cn.fd.utilities.core.Workspace
 import cn.fd.utilities.core.util.releaseResourceFile
 import java.io.File
 

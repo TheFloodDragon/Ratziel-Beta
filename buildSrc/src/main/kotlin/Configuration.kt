@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 const val rootName = "FDUtilities"
 const val rootGroup = "cn.fd.utilities"
-const val rootVersion = "A.0.0.1.5"
+const val rootVersion = "A.0.0.1.6"
 
 const val kotlinVersion = "1.8.20"
 const val shadowJarVersion = "8.1.1"
