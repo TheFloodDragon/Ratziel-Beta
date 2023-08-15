@@ -6,11 +6,6 @@ package cn.fd.utilities.core.element
  */
 class Element(
 
-    /**
-     * 元素类型
-     */
-    val type: ElementType,
-
     //TODO 要用JSON吗
 
 )

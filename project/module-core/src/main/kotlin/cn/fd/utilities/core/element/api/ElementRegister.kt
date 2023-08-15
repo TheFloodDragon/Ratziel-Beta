@@ -1,6 +1,6 @@
 package cn.fd.utilities.core.element.api
 
-import cn.fd.utilities.core.element.ElementType
+import cn.fd.utilities.core.element.ElementService
 import cn.fd.utilities.core.element.parser.ElementHandler
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
@@ -23,7 +23,7 @@ class ElementRegister : ClassVisitor(0) {
                 if (instance == null)
                     clazz.asSubclass(ElementHandler::class.java).newInstance()
                 else instance.get() as ElementHandler
-            println(ElementType(anno.name, arrayOf(handler)))
+            ElementService.registerElement(anno.id, anno.names, arrayOf(handler))
         }
     }
 

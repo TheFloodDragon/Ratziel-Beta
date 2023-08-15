@@ -10,18 +10,38 @@ import cn.fd.utilities.core.element.parser.ElementHandler
  */
 object ElementService {
 
-    private val registry: HashMap<Array<String>, Array<ElementHandler>> = hashMapOf()
+    /**
+     * 元素注册表
+     */
+    private val registry: HashMap<String, ElementInfo> = hashMapOf()
 
-    fun getRegistry(): Map<Array<String>, Array<ElementHandler>> {
+    /**
+     * 注册元素
+     * @param id 元素标识符,可看作元素所在的命名空间
+     * @param ei 元素信息
+     */
+    fun registerElement(id: String, ei: ElementInfo) {
+        registry[id] = ei
+    }
+
+    fun registerElement(id: String, name: Array<String>, handlers: Array<ElementHandler>) {
+        registerElement(id, ElementInfo(name, handlers))
+    }
+
+    fun unregisterElement(id: String) {
+        registry.remove(id)
+    }
+
+    fun getRegistry(): HashMap<String, ElementInfo> {
         return registry
     }
 
-    fun registerElement(et: ElementType) {
-        registry[et.name] = et.handlers
+    fun getElementHandlers(id: String): Array<ElementHandler>? {
+        return getElementInfo(id)?.handlers
     }
 
-    fun unregisterElement(at: Array<String>) {
-        registry.remove(at)
+    fun getElementInfo(id: String): ElementInfo? {
+        return registry[id]
     }
 
 }
