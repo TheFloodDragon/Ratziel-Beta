@@ -1,6 +1,6 @@
 package cn.fd.utilities.common
 
-object DefaultFiles {
+object DefaultFileRegistry {
 
     const val PATH: String = "default"
 

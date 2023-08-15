@@ -11,12 +11,12 @@ class ElementInfo(
     /**
      * 元素名称列表
      */
-    var names: Array<String>,
+    val names: Array<String>,
 
     /**
      * 处理该元素类型的处理器
      */
-    var handlers: Array<ElementHandler>,
+    val handlers: Array<ElementHandler>,
 
     ) {
 

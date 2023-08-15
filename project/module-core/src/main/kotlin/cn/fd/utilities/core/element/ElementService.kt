@@ -13,7 +13,7 @@ object ElementService {
     /**
      * 元素注册表
      */
-    private val registry: HashMap<String, ElementInfo> = hashMapOf()
+    private val registry: HashMap<String, MutableSet<ElementInfo>> = hashMapOf()
 
     /**
      * 注册元素
@@ -21,7 +21,11 @@ object ElementService {
      * @param ei 元素信息
      */
     fun registerElement(id: String, ei: ElementInfo) {
-        registry[id] = ei
+        /**
+         * 找得到: Add到Set
+         * 找不到: Put到Map
+         */
+        registry[id].also { it?.add(ei) } ?: ei.also { registry[id] = mutableSetOf(it) }
     }
 
     fun registerElement(id: String, name: Array<String>, handlers: Array<ElementHandler>) {
@@ -32,15 +36,19 @@ object ElementService {
         registry.remove(id)
     }
 
-    fun getRegistry(): HashMap<String, ElementInfo> {
+    fun getRegistry(): HashMap<String, MutableSet<ElementInfo>> {
         return registry
     }
 
-    fun getElementHandlers(id: String): Array<ElementHandler>? {
-        return getElementInfo(id)?.handlers
+    fun getHandlers(id: String, name: String): Array<ElementHandler>? {
+        return getInfo(id, name)?.handlers
     }
 
-    fun getElementInfo(id: String): ElementInfo? {
+    fun getInfo(id: String, name: String): ElementInfo? {
+        return getAllInfo(id)?.find { it.names.contains(name) }
+    }
+
+    fun getAllInfo(id: String): MutableSet<ElementInfo>? {
         return registry[id]
     }
 

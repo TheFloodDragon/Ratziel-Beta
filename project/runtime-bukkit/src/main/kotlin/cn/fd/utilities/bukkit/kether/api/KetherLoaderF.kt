@@ -1,4 +1,4 @@
-package cn.fd.utilities.kether.api
+package cn.fd.utilities.bukkit.kether.api
 
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor

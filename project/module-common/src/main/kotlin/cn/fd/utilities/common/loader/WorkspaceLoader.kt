@@ -41,9 +41,9 @@ object WorkspaceLoader {
         /**
          * 加载元素文件
          */
-        val loader = DefaultElementLoader() //创载器
+        val loader = DefaultElementLoader() //创建一个加载器对象
         measureTimeMillis {
-            wsm.getAllFiles().forEach {
+            wsm.getAllFiles().map {
                 loader.load(it)
             }
         }.let {

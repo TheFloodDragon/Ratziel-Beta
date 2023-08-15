@@ -1,6 +1,6 @@
 #语言文件——简体中文
 
-# 通用
+# 插件信息
 Plugin-Loading:
   - '&r'
   - '&7正在加载 &6FD&eUtilities&7... &8{0}'
@@ -8,5 +8,12 @@ Plugin-Loading:
 Plugin-Enabled: '&8[&6FD&eUtilities&8] &b信息 &8| &3加载完毕. FDUtilities &av{0} &3现已启用, 敬请使用.'
 Plugin-Reloaded: '&8[&6F&8] &7插件已重载完毕 &8({0}ms)'
 
+# 工作空间
 Workspace-Inited: '&8[&6F&8] &7已初始化 &a{0} &7个工作空间... 开始加载配置 &8({1}ms)'
 Workspace-Finished: '&8[&6F&8] &7成功载入 &a{0} &7个有效元素... &8({1}ms)'
+
+# 元素
+Element-Type-Header:
+  - '&8[&6F&8] &b信息 &3| 元素类型列表:'
+Element-Type-Namespace-Format: '  &6命名空间 &e{0} &6:  &8(名称:处理器)'
+Element-Type-Info-Format: '    &7{0} | {1}'
