@@ -10,6 +10,6 @@ interface ElementHandler {
     /**
      * 解析函数
      */
-    fun parse(): Element?
+    fun handle(element: Element)
 
 }

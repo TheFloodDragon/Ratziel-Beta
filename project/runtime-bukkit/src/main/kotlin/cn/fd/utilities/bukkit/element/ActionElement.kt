@@ -16,9 +16,8 @@ import cn.fd.utilities.core.element.parser.ElementHandler
 @ElementRegister(["action", "actions"])
 class ActionElement : ElementHandler {
 
-    override fun parse(): Element? {
+    override fun handle(element: Element) {
         debug("啊我艹我parse了")
-        return null
     }
 
 }

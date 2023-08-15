@@ -5,7 +5,6 @@ import cn.fd.utilities.core.element.parser.ElementHandler
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
-import taboolib.library.reflex.Reflex.Companion.getProperty
 import java.util.function.Supplier
 
 /**
@@ -18,14 +17,13 @@ import java.util.function.Supplier
 class ElementRegisterLoader : ClassVisitor(0) {
 
     override fun visitStart(clazz: Class<*>, instance: Supplier<*>?) {
-        if (clazz.isAnnotationPresent(ElementRegister::class.java) && clazz.isAssignableFrom(ElementHandler::class.java)) {
+        if (clazz.isAnnotationPresent(ElementRegister::class.java) && ElementHandler::class.java.isAssignableFrom(clazz)) {
             val anno = clazz.getAnnotation(ElementRegister::class.java)
-            val name = anno.getProperty<Array<String>>("name")
-            println(name)
-            // 创建 ElementType
-            name?.let {
-                println(ElementType(it, instance?.get() as ElementHandler))
-            }
+            val handler =
+                if (instance == null)
+                    clazz.asSubclass(ElementHandler::class.java).newInstance()
+                else instance.get() as ElementHandler
+            println(ElementType(anno.name, handler))
         }
     }
 
