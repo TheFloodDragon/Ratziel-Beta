@@ -1,25 +1,25 @@
 package cn.fd.utilities.core.element
 
 import cn.fd.utilities.core.element.parser.ElementHandler
-import cn.fd.utilities.core.util.strValue
 
 class ElementType(
 
     /**
-     * 元素类型的称谓
-     * 以及其别称
+     * 元素类型的名称
+     * 既其标识符
      */
     val name: Array<String>,
 
     /**
      * 处理该元素类型的处理器
      */
-    val handler: ElementHandler,
+    val handlers: Array<ElementHandler>,
 
     ) {
 
     override fun toString(): String {
-        return this::class.java.strValue()
+        return this::class.java.simpleName + '{' + "name=" + name.toList()
+            .toString() + " ; " + "handlers=" + handlers.toList().toString()
     }
 
 }
