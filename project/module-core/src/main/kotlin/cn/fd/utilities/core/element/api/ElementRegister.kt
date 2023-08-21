@@ -1,7 +1,7 @@
 package cn.fd.utilities.core.element.api
 
+import cn.fd.utilities.core.element.ElementHandler
 import cn.fd.utilities.core.element.ElementService
-import cn.fd.utilities.core.element.parser.ElementHandler
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.io.getInstance
@@ -25,7 +25,7 @@ class ElementRegister : ClassVisitor(0) {
                     if (instance == null)
                         clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get()
                     else instance.get() as ElementHandler
-                ElementService.registerElement(anno.id, anno.names, arrayOf(handler))
+                ElementService.registerElement(anno.space, anno.names, arrayOf(handler))
             } catch (e: Exception) {
                 e.printStackTrace()
                 error("Unable to register class $clazz!")

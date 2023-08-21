@@ -13,5 +13,5 @@ annotation class NewElement(
     /**
      * 标识符,用于区分同名元素
      */
-    val id: String = "ef",
+    val space: String = "ef",
 )
