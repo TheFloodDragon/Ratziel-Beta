@@ -8,20 +8,20 @@ import taboolib.module.configuration.Configuration
  */
 class Element(
     /**
-     * 元素的命名空间
+     * 元素标识符
      */
-    val space: String,
+    val id: String,
     /**
-     * 元素名称
+     * 元素类型
      */
-    val name: Array<String>,
+    val type: ElementType,
     /**
      * 元素属性
      */
     private var conf: Configuration? //TODO Use Kotlin Serialization
 ) {
 
-    constructor(space: String, name: Array<String>) : this(space, name, null)
+    constructor(id: String, type: ElementType) : this(id, type, null)
 
     fun getConfig(): Configuration? {
         return conf

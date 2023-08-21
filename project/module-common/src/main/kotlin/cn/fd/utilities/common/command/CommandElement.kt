@@ -32,21 +32,22 @@ object CommandElement {
     val listTypes = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
             sender.sendLang("Element-Type-Header")
-            ElementService.getRegistry().forEach { pair ->
-                sender.sendLang("Element-Type-Namespace-Format", pair.key)
-                pair.value.forEach {
-                    sender.sendLang(
-                        "Element-Type-Info-Format",
-                        format(it.names),
-                        format(it.handlers.map { h -> h::class.java.name })
-                    )
-                }
+            ElementService.getRegistry().forEach { etype, handlers ->
+                // 命名空间消息
+                sender.sendLang("Element-Type-Namespace-Format", etype.space)
+                // 具体消息
+                sender.sendLang(
+                    "Element-Type-Info-Format",
+                    etype.name, // 名称
+                    format(etype.getAlias()), // 别名
+                    format(handlers.map { it::class.java.name }) //处理器
+                )
             }
         }
     }
 
-    private fun format(array: Array<*>): String {
-        return format(array.toList())
+    private fun format(set: Set<*>): String {
+        return format(set.toList())
     }
 
     private fun format(list: List<*>): String {

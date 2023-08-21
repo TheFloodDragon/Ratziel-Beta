@@ -17,7 +17,7 @@ import cn.fd.utilities.core.element.util.ElementMemory
 class ActionElement : ElementHandler, ElementMemory() {
 
     override fun handle(element: Element) {
-        addToMemory(element.space, element) //TODO 只是为了不报错的
+        addToMemory(element.type.space, element) //TODO 只是为了不报错的
         debug("啊我艹我parse了")
     }
 

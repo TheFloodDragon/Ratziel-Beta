@@ -15,5 +15,5 @@ Workspace-Finished: '&8[&6F&8] &7成功载入 &a{0} &7个有效元素... &8({1}m
 # 元素
 Element-Type-Header:
   - '&8[&6F&8] &b信息 &3| 元素类型列表:'
-Element-Type-Namespace-Format: '  &6命名空间 &e{0} &6:  &8(名称:处理器)'
-Element-Type-Info-Format: '    &7{0} | {1}'
+Element-Type-Namespace-Format: '  &6命名空间 &e{0} &6:  &8(名称:别名:处理器)'
+Element-Type-Info-Format: '    &7{0} | {1} | {2}'
