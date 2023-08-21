@@ -11,43 +11,84 @@ object ElementService {
     /**
      * 元素注册表
      */
-    private val registry: HashMap<String, MutableSet<ElementType>> = hashMapOf()
+    private val registry: HashMap<ElementType, Set<ElementHandler>> = hashMapOf()
 
     /**
-     * 注册元素
-     * @param id 元素标识符,可看作元素所在的命名空间
-     * @param et 元素类型
+     * 注册元素类型
+     * @param etype 元素类型
+     * @param handlers 元素处理器
      */
-    fun registerElement(id: String, et: ElementType) {
-        /**
-         * 找得到: Add到Set
-         * 找不到: Put到Map
-         */
-        registry[id].also { it?.add(et) } ?: et.also { registry[id] = mutableSetOf(it) }
+    fun registerElementType(etype: ElementType, handlers: Set<ElementHandler>) {
+        registry[etype] = handlers.toMutableSet()
     }
 
-    fun registerElement(id: String, name: Array<String>, handlers: Array<ElementHandler>) {
-        registerElement(id, ElementType(name, handlers))
+    fun registerElementType(etype: ElementType, handler: ElementHandler) {
+        registry[etype] = mutableSetOf(handler)
     }
 
-    fun unregisterElement(id: String) {
-        registry.remove(id)
+    fun registerElementType(etype: ElementType) {
+        registry[etype] = mutableSetOf()
     }
 
-    fun getRegistry(): HashMap<String, MutableSet<ElementType>> {
+    fun registerElementType(space: String, name: String, alias: Set<String>, handlers: Set<ElementHandler>) {
+        registerElementType(ElementType(space, name, alias), handlers)
+    }
+
+    fun registerElementType(space: String, name: String, alias: Set<String>, handler: ElementHandler) {
+        registerElementType(ElementType(space, name, alias), handler)
+    }
+
+    fun registerElementType(space: String, name: String, alias: Set<String>) {
+        registerElementType(ElementType(space, name, alias))
+    }
+
+    /**
+     * 取消注册元素类型
+     * @param etype 元素类型
+     */
+    fun unregisterElementType(etype: ElementType) {
+        registry.remove(etype)
+    }
+
+    /**
+     * 取消注册命名空间内的所有元素类型
+     * @param space 命名空间名
+     */
+    fun unregisterSpace(space: String) {
+        registry.filter {
+            it.key.space == space // 命名空间匹配
+        }.forEach { unregisterElementType(it.key) }
+    }
+
+    /**
+     * 获取处理器
+     */
+    fun getHandlers(etype: ElementType): Set<ElementHandler> {
+        return registry[etype]!!
+    }
+
+    /**
+     * 获取元素类型
+     * @param space 命名空间
+     * @param name 元素类型名称
+     */
+    fun getElementType(space: String, name: String): ElementType? {
+        return getElementTypes(space).find { it.name == name }
+    }
+
+    /**
+     * 获取命名空间下的所有元素类型
+     * @param space 命名空间
+     */
+    fun getElementTypes(space: String): List<ElementType> {
+        return registry.keys.filter { it.space == space }
+    }
+
+    /**
+     * 获取元素注册表
+     */
+    fun getRegistry(): HashMap<ElementType, Set<ElementHandler>> {
         return registry
-    }
-
-    fun getHandlers(id: String, name: String): Array<ElementHandler>? {
-        return getInfo(id, name)?.handlers
-    }
-
-    fun getInfo(id: String, name: String): ElementType? {
-        return getAllInfo(id)?.find { it.names.contains(name) }
-    }
-
-    fun getAllInfo(id: String): MutableSet<ElementType>? {
-        return registry[id]
     }
 
 }
