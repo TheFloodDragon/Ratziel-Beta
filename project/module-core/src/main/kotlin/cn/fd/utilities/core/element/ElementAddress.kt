@@ -1,7 +1,6 @@
 package cn.fd.utilities.core.element
 
 import java.io.File
-import java.lang.annotation.ElementType
 
 /**
  * ElementAddress
@@ -19,7 +18,7 @@ class ElementAddress(
     /**
      * 元素类型
      */
-    val etype: ElementType,
+    val type: ElementType,
     /**
      * 元素所在文件路径(若为空则不是文件地址)
      */
