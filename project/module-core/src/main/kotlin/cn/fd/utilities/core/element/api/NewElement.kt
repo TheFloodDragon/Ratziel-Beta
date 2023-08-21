@@ -9,6 +9,10 @@ annotation class NewElement(
     /**
      * 元素名称
      */
+    val name: String,
+    /**
+     * 元素别名
+     */
     val alias: Array<String>,
     /**
      * 标识符,用于区分同名元素

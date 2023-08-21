@@ -7,17 +7,19 @@ import cn.fd.utilities.core.element.api.NewElement
 import cn.fd.utilities.core.element.util.ElementMemory
 
 /**
- * FDUtilities
- * cn.fd.utilities.bukkit.element.ActionElement
+ * ActionElement
  *
  * @author: TheFloodDragon
  * @since 2023/8/14 15:09
  */
-@NewElement(["action", "actions"])
+@NewElement(
+    name = "action",
+    alias = ["actions"]
+)
 class ActionElement : ElementHandler, ElementMemory() {
 
     override fun handle(element: Element) {
-        addToMemory(element.type.space, element) //TODO 只是为了不报错的
+        addToMemory(element)
         debug("啊我艹我parse了")
     }
 

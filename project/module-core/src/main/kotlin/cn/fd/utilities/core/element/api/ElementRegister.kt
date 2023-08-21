@@ -9,7 +9,7 @@ import taboolib.common.platform.Awake
 import java.util.function.Supplier
 
 /**
- * ElementRegisterLoader
+ * ElementRegister
  *
  * @author: TheFloodDragon
  * @since 2023/8/14 15:50
@@ -21,11 +21,22 @@ class ElementRegister : ClassVisitor(0) {
         if (clazz.isAnnotationPresent(NewElement::class.java) && ElementHandler::class.java.isAssignableFrom(clazz)) {
             val anno = clazz.getAnnotation(NewElement::class.java)
             try {
+                /**
+                 * 处理器
+                 */
                 val handler =
                     if (instance == null)
                         clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get()
                     else instance.get() as ElementHandler
-                ElementService.registerElement(anno.space, anno.names, arrayOf(handler))
+                /**
+                 * 注册
+                 */
+                ElementService.registerElementType(
+                    space = anno.space,
+                    name = anno.name,
+                    alias = anno.alias.toSet(),
+                    handler = handler
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
                 error("Unable to register element form class $clazz!")
