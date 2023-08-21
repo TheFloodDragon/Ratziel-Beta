@@ -28,7 +28,7 @@ class ElementRegister : ClassVisitor(0) {
                 ElementService.registerElement(anno.space, anno.names, arrayOf(handler))
             } catch (e: Exception) {
                 e.printStackTrace()
-                error("Unable to register class $clazz!")
+                error("Unable to register element form class $clazz!")
             }
         }
     }
