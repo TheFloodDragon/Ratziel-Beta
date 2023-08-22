@@ -11,7 +11,7 @@ subprojects {
         dependencies { runtimes.forEach { installModule(it) } }
     }
 
-    val outDir = File(project.buildDir, "cache/lang")
+    val outDir = project.layout.buildDirectory.dir("cache/lang").get().asFile
 
     tasks {
         build {
@@ -35,10 +35,10 @@ subprojects {
                 // 获取Runtime模块
                 val rts: List<Project> = runtimes.map { project(":project:${it}") }
                 // 准备合并文件
-                commonFiles.forEach { common ->
+                commonFiles?.forEach { common ->
                     rts.forEach {
                         it.file(langPath).listFiles()
-                            .find { f -> f.name == common.name } // 匹配相同语言
+                            ?.find { f -> f.name == common.name } // 匹配相同语言
                             ?.let { merged ->
                                 mergeYaml( // 合并文件
                                     common, merged, File(outDir, merged.name)
