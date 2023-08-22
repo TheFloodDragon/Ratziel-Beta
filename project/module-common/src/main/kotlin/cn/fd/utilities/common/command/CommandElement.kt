@@ -46,11 +46,11 @@ object CommandElement {
         }
     }
 
-    private fun format(set: Set<*>): String {
-        return format(set.toList())
+    private fun format(set: Set<*>?): String {
+        return format(set?.toList())
     }
 
-    private fun format(list: List<*>): String {
+    private fun format(list: List<*>?): String {
         return list.toString().let { it.subSequence(1, it.lastIndex).replace(Regex("\\s"), "") }
     }
 
