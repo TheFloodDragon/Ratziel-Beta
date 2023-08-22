@@ -2,5 +2,6 @@ Settings:
   language: zh_CN
 
 Workspaces:
+  filter: '^(?![#!]).*\.(?i)(conf|yaml|yml|toml|json)$'
   paths:
     - 'plugins/FDUtilities/workspace'

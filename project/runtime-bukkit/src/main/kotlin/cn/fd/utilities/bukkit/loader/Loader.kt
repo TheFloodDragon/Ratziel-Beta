@@ -10,7 +10,7 @@ object Loader {
     @Awake(LifeCycle.LOAD)
     fun load() {
         //语言设置
-        Language.default = Settings.LANGUAGE
+        Language.default = Settings.Language
         //工作空间
 //        initWorkSpace()
     }

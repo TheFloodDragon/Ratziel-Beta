@@ -10,10 +10,12 @@ class DefaultElementLoader {
 
     fun load(file: File): Element? {
         file.apply {
-            return when (extension) {
-                "yaml", "yml" -> null//runLoader(YamlElementLoader)
-                else -> null
-            }
+//            return when (extension) {
+//                "yaml", "yml" -> null//runLoader(YamlElementLoader)
+//                else -> null
+//            }
+
+            return null
         }
     }
 

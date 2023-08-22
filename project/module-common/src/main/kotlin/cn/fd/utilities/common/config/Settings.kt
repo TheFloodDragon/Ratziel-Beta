@@ -15,12 +15,15 @@ object Settings {
         private set
 
     @ConfigNode(value = "Settings.language")
-    var LANGUAGE = "zh_CN"
+    var Language = "zh_CN"
 
 //    @ConfigNode(value = "Settings.Multi-Thread")
 //    var MULTI_THREAD = true
 
     @ConfigNode(value = "Workspaces.paths")
-    var WORKSPACES_PATHS = listOf(defaultWorkspace.path)
+    var WorkspacePaths = listOf(defaultWorkspace.path)
+
+    @ConfigNode(value = "Workspaces.filter")
+    var fileFilter = "^(?![#!]).*\\.(?i)(conf|yaml|yml|toml|json)$"
 
 }

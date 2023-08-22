@@ -21,7 +21,7 @@ object WorkspaceLoader {
          * 初始化工作空间
          */
         measureTimeMillis {
-            Settings.WORKSPACES_PATHS.forEach { path ->
+            Settings.WorkspacePaths.forEach { path ->
                 wsm.registerWorkspace(newFile(path, create, true)) //注册命名空间
             }
             // 复制默认文件
@@ -43,12 +43,16 @@ object WorkspaceLoader {
          */
         val loader = DefaultElementLoader() //创建一个加载器对象
         measureTimeMillis {
-            /**
-             * 加载元素文件
-             */
-            wsm.getAllFiles().map {
-                loader.load(it)
-            }
+            // 匹配文件
+            val fileMather = Settings.fileFilter.toRegex()
+            wsm.getAllFiles()
+                .filter {
+                    it.name.matches(fileMather)
+                }
+                .forEach {
+                    // 加载元素文件
+                    loader.load(it)
+                }
         }.let {
             sender.sendLang("Workspace-Finished", loader.getCount(), it)
         }
