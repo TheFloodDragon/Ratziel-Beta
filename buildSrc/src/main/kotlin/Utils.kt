@@ -23,17 +23,22 @@ fun getLatestRelease(repoOwner: String, repoName: String): String {
     connection.requestMethod = "GET"
     connection.setRequestProperty("Accept", "application/vnd.github+json")
 
-    if (connection.responseCode != 200) {
-        error("Failed to retrieve the latest release")
+    return try {
+        if (connection.responseCode != 200) {
+            error("Failed to retrieve the latest release")
+        }
+        val reader = BufferedReader(InputStreamReader(connection.inputStream))
+        val response = reader.readText()
+        reader.close()
+
+        val index = response.indexOf("\"tag_name\":") + "\"tag_name\":".length + 1
+        val tagName = response.substring(index, response.indexOf(",", index))
+        tagName.replace("\"", "")
+    } catch (e: Exception) {
+        e.printStackTrace()
+        // 默认
+        fallbackVersion
     }
-
-    val reader = BufferedReader(InputStreamReader(connection.inputStream))
-    val response = reader.readText()
-    reader.close()
-
-    val index = response.indexOf("\"tag_name\":") + "\"tag_name\":".length + 1
-    val tagName = response.substring(index, response.indexOf(",", index))
-    return tagName.replace("\"", "")
 }
 
 /**

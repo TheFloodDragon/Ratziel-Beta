@@ -1,7 +1,7 @@
 package cn.fd.utilities.common
 
 import cn.fd.utilities.core.Workspace
-import cn.fd.utilities.core.util.releaseResourceFile
+import taboolib.common.platform.function.releaseResourceFile
 import java.io.File
 
 object WorkspaceManager {
@@ -29,7 +29,9 @@ object WorkspaceManager {
      */
     fun releaseWorkspace(files: Array<String> = DefaultFileRegistry.files, target: String) {
         files.forEach {
-            releaseResourceFile("${DefaultFileRegistry.PATH}/$it", "$target/$it")
+            //releaseResourceFile("${DefaultFileRegistry.PATH}/$it", "$target/$it")
+            //TODO 等Tlib更新吧
+            releaseResourceFile("${DefaultFileRegistry.PATH}/$it")
         }
     }
 

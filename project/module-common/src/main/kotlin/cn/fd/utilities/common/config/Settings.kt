@@ -4,7 +4,7 @@ import taboolib.common.io.newFolder
 import taboolib.common.platform.function.getDataFolder
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
-import tb.module.configuration.Config
+import taboolib.module.configuration.Config
 
 object Settings {
 

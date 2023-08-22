@@ -2,13 +2,14 @@ import java.text.SimpleDateFormat
 
 const val rootName = "FDUtilities"
 const val rootGroup = "cn.fd.utilities"
-const val rootVersion = "A.0.0.3.4"
+const val rootVersion = "A.0.0.3.5"
 
 const val kotlinVersion = "1.8.20"
 const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "1.56"
 
 val taboolibVersion = getLatestRelease("TabooLib", "taboolib").also { println("Using taboolib-version = $it") }
+const val fallbackVersion = "6.0.12-15" // 如果获取不到最新版本就改这个
 
 val isoInstantFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
