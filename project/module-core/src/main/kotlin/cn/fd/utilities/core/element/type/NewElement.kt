@@ -13,7 +13,7 @@ annotation class NewElement(
     /**
      * 元素类型别名
      */
-    val alias: Array<String>,
+    val alias: Array<String> = emptyArray(),
     /**
      * 命名空间
      */
