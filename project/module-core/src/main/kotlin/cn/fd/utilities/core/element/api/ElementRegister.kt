@@ -22,20 +22,18 @@ class ElementRegister : ClassVisitor(0) {
             val anno = clazz.getAnnotation(NewElement::class.java)
             try {
                 /**
-                 * 处理器
-                 */
-                val handler =
-                    if (instance == null)
-                        clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get()
-                    else instance.get() as ElementHandler
-                /**
                  * 注册
                  */
                 ElementService.registerElementType(
                     space = anno.space,
                     name = anno.name,
                     alias = anno.alias.toSet(),
-                    handler = handler
+                    /**
+                     * 处理器
+                     */
+                    handler = if (instance == null)
+                        clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get()
+                    else instance.get() as ElementHandler
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
