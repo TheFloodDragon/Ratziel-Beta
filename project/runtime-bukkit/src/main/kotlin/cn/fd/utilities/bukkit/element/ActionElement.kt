@@ -2,8 +2,8 @@ package cn.fd.utilities.bukkit.element
 
 import cn.fd.utilities.common.debug
 import cn.fd.utilities.core.element.Element
-import cn.fd.utilities.core.element.ElementHandler
-import cn.fd.utilities.core.element.api.NewElement
+import cn.fd.utilities.core.element.NewElement
+import cn.fd.utilities.core.element.api.ElementHandler
 import cn.fd.utilities.core.element.util.ElementMemory
 
 /**

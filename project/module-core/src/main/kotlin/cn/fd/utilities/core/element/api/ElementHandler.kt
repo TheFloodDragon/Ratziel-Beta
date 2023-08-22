@@ -1,4 +1,6 @@
-package cn.fd.utilities.core.element
+package cn.fd.utilities.core.element.api
+
+import cn.fd.utilities.core.element.Element
 
 /**
  * 元素的解析器

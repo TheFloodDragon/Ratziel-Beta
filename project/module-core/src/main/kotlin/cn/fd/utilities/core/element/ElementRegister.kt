@@ -1,7 +1,6 @@
-package cn.fd.utilities.core.element.api
+package cn.fd.utilities.core.element
 
-import cn.fd.utilities.core.element.ElementHandler
-import cn.fd.utilities.core.element.ElementService
+import cn.fd.utilities.core.element.api.ElementHandler
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.io.getInstance

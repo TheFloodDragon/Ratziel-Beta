@@ -1,4 +1,4 @@
-package cn.fd.utilities.core.element.api
+package cn.fd.utilities.core.element
 
 /**
  * 用于注册元素处理器
