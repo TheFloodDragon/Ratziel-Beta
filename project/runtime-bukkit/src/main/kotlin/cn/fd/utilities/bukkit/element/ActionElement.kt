@@ -16,7 +16,7 @@ import cn.fd.utilities.core.element.util.ElementMemory
     name = "action",
     alias = ["actions"]
 )
-class ActionElement : ElementHandler, ElementMemory() {
+object ActionElement : ElementHandler, ElementMemory() {
 
     override fun handle(element: Element) {
         addToMemory(element)

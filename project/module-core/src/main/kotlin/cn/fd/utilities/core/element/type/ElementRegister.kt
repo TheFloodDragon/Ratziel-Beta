@@ -27,9 +27,9 @@ class ElementRegister : ClassVisitor(0) {
                     if (ElementHandler::class.java.isAssignableFrom(clazz)) {
                         // 获取实例
                         setOf(
-                            if (instance == null)
+//                            if (instance == null)
                                 clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get()
-                            else instance.get() as ElementHandler
+//                            else instance.get() as ElementHandler
                         )
                     } else emptySet()
                 /**
