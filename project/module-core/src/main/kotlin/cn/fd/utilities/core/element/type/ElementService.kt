@@ -1,11 +1,13 @@
-package cn.fd.utilities.core.element
+package cn.fd.utilities.core.element.type
 
+import cn.fd.utilities.core.element.ElementType
 import cn.fd.utilities.core.element.api.ElementHandler
 
 /**
  * ElementService
+ * 负责元素类型和元素处理器的注册
  *
- * @author: TheFloodDragon
+ * @author TheFloodDragon
  * @since 2023/8/15 9:59
  */
 object ElementService {
@@ -21,15 +23,15 @@ object ElementService {
      * @param handlers 元素处理器
      */
     fun registerElementType(etype: ElementType, handlers: Set<ElementHandler>) {
-        registry[etype] = handlers.toMutableSet()
+        registry[etype] = handlers.toSet()
     }
 
     fun registerElementType(etype: ElementType, handler: ElementHandler) {
-        registry[etype] = mutableSetOf(handler)
+        registry[etype] = setOf(handler)
     }
 
     fun registerElementType(etype: ElementType) {
-        registry[etype] = mutableSetOf()
+        registry[etype] = emptySet()
     }
 
     fun registerElementType(space: String, name: String, alias: Set<String>, handlers: Set<ElementHandler>) {

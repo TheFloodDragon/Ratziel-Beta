@@ -1,6 +1,6 @@
 package cn.fd.utilities.common.command
 
-import cn.fd.utilities.core.element.ElementService
+import cn.fd.utilities.core.element.type.ElementService
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -12,7 +12,7 @@ import taboolib.module.lang.sendLang
 /**
  * CommandElement
  *
- * @author: TheFloodDragon
+ * @author TheFloodDragon
  * @since 2023/8/15 11:20
  */
 @CommandHeader(

@@ -7,7 +7,7 @@ import java.io.File
  * 代表一个元素的地址
  * 元素地址目前分两种: 文件地址 和 空地址
  *
- * @author: TheFloodDragon
+ * @author TheFloodDragon
  * @since 2023/8/21 10:49
  */
 class ElementAddress(

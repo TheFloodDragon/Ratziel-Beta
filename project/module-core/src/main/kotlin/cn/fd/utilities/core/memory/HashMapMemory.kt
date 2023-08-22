@@ -3,7 +3,7 @@ package cn.fd.utilities.core.memory
 /**
  * HashMapMemory
  *
- * @author: TheFloodDragon
+ * @author TheFloodDragon
  * @since 2023/8/21 10:11
  */
 open class HashMapMemory<K, V> : Memory {

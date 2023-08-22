@@ -1,4 +1,4 @@
-package cn.fd.utilities.core.element
+package cn.fd.utilities.core.element.type
 
 /**
  * 用于注册元素处理器
@@ -7,15 +7,15 @@ package cn.fd.utilities.core.element
 @Retention(AnnotationRetention.RUNTIME)
 annotation class NewElement(
     /**
-     * 元素名称
+     * 元素类型名称
      */
     val name: String,
     /**
-     * 元素别名
+     * 元素类型别名
      */
     val alias: Array<String>,
     /**
-     * 标识符,用于区分同名元素
+     * 命名空间
      */
     val space: String = "ef",
 )

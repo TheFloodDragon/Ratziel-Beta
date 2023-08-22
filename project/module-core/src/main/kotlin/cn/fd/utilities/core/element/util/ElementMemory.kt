@@ -7,7 +7,7 @@ import cn.fd.utilities.core.memory.HashMapMemory
 /**
  * ElementMemory
  *
- * @author: TheFloodDragon
+ * @author TheFloodDragon
  * @since 2023/8/21 10:30
  */
 open class ElementMemory : HashMapMemory<ElementType, Element>() {
