@@ -1,7 +1,9 @@
 package cn.fd.utilities.common.loader
 
 import cn.fd.utilities.core.element.Element
+import cn.fd.utilities.core.element.ElementType
 import cn.fd.utilities.core.element.loader.FileElementLoader
+import taboolib.module.configuration.Configuration
 import java.io.File
 
 class DefaultElementLoader {
@@ -15,7 +17,7 @@ class DefaultElementLoader {
 //                else -> null
 //            }
 
-            return null
+            return Element("fuck", ElementType("ef", "test"), Configuration.loadFromFile(file))
         }
     }
 
