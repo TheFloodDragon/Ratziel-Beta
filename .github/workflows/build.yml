@@ -5,9 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Cache Gradle Packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-build-${{ env.cache-name }}
           path: |
@@ -16,7 +16,7 @@ jobs:
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Setup JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: adopt
           java-version: 17
@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: ./gradlew build
       - name: Capture Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Artifacts
           path: outs/
@@ -35,6 +35,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           prerelease: false
-          title: "FDUtilities 自动构建最新版本"
+          title: "自动构建最新版本"
           files: |
             outs/*.*
