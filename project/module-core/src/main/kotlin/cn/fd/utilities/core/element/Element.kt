@@ -1,6 +1,6 @@
 package cn.fd.utilities.core.element
 
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import java.io.File
 
 class Element(
@@ -15,7 +15,7 @@ class Element(
     /**
      * 元素属性
      */
-    private var property: JsonElement? //TODO Use Kotlin Serialization
+    private var property: JsonObject? //TODO Use Kotlin Serialization
 ) {
 
     /**
@@ -26,7 +26,7 @@ class Element(
     /**
      * 获取元素属性
      */
-    fun getProperty(): JsonElement? {
+    fun getProperty(): JsonObject? {
         return property
     }
 
@@ -49,7 +49,7 @@ class Element(
         /**
          * 元素属性
          */
-        property: JsonElement?,
+        property: JsonObject?,
     ) : this(id, type, property) {
         // 元素地址赋值
         this.address = ElementAddress(id, this.type, file)
@@ -63,7 +63,7 @@ class Element(
         /**
          * 元素属性
          */
-        property: JsonElement?,
+        property: JsonObject?,
     ) : this(address.id, address.file, address.type, property)
 
     constructor(
@@ -90,7 +90,7 @@ class Element(
         /**
          * 元素属性
          */
-        property: JsonElement?,
+        property: JsonObject?,
     ) : this(id, file, ElementType(space, name, alias), property)
 
     constructor(
@@ -113,7 +113,7 @@ class Element(
         /**
          * 元素属性
          */
-        property: JsonElement?
+        property: JsonObject?
     ) : this(id, ElementType(space, name, alias), property)
 
 }
