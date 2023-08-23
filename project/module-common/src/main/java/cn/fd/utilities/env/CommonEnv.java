@@ -3,9 +3,10 @@ package cn.fd.utilities.env;
 import taboolib.common.env.RuntimeDependency;
 
 /**
- * @author MC~蛟龙
+ * CommonEnv
+ *
+ * @author TheFloodDragon
  * @since 2023/5/21 11:06
- * 自动安装依赖
  */
 @RuntimeDependency(
         value = "!net.kyori:adventure-api:4.14.0",
@@ -18,5 +19,4 @@ import taboolib.common.env.RuntimeDependency;
         initiative = true
 )
 
-public class CommonEnv {
-}
+public class CommonEnv { }

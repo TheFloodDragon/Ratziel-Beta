@@ -24,6 +24,6 @@ object Settings {
     var WorkspacePaths = listOf(defaultWorkspace.path)
 
     @ConfigNode(value = "Workspaces.filter")
-    var fileFilter = "^(?![#!]).*\\.(?i)(conf|yaml|yml|toml|json)$"
+    var fileFilter = "^(?![#!]).*\\.(?i)(yaml|yml|toml|tml|json)\$"
 
 }

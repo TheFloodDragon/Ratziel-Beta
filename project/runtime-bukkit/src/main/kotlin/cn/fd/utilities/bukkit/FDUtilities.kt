@@ -1,5 +1,6 @@
 package cn.fd.utilities.bukkit
 
+import kotlinx.serialization.json.Json
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.Plugin
@@ -14,6 +15,10 @@ object FDUtilities : Plugin() {
     val plugin by lazy { BukkitPlugin.getInstance() }
 
     override fun onLoad() {
+        println(
+            Json.parseToJsonElement("""
+            "{}"
+        """.trimIndent()))
         console().sendLang("Plugin-Loading", pluginVersion)
     }
 

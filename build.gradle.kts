@@ -72,15 +72,16 @@ subprojects {
             destinationDirectory.set(file("$rootDir/outs")) //输出路径
             // Exclude
             exclude("META-INF/**")
+            exclude("com/**", "org/**")
             // Adventure (不需要,因为是动态加载)
-//            relocate("net.kyori", "$rootGroup.common.adventure")
+            //relocate("net.kyori", "$rootGroup.common.adventure")
             // Taboolib
             relocate("taboolib", "$rootGroup.taboolib")
             relocate("tb", "$rootGroup.taboolib")
             relocate("org.tabooproject", "$rootGroup.taboolib.library")
             // Kotlin
             relocate("kotlin.", "kotlin190.") { exclude("kotlin.Metadata") }
-            relocate("kotlinx.serialization", "kotlinx160.serialization")
+            relocate("kotlinx.serialization", "kotlinx190_160.serialization")
         }
     }
 

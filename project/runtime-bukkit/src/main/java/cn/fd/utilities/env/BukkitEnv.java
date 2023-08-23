@@ -3,9 +3,9 @@ package cn.fd.utilities.env;
 import taboolib.common.env.RuntimeDependency;
 
 /**
- * @author MC~蛟龙
+ * BukkitEnv
+ * @author TheFloodDragon
  * @since 2023/5/21 10:58
- * 自动安装依赖
  */
 @RuntimeDependency(
         value = "!net.kyori:adventure-platform-bukkit:4.3.0",

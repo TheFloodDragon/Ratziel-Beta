@@ -29,11 +29,11 @@ object DefaultElementLoader : FileElementLoader {
                 it.getKeys(false).forEach { expression ->
                     ElementTypeMatcher.match(expression) //元素类型
                         ?.let { type ->
-                            debug(ConfigUtil.serializeToJson(conf).jsonObject.toString())
+                            //debug(ConfigUtil.serializeToJson(conf).jsonObject.toString())
                             successes.add( //如果非空就加入
                                 Element(
                                     id, file, type,
-                                    property = ConfigUtil.serializeToJson(conf).jsonObject
+                                    property = null
                                 )
                             )
                         }

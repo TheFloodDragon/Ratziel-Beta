@@ -3,6 +3,7 @@ package cn.fd.utilities.common.loader
 import cn.fd.utilities.common.config.Settings
 import cn.fd.utilities.core.element.Element
 import cn.fd.utilities.core.util.future
+import kotlinx.serialization.json.Json
 import taboolib.common.LifeCycle
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
