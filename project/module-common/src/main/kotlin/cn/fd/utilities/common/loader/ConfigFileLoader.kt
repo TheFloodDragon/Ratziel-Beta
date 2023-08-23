@@ -1,6 +1,6 @@
 package cn.fd.utilities.common.loader
 
-import cn.fd.utilities.common.log
+import taboolib.common.platform.function.severe
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
 import java.io.File
@@ -21,7 +21,7 @@ object ConfigFileLoader {
         return if (type != Type.HOCON) {
             Configuration.loadFromFile(file)
         } else {
-            log("Unsupported type 'HOCON' !")
+            severe("Unsupported file type 'HOCON' !")
             null
         }
     }

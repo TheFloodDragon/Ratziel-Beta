@@ -1,6 +1,6 @@
 package cn.fd.utilities.core.element
 
-import taboolib.module.configuration.Configuration
+import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 
 class Element(
@@ -15,7 +15,7 @@ class Element(
     /**
      * 元素属性
      */
-    private var conf: Configuration? //TODO Use Kotlin Serialization
+    private var conf: ConfigurationSection? //TODO Use Kotlin Serialization
 ) {
 
     /**
@@ -26,7 +26,7 @@ class Element(
     /**
      * 获取元素属性
      */
-    fun getConfig(): Configuration? {
+    fun getConfig(): ConfigurationSection? {
         return conf
     }
 
@@ -49,7 +49,7 @@ class Element(
         /**
          * 元素属性
          */
-        conf: Configuration?,
+        conf: ConfigurationSection?,
     ) : this(id, type, conf) {
         // 元素地址赋值
         this.address = ElementAddress(id, this.type, file)
@@ -63,7 +63,7 @@ class Element(
         /**
          * 元素属性
          */
-        conf: Configuration?,
+        conf: ConfigurationSection?,
     ) : this(address.id, address.file, address.type, conf)
 
     constructor(
@@ -90,7 +90,7 @@ class Element(
         /**
          * 元素属性
          */
-        conf: Configuration?,
+        conf: ConfigurationSection?,
     ) : this(id, file, ElementType(space, name, alias), conf)
 
     constructor(
@@ -113,7 +113,7 @@ class Element(
         /**
          * 元素属性
          */
-        conf: Configuration?
+        conf: ConfigurationSection?
     ) : this(id, ElementType(space, name, alias), conf)
 
 }

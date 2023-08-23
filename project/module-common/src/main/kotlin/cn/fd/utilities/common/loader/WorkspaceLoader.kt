@@ -1,12 +1,14 @@
 package cn.fd.utilities.common.loader
 
 import cn.fd.utilities.common.config.Settings
+import cn.fd.utilities.core.element.Element
 import taboolib.common.LifeCycle
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
+import java.util.concurrent.CompletableFuture
 import kotlin.system.measureTimeMillis
 import cn.fd.utilities.common.WorkspaceManager as wsm
 
@@ -41,20 +43,19 @@ object WorkspaceLoader {
         /**
          * 加载元素文件
          */
-        val loader = DefaultElementLoader() //创建一个加载器对象
+        val loaded: MutableList<CompletableFuture<Set<Element>>> = mutableListOf()
         measureTimeMillis {
-            // 匹配文件
             val fileMather = Settings.fileFilter.toRegex()
             wsm.getAllFiles()
-                .filter {
+                .filter { // 匹配文件
                     it.name.matches(fileMather)
                 }
                 .forEach {
                     // 加载元素文件
-                    loader.load(it)
+                    loaded += DefaultElementLoader.load(it)
                 }
         }.let {
-            sender.sendLang("Workspace-Finished", loader.getCount(), it)
+            sender.sendLang("Workspace-Finished", loaded.size, it)
         }
     }
 

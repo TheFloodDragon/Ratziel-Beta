@@ -89,6 +89,13 @@ object ElementService {
     }
 
     /**
+     * 获取所有注册的元素类型
+     */
+    fun getAllElementTypes(): Set<ElementType> {
+        return registry.keys
+    }
+
+    /**
      * 获取元素注册表
      */
     fun getRegistry(): HashMap<ElementType, Set<ElementHandler>> {

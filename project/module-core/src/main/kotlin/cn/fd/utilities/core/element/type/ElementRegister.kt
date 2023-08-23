@@ -26,11 +26,7 @@ class ElementRegister : ClassVisitor(0) {
                 val handlers =
                     if (ElementHandler::class.java.isAssignableFrom(clazz)) {
                         // 获取实例
-                        setOf(
-//                            if (instance == null)
-                                clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get()
-//                            else instance.get() as ElementHandler
-                        )
+                        setOf(clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get())
                     } else emptySet()
                 /**
                  * 注册
