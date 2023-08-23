@@ -5,6 +5,8 @@ const val rootGroup = "cn.fd.utilities"
 const val rootVersion = "A.0.0.3.8"
 
 const val kotlinVersion = "1.8.20"
+const val serializationVersion = "1.5.1"
+const val serializationPluginVersion = "1.9.0"
 const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "1.56"
 

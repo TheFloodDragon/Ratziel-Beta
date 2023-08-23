@@ -1,6 +1,6 @@
 package cn.fd.utilities.core.element
 
-import taboolib.library.configuration.ConfigurationSection
+import kotlinx.serialization.json.JsonElement
 import java.io.File
 
 class Element(
@@ -15,7 +15,7 @@ class Element(
     /**
      * 元素属性
      */
-    private var conf: ConfigurationSection? //TODO Use Kotlin Serialization
+    private var property: JsonElement? //TODO Use Kotlin Serialization
 ) {
 
     /**
@@ -26,8 +26,8 @@ class Element(
     /**
      * 获取元素属性
      */
-    fun getConfig(): ConfigurationSection? {
-        return conf
+    fun getProperty(): JsonElement? {
+        return property
     }
 
     /**
@@ -49,8 +49,8 @@ class Element(
         /**
          * 元素属性
          */
-        conf: ConfigurationSection?,
-    ) : this(id, type, conf) {
+        property: JsonElement?,
+    ) : this(id, type, property) {
         // 元素地址赋值
         this.address = ElementAddress(id, this.type, file)
     }
@@ -63,8 +63,8 @@ class Element(
         /**
          * 元素属性
          */
-        conf: ConfigurationSection?,
-    ) : this(address.id, address.file, address.type, conf)
+        property: JsonElement?,
+    ) : this(address.id, address.file, address.type, property)
 
     constructor(
         /**
@@ -90,8 +90,8 @@ class Element(
         /**
          * 元素属性
          */
-        conf: ConfigurationSection?,
-    ) : this(id, file, ElementType(space, name, alias), conf)
+        property: JsonElement?,
+    ) : this(id, file, ElementType(space, name, alias), property)
 
     constructor(
         /**
@@ -113,7 +113,7 @@ class Element(
         /**
          * 元素属性
          */
-        conf: ConfigurationSection?
-    ) : this(id, ElementType(space, name, alias), conf)
+        property: JsonElement?
+    ) : this(id, ElementType(space, name, alias), property)
 
 }

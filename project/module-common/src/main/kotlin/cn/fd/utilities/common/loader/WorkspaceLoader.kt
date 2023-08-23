@@ -65,7 +65,6 @@ object WorkspaceLoader {
         }.let {
             // 等待所有任务完成
             CompletableFuture.allOf(*loading.toTypedArray()).join()
-            println(loading.size)
             sender.sendLang("Workspace-Finished", loaded.size, it)
         }
     }

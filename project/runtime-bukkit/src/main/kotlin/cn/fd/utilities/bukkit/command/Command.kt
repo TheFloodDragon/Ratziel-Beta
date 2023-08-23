@@ -36,7 +36,7 @@ object Command {
                      */
                     Language.reload()
                     /**
-                     * 重载函数内容
+                     * 重载工作空间
                      */
                     WorkspaceLoader.reload(sender)
                 }.let {

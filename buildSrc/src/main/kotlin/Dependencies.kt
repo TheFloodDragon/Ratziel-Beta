@@ -1,4 +1,3 @@
-
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.PluginAware
@@ -9,6 +8,7 @@ fun PluginAware.applyPlugins() {
     apply(plugin = "maven-publish")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 }
 
 fun Project.buildDirClean() {
@@ -19,7 +19,7 @@ fun Project.buildDirClean() {
  * KotlinJson序列化工具
  */
 fun DependencyHandler.serialization() {
-    add("compileOnly", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    add("compileOnly", "org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
 }
 
 /**

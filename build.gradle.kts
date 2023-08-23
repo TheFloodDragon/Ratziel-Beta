@@ -5,6 +5,7 @@ plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version kotlinVersion apply false
     id("com.github.johnrengelman.shadow") version shadowJarVersion apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version serializationPluginVersion apply false
 }
 
 subprojects {
@@ -24,20 +25,22 @@ subprojects {
     dependencies {
         compileOnly(kotlin("stdlib"))
 
-        //项目一般依赖
+        // 项目一般依赖
         if (parent?.name == "project") {
             compileCore(12001)
             compileTabooLib()
-            //MiniMessage: https://docs.adventure.kyori.net/minimessage/api.html
+            // MiniMessage: https://docs.adventure.kyori.net/minimessage/api.html
             adventure()
+            // Kotlin序列化器
+            serialization()
         }
 
-        //模块一般依赖——所有
+        // 模块一般依赖——所有
         if (parent?.name == "script") {
             compileAll()
         }
 
-        //Runtime实现的模块依赖
+        // Runtime实现的模块依赖
         if (name.contains("runtime"))
             parent!!.childProjects.forEach {
                 if (it.value.name.contains("module"))

@@ -28,8 +28,8 @@ object ElementTypeMatcher {
             // 类型名称(或别名)
             1 -> matchName(split[0]).get()
             //错误的表达式
-            else -> { warning("Unknown element type expression: $expression!"); null }
-        }
+            else -> null
+        }.also { if (it == null) warning("Unknown element type expression: $expression!") }
     }
 
     /**
