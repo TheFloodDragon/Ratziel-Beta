@@ -15,10 +15,6 @@ object FDUtilities : Plugin() {
     val plugin by lazy { BukkitPlugin.getInstance() }
 
     override fun onLoad() {
-        println(
-            Json.parseToJsonElement("""
-            "{}"
-        """.trimIndent()))
         console().sendLang("Plugin-Loading", pluginVersion)
     }
 

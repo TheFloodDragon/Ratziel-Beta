@@ -11,8 +11,8 @@ import taboolib.common.env.RuntimeDependency;
         value = "!net.kyori:adventure-platform-bukkit:4.3.0",
         test = "!net.kyori.adventure.platform.bukkit.BukkitAudiences",
         //repository = "https://repo.maven.apache.org/maven2",
-        initiative = true
+        initiative = true,
+        transitive = false
 )
 
-public class BukkitEnv {
-}
+public class BukkitEnv { }

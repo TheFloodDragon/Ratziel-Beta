@@ -10,13 +10,15 @@ import taboolib.common.env.RuntimeDependency;
  */
 @RuntimeDependency(
         value = "!net.kyori:adventure-api:4.14.0",
-        initiative = true
+        initiative = true,
+        transitive = false
 )
 @RuntimeDependency(
         value = "!net.kyori:adventure-text-minimessage:4.14.0",
         //repository = "https://repo.maven.apache.org/maven2",
         //repository = "https://s01.oss.sonatype.org/content/repositories/snapshots",
-        initiative = true
+        initiative = true,
+        transitive = false
 )
 
 public class CommonEnv { }

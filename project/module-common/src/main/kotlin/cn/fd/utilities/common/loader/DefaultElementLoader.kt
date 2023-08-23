@@ -23,17 +23,18 @@ object DefaultElementLoader : FileElementLoader {
         // 成功加载的所有元素
         val successes: MutableSet<Element> = mutableSetOf()
         // 获取所有元素标识符
+        // TODO Use Json
         conf?.getKeys(false)?.forEach { id ->
             // 获取当前元素下的所有元素类型
             conf.getConfigurationSection(id)?.let {
                 it.getKeys(false).forEach { expression ->
                     ElementTypeMatcher.match(expression) //元素类型
                         ?.let { type ->
-                            //debug(ConfigUtil.serializeToJson(conf).jsonObject.toString())
+                            debug(ConfigUtil.serializeToJson(conf).jsonObject.toString())
                             successes.add( //如果非空就加入
                                 Element(
                                     id, file, type,
-                                    property = null
+                                    property = ConfigUtil.serializeToJson(conf)
                                 )
                             )
                         }
