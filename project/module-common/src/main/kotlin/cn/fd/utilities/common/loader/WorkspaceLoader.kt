@@ -2,6 +2,7 @@ package cn.fd.utilities.common.loader
 
 import cn.fd.utilities.common.config.Settings
 import cn.fd.utilities.core.element.Element
+import cn.fd.utilities.core.util.future
 import taboolib.common.LifeCycle
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
@@ -43,18 +44,28 @@ object WorkspaceLoader {
         /**
          * 加载元素文件
          */
-        val loaded: MutableList<CompletableFuture<Set<Element>>> = mutableListOf()
+        val loading: MutableList<CompletableFuture<Set<Element>>> = mutableListOf() //加载过程中的CompletableFuture
+        val loaded = mutableListOf<Element>() //加载完后的元素
         measureTimeMillis {
             val fileMather = Settings.fileFilter.toRegex()
             wsm.getAllFiles()
                 .filter { // 匹配文件
                     it.name.matches(fileMather)
                 }
-                .forEach {
+                .forEach { file ->
                     // 加载元素文件
-                    loaded += DefaultElementLoader.load(it)
+                    loading += future {
+                        DefaultElementLoader.load(file)
+                    }.also {
+                        it.thenAccept { set ->
+                            set.forEach { e -> loaded.add(e) }
+                        }
+                    }
                 }
         }.let {
+            // 等待所有任务完成
+            CompletableFuture.allOf(*loading.toTypedArray()).join()
+            println(loading.size)
             sender.sendLang("Workspace-Finished", loaded.size, it)
         }
     }
@@ -74,9 +85,11 @@ object WorkspaceLoader {
      * 在插件加载时注册并加载命名空间
      */
     @Awake(LifeCycle.LOAD)
-    fun run() {
-        this.init(console())
-        this.load(console())
+    private fun run() {
+        CompletableFuture.runAsync {
+            this.init(console())
+            this.load(console())
+        }
     }
 
 }

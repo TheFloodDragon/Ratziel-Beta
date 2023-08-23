@@ -9,6 +9,7 @@ import taboolib.common.platform.command.subCommand
 import taboolib.expansion.createHelper
 import taboolib.module.lang.Language
 import taboolib.module.lang.sendLang
+import java.util.concurrent.CompletableFuture
 import kotlin.system.measureTimeMillis
 
 @CommandHeader(
@@ -28,17 +29,19 @@ object Command {
     @CommandBody
     val reload = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            measureTimeMillis {
-                /**
-                 * 重载语言
-                 */
-                Language.reload()
-                /**
-                 * 重载函数内容
-                 */
-                WorkspaceLoader.reload(sender)
-            }.let {
-                sender.sendLang("Plugin-Reloaded", it)
+            CompletableFuture.runAsync {
+                measureTimeMillis {
+                    /**
+                     * 重载语言
+                     */
+                    Language.reload()
+                    /**
+                     * 重载函数内容
+                     */
+                    WorkspaceLoader.reload(sender)
+                }.let {
+                    sender.sendLang("Plugin-Reloaded", it)
+                }
             }
         }
     }

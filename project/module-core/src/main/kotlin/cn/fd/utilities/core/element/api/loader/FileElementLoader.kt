@@ -6,6 +6,6 @@ import java.util.concurrent.CompletableFuture
 
 interface FileElementLoader : ElementLoader {
 
-    fun load(file: File): CompletableFuture<Set<Element>>
+    fun load(file: File): Set<Element>
 
 }
