@@ -1,7 +1,6 @@
 package cn.fd.utilities.common.loader
 
 import cn.fd.utilities.common.config.Settings
-import cn.fd.utilities.common.debug
 import cn.fd.utilities.core.element.Element
 import cn.fd.utilities.core.util.future
 import cn.fd.utilities.core.util.runFuture
@@ -12,11 +11,14 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executors
+import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.system.measureTimeMillis
 import cn.fd.utilities.common.WorkspaceManager as wsm
 
 object WorkspaceLoader {
+
+    // 加载完后的元素
+    val elements = ConcurrentLinkedDeque<Element>()
 
     /**
      * 注册工作空间
@@ -47,8 +49,7 @@ object WorkspaceLoader {
         /**
          * 加载元素文件
          */
-        val loading: MutableList<CompletableFuture<List<Element>>> = mutableListOf() //加载过程中的CompletableFuture
-        val loaded = mutableListOf<Element>() //加载完后的元素
+        val loading = ConcurrentLinkedDeque<CompletableFuture<List<Element>>>() //加载过程中的CompletableFuture
         measureTimeMillis {
             val fileMather = Settings.fileFilter.toRegex()
             wsm.getAllFiles()
@@ -58,13 +59,13 @@ object WorkspaceLoader {
                 .forEach { file ->
                     // 加载元素文件
                     loading += future {
-                        DefaultElementLoader.load(file).onEach { loaded.add(it) }
+                        DefaultElementLoader.load(file).onEach { elements.add(it) }
                     }
                 }
             // 等待所有任务完成
             CompletableFuture.allOf(*loading.toTypedArray()).join()
         }.let {
-            sender.sendLang("Workspace-Finished", loaded.size, it)
+            sender.sendLang("Workspace-Finished", elements.size, it)
         }
     }
 
@@ -73,6 +74,7 @@ object WorkspaceLoader {
      */
     fun reload(sender: ProxyCommandSender) {
         wsm.workspaces.clear()
+        this.elements.clear()
         //初始化工作空间
         this.init(sender)
         //加载元素文件
