@@ -26,15 +26,15 @@ class ElementRegister : ClassVisitor(0) {
                 val handlers =
                     if (ElementHandler::class.java.isAssignableFrom(clazz)) {
                         // 获取实例
-                        setOf(clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get())
-                    } else emptySet()
+                        listOf(clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get())
+                    } else emptyList()
                 /**
                  * 注册
                  */
                 ElementService.registerElementType(
                     space = anno.space,
                     name = anno.name,
-                    alias = anno.alias.toSet(),
+                    alias = anno.alias,
                     handlers
                 )
             } catch (e: Exception) {

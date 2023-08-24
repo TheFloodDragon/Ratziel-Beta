@@ -22,6 +22,9 @@ class ElementType(
 
     ) {
 
+    constructor(space: String, name: String, alias: Array<String>)
+            : this(space, name, alias.toSet())
+
     constructor(space: String, name: String) : this(space, name, emptySet())
 
     /**
@@ -29,7 +32,7 @@ class ElementType(
      * 不包含元素类型主名称
      */
     fun getAlias(): Set<String> {
-        return getAllNames().toMutableSet().apply { remove(name) }
+        return alias.toMutableSet().apply { remove(name) }
     }
 
     /**
@@ -41,10 +44,7 @@ class ElementType(
     }
 
     override fun toString(): String {
-        return this::class.java.simpleName + '{' +
-                "space=" + space + ";" +
-                "name=" + name + ';' +
-                "alias=" + alias.toList().toString()
+        return this::class.java.simpleName + '{' + "space=" + space + ";" + "name=" + name + ';' + "alias=" + alias.toString()
     }
 
 }

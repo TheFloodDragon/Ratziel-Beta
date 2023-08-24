@@ -15,34 +15,34 @@ object ElementService {
     /**
      * 元素注册表
      */
-    private val registry: HashMap<ElementType, Set<ElementHandler>> = hashMapOf()
+    private val registry: HashMap<ElementType, List<ElementHandler>> = hashMapOf()
 
     /**
      * 注册元素类型
      * @param etype 元素类型
      * @param handlers 元素处理器
      */
-    fun registerElementType(etype: ElementType, handlers: Set<ElementHandler>) {
-        registry[etype] = handlers.toSet()
+    fun registerElementType(etype: ElementType, handlers: List<ElementHandler>) {
+        registry[etype] = handlers
     }
 
     fun registerElementType(etype: ElementType, handler: ElementHandler) {
-        registry[etype] = setOf(handler)
+        registry[etype] = listOf(handler)
     }
 
     fun registerElementType(etype: ElementType) {
-        registry[etype] = emptySet()
+        registry[etype] = emptyList()
     }
 
-    fun registerElementType(space: String, name: String, alias: Set<String>, handlers: Set<ElementHandler>) {
+    fun registerElementType(space: String, name: String, alias: Array<String>, handlers: List<ElementHandler>) {
         registerElementType(ElementType(space, name, alias), handlers)
     }
 
-    fun registerElementType(space: String, name: String, alias: Set<String>, handler: ElementHandler) {
+    fun registerElementType(space: String, name: String, alias: Array<String>, handler: ElementHandler) {
         registerElementType(ElementType(space, name, alias), handler)
     }
 
-    fun registerElementType(space: String, name: String, alias: Set<String>) {
+    fun registerElementType(space: String, name: String, alias: Array<String>) {
         registerElementType(ElementType(space, name, alias))
     }
 
@@ -67,7 +67,7 @@ object ElementService {
     /**
      * 获取处理器
      */
-    fun getHandlers(etype: ElementType): Set<ElementHandler> {
+    fun getHandlers(etype: ElementType): List<ElementHandler> {
         return registry[etype]!!
     }
 
@@ -98,7 +98,7 @@ object ElementService {
     /**
      * 获取元素注册表
      */
-    fun getRegistry(): HashMap<ElementType, Set<ElementHandler>> {
+    fun getRegistry(): HashMap<ElementType, List<ElementHandler>> {
         return registry
     }
 

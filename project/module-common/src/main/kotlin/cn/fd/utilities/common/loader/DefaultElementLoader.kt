@@ -6,6 +6,8 @@ import cn.fd.utilities.core.element.Element
 import cn.fd.utilities.core.element.api.loader.FileElementLoader
 import cn.fd.utilities.core.element.type.ElementTypeMatcher
 import kotlinx.serialization.json.jsonObject
+import taboolib.common.platform.function.severe
+import taboolib.common.platform.function.warning
 import java.io.File
 
 /**
@@ -16,32 +18,42 @@ import java.io.File
  */
 object DefaultElementLoader : FileElementLoader {
 
-    override fun load(file: File): Set<Element> {
-        debug("Loading file... ${file.name}")
-        // 获取 Config
-        val conf = ConfigUtil.loadFromFile(file)
+    override fun load(file: File): List<Element> {
         // 成功加载的所有元素
-        val successes: MutableSet<Element> = mutableSetOf()
-        // 获取所有元素标识符
-        // TODO Use Json
-        conf?.getKeys(false)?.forEach { id ->
-            // 获取当前元素下的所有元素类型
-            conf.getConfigurationSection(id)?.let {
-                it.getKeys(false).forEach { expression ->
-                    ElementTypeMatcher.match(expression) //元素类型
-                        ?.let { type ->
-                            debug(ConfigUtil.serializeToJson(conf).jsonObject.toString())
-                            successes.add( //如果非空就加入
-                                Element(
-                                    id, file, type,
-                                    property = ConfigUtil.serializeToJson(conf)
-                                )
-                            )
+        val successes: MutableList<Element> = mutableListOf()
+        try {
+            debug("Loading file... ${file.name}")
+            // 获取 Config (转换成Json)
+            ConfigUtil.loadFromFile(file)?.let { ConfigUtil.serializeToJson(it).jsonObject }?.let { conf ->
+                // 获取所有元素标识符
+                conf.keys.forEach { id ->
+                    // 获取当前元素下的所有元素类型
+                    conf[id]?.jsonObject?.let { types ->
+                        types.keys.forEach { expression ->
+                            //匹配元素类型
+                            ElementTypeMatcher.match(expression).let { type ->
+                                type?.let {
+                                    successes.add(
+                                        Element(
+                                            id, file, it,
+                                            property = types[expression]
+                                        )
+                                    )
+                                }
+                            } ?: warning("Unknown element type: \"$expression\" !")
                         }
+                    }
                 }
             }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            severe("Failed to load element form file: ${file.name} !")
         }
         return successes
+            .distinctBy { // 防止表达式指向同一类型导致的有多个相同地址的元素
+                Pair(it.id, it.type)
+            }
     }
 
 }

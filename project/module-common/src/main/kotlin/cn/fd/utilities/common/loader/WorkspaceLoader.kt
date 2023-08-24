@@ -3,6 +3,7 @@ package cn.fd.utilities.common.loader
 import cn.fd.utilities.common.config.Settings
 import cn.fd.utilities.core.element.Element
 import cn.fd.utilities.core.util.future
+import cn.fd.utilities.core.util.runFuture
 import kotlinx.serialization.json.Json
 import taboolib.common.LifeCycle
 import taboolib.common.io.newFile
@@ -45,7 +46,7 @@ object WorkspaceLoader {
         /**
          * 加载元素文件
          */
-        val loading: MutableList<CompletableFuture<Set<Element>>> = mutableListOf() //加载过程中的CompletableFuture
+        val loading: MutableList<CompletableFuture<List<Element>>> = mutableListOf() //加载过程中的CompletableFuture
         val loaded = mutableListOf<Element>() //加载完后的元素
         measureTimeMillis {
             val fileMather = Settings.fileFilter.toRegex()
@@ -86,7 +87,7 @@ object WorkspaceLoader {
      */
     @Awake(LifeCycle.LOAD)
     private fun run() {
-        CompletableFuture.runAsync {
+        runFuture {
             this.init(console())
             this.load(console())
         }
