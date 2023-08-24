@@ -44,7 +44,10 @@ class ElementType(
     }
 
     override fun toString(): String {
-        return this::class.java.simpleName + '{' + "space=" + space + ";" + "name=" + name + ';' + "alias=" + alias.toString()
+        return this::class.java.simpleName + '{' +
+                "space=" + space + ";" +
+                "name=" + name + ';' +
+                "alias=" + alias.toString() + '}'
     }
 
 }

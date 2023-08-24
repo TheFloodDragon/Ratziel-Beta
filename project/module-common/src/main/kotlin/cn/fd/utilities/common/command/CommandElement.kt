@@ -1,5 +1,6 @@
 package cn.fd.utilities.common.command
 
+import cn.fd.utilities.common.loader.WorkspaceLoader
 import cn.fd.utilities.core.element.type.ElementService
 import cn.fd.utilities.core.util.runFuture
 import taboolib.common.platform.ProxyCommandSender
@@ -25,6 +26,28 @@ object CommandElement {
 
     @CommandBody
     val main = mainCommand { createHelper() }
+
+    /**
+     * 列出已加载的所有元素
+     */
+    @CommandBody
+    val list = subCommand {
+        execute<ProxyCommandSender> { sender, _, _ ->
+            //TODO 使用可选选项设置一次展示多少个元素
+            runFuture{
+                sender.sendLang("Element-Header")
+                WorkspaceLoader.elements.forEach {
+                    sender.sendLang("Element-Identifier-Format",it.id) // 标识符
+                    sender.sendLang(
+                        "Element-Info-Format",
+                        it.type.toString(), // 类型
+                        it.getProperty().toString() // 属性
+                    )
+                }
+            }
+        }
+    }
+
 
     /**
      * 列出所有元素类型
@@ -54,7 +77,7 @@ object CommandElement {
     }
 
     private fun format(list: List<*>?): String {
-        return list.toString().let { it.subSequence(1, it.lastIndex).replace(Regex("\\s"), "") }
+        return list?.joinToString(separator = ", ") ?: "无"
     }
 
 }
