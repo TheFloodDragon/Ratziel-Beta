@@ -1,6 +1,7 @@
 package cn.fd.utilities.common.command
 
 import cn.fd.utilities.core.element.type.ElementService
+import cn.fd.utilities.core.util.runFuture
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -31,17 +32,19 @@ object CommandElement {
     @CommandBody
     val listTypes = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            sender.sendLang("Element-Type-Header")
-            ElementService.getRegistry().forEach { etype, handlers ->
-                // 命名空间消息
-                sender.sendLang("Element-Type-Namespace-Format", etype.space)
-                // 具体消息
-                sender.sendLang(
-                    "Element-Type-Info-Format",
-                    etype.name, // 名称
-                    format(etype.getAlias()), // 别名
-                    format(handlers.map { it::class.java.name }) //处理器
-                )
+            runFuture {
+                sender.sendLang("Element-Type-Header")
+                ElementService.getRegistry().forEach { etype, handlers ->
+                    // 命名空间消息
+                    sender.sendLang("Element-Type-Namespace-Format", etype.space)
+                    // 具体消息
+                    sender.sendLang(
+                        "Element-Type-Info-Format",
+                        etype.name, // 名称
+                        format(etype.getAlias()), // 别名
+                        format(handlers.map { it::class.java.name }) //处理器
+                    )
+                }
             }
         }
     }

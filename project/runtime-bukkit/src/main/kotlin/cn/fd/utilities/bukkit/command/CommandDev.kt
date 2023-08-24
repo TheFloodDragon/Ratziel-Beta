@@ -3,6 +3,7 @@ package cn.fd.utilities.bukkit.command
 import cn.fd.utilities.bukkit.kether.KetherHandler
 import cn.fd.utilities.common.command.CommandElement
 import cn.fd.utilities.common.debug
+import cn.fd.utilities.core.util.runFuture
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
@@ -33,12 +34,14 @@ object CommandDev {
     @CommandBody
     val runKether = subCommand {
         execute<CommandSender> { sender, _, argument ->
-            val player = if (sender is Player) sender else onlinePlayers.random()
-            debug(argument)
-            val script = argument.removePrefix("runKether ")
+            runFuture {
+                val player = if (sender is Player) sender else onlinePlayers.random()
+                debug(argument)
+                val script = argument.removePrefix("runKether ")
 
-            KetherHandler.invoke(script, player, mapOf()).thenApply {
-                sender.sendMessage("§7Result: $it")
+                KetherHandler.invoke(script, player, mapOf()).thenApply {
+                    sender.sendMessage("§7Result: $it")
+                }
             }
         }
     }
