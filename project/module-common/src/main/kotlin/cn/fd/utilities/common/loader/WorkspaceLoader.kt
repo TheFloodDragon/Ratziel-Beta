@@ -1,10 +1,10 @@
 package cn.fd.utilities.common.loader
 
 import cn.fd.utilities.common.config.Settings
+import cn.fd.utilities.common.debug
 import cn.fd.utilities.core.element.Element
 import cn.fd.utilities.core.util.future
 import cn.fd.utilities.core.util.runFuture
-import kotlinx.serialization.json.Json
 import taboolib.common.LifeCycle
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
@@ -12,6 +12,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executors
 import kotlin.system.measureTimeMillis
 import cn.fd.utilities.common.WorkspaceManager as wsm
 
@@ -57,16 +58,12 @@ object WorkspaceLoader {
                 .forEach { file ->
                     // 加载元素文件
                     loading += future {
-                        DefaultElementLoader.load(file)
-                    }.also {
-                        it.thenAccept { set ->
-                            set.forEach { e -> loaded.add(e) }
-                        }
+                        DefaultElementLoader.load(file).onEach { loaded.add(it) }
                     }
                 }
-        }.let {
             // 等待所有任务完成
             CompletableFuture.allOf(*loading.toTypedArray()).join()
+        }.let {
             sender.sendLang("Workspace-Finished", loaded.size, it)
         }
     }
