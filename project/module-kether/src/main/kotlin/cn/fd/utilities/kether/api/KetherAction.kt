@@ -1,4 +1,4 @@
-package cn.fd.utilities.bukkit.kether.api
+package cn.fd.utilities.kether.api
 
 /**
  * @author 蛟龙

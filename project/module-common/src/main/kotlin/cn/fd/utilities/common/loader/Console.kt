@@ -1,8 +1,8 @@
-package cn.fd.utilities.bukkit.util
+package cn.fd.utilities.common.loader
 
-import org.bukkit.command.CommandSender
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
-import taboolib.platform.util.asLangText
+import taboolib.module.lang.asLangText
 
 inline fun <T, R> T.alert(block: (T) -> R): R? {
     return alertBlock { block(this) }.getOrNull()
@@ -18,7 +18,7 @@ inline fun <R> alertBlock(block: () -> R): Result<R> {
 }
 
 fun Throwable.prettyPrint(head: Boolean = true) {
-    if (head) println(console().cast<CommandSender>().asLangText("throwable-print"))
+    if (head) println(console().cast<ProxyCommandSender>().asLangText("throwable-print"))
     println("§8${javaClass.name}")
     println("§c$localizedMessage")
 

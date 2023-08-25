@@ -4,12 +4,15 @@ plugins {
 
 dependencies {
     compileOnly("com.google.guava:guava:31.1-jre")
+    // 模块依赖
+    installModule("module-kether")
 }
 
 taboolib {
     version = taboolibVersion
     taboolibModules.forEach { install(it) }
     install("platform-bukkit")
+    install("module-kether")
 
     description {
         name = rootName

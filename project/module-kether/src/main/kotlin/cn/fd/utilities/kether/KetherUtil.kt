@@ -1,4 +1,4 @@
-package cn.fd.utilities.bukkit.kether
+package cn.fd.utilities.kether
 
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.ScriptFrame

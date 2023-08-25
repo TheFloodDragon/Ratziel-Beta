@@ -1,6 +1,6 @@
-package cn.fd.utilities.bukkit.kether
+package cn.fd.utilities.kether
 
-import cn.fd.utilities.bukkit.util.alert
+import cn.fd.utilities.common.loader.alert
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.console

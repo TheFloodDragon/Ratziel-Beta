@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 const val rootName = "FDUtilities"
 const val rootGroup = "cn.fd.utilities"
-const val rootVersion = "A.0.0.3.18"
+const val rootVersion = "A.0.0.4.0"
 
 const val kotlinVersion = "1.9.0"
 const val serializationVersion = "1.6.0"
@@ -20,7 +20,6 @@ val taboolibModules = setOf(
     "common-5",
     "module-nms",
     "module-nms-util",
-    "module-kether",
     "module-configuration",
     "module-lang",
     "module-chat",

@@ -1,6 +1,6 @@
 package cn.fd.utilities.bukkit.command
 
-import cn.fd.utilities.bukkit.kether.KetherHandler
+import cn.fd.utilities.kether.KetherHandler
 import cn.fd.utilities.common.command.CommandElement
 import cn.fd.utilities.common.debug
 import cn.fd.utilities.core.util.runFuture

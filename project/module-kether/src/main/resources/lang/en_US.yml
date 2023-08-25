@@ -1,0 +1,19 @@
+# Language file - Translated by Youdao Translator
+# Last updated: 2023/6/18 —— It was stoped updating
+
+# Due to force majeure,Bukkit and Bungee have the same configuration file
+
+# The following are generic
+Plugin-Loading:
+  - '&r'
+  - '&7Loading &6FD&eUtilities&7... &8{0}'
+  - '&r'
+Plugin-Enabled: '&8[&6FD&eUtilities&r&8] &bINFO &8| &3Loading complete. FDUtilities &av{0} &3now enabled, please use.'
+
+# The following is exclusive to Bukkit
+
+##None##
+
+# The following is exclusive to Bungee
+
+##None##

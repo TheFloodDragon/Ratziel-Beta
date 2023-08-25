@@ -1,7 +1,7 @@
 package cn.fd.utilities.bukkit.element.action
 
-import cn.fd.utilities.bukkit.kether.api.KetherAction
-import cn.fd.utilities.bukkit.kether.getFromFrame
+import cn.fd.utilities.kether.api.KetherAction
+import cn.fd.utilities.kether.getFromFrame
 import taboolib.module.kether.combinationParser
 
 //TODO md好大的坑

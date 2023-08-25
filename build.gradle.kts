@@ -40,12 +40,11 @@ subprojects {
             compileAll()
         }
 
-        // Runtime实现的模块依赖
-        if (name.contains("runtime"))
-            parent!!.childProjects.forEach {
-                if (it.value.name.contains("module"))
-                    implementation(it.value)
-            }
+        // Runtime默认模块依赖
+        if (name.contains("runtime")) {
+            installModule("module-core")
+            installModule("module-common")
+        }
     }
 
     java {
