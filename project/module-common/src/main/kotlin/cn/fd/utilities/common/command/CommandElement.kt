@@ -33,11 +33,10 @@ object CommandElement {
     @CommandBody
     val list = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            //TODO 使用可选选项设置一次展示多少个元素
-            runFuture{
+            runFuture {
                 sender.sendLang("Element-Header")
                 WorkspaceLoader.elements.forEach {
-                    sender.sendLang("Element-Identifier-Format",it.id) // 标识符
+                    sender.sendLang("Element-Identifier-Format", it.id) // 标识符
                     sender.sendLang(
                         "Element-Info-Format",
                         it.type.toString(), // 类型

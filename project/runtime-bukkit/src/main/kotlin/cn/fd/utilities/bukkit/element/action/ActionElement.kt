@@ -1,4 +1,4 @@
-package cn.fd.utilities.bukkit.element
+package cn.fd.utilities.bukkit.element.action
 
 import cn.fd.utilities.common.debug
 import cn.fd.utilities.core.element.Element

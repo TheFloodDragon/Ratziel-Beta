@@ -19,12 +19,13 @@ class KetherLoaderF : ClassVisitor(0) {
         if (method.isAnnotationPresent(KetherAction::class.java) && method.returnType == ScriptActionParser::class.java) {
             val parser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get()))
             val annotation = method.getAnnotation(KetherAction::class.java)
-            val name = annotation.property<Array<String>>("name") ?: emptyArray()
+            val name = annotation.property<Array<String>>("value") ?: emptyArray()
             val namespace = annotation.property<Array<String>>("namespace") ?: emptyArray()
+            val shared = annotation.property<Boolean>("shared") ?: true
 
             // 批量注册
             namespace.forEach {
-                registerParser(parser as ScriptActionParser<*>, name, it, true)
+                registerParser(parser as ScriptActionParser<*>, name, it, shared)
             }
         }
     }

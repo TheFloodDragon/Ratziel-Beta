@@ -7,6 +7,7 @@ package cn.fd.utilities.bukkit.kether.api
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class KetherAction(
-    val name: Array<String>,
+    val value: Array<String>,
     val namespace: Array<String> = ["fdu", "kether"],
+    val shared: Boolean = true,
 )
