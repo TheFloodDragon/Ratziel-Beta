@@ -1,6 +1,7 @@
 package cn.fd.utilities.bukkit.element.action
 
 import cn.fd.utilities.bukkit.kether.api.KetherAction
+import cn.fd.utilities.bukkit.kether.getFromFrame
 import taboolib.module.kether.combinationParser
 
 //TODO md好大的坑
@@ -20,9 +21,9 @@ internal fun actionPress() = combinationParser {
         command("option", "opt", "-o", then = action()).option().defaultsTo(null),
     ).apply(it) { name, time, option ->
         now {
-            "name=" + name + " ; " +
-                    "time=" + time + " ; " +
-                    "option=" + option
+            "name=" + name+ " ; " +
+                    "time=" + getFromFrame(time,"2.5s") + " ; " +
+                    "option=" + getFromFrame(option,"2.5s")
         }
     }
 }
