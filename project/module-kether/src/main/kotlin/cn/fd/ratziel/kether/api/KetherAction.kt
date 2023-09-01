@@ -8,6 +8,6 @@ package cn.fd.ratziel.kether.api
 @Retention(AnnotationRetention.RUNTIME)
 annotation class KetherAction(
     val value: Array<String>,
-    val namespace: Array<String> = ["fdu", "kether"],
+    val namespace: Array<String> = ["ratziel", "kether"],
     val shared: Boolean = true,
 )

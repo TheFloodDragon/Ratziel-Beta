@@ -17,5 +17,5 @@ annotation class NewElement(
     /**
      * 命名空间
      */
-    val space: String = "ef"
+    val space: String = "ez"
 )

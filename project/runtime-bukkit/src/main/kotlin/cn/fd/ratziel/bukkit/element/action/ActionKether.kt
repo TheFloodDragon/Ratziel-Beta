@@ -10,8 +10,8 @@ import taboolib.module.kether.combinationParser
  * press 特征名称 option 特征选项 time 存活周期
  */
 @KetherAction(
-    value = ["press", "f-press"],
-    namespace = ["fdu"],
+    value = ["press", "r-press"],
+    namespace = ["ratziel"],
     shared = false
 )
 internal fun actionPress() = combinationParser {

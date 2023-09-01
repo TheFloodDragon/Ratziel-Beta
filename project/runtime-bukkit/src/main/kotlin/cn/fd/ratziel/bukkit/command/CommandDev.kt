@@ -14,13 +14,15 @@ import taboolib.expansion.createHelper
 import taboolib.platform.util.onlinePlayers
 
 /**
- * @author Arasple, TheFloodDragon
+ * CommandDev
+ *
+ * @author TheFloodDragon
  * @since 2023/8/12 11:47
  */
 @CommandHeader(
-    name = "f-dev",
-    aliases = ["fdev"],
-    permission = "fdutilities.command.dev",
+    name = "r-dev",
+    aliases = ["rdev"],
+    permission = "ratziel.command.dev",
     description = "开发命令"
 )
 object CommandDev {

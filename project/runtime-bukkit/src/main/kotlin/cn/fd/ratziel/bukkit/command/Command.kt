@@ -13,9 +13,9 @@ import taboolib.module.lang.sendLang
 import kotlin.system.measureTimeMillis
 
 @CommandHeader(
-    name = "fdutilities",
-    aliases = ["f", "fd", "fdu"],
-    permission = "fdutilities.command.main",
+    name = "ratziel",
+    aliases = ["r", "rz", "f"],
+    permission = "ratziel.command.main",
     description = "插件主命令"
 )
 object Command {

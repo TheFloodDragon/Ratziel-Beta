@@ -4,4 +4,4 @@ Settings:
 Workspaces:
   filter: '^(?![#!]).*\.(?i)(yaml|yml|toml|tml|json)$'
   paths:
-    - 'plugins/FDUtilities/workspace'
+    - 'plugins/Ratziel/workspace'

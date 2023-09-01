@@ -18,9 +18,9 @@ import taboolib.module.lang.sendLang
  * @since 2023/8/15 11:20
  */
 @CommandHeader(
-    name = "f-element",
-    aliases = ["felement", "element", "em", "fem"],
-    permission = "fdutilities.command.element",
+    name = "element",
+    aliases = ["rz-element", "rem", "em", "fem"],
+    permission = "ratziel.command.element",
 )
 object CommandElement {
 
