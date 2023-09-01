@@ -31,8 +31,10 @@ subprojects {
             compileTabooLib()
             // MiniMessage: https://docs.adventure.kyori.net/minimessage/api.html
             adventure()
-            // Kotlin序列化器
+            // Kotlin序列化工具
             serialization()
+            // Kotlin协程工具
+            coroutine()
         }
 
         // 模块一般依赖——所有
@@ -81,6 +83,7 @@ subprojects {
             // Kotlin
             relocate("kotlin.", "kotlin190.") { exclude("kotlin.Metadata") }
             relocate("kotlinx.serialization", "kotlinx190_160.serialization")
+            relocate("kotlinx.coroutine", "kotlinx190_173.coroutine")
         }
     }
 

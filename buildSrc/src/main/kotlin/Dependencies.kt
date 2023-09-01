@@ -16,10 +16,17 @@ fun Project.buildDirClean() {
 }
 
 /**
- * KotlinJson序列化工具
+ * Kotlin序列化工具
  */
 fun DependencyHandler.serialization() {
     add("compileOnly", "org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+}
+
+/**
+ * Kotlin协程工具
+ */
+fun DependencyHandler.coroutine() {
+    add("compileOnly", "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
 }
 
 /**

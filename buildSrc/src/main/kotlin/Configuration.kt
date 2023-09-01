@@ -2,11 +2,12 @@ import java.text.SimpleDateFormat
 
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.0.4.1"
+const val rootVersion = "A.0.0.4.2"
 
 const val kotlinVersion = "1.9.0"
 const val serializationVersion = "1.6.0"
 const val serializationPluginVersion = "1.9.0"
+const val coroutineVersion = "1.7.3"
 const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "1.56"
 
