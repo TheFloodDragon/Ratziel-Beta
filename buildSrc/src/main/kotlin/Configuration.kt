@@ -1,8 +1,8 @@
 import java.text.SimpleDateFormat
 
-const val rootName = "FDUtilities"
-const val rootGroup = "cn.fd.utilities"
-const val rootVersion = "A.0.0.4.0"
+const val rootName = "Ratziel"
+const val rootGroup = "cn.fd.ratziel"
+const val rootVersion = "A.0.0.4.1"
 
 const val kotlinVersion = "1.9.0"
 const val serializationVersion = "1.6.0"

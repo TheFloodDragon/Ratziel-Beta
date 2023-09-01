@@ -1,4 +1,4 @@
-rootProject.name = "FDUtilities"
+rootProject.name = "Ratziel"
 
 apply("project")
 apply("script")
