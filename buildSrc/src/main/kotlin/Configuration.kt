@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.0.4.3"
+const val rootVersion = "A.0.0.4.4"
 
 const val kotlinVersion = "1.9.0"
 const val serializationVersion = "1.6.0"
@@ -25,7 +25,7 @@ val taboolibModules = setOf(
     "module-lang",
     "module-chat",
 //    "module-database",
-//    "expansion-javascript",
+    "expansion-javascript",
     "expansion-command-helper"
 //    "expansion-player-database",
 )

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.common.loader
 
+import cn.fd.ratziel.common.LogLevel
 import cn.fd.ratziel.common.debug
 import cn.fd.ratziel.common.util.ConfigUtil
 import cn.fd.ratziel.core.element.Element
@@ -22,7 +23,8 @@ object DefaultElementLoader : FileElementLoader {
         // 成功加载的所有元素
         val successes: MutableList<Element> = mutableListOf()
         try {
-            debug("Loading file... ${file.name}")
+            //TODO Event
+            debug("Loading file... ${file.name}", level = LogLevel.Higher)
             // 获取 Config (转换成Json)
             ConfigUtil.loadFromFile(file)?.let { ConfigUtil.serializeToJson(it).jsonObject }?.let { conf ->
                 // 获取所有元素标识符

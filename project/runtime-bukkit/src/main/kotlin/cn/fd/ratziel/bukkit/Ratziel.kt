@@ -1,6 +1,5 @@
 package cn.fd.ratziel.bukkit
 
-import kotlinx.serialization.json.Json
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.Plugin

@@ -1,0 +1,4 @@
+testAction: #元素名称
+  "ez:action": #元素类型
+    test: "我操你妈"
+    # TODO
