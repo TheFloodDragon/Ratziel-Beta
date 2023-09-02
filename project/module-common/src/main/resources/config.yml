@@ -2,6 +2,6 @@ Settings:
   language: zh_CN
 
 Workspaces:
-  filter: '^(?![#!]).*\.(?i)(yaml|yml|toml|tml|json)$'
+  filter: '^(?![#!]).*\.(?i)(yaml|yml|toml|tml|json|conf)$'
   paths:
     - 'plugins/Ratziel/workspace'
