@@ -1,6 +1,4 @@
-package cn.fd.ratziel.core.element.api
-
-import cn.fd.ratziel.core.element.Element
+package cn.fd.ratziel.core.element
 
 /**
  * 元素的解析器

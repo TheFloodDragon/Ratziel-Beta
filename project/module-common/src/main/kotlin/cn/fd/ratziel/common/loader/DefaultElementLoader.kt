@@ -4,8 +4,11 @@ import cn.fd.ratziel.common.LogLevel
 import cn.fd.ratziel.common.debug
 import cn.fd.ratziel.common.util.ConfigUtil
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.api.loader.FileElementLoader
+import cn.fd.ratziel.core.element.event.ElementLoadEvent
+import cn.fd.ratziel.core.element.event.ElementTypeMatchEvent
+import cn.fd.ratziel.core.element.loader.FileElementLoader
 import cn.fd.ratziel.core.element.type.ElementTypeMatcher
+import cn.fd.ratziel.core.util.callThenRun
 import kotlinx.serialization.json.jsonObject
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
@@ -23,7 +26,6 @@ object DefaultElementLoader : FileElementLoader {
         // 成功加载的所有元素
         val successes: MutableList<Element> = mutableListOf()
         try {
-            //TODO Event
             debug("Loading file... ${file.name}", level = LogLevel.Higher)
             // 获取 Config (转换成Json)
             ConfigUtil.loadFromFile(file)?.let { ConfigUtil.serializeToJson(it).jsonObject }?.let { conf ->
@@ -32,17 +34,19 @@ object DefaultElementLoader : FileElementLoader {
                     // 获取当前元素下的所有元素类型
                     conf[id]?.jsonObject?.let { types ->
                         types.keys.forEach { expression ->
-                            //匹配元素类型
-                            ElementTypeMatcher.match(expression).let { type ->
-                                type?.let {
-                                    successes.add(
+                            // 匹配元素类型 (元素类型匹配事件)
+                            ElementTypeMatchEvent(expression)
+                                .callThenRun { ElementTypeMatcher.match(expression) }
+                                ?.let { type ->
+                                    // 元素加载事件
+                                    ElementLoadEvent(
+                                        // 初始化元素对象
                                         Element(
-                                            id, file, it,
+                                            id, file, type,
                                             property = types[expression]
                                         )
-                                    )
-                                }
-                            } ?: warning("Unknown element type: \"$expression\" !")
+                                    ).callThenRun { successes.add(it.element) }
+                                } ?: warning("Unknown element type: \"$expression\" !")
                         }
                     }
                 }

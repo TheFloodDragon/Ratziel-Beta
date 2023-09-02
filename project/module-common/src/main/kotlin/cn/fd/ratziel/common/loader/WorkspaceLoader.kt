@@ -2,16 +2,15 @@ package cn.fd.ratziel.common.loader
 
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.util.future
-import cn.fd.ratziel.core.util.runFuture
+import cn.fd.ratziel.core.element.util.handle
+import cn.fd.ratziel.core.util.*
 import taboolib.common.LifeCycle
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.*
 import kotlin.system.measureTimeMillis
 import cn.fd.ratziel.common.WorkspaceManager as wsm
 
@@ -59,7 +58,10 @@ object WorkspaceLoader {
                 .forEach { file ->
                     // 加载元素文件
                     loading += future {
-                        DefaultElementLoader.load(file).onEach { elements.add(it) }
+                        DefaultElementLoader.load(file).onEach {
+                            elements.add(it) // 插入缓存
+                            it.handle()  // 处理元素
+                        }
                     }
                 }
             // 等待所有任务完成
@@ -75,9 +77,9 @@ object WorkspaceLoader {
     fun reload(sender: ProxyCommandSender) {
         wsm.workspaces.clear()
         this.elements.clear()
-        //初始化工作空间
+        // 初始化工作空间
         this.init(sender)
-        //加载元素文件
+        // 加载元素文件
         this.load(sender)
     }
 

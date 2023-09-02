@@ -41,7 +41,7 @@ object CommandElement {
                         "Element-Info-Format",
                         it.address?.file?.name ?: "无", // 文件
                         it.type.toString(), // 类型
-                        it.getProperty().toString() // 属性
+                        it.property.toString() // 属性
                     )
                 }
             }

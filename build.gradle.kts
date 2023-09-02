@@ -5,7 +5,7 @@ plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version kotlinVersion apply false
     id("com.github.johnrengelman.shadow") version shadowJarVersion apply false
-    id("org.jetbrains.kotlin.plugin.serialization") version serializationPluginVersion apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion apply false
 }
 
 subprojects {
@@ -81,9 +81,8 @@ subprojects {
             relocate("tb", "$rootGroup.taboolib")
             relocate("org.tabooproject", "$rootGroup.taboolib.library")
             // Kotlin
-            relocate("kotlin.", "kotlin190.") { exclude("kotlin.Metadata") }
-            relocate("kotlinx.serialization", "kotlinx190_160.serialization")
-            relocate("kotlinx.coroutine", "kotlinx190_173.coroutine")
+            relocate("kotlin.", "kotlin1910.") { exclude("kotlin.Metadata") }
+            relocate("kotlinx.", "kotlinx1910.")
         }
     }
 

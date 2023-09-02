@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.element.api.loader
+package cn.fd.ratziel.core.element.loader
 
 import cn.fd.ratziel.core.element.Element
 import java.io.File
