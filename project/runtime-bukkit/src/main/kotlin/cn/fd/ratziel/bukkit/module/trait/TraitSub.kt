@@ -1,4 +1,4 @@
-package cn.fd.ratziel.bukkit.element.action.api
+package cn.fd.ratziel.bukkit.module.trait
 
 /**
  * TraitSub

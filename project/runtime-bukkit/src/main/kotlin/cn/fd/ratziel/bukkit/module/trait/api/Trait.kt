@@ -1,7 +1,9 @@
-package cn.fd.ratziel.bukkit.element.action.api
+package cn.fd.ratziel.bukkit.module.trait.api
+
+import cn.fd.ratziel.bukkit.module.trait.TraitSub
 
 /**
- * Trait
+ * Trait - 特征
  *
  * @author TheFloodDragon
  * @since 2023/8/25 14:17

@@ -1,6 +1,6 @@
-package cn.fd.ratziel.bukkit.element.action
+package cn.fd.ratziel.bukkit.module.trait
 
-import cn.fd.ratziel.bukkit.element.action.api.Trait
+import cn.fd.ratziel.bukkit.module.trait.api.Trait
 import cn.fd.ratziel.core.memory.HashMapMemory
 
 /**

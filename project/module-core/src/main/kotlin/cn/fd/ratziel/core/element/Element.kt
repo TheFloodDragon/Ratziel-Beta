@@ -3,7 +3,6 @@ package cn.fd.ratziel.core.element
 import cn.fd.ratziel.core.serialize.adapt
 import kotlinx.serialization.json.JsonElement
 import java.io.File
-import java.util.function.Supplier
 
 class Element(
     /**
@@ -21,7 +20,7 @@ class Element(
     /**
      * 元素地址
      */
-    val address: ElementAddress = ElementAddress(id, type, null)
+    val address: ElementAddress = ElementAddress(id, type, null),
 ) {
 
     /**

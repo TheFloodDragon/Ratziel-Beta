@@ -1,6 +1,6 @@
-package cn.fd.ratziel.bukkit.element.action
+package cn.fd.ratziel.bukkit.module.trait
 
-import cn.fd.ratziel.bukkit.element.action.api.*
+import cn.fd.ratziel.bukkit.module.trait.api.Trait
 
 /**
  * DefaultTrait

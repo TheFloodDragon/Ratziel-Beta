@@ -1,4 +1,4 @@
-package cn.fd.ratziel.kether.action
+package cn.fd.ratziel.bukkit.module.trait
 
 import cn.fd.ratziel.kether.api.KetherAction
 import cn.fd.ratziel.kether.getFromFrame

@@ -50,7 +50,7 @@ object WorkspaceLoader {
         /**
          * 加载元素文件
          */
-        val loading = ConcurrentLinkedDeque<CompletableFuture<List<Element>>>() //加载过程中的CompletableFuture
+        val loading = ConcurrentLinkedDeque<CompletableFuture<List<Element>>>() // 加载过程中的CompletableFuture
         measureTimeMillis {
             val fileMather = Settings.fileFilter.toRegex()
             wsm.getAllFiles()
