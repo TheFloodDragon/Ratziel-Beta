@@ -35,7 +35,7 @@
       // 元素类型别名
       alias = ["actions"],
       // 命名空间
-      space = ["actions"]
+      space = ["ez"]
     )
     ```
 

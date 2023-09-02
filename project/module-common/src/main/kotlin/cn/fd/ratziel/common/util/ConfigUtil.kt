@@ -5,12 +5,7 @@ import kotlinx.serialization.json.JsonElement
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
 
-object ConfigUtil {
-
-    fun serializeToJson(conf: Configuration): JsonElement {
-        // 改变成 Json
-        conf.changeType(Type.JSON)
-        return Json.parseToJsonElement(conf.saveToString())
-    }
-
+fun Configuration.serializeToJson(): JsonElement {
+    this.changeType(Type.JSON)
+    return Json.parseToJsonElement(this.saveToString())
 }

@@ -5,6 +5,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.io.getInstance
 import taboolib.common.platform.Awake
+import taboolib.common.platform.function.severe
 import java.util.function.Supplier
 
 /**
@@ -38,8 +39,8 @@ class ElementRegister : ClassVisitor(0) {
                     handlers
                 )
             } catch (e: Exception) {
+                severe("Unable to register element form class $clazz!")
                 e.printStackTrace()
-                error("Unable to register element form class $clazz!")
             }
         }
     }

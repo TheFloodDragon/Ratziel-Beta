@@ -2,7 +2,7 @@ package cn.fd.ratziel.common.loader
 
 import cn.fd.ratziel.common.LogLevel
 import cn.fd.ratziel.common.debug
-import cn.fd.ratziel.common.util.ConfigUtil
+import cn.fd.ratziel.common.util.serializeToJson
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.event.ElementLoadEvent
 import cn.fd.ratziel.core.element.event.ElementTypeMatchEvent
@@ -29,7 +29,7 @@ object DefaultElementLoader : FileElementLoader {
         try {
             debug("Loading file... ${file.name}", level = LogLevel.Higher)
             // 获取 Config (转换成Json)
-            ConfigUtil.serializeToJson(Configuration.loadFromFile(file)).jsonObject.let { conf ->
+            Configuration.loadFromFile(file).serializeToJson().jsonObject.let { conf ->
                 // 获取所有元素标识符
                 conf.keys.forEach { id ->
                     // 获取当前元素下的所有元素类型
@@ -54,8 +54,8 @@ object DefaultElementLoader : FileElementLoader {
             }
 
         } catch (e: Exception) {
+            severe("Failed to load element form file: ${file.name}")
             e.printStackTrace()
-            severe("Failed to load element form file: ${file.name} !")
         }
         return successes
             .distinctBy { // 防止表达式指向同一类型导致的有多个相同地址的元素

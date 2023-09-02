@@ -45,7 +45,7 @@ object ElementTypeMatcher {
      */
     fun matchSpace(
         space: String,
-        types: Set<ElementType> = ElementService.getAllElementTypes()
+        types: Set<ElementType> = ElementService.getAllElementTypes(),
     ): CompletableFuture<List<ElementType>> {
         return future {
             types.filter { it.space == space }
@@ -59,7 +59,7 @@ object ElementTypeMatcher {
      */
     fun matchName(
         name: String,
-        types: Set<ElementType> = ElementService.getAllElementTypes()
+        types: Set<ElementType> = ElementService.getAllElementTypes(),
     ): CompletableFuture<ElementType?> {
         return future {
             types.find { it.getAllNames().contains(name) }

@@ -1,8 +1,17 @@
-package cn.fd.ratziel.bukkit.element.action
+package cn.fd.ratziel.kether.action
 
 import cn.fd.ratziel.kether.api.KetherAction
 import cn.fd.ratziel.kether.getFromFrame
+import taboolib.module.kether.ParserHolder.defaultsTo
+import taboolib.module.kether.ParserHolder.option
 import taboolib.module.kether.combinationParser
+
+/**
+ * PressAction
+ *
+ * @author TheFloodDragon
+ * @since 2023/9/2 12:56
+ */
 
 //TODO md好大的坑
 /**
@@ -23,7 +32,7 @@ internal fun actionPress() = combinationParser {
         now {
             "name=" + name+ " ; " +
                     "time=" + getFromFrame(time,"2.5s") + " ; " +
-                    "option=" + getFromFrame(option,"2.5s")
+                    "option=" + getFromFrame(option,"fuckyou")
         }
     }
 }
