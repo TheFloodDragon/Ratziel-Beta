@@ -1,4 +1,4 @@
-package cn.fd.ratziel.common.loader
+package cn.fd.ratziel.common.util
 
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
@@ -22,9 +22,8 @@ fun Throwable.prettyPrint(head: Boolean = true) {
     println("§8${javaClass.name}")
     println("§c$localizedMessage")
 
-
     stackTrace
-        .filter { "taboolib" in it.toString() || "invero" in it.toString() }
+        .filter { "taboolib" in it.toString() || "ratziel" in it.toString() }
         .forEach {
             val info =
                 it.toString().split("//").let { split ->

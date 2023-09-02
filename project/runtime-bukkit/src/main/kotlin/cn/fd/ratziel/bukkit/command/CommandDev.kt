@@ -1,17 +1,14 @@
 package cn.fd.ratziel.bukkit.command
 
-import cn.fd.ratziel.kether.KetherHandler
 import cn.fd.ratziel.common.command.CommandElement
-import cn.fd.ratziel.common.debug
 import cn.fd.ratziel.core.util.runFuture
+import cn.fd.ratziel.kether.KetherHandler
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.expansion.createHelper
-import taboolib.platform.util.onlinePlayers
 
 /**
  * CommandDev
@@ -35,14 +32,12 @@ object CommandDev {
      */
     @CommandBody
     val runKether = subCommand {
-        execute<CommandSender> { sender, _, argument ->
-            runFuture {
-                val player = if (sender is Player) sender else onlinePlayers.random()
-                debug(argument)
-                val script = argument.removePrefix("runKether ")
-
-                KetherHandler.invoke(script, player, mapOf()).thenApply {
-                    sender.sendMessage("§7Result: $it")
+        dynamic {
+            execute<CommandSender> { sender, _, context ->
+                runFuture {
+                    KetherHandler.invoke(context, sender, mapOf()).thenApply {
+                        sender.sendMessage("§7Result: $it")
+                    }
                 }
             }
         }

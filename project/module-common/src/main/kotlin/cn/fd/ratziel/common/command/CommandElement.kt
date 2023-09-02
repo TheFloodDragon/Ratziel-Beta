@@ -39,7 +39,7 @@ object CommandElement {
                     sender.sendLang("Element-Identifier-Format", it.id) // 标识符
                     sender.sendLang(
                         "Element-Info-Format",
-                        it.address?.file?.name ?: "无", // 文件
+                        it.address.file?.name ?: "无", // 文件
                         it.type.toString(), // 类型
                         it.property.toString() // 属性
                     )

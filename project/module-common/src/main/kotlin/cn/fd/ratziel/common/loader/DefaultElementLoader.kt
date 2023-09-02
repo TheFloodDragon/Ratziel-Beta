@@ -12,6 +12,7 @@ import cn.fd.ratziel.core.util.callThenRun
 import kotlinx.serialization.json.jsonObject
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
+import taboolib.module.configuration.Configuration
 import java.io.File
 
 /**
@@ -28,7 +29,7 @@ object DefaultElementLoader : FileElementLoader {
         try {
             debug("Loading file... ${file.name}", level = LogLevel.Higher)
             // 获取 Config (转换成Json)
-            ConfigUtil.loadFromFile(file)?.let { ConfigUtil.serializeToJson(it).jsonObject }?.let { conf ->
+            ConfigUtil.serializeToJson(Configuration.loadFromFile(file)).jsonObject.let { conf ->
                 // 获取所有元素标识符
                 conf.keys.forEach { id ->
                     // 获取当前元素下的所有元素类型

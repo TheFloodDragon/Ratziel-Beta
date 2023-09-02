@@ -1,14 +1,12 @@
 package cn.fd.ratziel.common
 
-import cn.fd.ratziel.common.Logger.process
-
 fun debug(info: Any? = Any(), level: LogLevel = LogLevel.Medium, auto: Boolean = true) {
     if (Logger.debug) log(info, level, auto)
 }
 
 fun log(info: Any? = Any(), level: LogLevel = LogLevel.Medium, auto: Boolean = true) {
     if (level.priority >= Logger.level.priority)
-        if (auto) process(info)
+        if (auto) Logger.process(info)
         else println(info)
 }
 

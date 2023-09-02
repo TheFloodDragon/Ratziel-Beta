@@ -20,7 +20,7 @@ object ActionElement : ElementHandler, ElementMemory() {
 
     override fun handle(element: Element) {
         addToMemory(element)
-        debug("啊我艹我parse了")
+        println("啊我艹我parse了")
     }
 
 }
