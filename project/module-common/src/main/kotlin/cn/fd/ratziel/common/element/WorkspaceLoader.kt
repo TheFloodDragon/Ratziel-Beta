@@ -1,4 +1,4 @@
-package cn.fd.ratziel.common.loader
+package cn.fd.ratziel.common.element
 
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.core.element.Element
@@ -78,11 +78,11 @@ object WorkspaceLoader {
      */
     fun reload(sender: ProxyCommandSender) {
         wsm.workspaces.clear()
-        this.elements.clear()
+        elements.clear()
         // 初始化工作空间
-        this.init(sender)
+        init(sender)
         // 加载元素文件
-        this.load(sender)
+        load(sender)
     }
 
     /**
@@ -91,8 +91,8 @@ object WorkspaceLoader {
     @Awake(LifeCycle.LOAD)
     private fun run() {
         runFuture {
-            this.init(console())
-            this.load(console())
+            init(console())
+            load(console())
         }
     }
 

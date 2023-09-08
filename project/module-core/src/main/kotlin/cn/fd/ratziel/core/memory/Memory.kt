@@ -6,4 +6,4 @@ package cn.fd.ratziel.core.memory
  * @author TheFloodDragon
  * @since 2023/8/21 10:22
  */
-interface Memory
+interface Memory<M>

@@ -6,7 +6,7 @@ package cn.fd.ratziel.core.memory
  * @author TheFloodDragon
  * @since 2023/8/21 10:11
  */
-open class HashMapMemory<K, V> : Memory {
+open class HashMapMemory<K, V> : Memory<HashMap<K, V>> {
 
     /**
      * 容器
