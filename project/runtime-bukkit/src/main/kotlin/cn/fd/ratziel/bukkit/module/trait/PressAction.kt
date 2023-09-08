@@ -2,7 +2,7 @@ package cn.fd.ratziel.bukkit.module.trait
 
 import cn.fd.ratziel.kether.bacikal.bacikalParser
 import cn.fd.ratziel.kether.getFromFrame
-import cn.fd.ratziel.kether.loader.KetherAction
+import cn.fd.ratziel.kether.NewKetherAction
 import taboolib.module.kether.ParserHolder.now
 
 /**
@@ -17,7 +17,7 @@ import taboolib.module.kether.ParserHolder.now
  * 用法:
  * press 特征名称 option 特征选项 time 存活周期
  */
-@KetherAction(
+@NewKetherAction(
     value = ["press", "r-press"],
     namespace = ["ratziel"],
     shared = false

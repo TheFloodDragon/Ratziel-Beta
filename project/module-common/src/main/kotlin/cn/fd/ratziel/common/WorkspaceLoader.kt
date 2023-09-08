@@ -2,7 +2,6 @@ package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
-import cn.fd.ratziel.core.coroutine.ProxyIOCoroutineScope
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.util.handle
 import cn.fd.ratziel.core.util.future
@@ -17,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.system.measureTimeMillis
 import cn.fd.ratziel.common.WorkspaceManager as wsm
 
-object WorkspaceLoader : ProxyIOCoroutineScope() {
+object WorkspaceLoader {
 
     // 已加载的元素
     val elements = ConcurrentLinkedDeque<Element>()
@@ -44,11 +43,7 @@ object WorkspaceLoader : ProxyIOCoroutineScope() {
          */
         val loading = ConcurrentLinkedDeque<CompletableFuture<List<Element>>>() // 加载过程中的CompletableFuture
         measureTimeMillis {
-            val fileMather = Settings.fileFilter.toRegex()
-            wsm.getAllFiles()
-                .filter { // 匹配文件
-                    it.name.matches(fileMather)
-                }
+            wsm.gerFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
                     loading += future {

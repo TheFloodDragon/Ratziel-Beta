@@ -1,4 +1,4 @@
-package cn.fd.ratziel.kether.bacikal.property
+package cn.fd.ratziel.kether.bacikal
 
 import taboolib.common.OpenResult
 import taboolib.module.kether.ScriptProperty

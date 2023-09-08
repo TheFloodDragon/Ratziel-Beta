@@ -1,5 +1,6 @@
 package cn.fd.ratziel.common
 
+import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.core.Workspace
 import taboolib.common.platform.function.releaseResourceFile
 import java.io.File
@@ -22,7 +23,7 @@ object WorkspaceManager {
         if (copyDefaults && !file.exists()) // 文件夹未创建时
             releaseWorkspace(target = file.name)
         else file.mkdirs()
-        markInitialized(Workspace(file))
+        workspaces.add(Workspace(file))
     }
 
     fun initializeWorkspace(path: String, copyDefaults: Boolean = true) {
@@ -34,18 +35,18 @@ object WorkspaceManager {
     }
 
     /**
-     * 标记已加载工作空间
+     * 获取工作空间内过滤后的文件
      */
-    fun markInitialized(wp: Workspace) {
-        workspaces.add(wp)
-    }
+    fun gerFilteredFiles(spaces: Iterable<Workspace> = workspaces) =
+        Settings.fileFilter.toRegex().let { mather ->
+            getAllFiles(spaces).filter { it.name.matches(mather) }
+        }
 
     /**
      * 获取所有工作空间内的所有文件
      */
-    fun getAllFiles(spaces: Iterable<Workspace> = workspaces): List<File> {
-        return spaces.flatMap { it.getFiles() }
-    }
+    fun getAllFiles(spaces: Iterable<Workspace> = workspaces) =
+        spaces.flatMap { it.getFiles() }
 
     /**
      * 复制默认工作空间内文件到默认工作空间

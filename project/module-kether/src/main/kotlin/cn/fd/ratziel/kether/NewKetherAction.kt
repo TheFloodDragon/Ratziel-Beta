@@ -1,4 +1,4 @@
-package cn.fd.ratziel.kether.loader
+package cn.fd.ratziel.kether
 
 /**
  * @author 蛟龙
@@ -6,7 +6,7 @@ package cn.fd.ratziel.kether.loader
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class KetherAction(
+annotation class NewKetherAction(
     val value: Array<String>,
     val namespace: Array<String> = ["ratziel", "kether"],
     val shared: Boolean = true,

@@ -28,7 +28,6 @@ object Logger {
      * 日志智能处理
      */
     fun process(info: Any?) {
-        println("Process: $info")
         when (info) {
             is Iterable<*> -> info.forEach { println(it) }
             is Map<*, *> -> info.forEach { println(it.key.toString() + "  |  " + it.value.toString()) }

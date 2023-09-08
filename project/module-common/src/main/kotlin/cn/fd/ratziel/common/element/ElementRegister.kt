@@ -1,6 +1,8 @@
-package cn.fd.ratziel.core.element.type
+package cn.fd.ratziel.common.element
 
 import cn.fd.ratziel.core.element.ElementHandler
+import cn.fd.ratziel.core.element.type.ElementService
+import cn.fd.ratziel.core.element.type.NewElement
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.io.getInstance
