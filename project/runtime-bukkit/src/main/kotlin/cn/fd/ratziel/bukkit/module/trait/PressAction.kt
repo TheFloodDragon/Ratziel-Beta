@@ -1,9 +1,8 @@
 package cn.fd.ratziel.bukkit.module.trait
 
+import cn.fd.ratziel.kether.NewKetherAction
 import cn.fd.ratziel.kether.bacikal.bacikalParser
 import cn.fd.ratziel.kether.getFromFrame
-import cn.fd.ratziel.kether.NewKetherAction
-import taboolib.module.kether.ParserHolder.now
 
 /**
  * PressAction
@@ -19,8 +18,6 @@ import taboolib.module.kether.ParserHolder.now
  */
 @NewKetherAction(
     value = ["press", "r-press"],
-    namespace = ["ratziel"],
-    shared = false
 )
 internal fun actionPress() = bacikalParser {
     fructus(
@@ -28,11 +25,9 @@ internal fun actionPress() = bacikalParser {
         argument("time", "-t", then = action()),
         argument("option", "opt", "-o", then = action()),
     ) { frame, name, time, option ->
-        now {
-            "name=" + name + " ; " +
-                    "time=" + getFromFrame(time, "2.5s") + " ; " +
-                    "option=" + getFromFrame(option, "fuckyou")
-        }
+        "name=" + name + " ; " +
+                "time=" + time?.let { frame.runAction(time).get() } + " ; " +
+                "option=" + option?.let { frame.runAction(option).get() }
     }
 }
 //internal fun actionPress() = combinationParser {

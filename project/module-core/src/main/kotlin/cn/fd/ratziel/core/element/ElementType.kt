@@ -50,4 +50,17 @@ class ElementType(
                 "alias=" + alias.toString() + '}'
     }
 
+    override fun equals(other: Any?): Boolean {
+        return if (other is ElementType) {
+            this.space == other.space && this.name == other.name
+        } else super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = space.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + alias.hashCode()
+        return result
+    }
+
 }

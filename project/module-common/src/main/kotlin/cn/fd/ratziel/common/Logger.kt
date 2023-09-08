@@ -1,7 +1,5 @@
 package cn.fd.ratziel.common
 
-import taboolib.common.platform.function.info
-
 fun debug(info: Any? = Any(), level: LogLevel = LogLevel.Medium, auto: Boolean = true) {
     if (Logger.debug) log(info, level, auto)
 }
@@ -9,7 +7,7 @@ fun debug(info: Any? = Any(), level: LogLevel = LogLevel.Medium, auto: Boolean =
 fun log(info: Any? = Any(), level: LogLevel = LogLevel.Medium, auto: Boolean = true) {
     if (level.priority >= Logger.level.priority)
         if (auto) Logger.process(info)
-        else info(info)
+        else println(info)
 }
 
 object Logger {

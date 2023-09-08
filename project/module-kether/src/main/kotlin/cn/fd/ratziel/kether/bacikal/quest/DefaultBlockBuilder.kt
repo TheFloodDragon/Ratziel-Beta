@@ -4,13 +4,12 @@ import cn.fd.ratziel.core.serialize.SerializeAdaptBuilder.Companion.adaptBuilder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonPrimitive
 import taboolib.library.configuration.ConfigurationSection
-import java.util.*
 
 /**
  * @author Lanscarlos
  * @since 2023-08-25 01:07
  */
-class DefaultBlockBuilder(override var name: String = UUID.randomUUID().toString()) : BacikalBlockBuilder {
+class DefaultBlockBuilder(override var name: String) : BacikalBlockBuilder {
 
     override val namespace = mutableListOf<String>()
 
@@ -323,7 +322,7 @@ class DefaultBlockBuilder(override var name: String = UUID.randomUUID().toString
         return when (algorithm.lowercase()) {
             "ke", "kether" -> this.toString()
             "js", "javascript" -> "js '$this'"
-            //"ks", "script" -> "ratziel script run *\"$this\"" //TODO
+//            "ks", "script" -> "vul script run *\"$this\"" //TODO
 //            "kf", "fragment" -> ScriptFragment.link(this, content)
 //            "kf", "fragment" -> "fragment $content"
             else -> error("Unknown format algorithm: $algorithm")

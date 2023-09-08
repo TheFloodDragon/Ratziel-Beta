@@ -1,8 +1,7 @@
 package cn.fd.ratziel.kether.bacikal.quest
 
-import kotlinx.coroutines.*
-import taboolib.common.LifeCycle
-import taboolib.common.platform.Awake
+import cn.fd.ratziel.core.coroutine.ProxyCoroutineScope
+import kotlinx.coroutines.launch
 import taboolib.common.platform.function.info
 import taboolib.library.kether.AbstractQuestContext.*
 import taboolib.library.kether.*
@@ -15,6 +14,8 @@ import java.util.concurrent.CompletableFuture
  * @since 2023-08-25 11:39
  */
 class CoroutinesQuestContext(quest: BacikalQuest) : AbstractQuestContext(quest) {
+
+    companion object : ProxyCoroutineScope()
 
     override fun createRootFrame(context: InnerContext): QuestContext.Frame {
         return InnerRootFrame(context)
@@ -94,12 +95,4 @@ class CoroutinesQuestContext(quest: BacikalQuest) : AbstractQuestContext(quest) 
         }
     }
 
-    companion object {
-        private val scope by lazy { CoroutineScope(Dispatchers.Default) }
-
-        @Awake(LifeCycle.DISABLE)
-        fun onDisable() {
-            scope.cancel()
-        }
-    }
 }

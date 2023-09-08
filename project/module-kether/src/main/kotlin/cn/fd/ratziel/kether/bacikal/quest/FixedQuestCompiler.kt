@@ -2,12 +2,8 @@ package cn.fd.ratziel.kether.bacikal.quest
 
 import taboolib.library.kether.*
 import taboolib.library.reflex.Reflex.Companion.setProperty
-import taboolib.module.kether.Kether
-import taboolib.module.kether.ScriptService
-import taboolib.module.kether.action.ActionGet
-import taboolib.module.kether.action.ActionLiteral
-import taboolib.module.kether.action.ActionProperty
-import taboolib.module.kether.printKetherErrorMessage
+import taboolib.module.kether.action.*
+import taboolib.module.kether.*
 import java.nio.charset.StandardCharsets
 
 /**

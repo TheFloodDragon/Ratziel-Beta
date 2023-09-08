@@ -4,15 +4,13 @@ import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.util.handle
-import cn.fd.ratziel.core.util.future
-import cn.fd.ratziel.core.util.runFuture
+import cn.fd.ratziel.core.util.*
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.*
 import kotlin.system.measureTimeMillis
 import cn.fd.ratziel.common.WorkspaceManager as wsm
 
@@ -51,7 +49,7 @@ object WorkspaceLoader {
                             elements.add(it) // 插入缓存
                             it.handle()  // 处理元素
                         }
-                    }
+                    } //TODO 异常处理
                 }
             // 等待所有任务完成
             CompletableFuture.allOf(*loading.toTypedArray()).join()

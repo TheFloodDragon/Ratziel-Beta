@@ -42,4 +42,18 @@ class Element(
         property: JsonElement?,
     ) : this(address.id, address.file, address.type, property)
 
+    override fun equals(other: Any?): Boolean {
+        return if (other is Element) {
+            this.address == other.address
+        } else super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + (property?.hashCode() ?: 0)
+        result = 31 * result + address.hashCode()
+        return result
+    }
+
 }

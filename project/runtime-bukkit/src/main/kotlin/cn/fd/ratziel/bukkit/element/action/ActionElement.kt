@@ -26,7 +26,6 @@ object ActionElement : ElementHandler, ElementMemory() {
                 KetherHandler.invoke(it, null, emptyMap()).thenApply { result -> println(result) }
             }
         }
-        debug("啊我艹我parse了")
     }
 
 }

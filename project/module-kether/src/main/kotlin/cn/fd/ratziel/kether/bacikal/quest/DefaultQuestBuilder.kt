@@ -1,9 +1,9 @@
 package cn.fd.ratziel.kether.bacikal.quest
 
+import cn.fd.ratziel.core.util.randomUUID
 import cn.fd.ratziel.kether.bacikal.Bacikal
 import taboolib.library.kether.QuestContext
 import java.io.File
-import java.util.*
 import java.util.function.Consumer
 
 /**
@@ -67,13 +67,13 @@ class DefaultQuestBuilder(override var name: String) : BacikalQuestBuilder {
     }
 
     override fun appendBlock(name: String?, func: BacikalBlockBuilder.() -> Unit) {
-        val block = DefaultBlockBuilder(name ?: UUID.randomUUID().toString())
+        val block = DefaultBlockBuilder(name ?: randomUUID())
         appendBlock(block)
         block.also(func)
     }
 
     override fun appendBlock(name: String?, func: Consumer<BacikalBlockBuilder>) {
-        val block = DefaultBlockBuilder(name ?: UUID.randomUUID().toString())
+        val block = DefaultBlockBuilder(name ?: randomUUID())
         appendBlock(block)
         func.accept(block)
     }

@@ -22,7 +22,7 @@ class ElementAddress(
     /**
      * 元素所在文件路径(若为空则不是文件地址)
      */
-    val file: File?
+    val file: File?,
 ) {
     /**
      * 元素地址是否是文件地址
@@ -33,6 +33,19 @@ class ElementAddress(
 
     fun isEmptyAddress(): Boolean {
         return file == null
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return if (other is ElementAddress) {
+            this.id == other.id && this.type == other.type && this.file == other.file
+        } else super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + (file?.hashCode() ?: 0)
+        return result
     }
 
 }
