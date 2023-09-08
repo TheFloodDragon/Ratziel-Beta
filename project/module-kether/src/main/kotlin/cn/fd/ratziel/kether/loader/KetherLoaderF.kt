@@ -1,4 +1,4 @@
-package cn.fd.ratziel.kether.api
+package cn.fd.ratziel.kether.loader
 
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor

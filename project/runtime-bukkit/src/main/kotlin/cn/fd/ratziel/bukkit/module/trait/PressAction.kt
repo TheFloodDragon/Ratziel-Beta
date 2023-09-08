@@ -1,10 +1,9 @@
 package cn.fd.ratziel.bukkit.module.trait
 
-import cn.fd.ratziel.kether.api.KetherAction
+import cn.fd.ratziel.kether.bacikal.bacikalParser
 import cn.fd.ratziel.kether.getFromFrame
-import taboolib.module.kether.ParserHolder.defaultsTo
-import taboolib.module.kether.ParserHolder.option
-import taboolib.module.kether.combinationParser
+import cn.fd.ratziel.kether.loader.KetherAction
+import taboolib.module.kether.ParserHolder.now
 
 /**
  * PressAction
@@ -23,16 +22,29 @@ import taboolib.module.kether.combinationParser
     namespace = ["ratziel"],
     shared = false
 )
-internal fun actionPress() = combinationParser {
-    it.group(
+internal fun actionPress() = bacikalParser {
+    fructus(
         text(),
-        command("time", "-t", then = action()).option().defaultsTo(null),
-        command("option", "opt", "-o", then = action()).option().defaultsTo(null),
-    ).apply(it) { name, time, option ->
+        argument("time", "-t", then = action()),
+        argument("option", "opt", "-o", then = action()),
+    ) { frame, name, time, option ->
         now {
-            "name=" + name+ " ; " +
-                    "time=" + getFromFrame(time,"2.5s") + " ; " +
-                    "option=" + getFromFrame(option,"fuckyou")
+            "name=" + name + " ; " +
+                    "time=" + getFromFrame(time, "2.5s") + " ; " +
+                    "option=" + getFromFrame(option, "fuckyou")
         }
     }
 }
+//internal fun actionPress() = combinationParser {
+//    it.group(
+//        text(),
+//        command("time", "-t", then = action()).option().defaultsTo(null),
+//        command("option", "opt", "-o", then = action()).option().defaultsTo(null),
+//    ).apply(it) { name, time, option ->
+//        now {
+//            "name=" + name+ " ; " +
+//                    "time=" + getFromFrame(time,"2.5s") + " ; " +
+//                    "option=" + getFromFrame(option,"fuckyou")
+//        }
+//    }
+//}

@@ -29,9 +29,7 @@ object WorkspaceManager {
      */
     fun releaseWorkspace(files: Array<String> = DefaultFileRegistry.files, target: String) {
         files.forEach {
-            //releaseResourceFile("${DefaultFileRegistry.PATH}/$it", "$target/$it")
-            //TODO 等Tlib更新吧
-            releaseResourceFile("${DefaultFileRegistry.PATH}/$it")
+            releaseResourceFile("${DefaultFileRegistry.PATH}/$it", target = "$target/$it")
         }
     }
 

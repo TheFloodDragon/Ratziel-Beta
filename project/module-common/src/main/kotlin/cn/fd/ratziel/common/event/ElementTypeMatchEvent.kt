@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.element.event
+package cn.fd.ratziel.common.event
 
 import taboolib.common.platform.event.ProxyEvent
 

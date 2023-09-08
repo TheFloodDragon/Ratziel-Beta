@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.0.5.2"
+const val rootVersion = "A.0.0.5.3"
 
 const val kotlinVersion = "1.9.10"
 const val serializationVersion = "1.6.0"
@@ -11,7 +11,7 @@ const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "1.56"
 
 val taboolibVersion = getLatestRelease("TabooLib", "taboolib").also { println("Using taboolib-version = $it") }
-const val fallbackVersion = "6.0.12-15" // 如果获取不到最新版本就改这个
+const val fallbackVersion = "6.0.12-20" // 如果获取不到最新版本就改这个
 
 val isoInstantFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
