@@ -1,7 +1,7 @@
 package cn.fd.ratziel.core.element.util
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.event.ElementHandleEvent
+import cn.fd.ratziel.core.event.ElementHandleEvent
 import cn.fd.ratziel.core.element.type.ElementService
 import cn.fd.ratziel.core.util.callThenRun
 

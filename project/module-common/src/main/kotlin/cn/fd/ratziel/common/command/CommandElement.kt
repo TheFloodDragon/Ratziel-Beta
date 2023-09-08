@@ -1,6 +1,6 @@
 package cn.fd.ratziel.common.command
 
-import cn.fd.ratziel.common.element.WorkspaceLoader
+import cn.fd.ratziel.common.WorkspaceLoader
 import cn.fd.ratziel.core.element.type.ElementService
 import cn.fd.ratziel.core.util.runFuture
 import taboolib.common.platform.ProxyCommandSender

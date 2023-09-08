@@ -1,12 +1,12 @@
-package cn.fd.ratziel.common.element
+package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
+import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.util.handle
 import cn.fd.ratziel.core.util.future
 import cn.fd.ratziel.core.util.runFuture
 import taboolib.common.LifeCycle
-import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
@@ -18,25 +18,16 @@ import cn.fd.ratziel.common.WorkspaceManager as wsm
 
 object WorkspaceLoader {
 
-    // 加载完后的元素
+    // 已加载的元素
     val elements = ConcurrentLinkedDeque<Element>()
 
     /**
-     * 注册工作空间
-     * @param create 是否创建目录如果工作空间目录不存在
+     * 初始化工作空间
      */
-    fun init(sender: ProxyCommandSender, create: Boolean = true) {
-        /**
-         * 初始化工作空间
-         */
+    fun init(sender: ProxyCommandSender) {
         measureTimeMillis {
             Settings.WorkspacePaths.forEach { path ->
-                wsm.registerWorkspace(newFile(path, create, true)) //注册命名空间
-            }
-            // 复制默认文件
-            Settings.defaultWorkspace.let {
-                if (it.exists() && it.list()?.size == 0) //当文件夹创建了并且文件夹内没有文件时
-                    wsm.releaseWorkspace(target = it.name)
+                wsm.initializeWorkspace(path, true)
             }
         }.let {
             sender.sendLang("Workspace-Inited", wsm.workspaces.size, it)

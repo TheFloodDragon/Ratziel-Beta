@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.element.event
+package cn.fd.ratziel.core.event
 
 import cn.fd.ratziel.core.element.Element
 

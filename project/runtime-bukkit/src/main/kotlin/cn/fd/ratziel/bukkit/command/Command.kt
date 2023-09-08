@@ -1,6 +1,6 @@
 package cn.fd.ratziel.bukkit.command
 
-import cn.fd.ratziel.common.element.WorkspaceLoader
+import cn.fd.ratziel.common.WorkspaceLoader
 import cn.fd.ratziel.core.util.runFuture
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
