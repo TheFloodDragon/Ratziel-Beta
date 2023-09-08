@@ -2,6 +2,7 @@ package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
+import cn.fd.ratziel.core.coroutine.ProxyIOCoroutineScope
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.util.handle
 import cn.fd.ratziel.core.util.future
@@ -16,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.system.measureTimeMillis
 import cn.fd.ratziel.common.WorkspaceManager as wsm
 
-object WorkspaceLoader {
+object WorkspaceLoader : ProxyIOCoroutineScope() {
 
     // 已加载的元素
     val elements = ConcurrentLinkedDeque<Element>()

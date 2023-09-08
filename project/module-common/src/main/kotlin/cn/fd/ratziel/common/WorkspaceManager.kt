@@ -19,7 +19,7 @@ object WorkspaceManager {
      */
     fun initializeWorkspace(file: File, copyDefaults: Boolean = true) {
         // 复制默认文件
-        if (copyDefaults && file.exists()) // 文件夹未创建时
+        if (copyDefaults && !file.exists()) // 文件夹未创建时
             releaseWorkspace(target = file.name)
         else file.mkdirs()
         markInitialized(Workspace(file))
