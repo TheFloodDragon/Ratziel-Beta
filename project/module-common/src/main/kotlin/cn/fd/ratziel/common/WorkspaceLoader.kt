@@ -24,7 +24,7 @@ object WorkspaceLoader {
      */
     fun init(sender: ProxyCommandSender) {
         measureTimeMillis {
-            Settings.WorkspacePaths.forEach { path ->
+            Settings.workspacePaths.forEach { path ->
                 wsm.initializeWorkspace(path, true)
             }
         }.let {

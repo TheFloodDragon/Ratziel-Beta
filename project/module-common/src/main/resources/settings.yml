@@ -2,6 +2,7 @@ Settings:
   language: zh_CN
 
 Workspaces:
+  listen: true # 若开启则会监听工作空间内的文件变化,并自动重新加载变化文件
   filter: '^(?![#!]).*\.(?i)(yaml|yml|toml|tml|json|conf)$'
   paths:
     - 'plugins/Ratziel/workspace'
