@@ -1,6 +1,7 @@
 package cn.fd.ratziel.core.coroutine
 
 import cn.fd.ratziel.core.util.randomUUID
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -12,9 +13,14 @@ import kotlin.coroutines.suspendCoroutine
  * @author TheFloodDragon
  * @since 2023/9/9 16:24
  */
-class ContinuousTask<in R>(
-    private val ctn: Continuation<R>,
+class ContinuousTask(
+    val taskID: String,
+    private var ctn: Continuation<Any>,
 ) {
+
+    init {
+        submit(this)
+    }
 
     private var complete: Boolean = false
 
@@ -26,43 +32,62 @@ class ContinuousTask<in R>(
     /**
      * 完成任务
      */
-    fun completeWith(result: R) {
+    private fun completeWith(result: Any) {
         complete = true
         ctn.resume(result)
+        runningTasks.remove(taskID)
     }
 
     companion object {
 
-        val runningTasks: MutableMap<String, ContinuousTask<*>> = mutableMapOf()
+        private val runningTasks: ConcurrentHashMap<String, ContinuousTask> = ConcurrentHashMap()
+
+        /**
+         * 根据任务ID完成任务
+         */
+        fun completeAll(fuzzyID: String, result: Any = Unit) =
+            runningTasks.filter { it.key.startsWith(fuzzyID) }.onEach { it.value.completeWith(result) }
+
+        fun completeConcrete(concreteTaskID: String, result: Any = Unit) {
+            runningTasks[concreteTaskID]?.completeWith(result)
+        }
 
         /**
          * 提交任务
          */
-        fun <T> submit(task: ContinuousTask<T>, taskID: String = randomUUID()) {
-            runningTasks[taskID] = task
+        fun submit(id: String, task: ContinuousTask) {
+            runningTasks[id] = task
+        }
+
+        fun submit(task: ContinuousTask) {
+            submit(task.taskID, task)
         }
 
         /**
          * 运行任务
          */
-        suspend fun <T> newContinuousTask(function: Function<ContinuousTask<T>, Unit>) =
-            suspendCoroutine {
-                ContinuousTask(it).let { task ->
+        suspend inline fun newContinuousTask(
+            originalID: String,
+            function: Function<ContinuousTask, Any> = Function { },
+        ) = suspendCoroutine {
+                ContinuousTask(formatID(originalID), it).let { task ->
                     submit(task)
                     function.apply(task)
                 }
             }
-        suspend fun newContinuousTask(function: Function<ContinuousTask<Unit>, Unit>) =
-            newContinuousTask<Unit>(function)
+
+        @Suppress("UNCHECKED_CAST")
+        @JvmName("newContinuousTaskTyped")
+        suspend inline fun <T> newContinuousTask(
+            originalID: String,
+            function: Function<ContinuousTask, Any> = Function { },
+        ) = newContinuousTask(originalID, function) as T
 
         /**
-         * 完成所有任务
+         * 格式化ID
+         * $originalID_$UUID
          */
-        fun completeAll(){
-//            runningTasks.values.forEach {
-//                it.completeWith()
-//            }
-        }
+        fun formatID(originalID: String) = StringBuilder(originalID).append(randomUUID()).toString()
 
     }
 

@@ -6,7 +6,7 @@ import taboolib.module.lang.Language
 
 object Settings {
 
-    @Config("settings.yml")
+    @Config(value = "settings.yml")
     lateinit var conf: Configuration
         private set
 

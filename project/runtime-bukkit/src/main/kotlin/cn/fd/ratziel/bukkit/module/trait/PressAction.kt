@@ -1,5 +1,6 @@
 package cn.fd.ratziel.bukkit.module.trait
 
+import cn.fd.ratziel.core.coroutine.ContinuousTask
 import cn.fd.ratziel.core.coroutine.ContinuousTask.Companion.newContinuousTask
 import cn.fd.ratziel.kether.NewKetherAction
 import cn.fd.ratziel.kether.getFromFrame
@@ -7,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import taboolib.module.kether.combinationParser
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * PressAction
@@ -32,11 +34,9 @@ internal fun actionPress() = combinationParser {
         runBlocking {
             launch {
                 delay(3000)
-
+                ContinuousTask.completeAll("PressContinuousTask")
             }
-            newContinuousTask<Boolean> {
-
-            }
+            newContinuousTask<Boolean>("PressContinuousTask")
             now {
                 "name=" + name + " ; " +
                         "time=" + getFromFrame(time, "2.5s") + " ; " +

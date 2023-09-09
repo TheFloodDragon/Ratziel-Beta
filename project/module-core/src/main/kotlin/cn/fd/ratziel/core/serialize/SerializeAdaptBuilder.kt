@@ -52,17 +52,17 @@ class SerializeAdaptBuilder(private val jsonElement: JsonElement) {
 
         /**
          * 自适应构建器
-         * @return 无返回值
          */
-        inline fun newAdaptBuilder(
+        inline fun adaptBuilder(
             jsonElement: JsonElement,
             block: SerializeAdaptBuilder.() -> Unit,
         ): SerializeAdaptBuilder {
             return SerializeAdaptBuilder(jsonElement).also(block)
         }
 
+        @JvmName("adaptBuilderTyped")
         inline fun JsonElement.adaptBuilder(block: SerializeAdaptBuilder.() -> Unit): SerializeAdaptBuilder {
-            return newAdaptBuilder(this, block)
+            return adaptBuilder(this, block)
         }
 
     }
