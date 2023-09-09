@@ -1,13 +1,12 @@
 package cn.fd.ratziel.bukkit.module.trait
 
-import cn.fd.ratziel.core.coroutine.ContinuousTask
+import cn.fd.ratziel.core.coroutine.ContinuousTask.Companion.newContinuousTask
 import cn.fd.ratziel.kether.NewKetherAction
 import cn.fd.ratziel.kether.getFromFrame
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import taboolib.module.kether.combinationParser
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * PressAction
@@ -31,8 +30,12 @@ internal fun actionPress() = combinationParser {
         command("time", "-t", then = action()).option().defaultsTo(null),
     ).apply(it) { name, option, time ->
         runBlocking {
-            suspendCoroutine<Boolean> {
-                it.resume(true)
+            launch {
+                delay(3000)
+
+            }
+            newContinuousTask<Boolean> {
+
             }
             now {
                 "name=" + name + " ; " +
