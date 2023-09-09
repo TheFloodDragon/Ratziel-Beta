@@ -1,14 +1,13 @@
 package cn.fd.ratziel.bukkit.module.trait
 
-import cn.fd.ratziel.core.coroutine.ContinuousTask
-import cn.fd.ratziel.core.coroutine.ContinuousTask.Companion.newContinuousTask
+import cn.fd.ratziel.core.coroutine.task.ContinuousTaskController
 import cn.fd.ratziel.kether.NewKetherAction
 import cn.fd.ratziel.kether.getFromFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import taboolib.module.kether.combinationParser
-import kotlin.coroutines.suspendCoroutine
+import kotlin.system.measureTimeMillis
 
 /**
  * PressAction
@@ -16,6 +15,8 @@ import kotlin.coroutines.suspendCoroutine
  * @author TheFloodDragon
  * @since 2023/9/2 12:56
  */
+
+val pressController = ContinuousTaskController<Boolean>()
 
 //TODO md好大的坑
 /**
@@ -32,11 +33,13 @@ internal fun actionPress() = combinationParser {
         command("time", "-t", then = action()).option().defaultsTo(null),
     ).apply(it) { name, option, time ->
         runBlocking {
-            launch {
-                delay(3000)
-                ContinuousTask.completeAll("PressContinuousTask")
-            }
-            newContinuousTask<Boolean>("PressContinuousTask")
+            measureTimeMillis {
+                launch {
+                    delay(3000)
+                    pressController.getIds().forEach { key -> pressController.complete(key, false) }
+                }
+                println(pressController.newTask())
+            }.also { mt -> println(mt) }
             now {
                 "name=" + name + " ; " +
                         "time=" + getFromFrame(time, "2.5s") + " ; " +

@@ -60,7 +60,7 @@ class SerializeAdaptBuilder(private val jsonElement: JsonElement) {
             return SerializeAdaptBuilder(jsonElement).also(block)
         }
 
-        @JvmName("adaptBuilderTyped")
+        @JvmName("jsonAdaptBuilder")
         inline fun JsonElement.adaptBuilder(block: SerializeAdaptBuilder.() -> Unit): SerializeAdaptBuilder {
             return adaptBuilder(this, block)
         }
