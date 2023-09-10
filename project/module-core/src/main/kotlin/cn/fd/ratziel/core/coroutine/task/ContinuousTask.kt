@@ -3,6 +3,7 @@ package cn.fd.ratziel.core.coroutine.task
 import cn.fd.ratziel.core.Task
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * ContinuousTask
@@ -11,7 +12,7 @@ import kotlin.coroutines.resume
  * @author TheFloodDragon
  * @since 2023/9/9 20:26
  */
-class ContinuousTask<T>(
+open class ContinuousTask<T>(
     override val id: String,
     private val ctn: Continuation<T>,
 ) : Task {

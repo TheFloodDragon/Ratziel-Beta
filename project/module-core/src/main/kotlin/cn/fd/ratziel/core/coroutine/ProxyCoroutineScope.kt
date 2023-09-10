@@ -26,4 +26,4 @@ open class ProxyCoroutineScope(
 /**
  * 创建IO协程
  */
-open class ProxyIOCoroutineScope : ProxyCoroutineScope(Dispatchers.IO)
+open class ProxyCoroutineScopeIO : ProxyCoroutineScope(Dispatchers.IO)

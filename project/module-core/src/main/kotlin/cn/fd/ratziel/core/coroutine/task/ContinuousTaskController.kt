@@ -12,7 +12,7 @@ import kotlin.coroutines.suspendCoroutine
  * @author TheFloodDragon
  * @since 2023/9/9 20:24
  */
-class ContinuousTaskController<T> {
+open class ContinuousTaskController<T> {
 
     /**
      * 运行中的任务
@@ -24,7 +24,7 @@ class ContinuousTaskController<T> {
      * @param id 任务ID
      * @param task ContinuousTask
      */
-    fun submit(id: String, task: ContinuousTask<T>) {
+    open fun submit(id: String, task: ContinuousTask<T>) {
         runningTasks[id] = task
     }
 
@@ -33,25 +33,32 @@ class ContinuousTaskController<T> {
      * @param id 任务ID
      * @param result 任务的返回值
      */
-    fun complete(id: String, result: T) {
+    open fun complete(id: String, result: T) {
         runningTasks[id]?.completeWith(result)
         runningTasks.remove(id)
     }
 
     /**
+     * 清除所有已完成的任务
+     */
+    open fun clearCache() {
+        runningTasks.values.forEach { if (it.isFinished()) runningTasks.remove(it.id) }
+    }
+
+    /**
      * 获取未完成的任务
      */
-    fun getRunningTasks() = runningTasks
+    open fun getRunningTasks() = runningTasks.also { clearCache() }
 
     /**
      * 获取所有任务
      */
-    fun getTasks(): Collection<ContinuousTask<T>> = runningTasks.values
+    open fun getTasks(): Collection<ContinuousTask<T>> = getRunningTasks().values
 
     /**
      * 获取所有任务ID
      */
-    fun getIds(): List<String> = runningTasks.map { it.key }
+    open fun getIds(): List<String> = getRunningTasks().map { it.key }
 
     /**
      * 新建任务

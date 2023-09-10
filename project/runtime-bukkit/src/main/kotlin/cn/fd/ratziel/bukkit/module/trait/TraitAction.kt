@@ -1,6 +1,7 @@
 package cn.fd.ratziel.bukkit.module.trait
 
 import cn.fd.ratziel.core.coroutine.task.ContinuousTaskController
+import cn.fd.ratziel.core.coroutine.task.LiveContinuousTaskController
 import cn.fd.ratziel.kether.NewKetherAction
 import cn.fd.ratziel.kether.getFromFrame
 import kotlinx.coroutines.delay
@@ -16,7 +17,7 @@ import kotlin.system.measureTimeMillis
  * @since 2023/9/2 12:56
  */
 
-val pressController = ContinuousTaskController<Boolean>()
+val pressController = LiveContinuousTaskController<Boolean>()
 
 //TODO md好大的坑
 /**
@@ -34,11 +35,7 @@ internal fun actionPress() = combinationParser {
     ).apply(it) { name, option, time ->
         runBlocking {
             measureTimeMillis {
-                launch {
-                    delay(3000)
-                    pressController.getIds().forEach { key -> pressController.complete(key, false) }
-                }
-                println(pressController.newTask())
+                println(pressController.newTask(duration = 3000, defaultResult = false))
             }.also { mt -> println(mt) }
             now {
                 "name=" + name + " ; " +
