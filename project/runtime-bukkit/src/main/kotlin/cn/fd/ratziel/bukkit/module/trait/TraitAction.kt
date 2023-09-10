@@ -43,7 +43,7 @@ internal fun actionPress() = combinationParser {
             now {
                 "name=" + name + " ; " +
                         "time=" + getFromFrame(time, "2.5s") + " ; " +
-                        "option=" + getFromFrame(option, "fuckyou")
+                        "option=" + getFromFrame(option, "type")
             }
         }
     }

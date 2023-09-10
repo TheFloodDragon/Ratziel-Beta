@@ -18,14 +18,11 @@ class ElementType(
     /**
      * 元素类型别名
      */
-    private val alias: Set<String>,
+    private val alias: Array<String>,
 
     ) {
 
-    constructor(space: String, name: String, alias: Array<String>)
-            : this(space, name, alias.toSet())
-
-    constructor(space: String, name: String) : this(space, name, emptySet())
+    constructor(space: String, name: String) : this(space, name, emptyArray())
 
     /**
      * 获取别名

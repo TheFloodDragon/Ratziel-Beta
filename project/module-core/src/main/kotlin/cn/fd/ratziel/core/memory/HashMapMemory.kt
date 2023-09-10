@@ -16,21 +16,21 @@ open class HashMapMemory<K, V> : Memory<HashMap<K, V>> {
     /**
      * 加入到容器
      */
-    fun addToMemory(key: K, value: V) {
+    protected fun addToMemory(key: K, value: V) {
         memory[key] = value
     }
 
     /**
      * 从容器中删除
      */
-    fun removeFromMemory(key: K) {
+    protected fun removeFromMemory(key: K) {
         memory.remove(key)
     }
 
     /**
      * 清空容器
      */
-    fun clearMemory() {
+    protected fun clearMemory() {
         memory.clear()
     }
 

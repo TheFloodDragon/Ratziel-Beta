@@ -6,23 +6,23 @@ import taboolib.module.lang.Language
 
 object Settings {
 
-    @Config(value = "settings.yml")
+    @Config("settings.yml")
     lateinit var conf: Configuration
         private set
 
-    @ConfigNode(value = "Settings.language")
+    @ConfigNode("Settings.language", "settings.yml")
     var language: String = "zh_CN"
         private set(value) {
             field = value.also { Language.default = value } // 刷新语言
         }
 
-    @ConfigNode(value = "Workspaces.listen")
+    @ConfigNode("Workspaces.listen", "settings.yml")
     var listenFiles = true
 
-    @ConfigNode(value = "Workspaces.paths")
+    @ConfigNode("Workspaces.paths", "settings.yml")
     var workspacePaths = listOf("${getDataFolder()}/workspace")
 
-    @ConfigNode(value = "Workspaces.filter")
+    @ConfigNode("Workspaces.filter", "settings.yml")
     var fileFilter = "^(?![#!]).*\\.(?i)(yaml|yml|toml|tml|json|conf)\$"
 
 }
