@@ -23,6 +23,7 @@ val pressController = LiveContinuousTaskController<Boolean>()
 /**
  * 用法:
  * press 特征名称 option 特征选项 time 存活周期
+ * /r dev runKether press "interact" -o "left" -t "20s"
  */
 @NewKetherAction(
     value = ["press", "r-press"],
@@ -33,27 +34,40 @@ internal fun actionPress() = combinationParser {
         command("option", "opt", "-o", then = action()).option().defaultsTo(null),
         command("time", "-t", then = action()).option().defaultsTo(null),
     ).apply(it) { name, option, time ->
-        now {
-            val parsedTime = Duration.parse(getFromFrame(time, "0ms"))
-            TraitRegistry.match(name)?.let { trait ->
-                runBlocking {
-                    println(parsedTime.toLong(DurationUnit.MILLISECONDS))
-                    println(trait)
-                    val opt = getFromFrame(option, String)
-                    println(opt)
-                    val str = "${trait.id}_${opt}_${randomUUID()}"
-                    println(str)
-                    measureTimeMillis {
-                        println(
-                            pressController.newTask(
-                                id = str,
-                                duration = parsedTime,
-                                defaultResult = false
-                            )
-                        )
-                    }.also { mt -> println(mt) }
+        var result = false
+        runBlocking {
+            var str: String? = null
+            var parsedTime: Duration? = null
+            /**
+             * 值的设置
+             */
+            now {
+                parsedTime = Duration.parse(getFromFrame(time, "0ms"))
+                parsedTime?.toLong(DurationUnit.MILLISECONDS).let { println(it) }
+                val trait = TraitRegistry.match(name)
+                println(trait)
+                val opt = getFromFrame(option, String)
+                println(opt)
+                if (trait != null) {
+                    str = "${trait.id}_${opt}_${randomUUID()}"
                 }
-            } ?: "Unknown!"
+            }
+
+            measureTimeMillis {
+                if (parsedTime != null || str != null) {
+                    result = pressController.newTask(
+                            id = str!!,
+                            duration = parsedTime!!,
+                            defaultResult = false
+                        )
+                    println(result)
+                }
+            }.also { mt -> println(mt) }
+
+            /**
+             * 返回值
+             */
+            now { result }
         }
     }
 }
