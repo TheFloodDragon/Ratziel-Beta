@@ -1,6 +1,6 @@
-package cn.fd.ratziel.bukkit.module.trait
+package cn.fd.ratziel.bukkit.module.trait_todo
 
-import cn.fd.ratziel.bukkit.module.trait.api.InteractType
+import cn.fd.ratziel.bukkit.module.trait_todo.api.InteractType
 import org.bukkit.event.player.PlayerInteractEvent
 import taboolib.common.platform.event.SubscribeEvent
 

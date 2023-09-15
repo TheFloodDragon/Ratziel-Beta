@@ -1,8 +1,8 @@
-package cn.fd.ratziel.bukkit.module.trait
+package cn.fd.ratziel.bukkit.module.trait_todo
 
-import cn.fd.ratziel.bukkit.module.trait.api.InteractType
-import cn.fd.ratziel.bukkit.module.trait.api.Trait
-import cn.fd.ratziel.bukkit.module.trait.api.TraitWS
+import cn.fd.ratziel.bukkit.module.trait_todo.api.InteractType
+import cn.fd.ratziel.bukkit.module.trait_todo.api.Trait
+import cn.fd.ratziel.bukkit.module.trait_todo.api.TraitWS
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 

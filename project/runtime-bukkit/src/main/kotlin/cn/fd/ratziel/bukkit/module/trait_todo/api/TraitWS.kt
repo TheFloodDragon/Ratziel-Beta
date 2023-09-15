@@ -1,4 +1,4 @@
-package cn.fd.ratziel.bukkit.module.trait.api
+package cn.fd.ratziel.bukkit.module.trait_todo.api
 
 /**
  * TraitWS

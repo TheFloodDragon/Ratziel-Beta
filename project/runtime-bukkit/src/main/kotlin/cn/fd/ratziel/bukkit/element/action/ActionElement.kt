@@ -1,6 +1,5 @@
 package cn.fd.ratziel.bukkit.element.action
 
-import cn.fd.ratziel.common.debug
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.type.NewElement
