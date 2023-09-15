@@ -10,28 +10,28 @@ import java.io.File
  * @author TheFloodDragon
  * @since 2023/8/21 10:49
  */
-class ElementAddress(
+open class ElementAddress(
     /**
      * 元素标识符
      */
-    val id: String,
+    open val id: String,
     /**
      * 元素类型
      */
-    val type: ElementType,
+    open val type: ElementType,
     /**
      * 元素所在文件路径(若为空则不是文件地址)
      */
-    val file: File?,
+    open val file: File?,
 ) {
     /**
      * 元素地址是否是文件地址
      */
-    fun isFileAddress(): Boolean {
+    open fun isFileAddress(): Boolean {
         return !isEmptyAddress()
     }
 
-    fun isEmptyAddress(): Boolean {
+    open fun isEmptyAddress(): Boolean {
         return file == null
     }
 

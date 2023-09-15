@@ -4,29 +4,29 @@ import cn.fd.ratziel.core.serialize.adapt
 import kotlinx.serialization.json.JsonElement
 import java.io.File
 
-class Element(
+open class Element(
     /**
      * 元素标识符
      */
-    val id: String,
+    open val id: String,
     /**
      * 元素类型
      */
-    val type: ElementType,
+    open val type: ElementType,
     /**
      * 元素属性
      */
-    val property: JsonElement?,
+    open val property: JsonElement?,
     /**
      * 元素地址
      */
-    val address: ElementAddress = ElementAddress(id, type, null),
+    open val address: ElementAddress = ElementAddress(id, type, null),
 ) {
 
     /**
      * 获取自适应的元素属性
      */
-    fun adaptProperty(): Any? {
+    open fun adaptProperty(): Any? {
         return property?.adapt()
     }
 

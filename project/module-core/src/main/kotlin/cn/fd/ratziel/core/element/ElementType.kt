@@ -3,22 +3,22 @@ package cn.fd.ratziel.core.element
 /**
  * 元素类型
  */
-class ElementType(
+open class ElementType(
 
     /**
      * 元素类型所在空间
      */
-    val space: String,
+    open val space: String,
 
     /**
      * 元素类型主名称
      */
-    val name: String,
+    open val name: String,
 
     /**
      * 元素类型别名
      */
-    private val alias: Array<String>,
+    protected open val alias: Array<String>,
 
     ) {
 
@@ -28,7 +28,7 @@ class ElementType(
      * 获取别名
      * 不包含元素类型主名称
      */
-    fun getAlias(): Set<String> {
+    open fun getAlias(): Set<String> {
         return alias.toMutableSet().apply { remove(name) }
     }
 
@@ -36,7 +36,7 @@ class ElementType(
      * 获取所有名称
      * 包含元素类型主名称
      */
-    fun getAllNames(): Set<String> {
+    open fun getAllNames(): Set<String> {
         return alias.toMutableSet().apply { add(name) }
     }
 

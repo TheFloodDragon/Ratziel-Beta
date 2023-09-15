@@ -9,33 +9,33 @@ import java.util.function.Function
  * @author TheFloodDragon
  * @since 2023/9/2 15:30
  */
-class SerializeAdaptBuilder(private val jsonElement: JsonElement) {
+open class SerializeAdaptBuilder(private val jsonElement: JsonElement) {
 
     /**
      * JsonObject作用域
      */
-    fun <R> objectScope(function: Function<JsonObject, R>): R? {
+    open fun <R> objectScope(function: Function<JsonObject, R>): R? {
         return defaultScope(function)
     }
 
     /**
      * JsonArray作用域
      */
-    fun <R> arrayScope(function: Function<JsonArray, R>): R? {
+    open fun <R> arrayScope(function: Function<JsonArray, R>): R? {
         return defaultScope(function)
     }
 
     /**
      * JsonPrimitive作用域
      */
-    fun <R> primitiveScope(function: Function<JsonPrimitive, R>): R? {
+    open fun <R> primitiveScope(function: Function<JsonPrimitive, R>): R? {
         return defaultScope(function)
     }
 
     /**
      * JsonNull作用域
      */
-    fun <R> nullScope(function: Function<JsonNull, R>): R? {
+    open fun <R> nullScope(function: Function<JsonNull, R>): R? {
         return defaultScope(function)
     }
 
