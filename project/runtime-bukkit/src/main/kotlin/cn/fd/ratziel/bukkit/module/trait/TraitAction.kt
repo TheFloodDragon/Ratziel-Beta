@@ -1,17 +1,16 @@
 package cn.fd.ratziel.bukkit.module.trait
 
-import cn.fd.ratziel.core.coroutine.task.ContinuousTaskController
 import cn.fd.ratziel.core.coroutine.task.LiveContinuousTaskController
 import cn.fd.ratziel.kether.NewKetherAction
 import cn.fd.ratziel.kether.getFromFrame
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import taboolib.module.kether.combinationParser
 import kotlin.system.measureTimeMillis
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 /**
- * PressAction
+ * TraitAction
  *
  * @author TheFloodDragon
  * @since 2023/9/2 12:56
@@ -33,15 +32,23 @@ internal fun actionPress() = combinationParser {
         command("option", "opt", "-o", then = action()).option().defaultsTo(null),
         command("time", "-t", then = action()).option().defaultsTo(null),
     ).apply(it) { name, option, time ->
-        runBlocking {
-            measureTimeMillis {
-                println(pressController.newTask(duration = 3000, defaultResult = false))
-            }.also { mt -> println(mt) }
-            now {
-                "name=" + name + " ; " +
-                        "time=" + getFromFrame(time, "2.5s") + " ; " +
-                        "option=" + getFromFrame(option, "type")
-            }
+        now {
+            val parsedTime = Duration.parse(getFromFrame(time, "0ms"))
+            TraitRegistry.match(getFromFrame(option, "interact"))?.let { trait ->
+                println(parsedTime.toLong(DurationUnit.MILLISECONDS))
+                println(trait)
+                runBlocking {
+                    measureTimeMillis {
+                        println(
+                            pressController.newTask(
+                                id = "${trait.id}_${getFromFrame(option, String)}",
+                                duration = parsedTime,
+                                defaultResult = false
+                            )
+                        )
+                    }.also { mt -> println(mt) }
+                }
+            } ?: "Unknown!"
         }
     }
 }

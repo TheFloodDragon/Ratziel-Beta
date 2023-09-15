@@ -3,6 +3,8 @@ package cn.fd.ratziel.core.coroutine.task
 import cn.fd.ratziel.core.util.randomUUID
 import java.util.function.Function
 import kotlin.coroutines.suspendCoroutine
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * LiveContinuousTaskController
@@ -23,6 +25,13 @@ class LiveContinuousTaskController<T> : ContinuousTaskController<T>() {
      */
     suspend inline fun newTask(
         id: String = randomUUID(),
+        duration: Duration,
+        defaultResult: T,
+        runner: Function<LiveContinuousTask<T>, Unit> = Function { },
+    ) = newContinuousTask(id, this, duration, defaultResult, runner)
+
+    suspend inline fun newTask(
+        id: String = randomUUID(),
         duration: Long,
         defaultResult: T,
         runner: Function<LiveContinuousTask<T>, Unit> = Function { },
@@ -41,7 +50,7 @@ class LiveContinuousTaskController<T> : ContinuousTaskController<T>() {
         suspend inline fun <T> newContinuousTask(
             id: String = randomUUID(),
             controller: LiveContinuousTaskController<T>,
-            duration: Long,
+            duration: Duration,
             defaultResult: T,
             runner: Function<LiveContinuousTask<T>, Unit> = Function { },
         ) = suspendCoroutine {
@@ -51,6 +60,14 @@ class LiveContinuousTaskController<T> : ContinuousTaskController<T>() {
                     runner.apply(task)
                 }
         }
+
+        suspend inline fun <T> newContinuousTask(
+            id: String = randomUUID(),
+            controller: LiveContinuousTaskController<T>,
+            duration: Long,
+            defaultResult: T,
+            runner: Function<LiveContinuousTask<T>, Unit> = Function { },
+        ) = newContinuousTask(id, controller, duration.milliseconds, defaultResult, runner)
 
     }
 

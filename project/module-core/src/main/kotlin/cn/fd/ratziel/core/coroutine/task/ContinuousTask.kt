@@ -3,7 +3,6 @@ package cn.fd.ratziel.core.coroutine.task
 import cn.fd.ratziel.core.Task
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * ContinuousTask
@@ -27,7 +26,7 @@ open class ContinuousTask<T>(
     /**
      * 完成任务
      */
-    fun completeWith(result: T) {
+    open fun completeWith(result: T) {
         finished = true
         ctn.resume(result)
     }

@@ -36,4 +36,13 @@ object TraitRegistry : HashMapMemory<String, TraitWS>() {
      */
     fun getTrait(name: String) = memory[name]
 
+
+    /**
+     * 匹配
+     */
+    fun match(name: String) = memory.values.find {
+        // 标识符或者名字匹配
+        it.id.equals(name, true) || it.alias.contains(name)
+    }
+
 }

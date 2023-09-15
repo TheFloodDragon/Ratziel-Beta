@@ -1,5 +1,6 @@
 package cn.fd.ratziel.bukkit.module.trait
 
+import cn.fd.ratziel.bukkit.module.trait.api.InteractType
 import org.bukkit.event.player.PlayerInteractEvent
 import taboolib.common.platform.event.SubscribeEvent
 
@@ -13,7 +14,15 @@ class TraitListener {
 
     @SubscribeEvent
     fun onInteract(e: PlayerInteractEvent) {
-        // TODO 完成此
+        pressController.apply {
+            getTasks().forEach { task ->
+                task.id.let {
+                    println(it)
+                    if (it.startsWith("interact_${InteractType.infer(e.action).id}", true))
+                        complete(it, true)
+                }
+            }
+        }
     }
 
 }

@@ -1,5 +1,7 @@
 package cn.fd.ratziel.bukkit.module.trait.api
 
+import org.bukkit.event.block.Action
+
 /**
  * InteractType
  *
@@ -61,5 +63,30 @@ enum class InteractType : Trait {
      * 默认别名
      */
     override val alias: Array<String> = emptyArray()
+
+
+    companion object {
+
+        /**
+         * 通过字符串推断
+         */
+        fun infer(name: String) = entries.find {
+            // 标识符或者名字匹配
+            it.id.equals(name, true) || it.alias.contains(name)
+        } ?: ANY
+
+        /**
+         * 通过Bukkit的动作事件获取交互类型
+         */
+        fun infer(action: Action) =
+            when (action) {
+                Action.LEFT_CLICK_AIR -> LEFT_CLICK_AIR
+                Action.LEFT_CLICK_BLOCK -> LEFT_CLICK_BLOCK
+                Action.RIGHT_CLICK_AIR -> RIGHT_CLICK_AIR
+                Action.RIGHT_CLICK_BLOCK -> RIGHT_CLICK_BLOCK
+                Action.PHYSICAL -> PHYSICAL
+            }
+
+    }
 
 }
