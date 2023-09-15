@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @since 2023/9/10 12:19
  */
 open class LiveContinuousTask<T>(
-    override val id: String,
+    id: String,
     ctn: Continuation<T>,
     /**
      * 生命持续时间

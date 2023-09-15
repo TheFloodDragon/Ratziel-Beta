@@ -37,11 +37,13 @@ internal fun actionPress() = combinationParser {
             TraitRegistry.match(getFromFrame(option, "interact"))?.let { trait ->
                 println(parsedTime.toLong(DurationUnit.MILLISECONDS))
                 println(trait)
+                val opt = getFromFrame(option, String)
+                println(opt)
                 runBlocking {
                     measureTimeMillis {
                         println(
                             pressController.newTask(
-                                id = "${trait.id}_${getFromFrame(option, String)}",
+                                id = "${trait.id}_$opt",
                                 duration = parsedTime,
                                 defaultResult = false
                             )
