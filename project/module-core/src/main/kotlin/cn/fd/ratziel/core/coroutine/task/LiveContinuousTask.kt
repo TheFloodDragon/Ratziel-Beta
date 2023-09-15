@@ -5,7 +5,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.Continuation
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * LiveContinuousTask
@@ -26,14 +25,6 @@ open class LiveContinuousTask<T>(
      */
     val defaultResult: T,
 ) : ContinuousTask<T>(id, ctn) {
-
-
-    constructor(
-        id: String,
-        ctn: Continuation<T>,
-        duration: Long,
-        defaultResult: T,
-    ) : this(id, ctn, duration.milliseconds, defaultResult)
 
     /**
      * 提供一个通用作用域
@@ -59,9 +50,9 @@ open class LiveContinuousTask<T>(
     }
 
     /**
-     * 生命是否达到终点
+     * 是否死亡
      */
-    open fun isReachedEnd() = ended || isFinished()
+    open fun isDead() = ended || isFinished()
 
     /**
      * 完成任务

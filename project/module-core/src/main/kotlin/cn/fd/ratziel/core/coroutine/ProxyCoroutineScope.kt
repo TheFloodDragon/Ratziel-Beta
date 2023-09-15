@@ -12,10 +12,10 @@ import kotlinx.coroutines.cancel
  * @since 2023/9/8 21:40
  */
 open class ProxyCoroutineScope(
-    val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
 
-    protected val scope by lazy { CoroutineScope(dispatcher) }
+    protected val scope = CoroutineScope(dispatcher)
 
     fun disableScope() {
         scope.cancel()

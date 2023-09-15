@@ -13,12 +13,12 @@ import kotlin.time.Duration.Companion.milliseconds
  * @author TheFloodDragon
  * @since 2023/9/10 12:26
  */
-class LiveContinuousTaskController<T> : ContinuousTaskController<T>() {
+open class LiveContinuousTaskController<T> : ContinuousTaskController<T>() {
 
     /**
      * 获取所有任务
      */
-    fun getLiveTasks(): List<LiveContinuousTask<T>> = getTasks().filterIsInstance<LiveContinuousTask<T>>()
+    open fun getLiveTasks(): List<LiveContinuousTask<T>> = getTasks().filterIsInstance<LiveContinuousTask<T>>()
 
     /**
      * 新建任务

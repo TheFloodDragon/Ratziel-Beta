@@ -10,7 +10,7 @@ import taboolib.common.platform.event.SubscribeEvent
  * @author TheFloodDragon
  * @since 2023/9/10 10:56
  */
-class TraitListener {
+object TraitListener {
 
     @SubscribeEvent
     fun onInteract(e: PlayerInteractEvent) {

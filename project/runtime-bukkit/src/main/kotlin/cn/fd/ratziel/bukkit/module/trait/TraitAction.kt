@@ -1,6 +1,7 @@
 package cn.fd.ratziel.bukkit.module.trait
 
 import cn.fd.ratziel.core.coroutine.task.LiveContinuousTaskController
+import cn.fd.ratziel.core.util.randomUUID
 import cn.fd.ratziel.kether.NewKetherAction
 import cn.fd.ratziel.kether.getFromFrame
 import kotlinx.coroutines.runBlocking
@@ -34,16 +35,18 @@ internal fun actionPress() = combinationParser {
     ).apply(it) { name, option, time ->
         now {
             val parsedTime = Duration.parse(getFromFrame(time, "0ms"))
-            TraitRegistry.match(getFromFrame(option, "interact"))?.let { trait ->
-                println(parsedTime.toLong(DurationUnit.MILLISECONDS))
-                println(trait)
-                val opt = getFromFrame(option, String)
-                println(opt)
+            TraitRegistry.match(name)?.let { trait ->
                 runBlocking {
+                    println(parsedTime.toLong(DurationUnit.MILLISECONDS))
+                    println(trait)
+                    val opt = getFromFrame(option, String)
+                    println(opt)
+                    val str = "${trait.id}_${opt}_${randomUUID()}"
+                    println(str)
                     measureTimeMillis {
                         println(
                             pressController.newTask(
-                                id = "${trait.id}_$opt",
+                                id = str,
                                 duration = parsedTime,
                                 defaultResult = false
                             )
