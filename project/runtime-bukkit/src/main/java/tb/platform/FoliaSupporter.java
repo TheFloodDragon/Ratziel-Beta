@@ -1,10 +1,8 @@
 package tb.platform;
 
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -13,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
  * @author TheFloodDragon
  * @since 2023/9/16 12:11
  */
+@SuppressWarnings("JavaReflectionMemberAccess")
 public final class FoliaSupporter {
 
     private FoliaSupporter() {}
@@ -21,25 +20,32 @@ public final class FoliaSupporter {
             isClassExists("io.papermc.paper.threadedregions.RegionizedServer") ||
                     isClassExists("io.papermc.paper.threadedregions.RegionizedServerInitEvent");
 
-//    private static AsyncScheduler asyncScheduler;
-//
-//    static {
-//        try {
-//            Class<?> classBukkit = Class.forName("org.bukkit.Bukkit");
-//            asyncScheduler = (AsyncScheduler) classBukkit.getDeclaredMethod("getAsyncScheduler").invoke(null);
-//        } catch (Exception ignored) {}
-//    }
-//
-//    public static CompletableFuture<Void> runAsync(Plugin plugin, Runnable runnable) {
-//        CompletableFuture<Void> future = new CompletableFuture<>();
-//
-//        asyncScheduler.runNow(plugin, task -> {
-//            runnable.run();
-//            future.complete(null);
-//        });
-//
-//        return future;
-//    }
+    /**
+     * Folia的异步调度器
+     */
+    private static AsyncScheduler asyncScheduler;
+
+    static {
+        try {
+            Class<?> classBukkit = Class.forName("org.bukkit.Bukkit");
+            asyncScheduler = (AsyncScheduler) classBukkit.getDeclaredMethod("getAsyncScheduler").invoke(null);
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * 执行异步任务
+     */
+    public static CompletableFuture<Void> runAsync(Plugin plugin, Runnable runnable) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        asyncScheduler.runNow(plugin, task -> {
+            runnable.run();
+            future.complete(null);
+        });
+
+        return future;
+    }
 
 
     /**

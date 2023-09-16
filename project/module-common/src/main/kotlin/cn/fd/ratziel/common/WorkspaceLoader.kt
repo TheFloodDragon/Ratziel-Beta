@@ -49,7 +49,7 @@ object WorkspaceLoader {
                             elements.add(it) // 插入缓存
                             it.handle()  // 处理元素
                         }
-                    } //TODO 异常处理
+                    }
                 }
             // 等待所有任务完成
             CompletableFuture.allOf(*loading.toTypedArray()).join()
