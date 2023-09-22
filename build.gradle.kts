@@ -29,7 +29,7 @@ subprojects {
         if (parent?.name == "project") {
             compileCore(12001)
             compileTabooLib()
-            // MiniMessage: https://docs.adventure.kyori.net/minimessage/api.html
+            // MiniMessage - https://docs.adventure.kyori.net/minimessage/api.html
             adventure()
             // Kotlin序列化工具
             serialization()
@@ -74,8 +74,6 @@ subprojects {
             // Exclude
             exclude("META-INF/**")
             exclude("com/**", "org/**")
-            // Adventure (不需要,因为是动态加载)
-            //relocate("net.kyori", "$rootGroup.common.adventure")
             // Taboolib
             relocate("taboolib", "$rootGroup.taboolib")
             relocate("tb", "$rootGroup.taboolib")

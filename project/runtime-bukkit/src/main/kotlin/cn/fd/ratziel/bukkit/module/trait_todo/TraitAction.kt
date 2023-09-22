@@ -59,7 +59,7 @@ internal fun actionPress() = combinationParser {
             measureTimeMillis {
                 if (parsedTime != null || str != null) {
                     result = pressController.newTask(
-                        id = str!!, duration = parsedTime!!, defaultResult = false
+                        id = str!!, duration = parsedTime!!, timeoutResult = false
                     )
                     println(result)
                 }

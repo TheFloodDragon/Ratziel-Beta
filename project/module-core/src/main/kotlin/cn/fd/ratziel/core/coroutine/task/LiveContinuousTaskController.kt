@@ -28,7 +28,7 @@ open class LiveContinuousTaskController<T> : ContinuousTaskController<T>() {
         id: String = randomUUID(),
         duration: Duration,
         timeoutResult: T,
-        taskLifeTrace: TaskLifeTrace = TaskLifeTrace(),
+        taskLifeTrace: TaskLifeTrace = defaultTaskLifeTrace(this, id),
         runner: Function<LiveContinuousTask<T>, Unit> = Function { },
     ) = newContinuousTask(id, this, duration, timeoutResult, taskLifeTrace, runner)
 
