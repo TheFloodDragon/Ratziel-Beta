@@ -13,9 +13,4 @@ interface Task {
      */
     val id: String
 
-    /**
-     * 任务是否结束
-     */
-    fun isFinished() : Boolean
-
 }

@@ -12,41 +12,32 @@ import java.util.function.Function
 open class SerializeAdaptBuilder(private val jsonElement: JsonElement) {
 
     /**
-     * JsonObject作用域
+     * JsonObject
      */
-    open fun <R> objectScope(function: Function<JsonObject, R>): R? {
-        return defaultScope(function)
-    }
+    open fun <R> objectScope(function: Function<JsonObject, R>) = defaultScope(function)
 
     /**
-     * JsonArray作用域
+     * JsonArray
      */
-    open fun <R> arrayScope(function: Function<JsonArray, R>): R? {
-        return defaultScope(function)
-    }
+    open fun <R> arrayScope(function: Function<JsonArray, R>) = defaultScope(function)
 
     /**
-     * JsonPrimitive作用域
+     * JsonPrimitive
      */
-    open fun <R> primitiveScope(function: Function<JsonPrimitive, R>): R? {
-        return defaultScope(function)
-    }
+    open fun <R> primitiveScope(function: Function<JsonPrimitive, R>) = defaultScope(function)
 
     /**
-     * JsonNull作用域
+     * JsonNull
      */
-    open fun <R> nullScope(function: Function<JsonNull, R>): R? {
-        return defaultScope(function)
-    }
+    open fun <R> nullScope(function: Function<JsonNull, R>) = defaultScope(function)
 
     /**
      * 默认通用作用域
      */
-    private inline fun <reified T, R> defaultScope(function: Function<T, R>): R? {
-        return jsonElement.adapt().takeIf { it is T }?.let {
+    private inline fun <reified T, R> defaultScope(function: Function<T, R>) =
+        jsonElement.adapt().takeIf { it is T }?.let {
             function.apply(it as T)
         }
-    }
 
     companion object {
 

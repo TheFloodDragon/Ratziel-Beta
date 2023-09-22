@@ -42,7 +42,7 @@ open class LiveContinuousTask<T>(
     init {
         scope.launch {
             delay(duration)
-            if (!isFinished()) { // 防止重复取消
+            if (!isFinished) { // 防止重复取消
                 ended = true
                 complete()
             }
@@ -52,7 +52,7 @@ open class LiveContinuousTask<T>(
     /**
      * 是否死亡
      */
-    open fun isDead() = ended || isFinished()
+    open fun isDead() = ended || isFinished
 
     /**
      * 完成任务
