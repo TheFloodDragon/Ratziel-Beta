@@ -42,7 +42,7 @@ open class ContinuousTaskController<T> {
      * 清除所有已完成的任务
      */
     open fun clearCache() {
-        runningTasks.values.forEach { if (it.isFinished()) runningTasks.remove(it.id) }
+        runningTasks.values.forEach { if (it.isFinished) runningTasks.remove(it.id) }
     }
 
     /**

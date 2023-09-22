@@ -20,9 +20,9 @@ open class ContinuousTask<T>(
      */
     id: String,
     /**
-     * Kotlin Continuation
+     * 延续者
      */
-    private val ctn: Continuation<T>,
+    private val continuator: Continuation<T>,
     /**
      * 是否立马开始任务
      */
@@ -34,27 +34,27 @@ open class ContinuousTask<T>(
 ) : BaseTask(id, taskLiveCycle) {
 
     init {
-        if (immediate) start()
+        if (immediate) this.start()
     }
 
 
     /**
      * 开始任务
      */
-    fun start() = startTask()
+    open fun start() = startTask()
 
     /**
      * 完成任务
      */
     open fun completeWith(result: T) {
         finishTask {
-            ctn.resume(result)
+            continuator.resume(result)
         }
     }
 
     open fun forceFinish() {
         finishTask {
-            ctn.resumeWithException(TaskForceFinishedException(this))
+            continuator.resumeWithException(TaskForceFinishedException(this))
         }
     }
 

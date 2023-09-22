@@ -1,6 +1,7 @@
 package cn.fd.ratziel.core.coroutine.task
 
 import cn.fd.ratziel.core.coroutine.ProxyCoroutineScopeIO
+import cn.fd.ratziel.core.task.TaskLifeTrace
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.Continuation
@@ -15,7 +16,7 @@ import kotlin.time.Duration
  */
 open class LiveContinuousTask<T>(
     id: String,
-    ctn: Continuation<T>,
+    continuator: Continuation<T>,
     /**
      * 生命持续时间
      */
@@ -24,7 +25,22 @@ open class LiveContinuousTask<T>(
      * 生命结束后的默认返回值
      */
     val defaultResult: T,
-) : ContinuousTask<T>(id, ctn) {
+    /**
+     * 是否立马开始任务
+     */
+    immediate: Boolean = false,
+    /**
+     * 任务行迹
+     */
+    taskLiveCycle: TaskLifeTrace = TaskLifeTrace(),
+) : ContinuousTask<T>(id, continuator, false, taskLiveCycle) {
+
+    /**
+     * 注: 对父类的immediate设置成false是为了防止无法触发waitToDie()
+     */
+    init {
+        if (immediate) this.start()
+    }
 
     /**
      * 提供一个通用作用域
@@ -32,27 +48,28 @@ open class LiveContinuousTask<T>(
     companion object : ProxyCoroutineScopeIO()
 
     /**
-     * 生命结束标记
+     * 是否死亡
      */
-    private var ended = false
+    var isDead = false
+        private set
+
+    override fun start() {
+        super.start()
+        waitToDie()
+    }
 
     /**
      * 等待死亡
      */
-    init {
+    private fun waitToDie() {
         scope.launch {
             delay(duration)
             if (!isFinished) { // 防止重复取消
-                ended = true
+                isDead = true
                 complete()
             }
         }
     }
-
-    /**
-     * 是否死亡
-     */
-    open fun isDead() = ended || isFinished
 
     /**
      * 完成任务
