@@ -24,19 +24,10 @@ open class ContinuousTask<T>(
      */
     private val continuator: Continuation<T>,
     /**
-     * 是否立马开始任务
-     */
-    immediate: Boolean = false,
-    /**
      * 任务行迹
      */
-    taskLiveCycle: TaskLifeTrace = TaskLifeTrace(),
-) : BaseTask(id, taskLiveCycle) {
-
-    init {
-        if (immediate) this.start()
-    }
-
+    taskLifeTrace: TaskLifeTrace = TaskLifeTrace(),
+) : BaseTask(id, taskLifeTrace) {
 
     /**
      * 开始任务

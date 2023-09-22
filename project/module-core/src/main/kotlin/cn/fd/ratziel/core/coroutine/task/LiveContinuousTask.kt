@@ -22,25 +22,14 @@ open class LiveContinuousTask<T>(
      */
     val duration: Duration,
     /**
-     * 生命结束后的默认返回值
+     * 生命死亡后(超时)未返回值时的默认返回值
      */
-    val defaultResult: T,
-    /**
-     * 是否立马开始任务
-     */
-    immediate: Boolean = false,
+    val timeoutResult: T,
     /**
      * 任务行迹
      */
-    taskLiveCycle: TaskLifeTrace = TaskLifeTrace(),
-) : ContinuousTask<T>(id, continuator, false, taskLiveCycle) {
-
-    /**
-     * 注: 对父类的immediate设置成false是为了防止无法触发waitToDie()
-     */
-    init {
-        if (immediate) this.start()
-    }
+    taskLifeTrace: TaskLifeTrace = TaskLifeTrace(),
+) : ContinuousTask<T>(id, continuator, taskLifeTrace) {
 
     /**
      * 提供一个通用作用域
@@ -53,6 +42,14 @@ open class LiveContinuousTask<T>(
     var isDead = false
         private set
 
+    /**
+     * 是否存活
+     */
+    var isAlive = !isDead
+
+    /**
+     * 开始任务
+     */
     override fun start() {
         super.start()
         waitToDie()
@@ -66,16 +63,26 @@ open class LiveContinuousTask<T>(
             delay(duration)
             if (!isFinished) { // 防止重复取消
                 isDead = true
-                complete()
+                forceComplete()
             }
         }
     }
 
     /**
-     * 完成任务
+     * 强制完成任务(延续者将返回默认值)
      */
-    open fun complete() {
-        return completeWith(defaultResult)
+    open fun forceComplete() {
+        return completeWith(timeoutResult)
+    }
+
+    /**
+     * 重写以实现任务结束后修改生命状态
+     */
+    override fun finishTask(function: Runnable) {
+        super.finishTask {
+            function.run()
+            isDead = true // 死亡
+        }
     }
 
 }

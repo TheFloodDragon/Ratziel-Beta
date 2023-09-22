@@ -1,5 +1,6 @@
 package cn.fd.ratziel.core.coroutine.task
 
+import cn.fd.ratziel.core.task.TaskLifeTrace
 import cn.fd.ratziel.core.util.randomUUID
 import java.util.function.Function
 import kotlin.coroutines.suspendCoroutine
@@ -26,16 +27,18 @@ open class LiveContinuousTaskController<T> : ContinuousTaskController<T>() {
     suspend inline fun newTask(
         id: String = randomUUID(),
         duration: Duration,
-        defaultResult: T,
+        timeoutResult: T,
+        taskLifeTrace: TaskLifeTrace = TaskLifeTrace(),
         runner: Function<LiveContinuousTask<T>, Unit> = Function { },
-    ) = newContinuousTask(id, this, duration, defaultResult, runner)
+    ) = newContinuousTask(id, this, duration, timeoutResult, taskLifeTrace, runner)
 
     suspend inline fun newTask(
         id: String = randomUUID(),
         duration: Long,
-        defaultResult: T,
+        timeoutResult: T,
+        taskLifeTrace: TaskLifeTrace = defaultTaskLifeTrace(this, id),
         runner: Function<LiveContinuousTask<T>, Unit> = Function { },
-    ) = newContinuousTask(id, this, duration, defaultResult, runner)
+    ) = newTask(id, duration.milliseconds, timeoutResult, taskLifeTrace, runner)
 
     companion object {
 
@@ -44,30 +47,24 @@ open class LiveContinuousTaskController<T> : ContinuousTaskController<T>() {
          * @param id 任务ID
          * @param controller 任务控制器
          * @param duration 任务持续时间
-         * @param defaultResult 生命结束后的默认返回值
+         * @param timeoutResult 生命死亡后(超时)未返回值时的默认返回值
+         * @param taskLifeTrace 任务行迹
          * @param runner 任务运行内容
          */
         suspend inline fun <T> newContinuousTask(
             id: String = randomUUID(),
             controller: LiveContinuousTaskController<T>,
             duration: Duration,
-            defaultResult: T,
+            timeoutResult: T,
+            taskLifeTrace: TaskLifeTrace = defaultTaskLifeTrace(controller, id),
             runner: Function<LiveContinuousTask<T>, Unit> = Function { },
         ) = suspendCoroutine {
-            LiveContinuousTask(id, it, duration, defaultResult)
+            LiveContinuousTask(id, it, duration, timeoutResult, taskLifeTrace)
                 .let { task ->
                     controller.submit(id, task)
                     runner.apply(task)
                 }
         }
-
-        suspend inline fun <T> newContinuousTask(
-            id: String = randomUUID(),
-            controller: LiveContinuousTaskController<T>,
-            duration: Long,
-            defaultResult: T,
-            runner: Function<LiveContinuousTask<T>, Unit> = Function { },
-        ) = newContinuousTask(id, controller, duration.milliseconds, defaultResult, runner)
 
     }
 

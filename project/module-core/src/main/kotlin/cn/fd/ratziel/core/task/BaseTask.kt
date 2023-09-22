@@ -6,7 +6,7 @@ package cn.fd.ratziel.core.task
  * @author TheFloodDragon
  * @since 2023/9/22 22:38
  */
-open class BaseTask(override val id: String, taskLiveCycle: TaskLifeTrace) : TaskLifeTrace(taskLiveCycle), Task {
+open class BaseTask(override val id: String, taskLifeTrace: TaskLifeTrace) : TaskLifeTrace(taskLifeTrace), Task {
 
     /**
      * 任务是否开始

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.core.coroutine.task
 
+import cn.fd.ratziel.core.task.TaskLifeTrace
 import cn.fd.ratziel.core.util.randomUUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
@@ -17,7 +18,7 @@ open class ContinuousTaskController<T> {
     /**
      * 运行中的任务
      */
-    private val runningTasks: ConcurrentHashMap<String, ContinuousTask<T>> = ConcurrentHashMap()
+    val runningTasks: ConcurrentHashMap<String, ContinuousTask<T>> = ConcurrentHashMap()
 
     /**
      * 提交任务
@@ -46,29 +47,34 @@ open class ContinuousTaskController<T> {
     }
 
     /**
-     * 获取未完成的任务
-     */
-    open fun getRunningTasks() = runningTasks.also { clearCache() }
-
-    /**
      * 获取所有任务
      */
-    open fun getTasks(): Collection<ContinuousTask<T>> = getRunningTasks().values
+    open fun getTasks(): Collection<ContinuousTask<T>> = runningTasks.values
 
     /**
      * 获取所有任务ID
      */
-    open fun getIds(): List<String> = getRunningTasks().map { it.key }
+    open fun getIds(): List<String> = runningTasks.map { it.key }
 
     /**
      * 新建任务
      */
     suspend inline fun newTask(
         id: String = randomUUID(),
+        taskLifeTrace: TaskLifeTrace = defaultTaskLifeTrace(this, id),
         runner: Function<ContinuousTask<T>, Unit> = Function { },
-    ) = newContinuousTask(id, this, runner)
+    ) = newContinuousTask(id, this, taskLifeTrace, runner)
 
     companion object {
+
+        /**
+         * 默认任务行迹
+         * 任务完成自动移除该任务
+         */
+        fun <T> defaultTaskLifeTrace(controller: ContinuousTaskController<T>, id: String) = TaskLifeTrace(
+            onFinish = {
+                controller.runningTasks.remove(id)
+            })
 
         /**
          * 新建一个延续性任务
@@ -79,9 +85,10 @@ open class ContinuousTaskController<T> {
         suspend inline fun <T> newContinuousTask(
             id: String = randomUUID(),
             controller: ContinuousTaskController<T>,
+            taskLifeTrace: TaskLifeTrace = defaultTaskLifeTrace(controller, id),
             runner: Function<ContinuousTask<T>, Unit> = Function { },
         ) = suspendCoroutine {
-            ContinuousTask(id, it)
+            ContinuousTask(id, it, taskLifeTrace)
                 .let { task ->
                     controller.submit(id, task)
                     runner.apply(task)
