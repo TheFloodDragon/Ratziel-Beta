@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core
+package cn.fd.ratziel.core.task
 
 /**
  * Task - 任务

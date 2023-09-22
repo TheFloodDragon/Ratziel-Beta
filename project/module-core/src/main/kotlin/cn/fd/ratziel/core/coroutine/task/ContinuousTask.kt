@@ -1,8 +1,11 @@
 package cn.fd.ratziel.core.coroutine.task
 
-import cn.fd.ratziel.core.Task
-import cn.fd.ratziel.core.coroutine.task.TaskLiveCycle
-import kotlin.coroutines.*
+import cn.fd.ratziel.core.task.BaseTask
+import cn.fd.ratziel.core.task.TaskForceFinishedException
+import cn.fd.ratziel.core.task.TaskLifeTrace
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * ContinuousTask
@@ -15,7 +18,7 @@ open class ContinuousTask<T>(
     /**
      * 任务ID
      */
-    override val id: String,
+    id: String,
     /**
      * Kotlin Continuation
      */
@@ -24,7 +27,11 @@ open class ContinuousTask<T>(
      * 是否立马开始任务
      */
     immediate: Boolean = false,
-) : TaskLiveCycle<T>(), Task {
+    /**
+     * 任务行迹
+     */
+    taskLiveCycle: TaskLifeTrace = TaskLifeTrace(),
+) : BaseTask(id, taskLiveCycle) {
 
     init {
         if (immediate) start()
@@ -40,21 +47,15 @@ open class ContinuousTask<T>(
      * 完成任务
      */
     open fun completeWith(result: T) {
-        beforeFinish.apply(this)
-        // 恢复
-        ctn.resume(result)
-        // 结束
-        isFinished = true
-        onFinish.apply(this)
+        finishTask {
+            ctn.resume(result)
+        }
     }
 
     open fun forceFinish() {
-        beforeFinish.apply(this)
-        // 带异常恢复
-        ctn.resumeWithException(TaskForceFinishedException(this))
-        // 结束
-        isFinished = true
-        onFinish.apply(this)
+        finishTask {
+            ctn.resumeWithException(TaskForceFinishedException(this))
+        }
     }
 
 }
