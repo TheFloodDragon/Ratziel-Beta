@@ -1,3 +1,6 @@
+/**
+ * 代码参考于其他开源项目
+ */
 dependencies {
     compileModule("module-core")
     installTaboo("platform-bukkit")
