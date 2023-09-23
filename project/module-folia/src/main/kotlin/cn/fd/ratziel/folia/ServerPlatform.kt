@@ -14,6 +14,10 @@ enum class ServerPlatform(val isRunWith: Boolean, val priority: Byte) {
         hasClass("io.papermc.paper.threadedregions.RegionizedServerInitEvent")
                 || hasClass("io.papermc.paper.threadedregions.RegionizedServer"), 4
     ),
+    PURPUR(
+        hasClass("org.purpurmc.purpur.language.Language"),
+        3
+    ),
     PAPER(
         hasClass("com.destroystokyo.paper.PaperConfig") || hasClass("io.papermc.paper.configuration.Configuration"),
         2

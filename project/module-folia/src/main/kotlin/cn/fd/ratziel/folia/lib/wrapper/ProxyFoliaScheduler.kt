@@ -44,41 +44,41 @@ class ProxyFoliaScheduler : ProxyScheduler {
     }
 
     override fun runTask(runnable: Runnable): ProxyTask = ProxyFoliaTask(when (schedulerType) {
-        SchedulerType.ENTITY -> entity.scheduler.run(plugin, { a -> runnable.run() }, retired)
-        SchedulerType.GLOBAL -> Bukkit.getGlobalRegionScheduler().run(plugin) { a -> runnable.run() }
-        SchedulerType.REGION -> Bukkit.getRegionScheduler().run(plugin, location) { a -> runnable.run() }
-        SchedulerType.ASYNC -> Bukkit.getAsyncScheduler().runNow(plugin) { a -> runnable.run() }
+        SchedulerType.ENTITY -> entity.scheduler.run(plugin, { runnable.run() }, retired)
+        SchedulerType.GLOBAL -> Bukkit.getGlobalRegionScheduler().run(plugin) { runnable.run() }
+        SchedulerType.REGION -> Bukkit.getRegionScheduler().run(plugin, location) { runnable.run() }
+        SchedulerType.ASYNC -> Bukkit.getAsyncScheduler().runNow(plugin) { runnable.run() }
     }!!)
 
     override fun runTaskLater(runnable: Runnable, delay: Long): ProxyTask = ProxyFoliaTask(
         when (schedulerType) {
-            SchedulerType.ENTITY -> entity.scheduler.runDelayed(plugin, { a -> runnable.run() }, retired, delay)
-            SchedulerType.GLOBAL -> Bukkit.getGlobalRegionScheduler().runDelayed(plugin, { a -> runnable.run() }, delay)
+            SchedulerType.ENTITY -> entity.scheduler.runDelayed(plugin, { runnable.run() }, retired, delay)
+            SchedulerType.GLOBAL -> Bukkit.getGlobalRegionScheduler().runDelayed(plugin, { runnable.run() }, delay)
 
             SchedulerType.REGION -> Bukkit.getRegionScheduler().runDelayed(
-                plugin, location, { a -> runnable.run() }, delay
+                plugin, location, { runnable.run() }, delay
             )
 
             SchedulerType.ASYNC -> Bukkit.getAsyncScheduler()
-                .runDelayed(plugin, { a -> runnable.run() }, delay * 50, TimeUnit.MILLISECONDS)
+                .runDelayed(plugin, { runnable.run() }, delay * 50, TimeUnit.MILLISECONDS)
         }!!
     )
 
     override fun runTaskTimer(runnable: Runnable, delay: Long, period: Long): ProxyTask = ProxyFoliaTask(
         when (schedulerType) {
             SchedulerType.ENTITY -> entity.scheduler.runAtFixedRate(
-                plugin, { a -> runnable.run() }, retired, delay, period
+                plugin, { runnable.run() }, retired, delay, period
             )
 
             SchedulerType.GLOBAL -> Bukkit.getGlobalRegionScheduler()
-                .runAtFixedRate(plugin, { a -> runnable.run() }, delay, period)
+                .runAtFixedRate(plugin, { runnable.run() }, delay, period)
 
             SchedulerType.REGION -> Bukkit.getRegionScheduler().runAtFixedRate(
-                plugin, location, { a -> runnable.run() }, delay, period
+                plugin, location, { runnable.run() }, delay, period
             )
 
             SchedulerType.ASYNC -> Bukkit.getAsyncScheduler()
-                .runAtFixedRate(plugin, { a -> runnable.run() }, delay * 50, period * 50, TimeUnit.MILLISECONDS)
+                .runAtFixedRate(plugin, { runnable.run() }, delay * 50, period * 50, TimeUnit.MILLISECONDS)
 
         }!!
     )

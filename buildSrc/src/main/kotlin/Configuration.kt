@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.0.7.10"
+const val rootVersion = "A.0.0.7.11"
 
 const val kotlinVersion = "1.9.10"
 const val serializationVersion = "1.6.0"
@@ -18,8 +18,6 @@ val isoInstantFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 val taboolibModules = setOf(
     "common",
     "common-5",
-    "module-nms",
-    "module-nms-util",
     "module-configuration",
     "module-lang",
     "module-chat",

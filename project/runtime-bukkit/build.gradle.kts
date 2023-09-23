@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     compileCore(12001)
+    compileOnly("com.google.code.gson:gson:2.8.9")
     compileOnly("net.md-5:bungeecord-chat:1.17")
     // Module - Kether
     installModule("module-kether")
@@ -16,6 +17,8 @@ taboolib {
     taboolibModules.forEach { install(it) }
     install("platform-bukkit")
     install("module-kether")
+    install("module-nms")
+    install("module-nms-util")
 
     description {
         name = rootName

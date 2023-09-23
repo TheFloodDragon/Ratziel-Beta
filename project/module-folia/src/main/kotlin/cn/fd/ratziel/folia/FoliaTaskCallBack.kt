@@ -7,9 +7,7 @@ data class FoliaTaskCallBack(
     var task: ProxyTask? = null,
     var scheduler: ProxyScheduler? = null,
 ) {
-
     fun cancel() {
         task?.cancel()
     }
-
 }
