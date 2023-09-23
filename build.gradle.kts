@@ -27,7 +27,6 @@ subprojects {
 
         // 项目一般依赖
         if (parent?.name == "project") {
-            compileCore(12001)
             compileTabooLib()
             // MiniMessage - https://docs.adventure.kyori.net/minimessage/api.html
             adventure()

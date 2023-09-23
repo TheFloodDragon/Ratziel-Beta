@@ -3,11 +3,14 @@ plugins {
 }
 
 dependencies {
+    compileCore(12001)
     compileOnly("com.google.guava:guava:31.1-jre")
-    // Folia
-    compileOnly("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT")
-    // Ratziel Module - Kether
+    // Module - Kether
     installModule("module-kether")
+    // Module - Folia
+    installModule("module-folia")
+    // Module - Hooker
+    installModule("module-hooker")
 }
 
 taboolib {

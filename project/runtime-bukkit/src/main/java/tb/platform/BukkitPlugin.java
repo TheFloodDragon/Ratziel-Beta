@@ -1,5 +1,6 @@
 package tb.platform;
 
+import cn.fd.ratziel.folia.FoliaAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -145,7 +146,7 @@ public class BukkitPlugin extends JavaPlugin {
 //                });
                 // Try to Support Folia
                 // TODO 该适配可能出现问题
-                Runnable task = new Runnable() {
+                FoliaAPI.INSTANCE.getScheduler().runTask(new Runnable() {
                     @Override
                     public void run() {
                         TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
@@ -153,11 +154,7 @@ public class BukkitPlugin extends JavaPlugin {
                             pluginInstance.onActive();
                         }
                     }
-                };
-                if (FoliaSupporter.isFolia())
-                    task.run(); // 直接运行?
-                else
-                    Bukkit.getScheduler().runTask(this, task);
+                });
             }
         }
     }
