@@ -25,7 +25,7 @@ subprojects {
     dependencies {
         compileOnly(kotlin("stdlib"))
 
-        // 项目一般依赖
+        // 项目依赖
         if (parent?.name == "project") {
             compileTabooLib()
             // MiniMessage - https://docs.adventure.kyori.net/minimessage/api.html
@@ -34,18 +34,18 @@ subprojects {
             serialization()
             // Kotlin协程工具
             coroutine()
+            // 基本依赖
+            arrayOf(
+                "module-core",
+                "module-common".takeIf { name != "module-core" }
+            ).forEach { module -> module.takeIf { name != it }?.let { installModule(it) } }
         }
 
-        // 模块一般依赖——所有
+        // 脚本依赖
         if (parent?.name == "script") {
             compileAll()
         }
 
-        // Runtime默认模块依赖
-        if (name.contains("runtime")) {
-            installModule("module-core")
-            installModule("module-common")
-        }
     }
 
     java {

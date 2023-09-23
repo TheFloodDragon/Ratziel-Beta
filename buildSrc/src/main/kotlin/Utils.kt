@@ -17,13 +17,13 @@ val systemOS: String
 val systemIP: String
     get() = URL("http://ipinfo.io/ip").readText()
 
-fun getLatestRelease(repoOwner: String, repoName: String): String {
-    val url = URL("https://api.github.com/repos/$repoOwner/$repoName/releases/latest")
-    val connection = url.openConnection() as HttpURLConnection
-    connection.requestMethod = "GET"
-    connection.setRequestProperty("Accept", "application/vnd.github+json")
+fun getLatestRelease(repoOwner: String, repoName: String, fallback: String) =
+    try {
+        val url = URL("https://api.github.com/repos/$repoOwner/$repoName/releases/latest")
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+        connection.setRequestProperty("Accept", "application/vnd.github+json")
 
-    return try {
         if (connection.responseCode != 200) {
             error("Failed to retrieve the latest release")
         }
@@ -36,14 +36,11 @@ fun getLatestRelease(repoOwner: String, repoName: String): String {
         tagName.replace("\"", "")
     } catch (e: Exception) {
         e.printStackTrace()
-        // 默认
-        fallbackVersion
+        fallback // 使用默认值
     }
-}
 
 /**
  * 合并两个YAML文件
- * ps: 还是BukkitAPI好用
  * @param merger 合并者
  * @param merged 被合并的
  */

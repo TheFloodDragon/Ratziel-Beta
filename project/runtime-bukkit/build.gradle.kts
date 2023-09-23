@@ -19,6 +19,7 @@ taboolib {
     install("module-kether")
     install("module-nms")
     install("module-nms-util")
+    install("expansion-javascript")
 
     description {
         name = rootName
@@ -28,7 +29,7 @@ taboolib {
         }
 
         dependencies {
-//            name("PlaceholderAPI").optional(true)
+            name("PlaceholderAPI").optional(true)
         }
 
         bukkitNodes = HashMap<String, Any>().apply {

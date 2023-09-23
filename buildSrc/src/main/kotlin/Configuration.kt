@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.0.7.11"
+const val rootVersion = "A.0.0.8.0"
 
 const val kotlinVersion = "1.9.10"
 const val serializationVersion = "1.6.0"
@@ -10,8 +10,10 @@ const val coroutineVersion = "1.7.3"
 const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "1.56"
 
-val taboolibVersion = getLatestRelease("TabooLib", "taboolib").also { println("Using taboolib-version = $it") }
-const val fallbackVersion = "6.0.12-20" // 如果获取不到最新版本就改这个
+val taboolibVersion = getLatestRelease(
+    "TabooLib", "taboolib",
+    fallback = "6.0.12-20" // 如果获取不到最新版本就改这个
+).also { println("Using taboolib-version = $it") }
 
 val isoInstantFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
@@ -21,10 +23,7 @@ val taboolibModules = setOf(
     "module-configuration",
     "module-lang",
     "module-chat",
-//    "module-database",
-    "expansion-javascript",
     "expansion-command-helper"
-//    "expansion-player-database",
 )
 
 val adventureModules = setOf(
