@@ -145,8 +145,6 @@ public class BukkitPlugin extends JavaPlugin {
 //                    }
 //                });
                 // Try to Support Folia
-                // TODO 该适配可能出现问题
-                Bukkit.getScheduler();
                 FoliaAPI.INSTANCE.getScheduler().runTask(new Runnable() {
                     @Override
                     public void run() {

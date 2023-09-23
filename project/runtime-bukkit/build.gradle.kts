@@ -4,13 +4,11 @@ plugins {
 
 dependencies {
     compileCore(12001)
-    compileOnly("com.google.guava:guava:31.1-jre")
+    compileOnly("net.md-5:bungeecord-chat:1.17")
     // Module - Kether
     installModule("module-kether")
     // Module - Folia
     installModule("module-folia")
-    // Module - Hooker
-    installModule("module-hooker")
 }
 
 taboolib {
@@ -44,8 +42,9 @@ taboolib {
 
     }
 
-    // 排除原有BukkitPlugin防止重复
+    // 排除原有的防止重复
     exclude("taboolib/platform/BukkitPlugin")
+    exclude("taboolib/platform/type/BukkitPlayer")
 
     classifier = null
     options("skip-minimize", "keep-kotlin-module", "skip-taboolib-relocate")

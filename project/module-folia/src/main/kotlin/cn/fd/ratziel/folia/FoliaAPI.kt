@@ -19,7 +19,7 @@ object FoliaAPI {
     val platform by lazy { ServerPlatform.infer() }
 
     /**
-     * 各平台确认方法
+     * 各平台确认
      */
     fun isFolia() = platform == ServerPlatform.FOLIA
     fun isPaper() = platform == ServerPlatform.PAPER
