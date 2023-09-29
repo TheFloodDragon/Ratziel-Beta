@@ -7,19 +7,20 @@ dependencies {
     compileOnly("com.google.code.gson:gson:2.8.9")
     compileOnly("net.md-5:bungeecord-chat:1.17")
     // Module - Kether
+    installModule("module-kether-api")
     installModule("module-kether")
     // Module - Folia
-    installModule("module-folia")
+//    installModule("module-folia")
 }
 
 taboolib {
     version = taboolibVersion
     taboolibModules.forEach { install(it) }
     install("platform-bukkit")
-    install("module-kether")
     install("module-nms")
     install("module-nms-util")
     install("expansion-javascript")
+    install("expansion-player-fake-op")
 
     description {
         name = rootName
