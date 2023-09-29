@@ -38,7 +38,7 @@ subprojects {
             arrayOf(
                 "module-core",
                 "module-common".takeIf { name != "module-core" }
-            ).forEach { module -> module.takeIf { name != it }?.let { installModule(it) } }
+            ).forEach { module -> module.takeIf { name != it }?.let { compileModule(it) } }
         }
 
         // 脚本依赖

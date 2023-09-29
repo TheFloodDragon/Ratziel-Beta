@@ -19,7 +19,6 @@ taboolib {
     install("platform-bukkit")
     install("module-nms")
     install("module-nms-util")
-    install("expansion-javascript")
     install("expansion-player-fake-op")
 
     description {
@@ -47,7 +46,7 @@ taboolib {
 
     }
 
-    // 排除原有的防止重复
+    // 排除原有的防止重复 (为了支持Folia)
     exclude("taboolib/platform/BukkitPlugin")
     exclude("taboolib/platform/type/BukkitPlayer")
 

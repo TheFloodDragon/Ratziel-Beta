@@ -1,3 +1,3 @@
 dependencies {
-    installTaboo("module-nms")
+    compileModule("module-nms")
 }
