@@ -10,12 +10,12 @@ import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
-import taboolib.common.reflect.Reflex.Companion.getProperty
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
-import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.common.util.unsafeLazy
@@ -27,7 +27,7 @@ import java.util.*
 
 /**
  * TabooLib
- * tb.platform.type.BukkitPlayer
+ * taboolib.platform.type.BukkitPlayer
  *
  * @author sky
  * @since 2021/6/17 10:33 下午

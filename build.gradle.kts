@@ -57,9 +57,9 @@ subprojects {
     group = rootGroup
     version = rootVersion
 
-    if (parent?.name != "plugin" && parent?.name != "script") {
+//    if (parent?.name != "plugin" && parent?.name != "script") {
         buildDirClean()
-    }
+//    }
 
     tasks {
         withType<JavaCompile> { options.encoding = "UTF-8" } //UTF-8 编码

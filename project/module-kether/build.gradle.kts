@@ -1,6 +1,5 @@
 dependencies {
     compileCore(12001)
-    compileModule("platform-bukkit")
-    compileModule("module-kether")
-    compileModule("expansion-javascript")
+    installTaboo("platform-bukkit")
+    installModule("module-kether-api")
 }
