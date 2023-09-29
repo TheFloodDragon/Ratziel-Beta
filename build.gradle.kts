@@ -20,6 +20,8 @@ subprojects {
         }
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
+        // 私有库
+        maven("https://jitpack.io")
     }
 
     dependencies {
@@ -57,9 +59,7 @@ subprojects {
     group = rootGroup
     version = rootVersion
 
-//    if (parent?.name != "plugin" && parent?.name != "script") {
-        buildDirClean()
-//    }
+    buildDirClean()
 
     tasks {
         withType<JavaCompile> { options.encoding = "UTF-8" } //UTF-8 编码
