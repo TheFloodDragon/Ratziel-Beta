@@ -58,7 +58,7 @@ subprojects {
     version = rootVersion
 
     if (parent?.name != "plugin" && parent?.name != "script") {
-//        buildDirClean()
+        buildDirClean()
     }
 
     tasks {

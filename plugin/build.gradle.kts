@@ -8,8 +8,7 @@ subprojects {
      * Runtime依赖 子项目必须写
      */
     afterEvaluate {
-        if (name != "platform-all")
-            dependencies { runtimes.forEach { installModule(it) } }
+        dependencies { runtimes.forEach { installModule(it) } }
     }
 
     val outDir = project.layout.buildDirectory.dir("cache/lang").get().asFile
