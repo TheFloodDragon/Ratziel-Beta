@@ -20,8 +20,13 @@ subprojects {
         }
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
-        // 私有库
-        maven("https://jitpack.io")
+        // Kether API From GitHub
+        maven("https://maven.pkg.github.com/TheFloodDragon/Kether-API") {
+            credentials {
+                username = project.findProperty("githubUser") as String? ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("githubKey") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 
     dependencies {
