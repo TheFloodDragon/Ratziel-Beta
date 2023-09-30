@@ -23,7 +23,10 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
       - name: Build
-        run: ./gradlew build
+        env:
+          GITHUB_USERNAME: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew build -PgithubUser=$GITHUB_USERNAME -PgithubKey=$GITHUB_TOKEN
       - name: Capture Build Artifacts
         uses: actions/upload-artifact@v3
         with:
