@@ -19,8 +19,6 @@ taboolib {
     install("module-nms")
     install("module-nms-util")
     install("expansion-player-fake-op")
-    // Kether
-    install("module-kether")
 
     description {
         name = rootName

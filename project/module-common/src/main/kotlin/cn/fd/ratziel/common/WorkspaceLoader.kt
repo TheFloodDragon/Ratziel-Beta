@@ -4,13 +4,14 @@ import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.util.handle
-import cn.fd.ratziel.core.util.*
+import cn.fd.ratziel.core.util.future
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.system.measureTimeMillis
 import cn.fd.ratziel.common.WorkspaceManager as wsm
 
@@ -33,26 +34,31 @@ object WorkspaceLoader {
     }
 
     /**
-     * 加载命名空间 (在插件加载时)
+     * 加载工作空间中的元素
      */
     fun load(sender: ProxyCommandSender) {
         /**
          * 加载元素文件
          */
-        val loading = ConcurrentLinkedDeque<CompletableFuture<List<Element>>>() // 加载过程中的CompletableFuture
+        val loading = ConcurrentLinkedDeque<CompletableFuture<List<Element>>>()
+        val handling = ConcurrentLinkedDeque<CompletableFuture<Unit>>()
         measureTimeMillis {
             wsm.gerFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
                     loading += future {
-                        DefaultElementLoader.load(file).onEach {
-                            elements.add(it) // 插入缓存
-                            it.handle()  // 处理元素
+                        DefaultElementLoader.load(file).onEach { em ->
+                            elements.add(em) // 插入缓存
+                            // 处理元素
+                            handling += future {
+                                em.handle()
+                            }
                         }
                     }
                 }
             // 等待所有任务完成
             CompletableFuture.allOf(*loading.toTypedArray()).join()
+            CompletableFuture.allOf(*handling.toTypedArray()).join()
         }.let {
             sender.sendLang("Workspace-Finished", elements.size, it)
         }
@@ -75,10 +81,8 @@ object WorkspaceLoader {
      */
     @Awake(LifeCycle.LOAD)
     private fun run() {
-        runFuture {
-            init(console())
-            load(console())
-        }
+        init(console())
+        load(console())
     }
 
 }

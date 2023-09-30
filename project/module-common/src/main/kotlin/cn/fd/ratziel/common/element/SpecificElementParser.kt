@@ -1,10 +1,14 @@
 package cn.fd.ratziel.common.element
 
-import cn.fd.ratziel.common.event.ElementLoadEvent
-import cn.fd.ratziel.core.element.*
+import cn.fd.ratziel.common.element.DefaultElementParser.buildElement
+import cn.fd.ratziel.common.element.DefaultElementParser.matchType
+import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.element.loader.ElementParser
 import cn.fd.ratziel.core.util.callThenRun
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 import java.io.File
 
 /**
@@ -15,6 +19,14 @@ import java.io.File
  * @since 2023/9/8 20:44
  */
 class SpecificElementParser(val type: ElementType) : ElementParser {
+
+    companion object {
+        /**
+         * 构造针对性元素加载器对象
+         */
+        fun build(expression: String): SpecificElementParser? =
+            matchType(expression)?.let { SpecificElementParser(it) }
+    }
 
     /**
      * 从JsonObject解析成Element
@@ -27,13 +39,10 @@ class SpecificElementParser(val type: ElementType) : ElementParser {
             // 获取当前元素下的所有元素类型
             jsonO[id]?.jsonObject?.let { types ->
                 types.keys.forEach { expression ->
-                    // 元素加载事件
-                    ElementLoadEvent(
-                        // 初始化元素对象
-                        Element(
-                            id, file, type,
-                            property = types[expression]
-                        )
+                    // 构造元素对象
+                    buildElement(
+                        id, file, type,
+                        property = types[expression]
                     ).callThenRun { successes.add(it.element) }
                 }
             }
