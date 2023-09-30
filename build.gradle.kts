@@ -27,6 +27,8 @@ subprojects {
                 password = project.findProperty("githubKey") as String? ?: System.getenv("GITHUB_TOKEN")
             }
         }
+        // PlaceholderAPI
+        maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
 
     dependencies {
