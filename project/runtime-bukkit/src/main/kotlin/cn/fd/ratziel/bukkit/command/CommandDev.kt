@@ -44,6 +44,17 @@ object CommandDev {
     }
 
     @CommandBody
+    val testMessage = subCommand {
+        dynamic {
+            execute<CommandSender> { sender, _, context ->
+//                sender.audienceSender.sendMessage(MiniMessage.miniMessage().deserialize(buildMessage(context)))
+////                sender.sendMessage(buildMessage(context))
+//                println(buildMessage(context))
+            }
+        }
+    }
+
+    @CommandBody
     val element = CommandElement
 
 }

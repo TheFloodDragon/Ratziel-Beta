@@ -10,6 +10,8 @@ dependencies {
     installModule("module-kether")
     // Module - Folia
     installModule("module-folia")
+    // Module - Item
+    installModule("module-item")
 }
 
 taboolib {
