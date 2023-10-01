@@ -1,8 +1,8 @@
 package cn.fd.ratziel.common.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
-import cn.fd.ratziel.core.element.type.ElementService
-import cn.fd.ratziel.core.util.runFuture
+import cn.fd.ratziel.core.element.ElementService
+import cn.fd.ratziel.core.util.quickRunFuture
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -33,7 +33,7 @@ object CommandElement {
     @CommandBody
     val list = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            runFuture {
+            quickRunFuture {
                 sender.sendLang("Element-Header")
                 WorkspaceLoader.elements.forEach {
                     sender.sendLang("Element-Identifier-Format", it.id) // 标识符
@@ -55,7 +55,7 @@ object CommandElement {
     @CommandBody
     val listTypes = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            runFuture {
+            quickRunFuture {
                 sender.sendLang("Element-Type-Header")
                 ElementService.getRegistry().forEach { etype, handlers ->
                     // 命名空间消息
@@ -64,7 +64,7 @@ object CommandElement {
                     sender.sendLang(
                         "Element-Type-Info-Format",
                         etype.name, // 名称
-                        format(etype.getAlias()), // 别名
+                        format(etype.alias.toList()), // 别名
                         format(handlers.map { it::class.java.name }) //处理器
                     )
                 }

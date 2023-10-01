@@ -1,8 +1,8 @@
 package cn.fd.ratziel.bukkit.element.action
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.ElementHandler
-import cn.fd.ratziel.core.element.type.NewElement
+import cn.fd.ratziel.core.element.api.ElementHandler
+import cn.fd.ratziel.core.element.NewElement
 import cn.fd.ratziel.core.element.util.ElementMemory
 import cn.fd.ratziel.kether.KetherCompiler
 import cn.fd.ratziel.kether.KetherHandler

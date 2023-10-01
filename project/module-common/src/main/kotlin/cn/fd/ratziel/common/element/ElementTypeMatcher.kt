@@ -1,7 +1,8 @@
-package cn.fd.ratziel.core.element.type
+package cn.fd.ratziel.common.element
 
+import cn.fd.ratziel.core.element.ElementService
 import cn.fd.ratziel.core.element.ElementType
-import cn.fd.ratziel.core.util.future
+import cn.fd.ratziel.core.util.quickFuture
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -47,7 +48,7 @@ object ElementTypeMatcher {
         space: String,
         types: Set<ElementType> = ElementService.getAllElementTypes(),
     ): CompletableFuture<List<ElementType>> {
-        return future {
+        return quickFuture {
             types.filter { it.space == space }
         }
     }
@@ -61,8 +62,8 @@ object ElementTypeMatcher {
         name: String,
         types: Set<ElementType> = ElementService.getAllElementTypes(),
     ): CompletableFuture<ElementType?> {
-        return future {
-            types.find { it.getAllNames().contains(name) }
+        return quickFuture {
+            types.find { it.appellations.contains(name) }
         }
     }
 

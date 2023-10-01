@@ -4,8 +4,7 @@ import cn.fd.ratziel.common.event.ElementLoadEvent
 import cn.fd.ratziel.common.event.ElementTypeMatchEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementType
-import cn.fd.ratziel.core.element.loader.ElementParser
-import cn.fd.ratziel.core.element.type.ElementTypeMatcher
+import cn.fd.ratziel.core.element.api.ElementParser
 import cn.fd.ratziel.core.util.callThenRun
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject

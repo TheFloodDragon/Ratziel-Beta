@@ -2,13 +2,19 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 subprojects {
 
-    val runtimes: List<String> by extra
-
     /**
      * Runtime依赖 子项目必须写
      */
+    val runtimes: List<String> by extra
+
     afterEvaluate {
-        dependencies { runtimes.forEach { installModule(it) } }
+        dependencies {
+            // 通用模块
+            installModule("module-core")
+            installModule("module-common")
+            // Runtime依赖
+            runtimes.forEach { installModule(it) }
+        }
     }
 
     val outDir = project.layout.buildDirectory.dir("cache/lang").get().asFile

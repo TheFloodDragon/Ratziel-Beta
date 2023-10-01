@@ -1,6 +1,7 @@
-package cn.fd.ratziel.core.event
+package cn.fd.ratziel.common.event.api
 
-import cn.fd.ratziel.core.element.*
+import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.element.api.ElementHandler
 import taboolib.common.platform.event.ProxyEvent
 
 /**

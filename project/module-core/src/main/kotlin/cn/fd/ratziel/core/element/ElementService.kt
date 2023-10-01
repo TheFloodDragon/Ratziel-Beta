@@ -1,7 +1,6 @@
-package cn.fd.ratziel.core.element.type
+package cn.fd.ratziel.core.element
 
-import cn.fd.ratziel.core.element.ElementType
-import cn.fd.ratziel.core.element.ElementHandler
+import cn.fd.ratziel.core.element.api.ElementHandler
 
 /**
  * ElementService

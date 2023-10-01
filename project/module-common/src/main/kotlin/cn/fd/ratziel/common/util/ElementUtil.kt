@@ -1,8 +1,8 @@
-package cn.fd.ratziel.core.element.util
+package cn.fd.ratziel.common.util
 
+import cn.fd.ratziel.common.event.api.ElementHandleEvent
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.type.ElementService
-import cn.fd.ratziel.core.event.ElementHandleEvent
+import cn.fd.ratziel.core.element.ElementService
 import cn.fd.ratziel.core.util.callThenRun
 import taboolib.common.platform.function.severe
 

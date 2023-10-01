@@ -2,9 +2,10 @@ package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
+import cn.fd.ratziel.common.util.handle
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.util.handle
-import cn.fd.ratziel.core.util.future
+import cn.fd.ratziel.core.util.quickFuture
+import cn.fd.ratziel.core.util.quickRunFuture
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
@@ -46,11 +47,11 @@ object WorkspaceLoader {
             wsm.gerFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
-                    loading += future {
+                    loading += quickFuture {
                         DefaultElementLoader.load(file).onEach { em ->
                             elements.add(em) // 插入缓存
                             // 处理元素
-                            handling += future {
+                            handling += quickFuture {
                                 em.handle()
                             }
                         }
@@ -81,8 +82,10 @@ object WorkspaceLoader {
      */
     @Awake(LifeCycle.LOAD)
     private fun run() {
-        init(console())
-        load(console())
+        quickRunFuture {
+            init(console())
+            load(console())
+        }
     }
 
 }

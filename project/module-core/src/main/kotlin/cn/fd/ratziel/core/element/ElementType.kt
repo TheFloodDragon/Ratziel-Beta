@@ -15,29 +15,22 @@ open class ElementType(
      */
     open val name: String,
 
+    ) {
+
     /**
      * 元素类型别名
      */
-    protected open val alias: Array<String>,
+    var alias: Array<String> = emptyArray()
+        protected set
 
-    ) {
-
-    constructor(space: String, name: String) : this(space, name, emptyArray())
-
-    /**
-     * 获取别名
-     * 不包含元素类型主名称
-     */
-    open fun getAlias(): Set<String> {
-        return alias.toMutableSet().apply { remove(name) }
-    }
+    val appellations
+        get() = alias.toMutableList().apply { add(name) }
 
     /**
-     * 获取所有名称
-     * 包含元素类型主名称
+     * 带别名的构造函数
      */
-    open fun getAllNames(): Set<String> {
-        return alias.toMutableSet().apply { add(name) }
+    constructor(space: String, name: String, alias: Array<String>) : this(space, name) {
+        this.alias = alias.toMutableSet().apply { remove(name) }.toTypedArray() // 规范别名
     }
 
     override fun toString(): String {

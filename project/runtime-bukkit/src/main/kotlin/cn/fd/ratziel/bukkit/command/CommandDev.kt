@@ -1,7 +1,7 @@
 package cn.fd.ratziel.bukkit.command
 
 import cn.fd.ratziel.common.command.CommandElement
-import cn.fd.ratziel.core.util.runFuture
+import cn.fd.ratziel.core.util.quickRunFuture
 import cn.fd.ratziel.kether.KetherHandler
 import org.bukkit.command.CommandSender
 import taboolib.common.platform.command.CommandBody
@@ -34,7 +34,7 @@ object CommandDev {
     val runKether = subCommand {
         dynamic {
             execute<CommandSender> { sender, _, context ->
-                runFuture {
+                quickRunFuture {
                     KetherHandler.invoke(context, sender, mapOf()).thenApply {
                         sender.sendMessage("§7Result: $it")
                     }
