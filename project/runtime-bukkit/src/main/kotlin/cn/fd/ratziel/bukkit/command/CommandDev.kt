@@ -1,5 +1,7 @@
 package cn.fd.ratziel.bukkit.command
 
+import cn.fd.ratziel.adventure.audienceSender
+import cn.fd.ratziel.adventure.buildMessage
 import cn.fd.ratziel.common.command.CommandElement
 import cn.fd.ratziel.core.util.quickRunFuture
 import cn.fd.ratziel.kether.KetherHandler
@@ -47,9 +49,7 @@ object CommandDev {
     val testMessage = subCommand {
         dynamic {
             execute<CommandSender> { sender, _, context ->
-//                sender.audienceSender.sendMessage(MiniMessage.miniMessage().deserialize(buildMessage(context)))
-////                sender.sendMessage(buildMessage(context))
-//                println(buildMessage(context))
+                sender.audienceSender.sendMessage(buildMessage(context))
             }
         }
     }

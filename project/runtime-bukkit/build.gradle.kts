@@ -6,6 +6,7 @@ dependencies {
     compileCore(12001)
     compileOnly("com.google.code.gson:gson:2.8.9")
     compileOnly("net.md-5:bungeecord-chat:1.17")
+    compileOnly("me.clip:placeholderapi:2.11.4")
     // Module - Kether
     installModule("module-kether")
     // Module - Folia
