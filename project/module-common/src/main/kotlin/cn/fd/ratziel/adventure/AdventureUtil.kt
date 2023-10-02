@@ -13,5 +13,6 @@ fun buildMessage(target: String) =
             .replace("\\>", ">")
     )
 
+@JvmName("buildMessageNullable")
 fun buildMessage(target: String?) =
     target?.let { buildMessage(it) } ?: Component.empty()
