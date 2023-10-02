@@ -4,10 +4,26 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.AMPERSAND_CHAR
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.SECTION_CHAR
 import taboolib.module.nms.MinecraftVersion
+
+/**
+ * Gson序列化器
+ */
+private val gsonComponentSerializer by lazy {
+    // 1.16+
+    if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_16)) {
+        GsonComponentSerializer.gson()
+    } else GsonComponentSerializer.colorDownsamplingGson()
+}
+
+/**
+ * 将组件转换成Json
+ */
+fun Component.toJsonFormat() = gsonComponentSerializer.serialize(this)
 
 /**
  * MiniMessage
