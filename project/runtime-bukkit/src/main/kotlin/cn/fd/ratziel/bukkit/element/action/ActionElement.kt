@@ -1,11 +1,12 @@
 package cn.fd.ratziel.bukkit.element.action
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.NewElement
+import cn.fd.ratziel.core.element.api.LifeElementHandler
 import cn.fd.ratziel.core.element.util.ElementMemory
 import cn.fd.ratziel.kether.KetherCompiler
 import cn.fd.ratziel.kether.KetherHandler
+import taboolib.common.LifeCycle
 
 /**
  * ActionElement
@@ -17,7 +18,9 @@ import cn.fd.ratziel.kether.KetherHandler
     name = "action",
     alias = ["actions"]
 )
-object ActionElement : ElementHandler, ElementMemory() {
+object ActionElement : LifeElementHandler, ElementMemory() {
+
+    override val lifeCycle= LifeCycle.ENABLE
 
     override fun handle(element: Element) {
         element.property?.let { json ->

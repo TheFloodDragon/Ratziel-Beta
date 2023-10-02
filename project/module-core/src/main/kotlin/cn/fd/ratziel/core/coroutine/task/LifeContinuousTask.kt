@@ -1,7 +1,7 @@
 package cn.fd.ratziel.core.coroutine.task
 
 import cn.fd.ratziel.core.coroutine.ProxyCoroutineScopeIO
-import cn.fd.ratziel.core.task.TaskLifeTrace
+import cn.fd.ratziel.core.task.TaskLifeCycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.Continuation
@@ -14,7 +14,7 @@ import kotlin.time.Duration
  * @author TheFloodDragon
  * @since 2023/9/10 12:19
  */
-open class LiveContinuousTask<T>(
+open class LifeContinuousTask<T>(
     id: String,
     continuator: Continuation<T>,
     /**
@@ -28,8 +28,8 @@ open class LiveContinuousTask<T>(
     /**
      * 任务行迹
      */
-    taskLifeTrace: TaskLifeTrace = TaskLifeTrace(),
-) : ContinuousTask<T>(id, continuator, taskLifeTrace) {
+    lifeCycle: TaskLifeCycle = TaskLifeCycle(),
+) : ContinuousTask<T>(id, continuator, lifeCycle) {
 
     /**
      * 提供一个通用作用域

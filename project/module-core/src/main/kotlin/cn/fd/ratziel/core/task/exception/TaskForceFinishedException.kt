@@ -1,6 +1,6 @@
-package cn.fd.ratziel.core.task
+package cn.fd.ratziel.core.task.exception
 
-import cn.fd.ratziel.core.task.Task
+import cn.fd.ratziel.core.task.api.Task
 
 /**
  * TaskForceFinishedException

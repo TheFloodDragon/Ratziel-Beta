@@ -1,8 +1,8 @@
 package cn.fd.ratziel.core.coroutine.task
 
 import cn.fd.ratziel.core.task.BaseTask
-import cn.fd.ratziel.core.task.TaskForceFinishedException
-import cn.fd.ratziel.core.task.TaskLifeTrace
+import cn.fd.ratziel.core.task.exception.TaskForceFinishedException
+import cn.fd.ratziel.core.task.TaskLifeCycle
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -26,8 +26,8 @@ open class ContinuousTask<T>(
     /**
      * 任务行迹
      */
-    taskLifeTrace: TaskLifeTrace = TaskLifeTrace(),
-) : BaseTask(id, taskLifeTrace) {
+    lifeCycle: TaskLifeCycle = TaskLifeCycle(),
+) : BaseTask(id, lifeCycle) {
 
     /**
      * 开始任务

@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.coroutine.task
 
-import cn.fd.ratziel.core.task.TaskLifeTrace
+import cn.fd.ratziel.core.task.TaskLifeCycle
 import cn.fd.ratziel.core.util.randomUUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
@@ -61,9 +61,9 @@ open class ContinuousTaskController<T> {
      */
     suspend inline fun newTask(
         id: String = randomUUID(),
-        taskLifeTrace: TaskLifeTrace = defaultTaskLifeTrace(this, id),
+        lifeCycle: TaskLifeCycle = defaultTaskLifeCycle(this, id),
         runner: Function<ContinuousTask<T>, Unit> = Function { },
-    ) = newContinuousTask(id, this, taskLifeTrace, runner)
+    ) = newContinuousTask(id, this, lifeCycle, runner)
 
     companion object {
 
@@ -71,7 +71,7 @@ open class ContinuousTaskController<T> {
          * 默认任务行迹
          * 任务完成自动移除该任务
          */
-        fun <T> defaultTaskLifeTrace(controller: ContinuousTaskController<T>, id: String) = TaskLifeTrace(
+        fun <T> defaultTaskLifeCycle(controller: ContinuousTaskController<T>, id: String) = TaskLifeCycle(
             onFinish = {
                 controller.runningTasks.remove(id)
             })
@@ -85,10 +85,10 @@ open class ContinuousTaskController<T> {
         suspend inline fun <T> newContinuousTask(
             id: String = randomUUID(),
             controller: ContinuousTaskController<T>,
-            taskLifeTrace: TaskLifeTrace = defaultTaskLifeTrace(controller, id),
+            lifeCycle: TaskLifeCycle = defaultTaskLifeCycle(controller, id),
             runner: Function<ContinuousTask<T>, Unit> = Function { },
         ) = suspendCoroutine {
-            ContinuousTask(id, it, taskLifeTrace)
+            ContinuousTask(id, it, lifeCycle)
                 .let { task ->
                     controller.submit(id, task)
                     runner.apply(task)

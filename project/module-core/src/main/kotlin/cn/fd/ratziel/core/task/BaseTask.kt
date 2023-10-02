@@ -1,12 +1,14 @@
 package cn.fd.ratziel.core.task
 
+import cn.fd.ratziel.core.task.api.Task
+
 /**
  * BaseTask - 基础任务
  *
  * @author TheFloodDragon
  * @since 2023/9/22 22:38
  */
-open class BaseTask(override val id: String, taskLifeTrace: TaskLifeTrace) : TaskLifeTrace(taskLifeTrace), Task {
+open class BaseTask(override val id: String, lifeCycle: TaskLifeCycle) : TaskLifeCycle(lifeCycle), Task {
 
     /**
      * 任务是否开始

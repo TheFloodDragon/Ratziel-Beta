@@ -5,7 +5,6 @@ import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.util.handle
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.quickFuture
-import cn.fd.ratziel.core.util.quickRunFuture
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
@@ -78,14 +77,12 @@ object WorkspaceLoader {
     }
 
     /**
-     * 在插件加载时注册并加载命名空间
+     * 自动加载方法
      */
+    @Awake(LifeCycle.INIT)
+    private fun init() = init(console())
+
     @Awake(LifeCycle.LOAD)
-    private fun run() {
-        quickRunFuture {
-            init(console())
-            load(console())
-        }
-    }
+    private fun load() = load(console())
 
 }
