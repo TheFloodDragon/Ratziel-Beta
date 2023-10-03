@@ -23,7 +23,7 @@ object ActionElement : LifeElementHandler, ElementMemory() {
     override val lifeCycle= LifeCycle.ENABLE
 
     override fun handle(element: Element) {
-        element.property?.let { json ->
+        element.property.let { json ->
             KetherCompiler.buildSection(json).toString().let {
                 KetherHandler.invoke(it, null, emptyMap()).thenApply { result -> println(result) }
             }

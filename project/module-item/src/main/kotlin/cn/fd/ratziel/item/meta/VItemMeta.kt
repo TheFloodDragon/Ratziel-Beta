@@ -21,14 +21,15 @@ import taboolib.module.nms.MinecraftVersion
 
 
 /**
- * XItemMeta
- * Bukkit中ItemMeta的重写
+ * VItemMeta
+ * 对Bukkit.ItemMeta的包装
+ * 用于Kotlin序列化
  *
  * @author TheFloodDragon
  * @since 2023/10/2 16:46
  */
 @Serializable
-class XItemMeta {
+class VItemMeta {
 
     /**
      * 显示名称
@@ -98,7 +99,7 @@ class XItemMeta {
     /**
      * 物品标志
      */
-    @JsonNames("flag", "flags", "itemFlag")
+    @JsonNames("hideFlag","hideFlags","flag", "flags", "itemFlag")
     val itemFlags: MutableList<ItemFlag> = mutableListOf()
 
     /**
@@ -177,11 +178,11 @@ class XItemMeta {
                 setProperty("customModelData", Integer.valueOf(customModelData))
             }
             this.enchants.clear()
-            this@XItemMeta.enchants.forEach { this.addEnchant(it.key, it.value, true) }
+            this@VItemMeta.enchants.forEach { this.addEnchant(it.key, it.value, true) }
             this.itemFlags.clear()
-            this.addItemFlags(*this@XItemMeta.itemFlags.toSet().toTypedArray())
-            this.isUnbreakable = this@XItemMeta.unbreakable
-            this.attributeModifiers = this@XItemMeta.attributeModifiers
+            this.addItemFlags(*this@VItemMeta.itemFlags.toSet().toTypedArray())
+            this.isUnbreakable = this@VItemMeta.unbreakable
+            this.attributeModifiers = this@VItemMeta.attributeModifiers
         }
 
 }

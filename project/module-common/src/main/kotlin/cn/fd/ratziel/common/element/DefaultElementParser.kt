@@ -5,6 +5,7 @@ import cn.fd.ratziel.common.event.ElementTypeMatchEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.element.api.ElementParser
+import cn.fd.ratziel.core.serialization.emptyJson
 import cn.fd.ratziel.core.util.callThenRun
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -65,7 +66,7 @@ object DefaultElementParser : ElementParser {
         // 元素加载事件
         ElementLoadEvent(
             // 初始化元素对象
-            Element(id, file, type, property)
+            Element(id, file, type, property ?: emptyJson())
         )
 
     /**

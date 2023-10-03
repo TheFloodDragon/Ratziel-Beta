@@ -13,3 +13,8 @@ fun JsonElement.adapt(): Any {
         else -> this.jsonNull
     }
 }
+
+/**
+ * 构造一个空Json如"{}"
+ */
+fun emptyJson() = JsonObject(emptyMap())
