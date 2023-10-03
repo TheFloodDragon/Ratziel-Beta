@@ -37,9 +37,9 @@ fun matchEnchantment(source: String) =
  * 匹配穿戴栏位
  */
 fun matchEquipment(source: String) =
-    (BukkitEquipment.fromString(source) ?: BukkitEquipment.entries.maxBy {
+    (BukkitEquipment.fromString(source) ?: BukkitEquipment.entries.maxByOrNull {
         Strings.similarDegree(it.name, source)
-    }).bukkit
+    })?.bukkit
 
 /**
  * 匹配物品属性修饰符

@@ -15,13 +15,13 @@ import org.bukkit.inventory.EquipmentSlot
  * @author TheFloodDragon
  * @since 2023/10/3 12:33
  */
-object EquipmentSlotSerializer : KSerializer<EquipmentSlot> {
+object EquipmentSlotSerializer : KSerializer<EquipmentSlot?> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("EquipmentSlot", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("item.EquipmentSlot", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: EquipmentSlot) {
-        encoder.encodeString(value.name)
+    override fun serialize(encoder: Encoder, value: EquipmentSlot?) {
+        value?.let { encoder.encodeString(it.name) }
     }
 
-    override fun deserialize(decoder: Decoder): EquipmentSlot = matchEquipment(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): EquipmentSlot? = matchEquipment(decoder.decodeString())
 }

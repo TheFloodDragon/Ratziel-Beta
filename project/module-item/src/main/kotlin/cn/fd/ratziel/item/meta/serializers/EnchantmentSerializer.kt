@@ -17,7 +17,7 @@ import org.bukkit.enchantments.Enchantment
  */
 object EnchantmentSerializer : KSerializer<Enchantment> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Enchantment", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("item.Enchantment", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Enchantment) =
         encoder.encodeString(value.key.key)

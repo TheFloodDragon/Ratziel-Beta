@@ -1,11 +1,14 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.item.meta.serializers
 
-import cn.fd.ratziel.core.serialization.serializers.UUIDJsonSerializer
+import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.*
+import kotlinx.serialization.json.JsonNames
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.EquipmentSlot
 import java.util.*
@@ -18,49 +21,47 @@ import java.util.*
  */
 object AttributeModifierSerializer : KSerializer<AttributeModifier> {
 
-    override val descriptor = buildClassSerialDescriptor("AttributeModifier") {
-        element<UUID>("uuid")
+    override val descriptor = buildClassSerialDescriptor("item.AttributeModifier") {
+        element<UUID>("uuid", annotations = listOf(JsonNames("uid")), isOptional = true)
         element<String>("name")
         element<Double>("amount")
         element<AttributeModifier.Operation>("operation")
-        element<EquipmentSlot>("slot")
+        element<EquipmentSlot?>("slot", isOptional = true)
     }
 
-    override fun serialize(encoder: Encoder, value: AttributeModifier) {
+    override fun serialize(encoder: Encoder, value: AttributeModifier) =
         encoder.encodeStructure(descriptor) {
-            encodeSerializableElement(descriptor, 0, UUIDJsonSerializer, value.uniqueId)
+            encodeNullableSerializableElement(descriptor, 0, UUIDSerializer, value.uniqueId)
             encodeStringElement(descriptor, 1, value.name)
             encodeDoubleElement(descriptor, 2, value.amount)
             encodeSerializableElement(descriptor, 3, AttributeOperationSerializer, value.operation)
-            encodeSerializableElement(descriptor, 4, EquipmentSlotSerializer, value.slot ?: EquipmentSlot.HAND)
+            encodeNullableSerializableElement(descriptor, 4, EquipmentSlotSerializer, value.slot)
         }
-    }
 
-    @OptIn(ExperimentalSerializationApi::class)
     override fun deserialize(decoder: Decoder) =
         decoder.decodeStructure(descriptor) {
             var uuid: UUID? = null
             var name: String? = null
-            var amount: Double? = null
+            var amount = 0.0
             var operation: AttributeModifier.Operation? = null
             var slot: EquipmentSlot? = null
             if (decodeSequentially()) { // 顺序解码协议
-                uuid = decodeSerializableElement(descriptor, 0, UUIDJsonSerializer)
+                uuid = decodeNullableSerializableElement(descriptor, 0, UUIDSerializer)
                 name = decodeStringElement(descriptor, 1)
                 amount = decodeDoubleElement(descriptor, 2)
                 operation = decodeSerializableElement(descriptor, 3, AttributeOperationSerializer)
-                slot = decodeSerializableElement(descriptor, 4, EquipmentSlotSerializer)
+                slot = decodeNullableSerializableElement(descriptor, 4, EquipmentSlotSerializer)
             } else while (true) {
                 when (val index = decodeElementIndex(descriptor)) {
-                    0 -> uuid = decodeSerializableElement(descriptor, index, UUIDJsonSerializer)
+                    0 -> uuid = decodeNullableSerializableElement(descriptor, index, UUIDSerializer)
                     1 -> name = decodeStringElement(descriptor, index)
                     2 -> amount = decodeDoubleElement(descriptor, index)
                     3 -> operation = decodeSerializableElement(descriptor, index, AttributeOperationSerializer)
-                    4 -> slot = decodeSerializableElement(descriptor, index, EquipmentSlotSerializer)
+                    4 -> slot = decodeNullableSerializableElement(descriptor, index, EquipmentSlotSerializer)
                     CompositeDecoder.DECODE_DONE -> break
                 }
             }
-            AttributeModifier(uuid ?: UUID.randomUUID(), name!!, amount!!, operation!!, slot)
+            AttributeModifier(uuid ?: UUID.randomUUID(), name!!, amount, operation!!, slot)
         }
 
 }

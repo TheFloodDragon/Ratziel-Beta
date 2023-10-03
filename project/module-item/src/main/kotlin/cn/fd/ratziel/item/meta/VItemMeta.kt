@@ -99,7 +99,7 @@ class VItemMeta {
     /**
      * 物品标志
      */
-    @JsonNames("hideFlag","hideFlags","flag", "flags", "itemFlag")
+    @JsonNames("hideFlag", "hideFlags", "flag", "flags", "itemFlag")
     val itemFlags: MutableList<ItemFlag> = mutableListOf()
 
     /**

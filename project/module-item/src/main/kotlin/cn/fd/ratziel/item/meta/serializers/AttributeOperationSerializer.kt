@@ -17,7 +17,7 @@ import org.bukkit.attribute.AttributeModifier
  */
 object AttributeOperationSerializer : KSerializer<AttributeModifier.Operation> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("AttributeOperation", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("item.AttributeOperation", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: AttributeModifier.Operation) {
         encoder.encodeString(value.name)
