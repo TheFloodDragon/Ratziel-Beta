@@ -5,8 +5,8 @@ package cn.fd.ratziel.item.meta
 import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
+import cn.fd.ratziel.item.meta.serializers.ItemFlagSerializer
 import com.google.common.collect.LinkedHashMultimap
-import com.google.common.collect.Multimap
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -100,7 +100,7 @@ class VItemMeta {
      * 物品标志
      */
     @JsonNames("hideFlag", "hideFlags", "flag", "flags", "itemFlag")
-    val itemFlags: MutableList<ItemFlag> = mutableListOf()
+    val itemFlags: MutableList<@Serializable(with = ItemFlagSerializer::class) ItemFlag> = mutableListOf()
 
     /**
      * 添加物品标志
@@ -126,63 +126,60 @@ class VItemMeta {
      * 物品属性修饰符
      */
     @JsonNames("attribute", "attributes", "modifier", "modifiers")
-    val attributeModifiers: Multimap<
+    val attributeModifiers: MutableMap<
             @Serializable(with = AttributeSerializer::class) Attribute,
-            @Serializable(with = AttributeModifierSerializer::class) AttributeModifier> = LinkedHashMultimap.create()
+            MutableList<@Serializable(with = AttributeModifierSerializer::class) AttributeModifier>> = mutableMapOf()
 
     /**
      * 获取属性修饰符
      */
-    fun getAttributeModifiers(slot: EquipmentSlot): Multimap<Attribute, AttributeModifier> =
-        LinkedHashMultimap.create<Attribute, AttributeModifier>().apply {
-            forEach { key, value ->
-                if (value.slot == slot) put(key, value)
-            }
-        }
-
-    fun getAttributeModifiers(attribute: Attribute): Collection<AttributeModifier> = attributeModifiers[attribute]
+    fun getAttributeModifiers(attribute: Attribute): MutableList<AttributeModifier> = attributeModifiers[attribute]!!
 
     /**
      * 添加属性修饰符
      */
     fun addAttributeModifiers(attribute: Attribute, vararg modifiers: AttributeModifier) {
-        attributeModifiers.putAll(attribute, modifiers.toMutableList())
+        attributeModifiers[attribute]!!.addAll(modifiers)
     }
 
     /**
      * 删除属性修饰符
      */
     fun removeAttributeModifiers(attribute: Attribute) {
-        attributeModifiers.removeAll(attribute)
+        attributeModifiers[attribute] = mutableListOf()
     }
 
     fun removeAttributeModifiers(slot: EquipmentSlot) {
-        attributeModifiers.forEach { key, value ->
-            if (value.slot == slot) attributeModifiers.remove(key, value)
+        attributeModifiers.forEach { (key, value) ->
+            value.forEach {
+                if (it.slot == slot) attributeModifiers[key]?.remove(it)
+            }
         }
     }
 
     fun removeAttributeModifier(attribute: Attribute, modifier: AttributeModifier) {
-        attributeModifiers.remove(attribute, modifier)
+        attributeModifiers[attribute]?.remove(modifier)
     }
 
     /**
-     * 获取Bukkit的ItemMeta
+     * 将数据转移到ItemMeta(克隆后的)中
      */
-    fun itemMetaBy(meta: ItemMeta) =
-        meta.clone().apply {
-            setProperty("displayName", displayName)
-            setLocalizedName(localizedName)
-            setProperty("lore", lore)
+    fun itemMetaBy(itemMeta: ItemMeta) =
+        itemMeta.clone().also { meta->
+            meta.setProperty("displayName", displayName)
+            meta.setLocalizedName(localizedName)
+            meta.setProperty("lore", lore)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                setProperty("customModelData", Integer.valueOf(customModelData))
+                setProperty("customModelData", customModelData?.let { Integer.valueOf(it) })
             }
-            this.enchants.clear()
-            this@VItemMeta.enchants.forEach { this.addEnchant(it.key, it.value, true) }
-            this.itemFlags.clear()
-            this.addItemFlags(*this@VItemMeta.itemFlags.toSet().toTypedArray())
-            this.isUnbreakable = this@VItemMeta.unbreakable
-            this.attributeModifiers = this@VItemMeta.attributeModifiers
+            meta.enchants.clear()
+            this.enchants.forEach { meta.addEnchant(it.key, it.value, true) }
+            meta.itemFlags.clear()
+            meta.addItemFlags(*this.itemFlags.toSet().toTypedArray())
+            meta.isUnbreakable = this.unbreakable
+            meta.attributeModifiers = LinkedHashMultimap.create<Attribute, AttributeModifier>().apply {
+                this@VItemMeta.attributeModifiers.forEach { putAll(it.key, it.value) }
+            }
         }
 
 }

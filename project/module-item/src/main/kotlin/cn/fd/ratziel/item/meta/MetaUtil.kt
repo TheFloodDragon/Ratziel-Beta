@@ -4,6 +4,7 @@ import cn.fd.ratziel.adventure.serializeByMiniMessage
 import cn.fd.ratziel.adventure.toJsonFormat
 import net.kyori.adventure.text.Component
 import org.bukkit.attribute.AttributeModifier
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.common.util.Strings
 import taboolib.library.reflex.Reflex.Companion.setProperty
@@ -14,13 +15,13 @@ import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrElse
 
 fun ItemMeta.setDisplayName(component: Component) = this.apply {
-    if (MinecraftVersion.isLower(MinecraftVersion.V1_17)) {
+    if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
         setDisplayName(serializeByMiniMessage(component))
     } else setProperty("displayName", component.toJsonFormat())
 }
 
 fun ItemMeta.setLore(components: Iterable<Component>) = this.apply {
-    if (MinecraftVersion.isLower(MinecraftVersion.V1_17)) {
+    if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
         lore = components.map { serializeByMiniMessage(it) }
     } else setProperty("lore", components.map { it.toJsonFormat() })
 }
@@ -57,5 +58,16 @@ fun matchAttributeOperation(source: String) =
         AttributeModifier.Operation.valueOf(source)
     } catch (_: IllegalArgumentException) { null }
         ?: AttributeModifier.Operation.entries.maxBy {
-        Strings.similarDegree(it.name, source)
-    }
+            Strings.similarDegree(it.name, source)
+        }
+
+/**
+ * 匹配物品(隐藏)标签
+ */
+fun matchItemFlag(source: String) =
+    try {
+        ItemFlag.valueOf(source)
+    } catch (_: IllegalArgumentException) { null }
+        ?: ItemFlag.entries.maxBy {
+            Strings.similarDegree(it.name, source)
+        }

@@ -22,11 +22,11 @@ import java.util.*
 object AttributeModifierSerializer : KSerializer<AttributeModifier> {
 
     override val descriptor = buildClassSerialDescriptor("item.AttributeModifier") {
-        element<UUID>("uuid", annotations = listOf(JsonNames("uid")), isOptional = true)
+        element("uuid", UUIDSerializer.descriptor, listOf(JsonNames("uid")), isOptional = true)
         element<String>("name")
-        element<Double>("amount")
-        element<AttributeModifier.Operation>("operation")
-        element<EquipmentSlot?>("slot", isOptional = true)
+        element<Double>("amount", listOf(JsonNames("amt")))
+        element("operation", AttributeOperationSerializer.descriptor, listOf(JsonNames("op")))
+        element("slot", EquipmentSlotSerializer.descriptor, isOptional = true)
     }
 
     override fun serialize(encoder: Encoder, value: AttributeModifier) =
@@ -45,13 +45,7 @@ object AttributeModifierSerializer : KSerializer<AttributeModifier> {
             var amount = 0.0
             var operation: AttributeModifier.Operation? = null
             var slot: EquipmentSlot? = null
-            if (decodeSequentially()) { // 顺序解码协议
-                uuid = decodeNullableSerializableElement(descriptor, 0, UUIDSerializer)
-                name = decodeStringElement(descriptor, 1)
-                amount = decodeDoubleElement(descriptor, 2)
-                operation = decodeSerializableElement(descriptor, 3, AttributeOperationSerializer)
-                slot = decodeNullableSerializableElement(descriptor, 4, EquipmentSlotSerializer)
-            } else while (true) {
+            while (true) {
                 when (val index = decodeElementIndex(descriptor)) {
                     0 -> uuid = decodeNullableSerializableElement(descriptor, index, UUIDSerializer)
                     1 -> name = decodeStringElement(descriptor, index)
