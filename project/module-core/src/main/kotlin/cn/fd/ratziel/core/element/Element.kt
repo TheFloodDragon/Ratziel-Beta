@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.element
 
-import cn.fd.ratziel.core.serialize.adapt
+import cn.fd.ratziel.core.serialization.adapt
 import kotlinx.serialization.json.JsonElement
 import java.io.File
 

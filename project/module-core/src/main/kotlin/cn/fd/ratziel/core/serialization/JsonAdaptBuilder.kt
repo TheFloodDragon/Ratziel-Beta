@@ -1,15 +1,15 @@
-package cn.fd.ratziel.core.serialize
+package cn.fd.ratziel.core.serialization
 
 import kotlinx.serialization.json.*
 import java.util.function.Function
 
 /**
- * SerializeAdaptBuilder
+ * JsonAdaptBuilder
  *
  * @author TheFloodDragon
  * @since 2023/9/2 15:30
  */
-open class SerializeAdaptBuilder(private val jsonElement: JsonElement) {
+open class JsonAdaptBuilder(private val jsonElement: JsonElement) {
 
     /**
      * JsonObject
@@ -46,13 +46,13 @@ open class SerializeAdaptBuilder(private val jsonElement: JsonElement) {
          */
         inline fun adaptBuilder(
             jsonElement: JsonElement,
-            block: SerializeAdaptBuilder.() -> Unit,
-        ): SerializeAdaptBuilder {
-            return SerializeAdaptBuilder(jsonElement).also(block)
+            block: JsonAdaptBuilder.() -> Unit,
+        ): JsonAdaptBuilder {
+            return JsonAdaptBuilder(jsonElement).also(block)
         }
 
         @JvmName("jsonAdaptBuilder")
-        inline fun JsonElement.adaptBuilder(block: SerializeAdaptBuilder.() -> Unit): SerializeAdaptBuilder {
+        inline fun JsonElement.adaptBuilder(block: JsonAdaptBuilder.() -> Unit): JsonAdaptBuilder {
             return adaptBuilder(this, block)
         }
 

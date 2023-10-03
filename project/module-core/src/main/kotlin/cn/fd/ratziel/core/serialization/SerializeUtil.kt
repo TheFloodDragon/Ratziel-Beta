@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.serialize
+package cn.fd.ratziel.core.serialization
 
 import kotlinx.serialization.json.*
 

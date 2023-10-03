@@ -2,6 +2,9 @@
 
 package cn.fd.ratziel.item.meta
 
+import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
+import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 import kotlinx.serialization.ExperimentalSerializationApi

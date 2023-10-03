@@ -1,6 +1,6 @@
 package cn.fd.ratziel.kether.bacikal.quest
 
-import cn.fd.ratziel.core.serialize.SerializeAdaptBuilder.Companion.adaptBuilder
+import cn.fd.ratziel.core.serialization.JsonAdaptBuilder.Companion.adaptBuilder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonPrimitive
 import taboolib.library.configuration.ConfigurationSection

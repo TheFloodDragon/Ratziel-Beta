@@ -1,6 +1,6 @@
 package cn.fd.ratziel.kether
 
-import cn.fd.ratziel.core.serialize.SerializeAdaptBuilder.Companion.adaptBuilder
+import cn.fd.ratziel.core.serialization.JsonAdaptBuilder.Companion.adaptBuilder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonPrimitive
 
