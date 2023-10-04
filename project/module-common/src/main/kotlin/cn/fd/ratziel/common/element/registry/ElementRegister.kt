@@ -1,7 +1,8 @@
 package cn.fd.ratziel.common.element.registry
 
-import cn.fd.ratziel.core.element.ElementService
+import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.element.api.ElementHandler
+import cn.fd.ratziel.core.element.service.ElementRegistry
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.io.getInstance
@@ -22,23 +23,15 @@ class ElementRegister : ClassVisitor(0) {
         if (clazz.isAnnotationPresent(NewElement::class.java)) {
             val anno = clazz.getAnnotation(NewElement::class.java)
             try {
+                val etype = ElementType(anno.space, anno.name, anno.alias)
                 /**
                  * 处理器
                  */
-                val handlers =
-                    if (ElementHandler::class.java.isAssignableFrom(clazz)) {
-                        // 获取实例
-                        listOf(clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get())
-                    } else emptyList()
-                /**
-                 * 注册
-                 */
-                ElementService.registerElementType(
-                    space = anno.space,
-                    name = anno.name,
-                    alias = anno.alias,
-                    handlers
-                )
+                if (ElementHandler::class.java.isAssignableFrom(clazz)) {
+                    // 获取实例
+                    val handler = clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get()
+                    ElementRegistry.register(etype, handler, anno.priority)
+                } else ElementRegistry.register(etype)
             } catch (e: Exception) {
                 severe("Unable to register element form class $clazz!")
                 e.printStackTrace()

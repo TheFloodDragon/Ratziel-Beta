@@ -1,5 +1,7 @@
 package cn.fd.ratziel.core.element
 
+typealias EType = ElementType
+
 /**
  * 元素类型
  */

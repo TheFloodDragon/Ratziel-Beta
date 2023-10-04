@@ -1,7 +1,7 @@
 package cn.fd.ratziel.common.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
-import cn.fd.ratziel.core.element.ElementService
+import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.util.quickRunFuture
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
@@ -57,7 +57,7 @@ object CommandElement {
         execute<ProxyCommandSender> { sender, _, _ ->
             quickRunFuture {
                 sender.sendLang("Element-Type-Header")
-                ElementService.getRegistry().forEach { etype, handlers ->
+                ElementRegistry.getRegistry().forEach { etype, handlers ->
                     // 命名空间消息
                     sender.sendLang("Element-Type-Namespace-Format", etype.space)
                     // 具体消息

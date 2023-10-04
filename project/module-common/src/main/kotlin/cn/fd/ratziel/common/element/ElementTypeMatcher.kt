@@ -1,6 +1,6 @@
 package cn.fd.ratziel.common.element
 
-import cn.fd.ratziel.core.element.ElementService
+import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.util.quickFuture
 import java.util.concurrent.CompletableFuture
@@ -46,7 +46,7 @@ object ElementTypeMatcher {
      */
     fun matchSpace(
         space: String,
-        types: Set<ElementType> = ElementService.getAllElementTypes(),
+        types: Set<ElementType> = ElementRegistry.getAllElementTypes(),
     ): CompletableFuture<List<ElementType>> {
         return quickFuture {
             types.filter { it.space == space }
@@ -60,7 +60,7 @@ object ElementTypeMatcher {
      */
     fun matchName(
         name: String,
-        types: Set<ElementType> = ElementService.getAllElementTypes(),
+        types: Set<ElementType> = ElementRegistry.getAllElementTypes(),
     ): CompletableFuture<ElementType?> {
         return quickFuture {
             types.find { it.appellations.contains(name) }
