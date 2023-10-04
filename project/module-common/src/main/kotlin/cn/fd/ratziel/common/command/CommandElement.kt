@@ -57,7 +57,7 @@ object CommandElement {
         execute<ProxyCommandSender> { sender, _, _ ->
             quickRunFuture {
                 sender.sendLang("Element-Type-Header")
-                ElementRegistry.getRegistry().forEach { etype, handlers ->
+                ElementRegistry.registry.forEach { etype, group ->
                     // 命名空间消息
                     sender.sendLang("Element-Type-Namespace-Format", etype.space)
                     // 具体消息
@@ -65,7 +65,7 @@ object CommandElement {
                         "Element-Type-Info-Format",
                         etype.name, // 名称
                         format(etype.alias.toList()), // 别名
-                        format(handlers.map { it::class.java.name }) //处理器
+                        format(group.handlerMap.map { it::class.java.name }) //处理器
                     )
                 }
             }
