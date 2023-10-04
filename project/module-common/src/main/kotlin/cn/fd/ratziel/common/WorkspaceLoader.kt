@@ -77,12 +77,12 @@ object WorkspaceLoader {
     }
 
     /**
-     * 自动加载方法
+     * 自动加载工作空间和加载元素
      */
-    @Awake(LifeCycle.INIT)
-    private fun init() = init(console())
-
     @Awake(LifeCycle.LOAD)
-    private fun load() = load(console())
+    private fun load() {
+        init(console())
+        load(console())
+    }
 
 }

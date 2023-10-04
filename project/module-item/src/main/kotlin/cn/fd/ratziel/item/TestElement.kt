@@ -1,7 +1,7 @@
 package cn.fd.ratziel.item
 
+import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.NewElement
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.item.meta.VItemMeta
 import kotlinx.serialization.json.Json

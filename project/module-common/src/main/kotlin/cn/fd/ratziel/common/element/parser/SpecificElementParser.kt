@@ -1,7 +1,7 @@
-package cn.fd.ratziel.common.element
+package cn.fd.ratziel.common.element.parser
 
-import cn.fd.ratziel.common.element.DefaultElementParser.buildElement
-import cn.fd.ratziel.common.element.DefaultElementParser.matchType
+import cn.fd.ratziel.common.element.parser.DefaultElementParser.buildElement
+import cn.fd.ratziel.common.element.parser.DefaultElementParser.matchType
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.element.api.ElementParser

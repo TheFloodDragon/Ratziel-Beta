@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.element
+package cn.fd.ratziel.common.element.registry
 
 /**
  * 用于注册元素处理器

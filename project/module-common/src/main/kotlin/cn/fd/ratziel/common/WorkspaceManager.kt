@@ -1,7 +1,9 @@
 package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
+import cn.fd.ratziel.common.event.WorkspaceInitializeEvent
 import cn.fd.ratziel.core.Workspace
+import cn.fd.ratziel.core.util.callThenRun
 import taboolib.common.platform.function.releaseResourceFile
 import java.io.File
 
@@ -19,11 +21,13 @@ object WorkspaceManager {
      * @param copyDefaults 是否复制默认文件
      */
     fun initializeWorkspace(file: File, copyDefaults: Boolean = true) {
-        // 复制默认文件
-        if (copyDefaults && !file.exists()) // 文件夹未创建时
-            releaseWorkspace(target = file.name)
-        else file.mkdirs()
-        workspaces.add(Workspace(file))
+        WorkspaceInitializeEvent(file,copyDefaults).callThenRun {
+            // 复制默认文件
+            if (copyDefaults && !file.exists()) // 文件夹未创建时
+                releaseWorkspace(target = file.name)
+            else file.mkdirs()
+            workspaces.add(Workspace(file))
+        }
     }
 
     fun initializeWorkspace(path: String, copyDefaults: Boolean = true) {

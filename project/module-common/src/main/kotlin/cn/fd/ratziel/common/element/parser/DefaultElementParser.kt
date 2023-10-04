@@ -1,5 +1,6 @@
-package cn.fd.ratziel.common.element
+package cn.fd.ratziel.common.element.parser
 
+import cn.fd.ratziel.common.element.ElementTypeMatcher
 import cn.fd.ratziel.common.event.ElementLoadEvent
 import cn.fd.ratziel.common.event.ElementTypeMatchEvent
 import cn.fd.ratziel.core.element.Element

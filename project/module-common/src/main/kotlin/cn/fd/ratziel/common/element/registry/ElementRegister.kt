@@ -1,7 +1,6 @@
-package cn.fd.ratziel.common.element
+package cn.fd.ratziel.common.element.registry
 
 import cn.fd.ratziel.core.element.ElementService
-import cn.fd.ratziel.core.element.NewElement
 import cn.fd.ratziel.core.element.api.ElementHandler
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
