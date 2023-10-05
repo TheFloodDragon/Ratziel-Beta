@@ -1,18 +1,16 @@
 package cn.fd.ratziel.adventure
 
 import net.kyori.adventure.text.Component
-import taboolib.common.platform.ProxyCommandSender
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
 
+// 换行符
+const val NEWLINE_SIGN = "\n"
+
 /**
  * 基本消息构建
- * @param sender 带命令发送者构建 (如果没有则不构建此部分)
  */
-fun buildMessage(target: String?, sender: ProxyCommandSender?): Component =
-    buildMessage(target)
-
-fun buildMessage(target: String?): Component = parseAdventure(target)
+fun buildMessage(target: String?): Component = parseAdventure(target).also { println(it.toJsonFormat()) }
 
 /**
  * Taboolib消息解析
@@ -32,3 +30,13 @@ fun parseAdventure(target: String?): Component =
                 .replace("\\>", ">")
         )
     } ?: Component.empty()
+
+/**
+ * 将组件列表进行格式化
+ * 根据换行符重新构建列表
+ */
+//fun List<Component>.format() :List<Component> = this.flatMap {
+//    // 转化为 JsonElement
+//    val json = baseJson.parseToJsonElement(it.toJsonFormat())
+//    if(json is JsonObject)
+//    }

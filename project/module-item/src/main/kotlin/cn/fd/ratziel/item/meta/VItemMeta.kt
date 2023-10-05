@@ -3,6 +3,7 @@
 package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.adventure.ComponentSerializer
+import cn.fd.ratziel.adventure.jsonToComponent
 import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
@@ -18,6 +19,7 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
+import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.module.nms.MinecraftVersion
 
@@ -36,7 +38,7 @@ class VItemMeta {
     /**
      * 显示名称
      */
-    @JsonNames("name", "display-name")
+    @JsonNames("name", "display-name", "displayname")
     @Serializable(with = ComponentSerializer::class)
     var displayName: Component? = null
 
@@ -62,7 +64,8 @@ class VItemMeta {
      * 魔咒列表
      */
     @JsonNames("enchant", "enchantment", "enchantments")
-    val enchants: MutableMap<@Serializable(with = EnchantmentSerializer::class) Enchantment, Int> = mutableMapOf()
+    var enchants: MutableMap<@Serializable(with = EnchantmentSerializer::class) Enchantment, Int> = mutableMapOf()
+        private set
 
     /**
      * 是否含有魔咒
@@ -103,7 +106,8 @@ class VItemMeta {
      * 物品标志
      */
     @JsonNames("hideflag", "hideflags", "hideFlag", "hideFlags", "flag", "flags", "itemFlag", "itemflag", "itemflags")
-    val itemFlags: MutableList<@Serializable(with = ItemFlagSerializer::class) ItemFlag> = mutableListOf()
+    var itemFlags: MutableSet<@Serializable(with = ItemFlagSerializer::class) ItemFlag> = mutableSetOf()
+        private set
 
     /**
      * 添加物品标志
@@ -136,13 +140,14 @@ class VItemMeta {
     /**
      * 获取属性修饰符
      */
-    fun getAttributeModifiers(attribute: Attribute): MutableList<AttributeModifier> = attributeModifiers[attribute]!!
+    fun getAttributeModifiers(attribute: Attribute): MutableList<AttributeModifier> =
+        attributeModifiers.computeIfAbsent(attribute) { mutableListOf() }
 
     /**
      * 添加属性修饰符
      */
     fun addAttributeModifiers(attribute: Attribute, vararg modifiers: AttributeModifier) {
-        attributeModifiers[attribute]!!.addAll(modifiers)
+        getAttributeModifiers(attribute).addAll(modifiers)
     }
 
     /**
@@ -165,11 +170,31 @@ class VItemMeta {
     }
 
     /**
+     * 通过ItemMeta构造
+     */
+    constructor(meta: ItemMeta) {
+        displayName = meta.getProperty<String?>("displayName")?.let { jsonToComponent(it) }
+        localizedName = meta.localizedName
+        lore = meta.getProperty<List<String>?>("lore")?.map { jsonToComponent(it) } ?: emptyList()
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
+            customModelData = getProperty<Int>("customModelData")
+        }
+        enchants = meta.enchants
+        itemFlags = meta.itemFlags
+        unbreakable = meta.isUnbreakable
+        attributeModifiers.apply {
+            meta.attributeModifiers?.forEach { key, value ->
+                addAttributeModifiers(key, value)
+            }
+        }
+    }
+
+    /**
      * 将数据转移到ItemMeta(克隆后的)中
      */
     fun itemMetaBy(itemMeta: ItemMeta) =
         itemMeta.clone().also { meta ->
-            meta.setProperty("displayName", displayName)
+            meta.setDisplayName(displayName ?: Component.empty())
             meta.setLocalizedName(localizedName)
             meta.setProperty("lore", lore)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {

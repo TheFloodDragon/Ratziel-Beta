@@ -3,7 +3,6 @@ package cn.fd.ratziel.adventure
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.AMPERSAND_CHAR
@@ -33,8 +32,8 @@ fun jsonToComponent(json: String) = gsonComponentSerializer.deserialize(json)
 /**
  * MiniMessage
  */
-fun deserializeByMiniMessage(target: String, vararg tagResolver: TagResolver = emptyArray())
-        : Component = MiniMessage.miniMessage().deserialize(target, *tagResolver)
+fun deserializeByMiniMessage(target: String)
+        : Component = MiniMessage.miniMessage().deserialize(target)
 
 fun serializeByMiniMessage(target: Component)
         : String = MiniMessage.miniMessage().serialize(target)
