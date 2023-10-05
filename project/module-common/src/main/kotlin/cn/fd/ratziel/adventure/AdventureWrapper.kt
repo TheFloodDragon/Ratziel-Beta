@@ -26,6 +26,11 @@ private val gsonComponentSerializer by lazy {
 fun Component.toJsonFormat() = gsonComponentSerializer.serialize(this)
 
 /**
+ * 将Json转化成组件
+ */
+fun jsonToComponent(json: String) = gsonComponentSerializer.deserialize(json)
+
+/**
  * MiniMessage
  */
 fun deserializeByMiniMessage(target: String, vararg tagResolver: TagResolver = emptyArray())

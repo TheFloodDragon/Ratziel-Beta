@@ -2,6 +2,7 @@
 
 package cn.fd.ratziel.item.meta
 
+import cn.fd.ratziel.adventure.ComponentSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
@@ -10,6 +11,7 @@ import com.google.common.collect.LinkedHashMultimap
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
+import net.kyori.adventure.text.Component
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
@@ -35,7 +37,8 @@ class VItemMeta {
      * 显示名称
      */
     @JsonNames("name", "display-name")
-    var displayName: String? = null
+    @Serializable(with = ComponentSerializer::class)
+    var displayName: Component? = null
 
     /**
      * 本地化名称
@@ -47,7 +50,7 @@ class VItemMeta {
      * 物品描述
      */
     @JsonNames("lores")
-    var lore: List<String> = emptyList()
+    var lore: List<@Serializable(with = ComponentSerializer::class) Component> = emptyList()
 
     /**
      * 自定义模型数据 (1.14+)
@@ -99,7 +102,7 @@ class VItemMeta {
     /**
      * 物品标志
      */
-    @JsonNames("hideFlag", "hideFlags", "flag", "flags", "itemFlag")
+    @JsonNames("hideflag", "hideflags", "hideFlag", "hideFlags", "flag", "flags", "itemFlag", "itemflag", "itemflags")
     val itemFlags: MutableList<@Serializable(with = ItemFlagSerializer::class) ItemFlag> = mutableListOf()
 
     /**
@@ -119,7 +122,7 @@ class VItemMeta {
     /**
      * 物品是否不可破坏
      */
-    @JsonNames("isUnbreakable")
+    @JsonNames("isUnbreakable", "isunbreakable")
     var unbreakable: Boolean = false
 
     /**
@@ -165,7 +168,7 @@ class VItemMeta {
      * 将数据转移到ItemMeta(克隆后的)中
      */
     fun itemMetaBy(itemMeta: ItemMeta) =
-        itemMeta.clone().also { meta->
+        itemMeta.clone().also { meta ->
             meta.setProperty("displayName", displayName)
             meta.setLocalizedName(localizedName)
             meta.setProperty("lore", lore)
