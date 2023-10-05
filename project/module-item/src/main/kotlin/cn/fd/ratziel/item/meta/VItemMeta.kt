@@ -54,7 +54,7 @@ class VItemMeta {
      */
     @JsonNames("lores")
     @Contextual
-    var lore: List<Component> = emptyList()
+    var lore: MutableList<Component> = mutableListOf()
 
     /**
      * 自定义模型数据 (1.14+)
@@ -177,7 +177,7 @@ class VItemMeta {
     constructor(meta: ItemMeta) {
         displayName = meta.getProperty<String?>("displayName")?.let { jsonToComponent(it) }
         localizedName = meta.localizedName
-        lore = meta.getProperty<List<String>?>("lore")?.map { jsonToComponent(it) } ?: emptyList()
+        lore = meta.getProperty<List<String>?>("lore")?.map { jsonToComponent(it) }?.toMutableList() ?: mutableListOf()
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
             customModelData = getProperty<Int>("customModelData")
         }
@@ -198,7 +198,7 @@ class VItemMeta {
         itemMeta.clone().also { meta ->
             meta.setDisplayName(displayName ?: Component.empty())
             meta.setLocalizedName(localizedName)
-            meta.setProperty("lore", lore)
+            meta.setProperty("lore", lore.toList())
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
                 setProperty("customModelData", customModelData?.let { Integer.valueOf(it) })
             }
