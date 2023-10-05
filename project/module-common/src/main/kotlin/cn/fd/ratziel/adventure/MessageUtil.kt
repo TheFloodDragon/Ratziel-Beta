@@ -10,7 +10,7 @@ const val NEWLINE_SIGN = "\n"
 /**
  * 基本消息构建
  */
-fun buildMessage(target: String?): Component = parseAdventure(target).also { println(it.toJsonFormat()) }
+fun buildMessage(target: String?): Component = parseAdventure(target)
 
 /**
  * Taboolib消息解析

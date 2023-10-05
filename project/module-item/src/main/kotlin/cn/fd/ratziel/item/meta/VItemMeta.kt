@@ -9,6 +9,7 @@ import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.item.meta.serializers.ItemFlagSerializer
 import com.google.common.collect.LinkedHashMultimap
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -52,7 +53,8 @@ class VItemMeta {
      * 物品描述
      */
     @JsonNames("lores")
-    var lore: List<@Serializable(with = ComponentSerializer::class) Component> = emptyList()
+    @Contextual
+    var lore: List<Component> = emptyList()
 
     /**
      * 自定义模型数据 (1.14+)

@@ -14,14 +14,14 @@ import net.kyori.adventure.text.Component
  * @author TheFloodDragon
  * @since 2023/10/5 11:42
  */
-class ComponentSerializer : KSerializer<Component> {
+object ComponentSerializer : KSerializer<Component> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("common.Component", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): Component = decoder.decodeString().let { source ->
         if (source.startsWith('{') && source.endsWith('}'))
             jsonToComponent(source)
-        else buildMessage(decoder.decodeString())
+        else buildMessage(source)
     }
 
     override fun serialize(encoder: Encoder, value: Component) = encoder.encodeString(value.toJsonFormat())
