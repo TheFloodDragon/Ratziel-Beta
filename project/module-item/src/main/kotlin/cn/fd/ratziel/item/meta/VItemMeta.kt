@@ -4,10 +4,6 @@ package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.adventure.ComponentSerializer
 import cn.fd.ratziel.adventure.jsonToComponent
-import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
-import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
-import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
-import cn.fd.ratziel.item.meta.serializers.ItemFlagSerializer
 import com.google.common.collect.LinkedHashMultimap
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -66,7 +62,7 @@ class VItemMeta {
      * 魔咒列表
      */
     @JsonNames("enchant", "enchantment", "enchantments")
-    var enchants: MutableMap<@Serializable(with = EnchantmentSerializer::class) Enchantment, Int> = mutableMapOf()
+    var enchants: MutableMap<@Contextual Enchantment, Int> = mutableMapOf()
         private set
 
     /**
@@ -108,8 +104,7 @@ class VItemMeta {
      * 物品标志
      */
     @JsonNames("hideflag", "hideflags", "hideFlag", "hideFlags", "flag", "flags", "itemFlag", "itemflag", "itemflags")
-    var itemFlags: MutableSet<@Serializable(with = ItemFlagSerializer::class) ItemFlag> = mutableSetOf()
-        private set
+    var itemFlags: MutableSet<@Contextual ItemFlag> = mutableSetOf()
 
     /**
      * 添加物品标志
@@ -135,9 +130,8 @@ class VItemMeta {
      * 物品属性修饰符
      */
     @JsonNames("attribute", "attributes", "modifier", "modifiers")
-    val attributeModifiers: MutableMap<
-            @Serializable(with = AttributeSerializer::class) Attribute,
-            MutableList<@Serializable(with = AttributeModifierSerializer::class) AttributeModifier>> = mutableMapOf()
+    var attributeModifiers: MutableMap<@Contextual Attribute,
+            MutableList<@Contextual AttributeModifier>> = mutableMapOf()
 
     /**
      * 获取属性修饰符

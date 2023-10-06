@@ -2,6 +2,7 @@ package cn.fd.ratziel.core.serialization
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
+import java.util.function.Function
 
 @OptIn(ExperimentalSerializationApi::class)
 val baseJson by lazy {
@@ -35,3 +36,20 @@ fun JsonElement.adapt(): Any {
  * 构造一个空Json如"{}"
  */
 fun emptyJson() = JsonObject(emptyMap())
+
+/**
+ * 对一个Json的所有Primitive值进行处理
+ * @param element 原始 Json 元素
+ * @param handle 处理方法
+ * @return 最终处理结果
+ */
+fun handlePrimitives(element: JsonElement, handle: Function<JsonPrimitive, JsonElement>): JsonElement =
+    when (element) {
+        is JsonPrimitive -> handle.apply(element)
+        is JsonArray -> buildJsonArray { element.jsonArray.forEach { add(handlePrimitives(it, handle)) } }
+        is JsonObject -> buildJsonObject {
+            element.jsonObject.forEach { key, value ->
+                put(key, handlePrimitives(value, handle))
+            }
+        }
+    }

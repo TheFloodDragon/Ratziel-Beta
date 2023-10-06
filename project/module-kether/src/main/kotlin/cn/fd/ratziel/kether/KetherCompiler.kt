@@ -20,7 +20,7 @@ object KetherCompiler {
                     val type = it["type"]?.jsonPrimitive?.content ?: "kether"
                     val content = it["value"]?.let { value -> buildSection(value).toString() }?.let { context ->
                         buildContent(context, type)
-                    } ?: return@objectScope builder
+                    } ?: return@objectScope
 
                     if (builder.isNotEmpty()) {
                         // 此前含有其他内容，换行隔开
@@ -37,7 +37,7 @@ object KetherCompiler {
                     if (it.isString)
                         buildSection(it.content, builder)
                 }
-            }
+            }.run()
 
             is String -> {
                 if (builder.isNotEmpty()) {

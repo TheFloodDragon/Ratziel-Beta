@@ -1,7 +1,7 @@
 package cn.fd.ratziel.core.serialization
 
 import kotlinx.serialization.json.*
-import java.util.function.Function
+import java.util.function.Consumer
 
 /**
  * JsonAdaptBuilder
@@ -14,30 +14,55 @@ open class JsonAdaptBuilder(private val jsonElement: JsonElement) {
     /**
      * JsonObject
      */
-    open fun <R> objectScope(function: Function<JsonObject, R>) = defaultScope(function)
+    lateinit var objectFunction: Consumer<JsonObject>
+        protected set
+
+    open fun objectScope(function: Consumer<JsonObject>) {
+        if (!::objectFunction.isInitialized) objectFunction = function
+    }
 
     /**
      * JsonArray
      */
-    open fun <R> arrayScope(function: Function<JsonArray, R>) = defaultScope(function)
+    lateinit var arrayFunction: Consumer<JsonArray>
+        protected set
+
+    open fun arrayScope(function: Consumer<JsonArray>) {
+        if (!::arrayFunction.isInitialized) arrayFunction = function
+    }
 
     /**
      * JsonPrimitive
      */
-    open fun <R> primitiveScope(function: Function<JsonPrimitive, R>) = defaultScope(function)
+    lateinit var primitiveFunction: Consumer<JsonPrimitive>
+        protected set
+
+    open fun primitiveScope(function: Consumer<JsonPrimitive>) {
+        if (!::primitiveFunction.isInitialized) primitiveFunction = function
+    }
 
     /**
      * JsonNull
      */
-    open fun <R> nullScope(function: Function<JsonNull, R>) = defaultScope(function)
+    lateinit var nullFunction: Consumer<JsonNull>
+        protected set
+
+    open fun nullScope(function: Consumer<JsonNull>) {
+        if (!::nullFunction.isInitialized) nullFunction = function
+    }
 
     /**
-     * 默认通用作用域
+     * 运行对应方法
      */
-    private inline fun <reified T, R> defaultScope(function: Function<T, R>) =
-        jsonElement.adapt().takeIf { it is T }?.let {
-            function.apply(it as T)
+    open fun run(): JsonElement {
+        when (jsonElement) {
+            is JsonObject -> objectFunction.accept(jsonElement)
+            is JsonArray -> arrayFunction.accept(jsonElement)
+            is JsonPrimitive -> primitiveFunction.accept(jsonElement)
+            is JsonNull -> nullFunction.accept(jsonElement)
         }
+        return jsonElement // 返回处理后的结果
+    }
 
     companion object {
 
