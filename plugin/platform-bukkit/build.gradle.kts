@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
     // Extension - Item
+    shadowModule("module-item")
 }
 
 tasks {

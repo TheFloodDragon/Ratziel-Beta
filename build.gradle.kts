@@ -52,11 +52,6 @@ subprojects {
             ).forEach { module -> module.takeIf { name != it }?.let { compileModule(it) } }
         }
 
-        // 脚本依赖
-        if (parent?.name == "script") {
-            compileAll()
-        }
-
     }
 
     java {
