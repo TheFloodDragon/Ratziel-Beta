@@ -1,9 +1,7 @@
 import java.io.BufferedReader
-import java.io.File
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import org.bukkit.configuration.file.YamlConfiguration.loadConfiguration as loadConfig
 
 val currentISODate: String
     get() = isoInstantFormat.format(System.currentTimeMillis())
@@ -41,21 +39,3 @@ fun getLatestRelease(repoOwner: String, repoName: String, fallback: String? = nu
         e.printStackTrace()
         fallback ?: throw e
     }
-
-/**
- * 合并两个YAML文件
- * @param merger 合并者
- * @param merged 被合并的
- */
-fun mergeYaml(merger: File, merged: File, out: File) {
-    loadConfig(if (out.exists()) out else merger).apply {
-        loadConfig(merged).let {
-            it.getKeys(false).forEach { k ->
-                set(k, it.get(k))
-                setInlineComments(k, it.getInlineComments(k))
-                setComments(k, it.getComments(k))
-            }
-        }
-        save(out)
-    }
-}

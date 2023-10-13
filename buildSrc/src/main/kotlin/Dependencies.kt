@@ -101,6 +101,27 @@ fun DependencyHandler.shadowTaboo(vararg module: String, version: String = taboo
     add(ACTION_SHADOW, "io.izzel.taboolib:$it:$version")
 }
 
+/**
+ * 通用依赖函数 (添加了自我检查)
+ */
+
+fun DependencyHandler.compile(target: Project) = dependChecked(target, ACTION_COMPILE)
+fun DependencyHandler.compile(target: String) = dependChecked(target, ACTION_COMPILE)
+
+fun DependencyHandler.shadow(target: Project) = dependChecked(target, ACTION_SHADOW)
+fun DependencyHandler.shadow(target: String) = dependChecked(target, ACTION_SHADOW)
+
+fun DependencyHandler.install(target: Project) = dependChecked(target, ACTION_INSTALL)
+fun DependencyHandler.install(target: String) = dependChecked(target, ACTION_INSTALL)
+
+private fun DependencyHandler.dependChecked(target: Project, action: String) {
+    if (project() != target) add(action, target)
+}
+
+private fun DependencyHandler.dependChecked(target: String, action: String) {
+    if (project().name != target) add(action, target)
+}
+
 private const val ACTION_COMPILE = "compileOnly"
 private const val ACTION_INSTALL = "api"
 private const val ACTION_SHADOW = "implementation"

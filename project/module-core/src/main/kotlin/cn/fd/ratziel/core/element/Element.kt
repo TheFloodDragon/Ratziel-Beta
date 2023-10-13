@@ -43,7 +43,7 @@ open class Element(
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + type.hashCode()
-        result = 31 * result + (property.hashCode() ?: 0)
+        result = 31 * result + (property.hashCode())
         result = 31 * result + address.hashCode()
         return result
     }
