@@ -84,9 +84,8 @@ subprojects {
             relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude("kotlin.Metadata") }
             relocate("kotlinx.", "kotlinx${kotlinVersion.escapedVersion}.")
             // Replace Tokens
-            expand {
-                Pair("@kotlin_version@", kotlinVersion.escapedVersion)
-            }
+//            expand(Pair("@kotlin_version@", kotlinVersion.escapedVersion))
+            relocate("@kotlin_version@", kotlinVersion.escapedVersion)
         }
     }
 
