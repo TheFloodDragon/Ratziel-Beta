@@ -83,13 +83,6 @@ subprojects {
             // Kotlin
             relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude("kotlin.Metadata") }
             relocate("kotlinx.", "kotlinx${kotlinVersion.escapedVersion}.")
-            // Replace Tokens
-            relocate("@kotlin_version@", kotlinVersion)
-            relocate("@kotlin_escaped_version@", kotlinVersion.escapedVersion)
-            relocate("@kotlin_serialization_version@", serializationVersion)
-            relocate("@kotlin_coroutine_version@", coroutineVersion)
-            relocate("@adventure_api_version@", "4.14.0")
-            relocate("@adventure_platform_version@", "4.3.1")
         }
     }
 
