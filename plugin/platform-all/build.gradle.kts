@@ -8,6 +8,9 @@ dependencies {
 }
 
 tasks {
+    build {
+        dependsOn(shadowJar)
+    }
     withType<ShadowJar> {
         archiveFileName.set("$rootName-$rootVersion.jar") //输出名称
     }

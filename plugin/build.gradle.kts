@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 subprojects {
 
     dependencies {
-        //通用模块
+        // 通用模块
         shadowModule("module-core")
         shadowModule("module-common")
     }
