@@ -2,22 +2,11 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 subprojects {
 
-    /**
-     * Runtime依赖 子项目必须写
-     */
-//    val runtimes: List<String> by extra
-
-//    afterEvaluate {
-//        dependencies {
-//            // 通用模块
-////            shadowModule("module-core")
-////            shadowModule("module-common")
-//            // Runtime依赖
-////            runtimes.forEach { shadowModule(it) }
-//        }
-//    }
-
-    val outDir = project.layout.buildDirectory.dir("cache/lang").get().asFile
+    dependencies {
+        //通用模块
+        shadowModule("module-core")
+        shadowModule("module-common")
+    }
 
     tasks {
         build {

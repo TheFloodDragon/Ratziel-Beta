@@ -1,8 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
-    rootProject.allprojects
-//        .forEach { if (it.name.contains("platform")) shadow(it) }
+    parent!!.subprojects
+        .forEach {
+            if (name != it.name) implementation(it)
+        }
 }
 
 tasks {
