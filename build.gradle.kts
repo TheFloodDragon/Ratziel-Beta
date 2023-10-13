@@ -77,7 +77,7 @@ subprojects {
             // Exclude
             exclude("META-INF/**")
             // Taboolib
-            relocate("tb.", "taboolib.")
+            relocate("tb.", "$rootGroup.taboolib.")
             relocate("taboolib.", "$rootGroup.taboolib.")
             relocate("org.tabooproject.", "$rootGroup.taboolib.library.")
             // Kotlin

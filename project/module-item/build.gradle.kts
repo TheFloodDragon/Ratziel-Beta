@@ -4,4 +4,5 @@ dependencies {
     compileTaboo("platform-bukkit")
     compileTaboo("module-nms")
     compileTaboo("module-nms-util")
+    compileModule("runtime-bukkit")
 }
