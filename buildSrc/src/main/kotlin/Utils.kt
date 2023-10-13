@@ -16,7 +16,7 @@ val systemIP: String
     get() = URL("http://ipinfo.io/ip").readText()
 
 val String.escapedVersion
-    get() = this.replace("[._-]", "")
+    get() = this.replace(".", "").replace("_", "").replace("-", "")
 
 fun getLatestRelease(repoOwner: String, repoName: String, fallback: String? = null): String =
     try {

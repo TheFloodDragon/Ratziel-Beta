@@ -9,12 +9,12 @@ import taboolib.common.env.RuntimeDependency;
  * @since 2023/5/21 11:06
  */
 @RuntimeDependency(
-        value = "!net.kyori:adventure-api:4.14.0",
+        value = "!net.kyori:adventure-api:@adventure_api_version@",
         initiative = true,
         transitive = false
 )
 @RuntimeDependency(
-        value = "!net.kyori:adventure-text-minimessage:4.14.0",
+        value = "!net.kyori:adventure-text-minimessage:@adventure_api_version@",
         transitive = false
 )
 

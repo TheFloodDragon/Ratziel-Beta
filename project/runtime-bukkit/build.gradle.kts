@@ -47,8 +47,8 @@ taboolib {
     }
 
     // 排除原有的防止重复 (为了支持Folia)
-    //exclude("taboolib/platform/BukkitPlugin")
-    //exclude("taboolib/platform/type/BukkitPlayer")
+    exclude("taboolib/platform/BukkitPlugin")
+    exclude("taboolib/platform/type/BukkitPlayer")
 
     classifier = null
     options("skip-minimize", "keep-kotlin-module", "skip-taboolib-relocate")

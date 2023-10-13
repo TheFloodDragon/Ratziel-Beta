@@ -9,22 +9,21 @@ import taboolib.common.env.RuntimeDependency;
  * @since 2023/8/23 16:20
  */
 @RuntimeDependency(
-        value = "!org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.0",
+        value = "!org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:@kotlin_serialization_version@",
         test = "!kotlinx1910.serialization.Serializer",
-        relocate = {"!kotlin.", "!kotlin1910.", "!kotlinx.", "!kotlinx1910."},
+        relocate = {"!kotlin.", "!kotlin@kotlin_escaped_version@.", "!kotlinx.", "!kotlinx@kotlin_escaped_version@."},
         transitive = false
 )
 @RuntimeDependency(
-        value = "!org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0",
-        test = "!kotlinx1910.serialization.json.JsonKt",
-        relocate = {"!kotlin.", "!kotlin1910.", "!kotlinx.", "!kotlinx1910."},
+        value = "!org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:@kotlin_serialization_version@",
+        test = "!kotlinx@kotlin_escaped_version@.serialization.json.JsonKt",
+        relocate = {"!kotlin.", "!kotlin@kotlin_escaped_version@.", "!kotlinx.", "!kotlinx@kotlin_escaped_version@."},
         transitive = false
 )
 @RuntimeDependency(
-        value = "!org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3",
-        relocate = {"!kotlin.", "!kotlin1910.", "!kotlinx.", "!kotlinx1910."},
+        value = "!org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:@kotlin_coroutine_version@",
+        relocate = {"!kotlin.", "!kotlin@kotlin_escaped_version@.", "!kotlinx.", "!kotlinx@kotlin_escaped_version@."},
         transitive = false
 )
 
-public class CoreEnv {
-}
+public class CoreEnv { }
