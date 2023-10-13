@@ -8,11 +8,11 @@ dependencies {
     compileOnly("net.md-5:bungeecord-chat:1.17")
     compileOnly("me.clip:placeholderapi:2.11.4")
     // Module - Kether
-    installModule("module-kether")
+    shadowModule("module-kether")
     // Module - Folia
-    installModule("module-folia")
+    shadowModule("module-folia")
     // Module - Item
-    installModule("module-item")
+    shadowModule("module-item")
 }
 
 taboolib {
@@ -49,8 +49,8 @@ taboolib {
     }
 
     // 排除原有的防止重复 (为了支持Folia)
-    exclude("taboolib/platform/BukkitPlugin")
-    exclude("taboolib/platform/type/BukkitPlayer")
+    //exclude("taboolib/platform/BukkitPlugin")
+    //exclude("taboolib/platform/type/BukkitPlayer")
 
     classifier = null
     options("skip-minimize", "keep-kotlin-module", "skip-taboolib-relocate")

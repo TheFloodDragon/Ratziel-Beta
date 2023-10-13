@@ -10,10 +10,10 @@ subprojects {
     afterEvaluate {
         dependencies {
             // 通用模块
-            installModule("module-core")
-            installModule("module-common")
+            shadowModule("module-core")
+            shadowModule("module-common")
             // Runtime依赖
-            runtimes.forEach { installModule(it) }
+            runtimes.forEach { shadowModule(it) }
         }
     }
 

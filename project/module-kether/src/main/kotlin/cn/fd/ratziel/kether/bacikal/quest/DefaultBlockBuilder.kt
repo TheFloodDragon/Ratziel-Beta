@@ -1,8 +1,6 @@
 package cn.fd.ratziel.kether.bacikal.quest
 
-import cn.fd.ratziel.core.serialization.JsonAdaptBuilder.Companion.adaptBuilder
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import taboolib.library.configuration.ConfigurationSection
 
 /**
@@ -255,9 +253,9 @@ class DefaultBlockBuilder(override var name: String) : BacikalBlockBuilder {
                 this.append(section.toString())
             }
 
-            is JsonElement -> section.adaptBuilder {
-                objectScope {
-                    val content = it["value"]?.format(it["type"]?.jsonPrimitive?.content ?: "kether")
+            is JsonElement -> when (section) {
+                is JsonObject -> {
+                    val content = section["value"]?.format(section["type"]?.jsonPrimitive?.content ?: "kether")
 
                     if (this@appendSection.isNotEmpty()) {
                         // 此前含有其他内容，换行隔开
@@ -265,14 +263,16 @@ class DefaultBlockBuilder(override var name: String) : BacikalBlockBuilder {
                     }
                     this@appendSection.append(content)
                 }
-                arrayScope {
-                    it.forEach { jsonElement ->
+
+                is JsonArray -> {
+                    section.forEach { jsonElement ->
                         this@appendSection.appendSection(jsonElement)
                     }
                 }
-                primitiveScope {
-                    if (it.isString)
-                        this@appendSection.appendSection(it.content)
+
+                is JsonPrimitive -> {
+                    if (section.isString)
+                        this@appendSection.appendSection(section.content)
                 }
             }
 

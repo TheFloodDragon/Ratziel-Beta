@@ -1,8 +1,6 @@
 package cn.fd.ratziel.kether
 
-import cn.fd.ratziel.core.serialization.JsonAdaptBuilder.Companion.adaptBuilder
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 
 /**
  * KetherCompiler
@@ -15,12 +13,12 @@ object KetherCompiler {
 
     fun buildSection(section: Any, builder: StringBuilder = StringBuilder()): StringBuilder {
         when (section) {
-            is JsonElement -> section.adaptBuilder {
-                objectScope {
-                    val type = it["type"]?.jsonPrimitive?.content ?: "kether"
-                    val content = it["value"]?.let { value -> buildSection(value).toString() }?.let { context ->
+            is JsonElement -> when (section) {
+                is JsonObject -> {
+                    val type = section["type"]?.jsonPrimitive?.content ?: "kether"
+                    val content = section["value"]?.let { value -> buildSection(value).toString() }?.let { context ->
                         buildContent(context, type)
-                    } ?: return@objectScope
+                    } ?: return builder
 
                     if (builder.isNotEmpty()) {
                         // 此前含有其他内容，换行隔开
@@ -28,16 +26,18 @@ object KetherCompiler {
                     }
                     builder.append(content)
                 }
-                arrayScope {
-                    it.forEach { jsonElement ->
+
+                is JsonArray -> {
+                    section.forEach { jsonElement ->
                         buildSection(jsonElement, builder)
                     }
                 }
-                primitiveScope {
-                    if (it.isString)
-                        buildSection(it.content, builder)
+
+                is JsonPrimitive -> {
+                    if (section.isString)
+                        buildSection(section.content, builder)
                 }
-            }.run()
+            }
 
             is String -> {
                 if (builder.isNotEmpty()) {

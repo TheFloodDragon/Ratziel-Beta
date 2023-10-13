@@ -11,6 +11,7 @@ object Ratziel : Plugin() {
     val plugin by lazy { BukkitPlugin.getInstance() }
 
     override fun onLoad() {
+        println("Test: @kotlin_version@")
         console().sendLang("Plugin-Loading", pluginVersion)
     }
 

@@ -32,11 +32,12 @@ subprojects {
     }
 
     dependencies {
+        // Kotlin标准库
         compileOnly(kotlin("stdlib"))
 
         // 项目依赖
         if (parent?.name == "project") {
-            compileTabooLib()
+            compileTabooCommon()
             // MiniMessage - https://docs.adventure.kyori.net/minimessage/api.html
             adventure()
             // Kotlin序列化工具
@@ -79,14 +80,17 @@ subprojects {
             destinationDirectory.set(file("$rootDir/outs")) //输出路径
             // Exclude
             exclude("META-INF/**")
-            exclude("com/**", "org/**")
             // Taboolib
-            relocate("taboolib", "$rootGroup.taboolib")
-            relocate("tb", "$rootGroup.taboolib")
-            relocate("org.tabooproject", "$rootGroup.taboolib.library")
+            relocate("tb.", "taboolib.")
+            relocate("taboolib.", "$rootGroup.taboolib.")
+            relocate("org.tabooproject.", "$rootGroup.taboolib.library.")
             // Kotlin
-            relocate("kotlin.", "kotlin1910.") { exclude("kotlin.Metadata") }
-            relocate("kotlinx.", "kotlinx1910.")
+            relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude("kotlin.Metadata") }
+            relocate("kotlinx.", "kotlinx${kotlinVersion.escapedVersion}.")
+            // Replace Tokens
+            expand {
+                Pair("@kotlin_version@", kotlinVersion.escapedVersion)
+            }
         }
     }
 

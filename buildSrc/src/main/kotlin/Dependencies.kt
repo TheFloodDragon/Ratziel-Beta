@@ -61,8 +61,8 @@ fun DependencyHandler.adventure() {
 /**
  * Taboolib通用依赖
  */
-fun DependencyHandler.compileTabooLib() {
-    taboolibModules.forEach { installTaboo(it) }
+fun DependencyHandler.compileTabooCommon() {
+    taboolibModules.forEach { compileTaboo(it) }
 }
 
 /**
@@ -73,7 +73,7 @@ fun DependencyHandler.compileModule(name: String) {
     add("compileOnly", project(":project:$name"))
 }
 
-fun DependencyHandler.installModule(name: String) {
+fun DependencyHandler.shadowModule(name: String) {
     add("implementation", project(":project:$name"))
 }
 
@@ -89,7 +89,7 @@ fun DependencyHandler.compileAll() {
  * @param module Taboolib模块名称
  * @param version Taboolib模块版本，默认为Taboolib版本
  */
-fun DependencyHandler.installTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {
+fun DependencyHandler.compileTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {
     add("compileOnly", "io.izzel.taboolib:$it:$version")
 }
 

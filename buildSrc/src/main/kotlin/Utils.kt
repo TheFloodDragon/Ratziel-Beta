@@ -17,7 +17,10 @@ val systemOS: String
 val systemIP: String
     get() = URL("http://ipinfo.io/ip").readText()
 
-fun getLatestRelease(repoOwner: String, repoName: String, fallback: String) =
+val String.escapedVersion
+    get() = this.replace("[._-]", "")
+
+fun getLatestRelease(repoOwner: String, repoName: String, fallback: String? = null): String =
     try {
         val url = URL("https://api.github.com/repos/$repoOwner/$repoName/releases/latest")
         val connection = url.openConnection() as HttpURLConnection
@@ -36,7 +39,7 @@ fun getLatestRelease(repoOwner: String, repoName: String, fallback: String) =
         tagName.replace("\"", "")
     } catch (e: Exception) {
         e.printStackTrace()
-        fallback // 使用默认值
+        fallback ?: throw e
     }
 
 /**

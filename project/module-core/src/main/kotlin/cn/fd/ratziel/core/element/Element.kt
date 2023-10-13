@@ -1,6 +1,5 @@
 package cn.fd.ratziel.core.element
 
-import cn.fd.ratziel.core.serialization.adapt
 import kotlinx.serialization.json.JsonElement
 import java.io.File
 
@@ -22,13 +21,6 @@ open class Element(
      */
     open val address: ElementAddress = ElementAddress(id, type, null),
 ) {
-
-    /**
-     * 获取自适应的元素属性
-     */
-    open fun adaptProperty(): Any? {
-        return property.adapt()
-    }
 
     constructor(
         id: String,
