@@ -5,6 +5,13 @@ extra["runtimes"] =
         .filter { it.name.contains("runtime") }
         .map { it.name }
 
+dependencies {
+    parent!!.subprojects.forEach {
+        if (it != this.project()) //排除自己
+            implementation(it)
+    }
+}
+
 tasks {
     build {
         dependsOn(shadowJar)

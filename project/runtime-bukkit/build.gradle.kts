@@ -8,11 +8,11 @@ dependencies {
     compileOnly("net.md-5:bungeecord-chat:1.17")
     compileOnly("me.clip:placeholderapi:2.11.4")
     // Module - Kether
-    shadowModule("module-kether")
+    installModule("module-kether")
     // Module - Folia
-    shadowModule("module-folia")
+    installModule("module-folia")
     // Module - Item
-    shadowModule("module-item")
+    installModule("module-item")
 }
 
 taboolib {

@@ -37,6 +37,7 @@ subprojects {
 
         // 项目依赖
         if (parent?.name == "project") {
+            // Taboolib通用模块
             compileTabooCommon()
             // MiniMessage - https://docs.adventure.kyori.net/minimessage/api.html
             adventure()
@@ -48,7 +49,7 @@ subprojects {
             arrayOf(
                 "module-core",
                 "module-common".takeIf { name != "module-core" }
-            ).forEach { module -> module.takeIf { name != it }?.let { compileModule(it) } }
+            ).forEach { module -> module.takeIf { name != it }?.let { installModule(it) } }
         }
 
         // 脚本依赖

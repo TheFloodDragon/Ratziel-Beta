@@ -19,21 +19,21 @@ fun Project.buildDirClean() {
  * Kotlin序列化工具
  */
 fun DependencyHandler.serialization() {
-    add("compileOnly", "org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+    add(ACTION_COMPILE, "org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
 }
 
 /**
  * Kotlin协程工具
  */
 fun DependencyHandler.coroutine() {
-    add("compileOnly", "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
+    add(ACTION_COMPILE, "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
 }
 
 /**
  * NMS依赖
  */
 fun DependencyHandler.compileNMS() {
-    add("compileOnly", "ink.ptms:nms-all:1.0.0")
+    add(ACTION_COMPILE, "ink.ptms:nms-all:1.0.0")
 }
 
 /**
@@ -48,14 +48,14 @@ fun DependencyHandler.compileCore(
 ) {
     val notation =
         "ink.ptms.core:v$version:$version${if (!complete && minimize) "-minimize" else ""}${if (complete) "" else if (mapped) ":mapped" else ":universal"}"
-    add("compileOnly", notation)
+    add(ACTION_COMPILE, notation)
 }
 
 /**
  * Adventure依赖
  */
 fun DependencyHandler.adventure() {
-    adventureModules.forEach { add("compileOnly", it) }
+    adventureModules.forEach { add(ACTION_COMPILE, it) }
 }
 
 /**
@@ -66,36 +66,41 @@ fun DependencyHandler.compileTabooCommon() {
 }
 
 /**
- * 依赖项目——仅编译时
+ * 依赖项目
  * @param name 项目名称
  */
 fun DependencyHandler.compileModule(name: String) {
-    add("compileOnly", project(":project:$name"))
+    add(ACTION_COMPILE, project(":project:$name"))
+}
+
+fun DependencyHandler.installModule(name: String) {
+    add(ACTION_INSTALL, project(":project:$name"))
 }
 
 fun DependencyHandler.shadowModule(name: String) {
-    add("implementation", project(":project:$name"))
+    add(ACTION_SHADOW, project(":project:$name"))
 }
 
 /**
- * 依赖所有项目——仅编译时
+ * 依赖所有项目
  */
 fun DependencyHandler.compileAll() {
-    project(":project").dependencyProject.childProjects.forEach { add("compileOnly", it.value) }
-}
-
-/**
- * 依赖Taboolib模块——仅编译时
- * @param module Taboolib模块名称
- * @param version Taboolib模块版本，默认为Taboolib版本
- */
-fun DependencyHandler.compileTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {
-    add("compileOnly", "io.izzel.taboolib:$it:$version")
+    project(":project").dependencyProject.childProjects.forEach { add(ACTION_COMPILE, it.value) }
 }
 
 /**
  * 依赖Taboolib模块
+ * @param module Taboolib模块名称
+ * @param version Taboolib版本
  */
-fun DependencyHandler.shadowTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {
-    add("implementation", "io.izzel.taboolib:$it:$version")
+fun DependencyHandler.compileTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {
+    add(ACTION_COMPILE, "io.izzel.taboolib:$it:$version")
 }
+
+fun DependencyHandler.shadowTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {
+    add(ACTION_SHADOW, "io.izzel.taboolib:$it:$version")
+}
+
+private const val ACTION_COMPILE = "compileOnly"
+private const val ACTION_INSTALL = "api"
+private const val ACTION_SHADOW = "implementation"
