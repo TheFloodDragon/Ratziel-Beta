@@ -18,11 +18,7 @@ object ComponentSerializer : KSerializer<Component> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("common.Component", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): Component = decoder.decodeString().let { source ->
-        if (source.startsWith('{') && source.endsWith('}'))
-            jsonToComponent(source)
-        else buildMessage(source)
-    }
+    override fun deserialize(decoder: Decoder): Component = buildMessageMJ(decoder.decodeString())
 
     override fun serialize(encoder: Encoder, value: Component) = encoder.encodeString(value.toJsonFormat())
 }

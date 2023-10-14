@@ -26,6 +26,11 @@ val baseJson by lazy {
 fun emptyJson() = JsonObject(emptyMap())
 
 /**
+ * 简单的Json检查
+ */
+fun String.isJson(): Boolean = startsWith('{') && endsWith('}')
+
+/**
  * 对一个Json的所有Primitive值进行处理
  * @param element 原始 Json 元素
  * @param handle 处理方法

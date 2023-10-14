@@ -6,12 +6,13 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
+import cn.fd.ratziel.item.meta.VItemDisplay
 import cn.fd.ratziel.item.meta.VItemMeta
-import cn.fd.ratziel.item.meta.serializers.bmeta.AttributeModifierSerializer
-import cn.fd.ratziel.item.meta.serializers.bmeta.AttributeSerializer
-import cn.fd.ratziel.item.meta.serializers.bmeta.EnchantmentSerializer
-import cn.fd.ratziel.item.meta.serializers.bmeta.ItemFlagSerializer
-import cn.fd.ratziel.item.meta.serializers.vmeta.ItemMetaSerializer
+import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
+import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
+import cn.fd.ratziel.item.meta.serializers.ItemFlagSerializer
+import cn.fd.ratziel.item.meta.util.VItemChar
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.modules.SerializersModule
@@ -36,8 +37,6 @@ object ItemElement : ElementHandler {
 
     val serializers by lazy {
         SerializersModule {
-            // VSeries Serializers
-            contextual(VItemMeta::class, ItemMetaSerializer)
             // Common Serializers
             contextual(Component::class, ComponentSerializer)
             contextual(EnhancedListSerializer(ComponentSerializer))
@@ -58,7 +57,9 @@ object ItemElement : ElementHandler {
     override fun handle(element: Element) = try {
         println(element.property)
 
-        val meta = json.decodeFromJsonElement<VItemMeta>(element.property)
+        val display = json.decodeFromJsonElement<VItemDisplay>(element.property)
+        val char = json.decodeFromJsonElement<VItemChar>(element.property)
+        val meta = VItemMeta(display, char)
 
         println(meta.display)
         println(meta.characteristic)

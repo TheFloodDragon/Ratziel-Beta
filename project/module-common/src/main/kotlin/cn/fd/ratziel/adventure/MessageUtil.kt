@@ -1,5 +1,6 @@
 package cn.fd.ratziel.adventure
 
+import cn.fd.ratziel.core.serialization.isJson
 import net.kyori.adventure.text.Component
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
@@ -7,23 +8,29 @@ import taboolib.module.chat.Components
 /**
  * 基本消息构建
  */
-fun buildMessage(target: String?): Component = parseAdventure(target)
+fun buildMessage(source: String?): Component = source?.let { parseAdventure(it) } ?: Component.empty()
+
+/**
+ * 可能是Json字符串的消息构建
+ */
+fun buildMessageMJ(source: String?): Component = source?.let {
+    if (it.isJson()) jsonToComponent(it)
+    else buildMessage(it)
+} ?: Component.empty()
 
 /**
  * Taboolib消息解析
  */
-fun parseTaboolibMessage(target: String?): ComponentText =
-    target?.let { Components.parseSimple(it).build() } ?: ComponentText.empty()
+fun parseTaboolibMessage(source: String?): ComponentText =
+    source?.let { Components.parseSimple(it).build() } ?: ComponentText.empty()
 
 /**
  * 冒险API消息解析
  */
-fun parseAdventure(target: String?): Component =
-    target?.let {
-        deserializeByMiniMessage(
-            serializeByMiniMessage(
-                deserializeLegacy(translateAmpersandColor(it))
-            ).replace("\\<", "<")
-                .replace("\\>", ">")
-        )
-    } ?: Component.empty()
+fun parseAdventure(source: String): Component =
+    deserializeByMiniMessage(
+        serializeByMiniMessage(
+            deserializeLegacy(translateAmpersandColor(source))
+        ).replace("\\<", "<")
+            .replace("\\>", ">")
+    )

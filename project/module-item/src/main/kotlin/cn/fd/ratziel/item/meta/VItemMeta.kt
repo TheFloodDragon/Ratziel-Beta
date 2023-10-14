@@ -4,7 +4,6 @@ package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.item.api.ItemMetadata
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.module.nms.MinecraftVersion
@@ -16,10 +15,9 @@ import java.util.function.Consumer
  * @author TheFloodDragon
  * @since 2023/10/14 16:15
  */
-@Serializable
 class VItemMeta(
-    override val display: VItemDisplay? = null,
-    override val characteristic: VItemCharacteristic? = null,
+    override val display: VItemDisplay = VItemDisplay(),
+    override val characteristic: VItemCharacteristic = VItemCharacteristic(),
 ) : ItemMetadata {
 
     /**
@@ -40,37 +38,37 @@ class VItemMeta(
          * 使用变量的形式是为了自定义性
          */
         fDisplayName: Consumer<VItemMeta> = Consumer {
-            if (it.display?.name == null || replace)
-                it.display?.name = meta.getProperty("displayName")
+            if (it.display.name == null || replace)
+                it.display.setName(meta.getProperty("displayName"))
         },
         fLocalizedName: Consumer<VItemMeta> = Consumer {
-            if (it.characteristic?.localizedName == null || replace)
-                it.characteristic?.localizedName = meta.localizedName
+            if (it.characteristic.localizedName == null || replace)
+                it.characteristic.localizedName = meta.localizedName
         },
         fLore: Consumer<VItemMeta> = Consumer {
-            if (it.display?.lore?.isEmpty() == true || replace)
-                it.display?.lore = meta.getProperty("lore") ?: emptyList()
+            if (it.display.lore.isEmpty() || replace)
+                it.display.setLore(meta.getProperty("lore") ?: emptyList())
         },
         fCustomModelData: Consumer<VItemMeta> = Consumer {
-            if (it.characteristic?.customModelData == null || replace)
-                it.characteristic?.customModelData = getProperty<Int>("customModelData")
+            if (it.characteristic.customModelData == null || replace)
+                it.characteristic.customModelData = getProperty<Int>("customModelData")
         },
         fEnchants: Consumer<VItemMeta> = Consumer {
-            if (it.characteristic?.enchants?.isEmpty() == true || replace)
-                it.characteristic?.enchants = meta.enchants
+            if (it.characteristic.enchants.isEmpty() || replace)
+                it.characteristic.enchants = meta.enchants
         },
         fItemFlags: Consumer<VItemMeta> = Consumer {
-            if (it.characteristic?.itemFlags?.isEmpty() == true || replace)
-                it.characteristic?.itemFlags = meta.itemFlags
+            if (it.characteristic.itemFlags.isEmpty() || replace)
+                it.characteristic.itemFlags = meta.itemFlags
         },
         fUnbreakable: Consumer<VItemMeta> = Consumer {
-            it.characteristic?.unbreakable = meta.isUnbreakable
+            it.characteristic.unbreakable = meta.isUnbreakable
         },
         fAttributeModifiers: Consumer<VItemMeta> = Consumer {
-            if (it.characteristic?.attributeModifiers?.isEmpty() == true || replace)
-                it.characteristic?.attributeModifiers.apply {
+            if (it.characteristic.attributeModifiers.isEmpty() || replace)
+                it.characteristic.attributeModifiers.apply {
                     meta.attributeModifiers?.forEach { key, value ->
-                        characteristic?.addAttributeModifiers(key, value)
+                        characteristic.addAttributeModifiers(key, value)
                     }
                 }
         },

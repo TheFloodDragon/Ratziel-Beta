@@ -2,7 +2,7 @@
 
 package cn.fd.ratziel.item.meta
 
-import cn.fd.ratziel.adventure.buildMessage
+import cn.fd.ratziel.adventure.buildMessageMJ
 import cn.fd.ratziel.item.api.ItemDisplay
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -27,15 +27,15 @@ data class VItemDisplay(
     /**
      * 设置显示名称
      */
-    fun setName(origin: String) {
-        name = buildMessage(origin)
+    fun setName(origin: String?) {
+        name = buildMessageMJ(origin)
     }
 
     /**
      * 设置描述
      */
-    fun setLore(components: Iterable<String>) {
-        lore = components.map { buildMessage(it) }
+    fun setLore(components: Iterable<String?>) {
+        lore = components.map { buildMessageMJ(it) }
     }
 
 }
