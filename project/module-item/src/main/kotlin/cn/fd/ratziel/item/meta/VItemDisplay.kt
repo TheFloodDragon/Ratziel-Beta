@@ -1,8 +1,12 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.item.api.ItemDisplay
+import cn.fd.ratziel.item.meta.util.nmsComponent
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.json.JsonNames
 import net.kyori.adventure.text.Component
 
 /**
@@ -12,16 +16,12 @@ import net.kyori.adventure.text.Component
  * @since 2023/10/14 16:15
  */
 @Serializable
-data class VItemDisplay(
-    private val nameC: ComponentSerializable,
-    private val loreC: Iterable<ComponentSerializable>?,
+class VItemDisplay(
+    @JsonNames("name", "display-name", "displayname")
+    override var name: String? = null,
+    @JsonNames("lores")
+    override var lore: List<String> = emptyList(),
 ) : ItemDisplay {
-
-    @Transient
-    override var name: String? = nmsComponent(nameC)
-
-    @Transient
-    override var lore: List<String> = loreC?.map { nmsComponent(it) } ?: emptyList()
 
     /**
      * 设置显示名称
@@ -36,6 +36,5 @@ data class VItemDisplay(
     fun setLore(components: Iterable<Component>) {
         lore = components.map { nmsComponent(it) }
     }
-
 
 }

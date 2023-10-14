@@ -13,4 +13,9 @@ interface ItemMetadata {
      */
     val display: ItemDisplay?
 
+    /**
+     * 物品特性
+     */
+    val characteristic: ItemCharacteristic?
+
 }

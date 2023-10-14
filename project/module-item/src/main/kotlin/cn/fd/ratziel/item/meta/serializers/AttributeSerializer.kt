@@ -1,6 +1,6 @@
 package cn.fd.ratziel.item.meta.serializers
 
-import cn.fd.ratziel.item.meta.matchAttribute
+import cn.fd.ratziel.item.meta.util.MetaMather
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -23,5 +23,5 @@ object AttributeSerializer : KSerializer<Attribute> {
         encoder.encodeString(value.key.key)
     }
 
-    override fun deserialize(decoder: Decoder) = matchAttribute(decoder.decodeString())
+    override fun deserialize(decoder: Decoder) = MetaMather.matchAttribute(decoder.decodeString())
 }
