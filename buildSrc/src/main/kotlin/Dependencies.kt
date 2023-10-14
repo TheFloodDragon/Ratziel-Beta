@@ -42,7 +42,7 @@ fun DependencyHandler.compileNMS() {
  */
 fun DependencyHandler.compileCore(
     version: Int,
-    minimize: Boolean = true,
+    minimize: Boolean = false,
     mapped: Boolean = false,
     complete: Boolean = false,
 ) {

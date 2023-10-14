@@ -7,7 +7,7 @@ import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.handlePrimitives
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
-import cn.fd.ratziel.item.meta.VItemMeta
+import cn.fd.ratziel.item.meta.OItemMeta
 import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
@@ -57,7 +57,10 @@ class TestElement : ElementHandler {
 
         handlePrimitives(element.property) { if (it.isString) JsonPrimitive(it.content.replace("1", "2")) else it }
 
-        val meta = json.decodeFromJsonElement<VItemMeta>(element.property)
+        val meta = json.decodeFromJsonElement<OItemMeta>(element.property)
+
+        println(meta)
+
     } catch (ex: Exception) {
         ex.printStackTrace()
     }

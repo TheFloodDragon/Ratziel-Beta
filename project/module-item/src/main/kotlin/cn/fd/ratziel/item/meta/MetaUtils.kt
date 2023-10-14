@@ -1,31 +1,25 @@
 package cn.fd.ratziel.item.meta
 
+import cn.fd.ratziel.adventure.ComponentSerializer
 import cn.fd.ratziel.adventure.serializeByMiniMessage
 import cn.fd.ratziel.adventure.toJsonFormat
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemFlag
-import org.bukkit.inventory.meta.ItemMeta
 import taboolib.common.util.Strings
-import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.library.xseries.XEnchantment
 import taboolib.module.nms.BukkitAttribute
 import taboolib.module.nms.MinecraftVersion
 import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrElse
 
+typealias ComponentSerializable = @Serializable(ComponentSerializer::class) Component
+
 fun nmsComponent(component: Component): String =
     if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
         serializeByMiniMessage(component)
     } else component.toJsonFormat()
-
-fun ItemMeta.setDisplayName(component: Component) = this.apply {
-    setProperty("displayName", nmsComponent(component))
-}
-
-fun ItemMeta.setLore(components: Iterable<Component>) = this.apply {
-    setProperty("lore", components.map { nmsComponent(it) })
-}
 
 /**
  * 匹配物品魔咒
