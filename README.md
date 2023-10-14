@@ -4,7 +4,7 @@
 
 ## 功能
 
-- TODO
+- 暂时没有
 
 ## 需求
 
@@ -62,7 +62,7 @@
 
 ### 鸣谢
 
-- ##### 代码参考
+- ##### 源码参考
 
-    - 坏黑 - [Zaphkiel](https://github.com/TabooLib/zaphkiel/)
-    - Lanscarlos - [Vulpecula](https://github.com/Lanscarlos/Vulpecula/)
+    - @Bkm016 - [Zaphkiel](https://github.com/TabooLib/zaphkiel/)
+    - @Lanscarlos - [Vulpecula](https://github.com/Lanscarlos/Vulpecula/)
