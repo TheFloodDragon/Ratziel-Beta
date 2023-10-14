@@ -14,16 +14,17 @@ import taboolib.module.nms.MinecraftVersion
 import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrElse
 
-fun ItemMeta.setDisplayName(component: Component) = this.apply {
+fun nmsComponent(component: Component): String =
     if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
-        setDisplayName(serializeByMiniMessage(component))
-    } else setProperty("displayName", component.toJsonFormat())
+        serializeByMiniMessage(component)
+    } else component.toJsonFormat()
+
+fun ItemMeta.setDisplayName(component: Component) = this.apply {
+    setProperty("displayName", nmsComponent(component))
 }
 
 fun ItemMeta.setLore(components: Iterable<Component>) = this.apply {
-    if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
-        lore = components.map { serializeByMiniMessage(it) }
-    } else setProperty("lore", components.map { it.toJsonFormat() })
+    setProperty("lore", components.map { nmsComponent(it) })
 }
 
 /**
@@ -56,7 +57,9 @@ fun matchAttribute(source: String) =
 fun matchAttributeOperation(source: String) =
     try {
         AttributeModifier.Operation.valueOf(source)
-    } catch (_: IllegalArgumentException) { null }
+    } catch (_: IllegalArgumentException) {
+        null
+    }
         ?: AttributeModifier.Operation.entries.maxBy {
             Strings.similarDegree(it.name, source)
         }
@@ -67,7 +70,9 @@ fun matchAttributeOperation(source: String) =
 fun matchItemFlag(source: String) =
     try {
         ItemFlag.valueOf(source)
-    } catch (_: IllegalArgumentException) { null }
+    } catch (_: IllegalArgumentException) {
+        null
+    }
         ?: ItemFlag.entries.maxBy {
             Strings.similarDegree(it.name, source)
         }

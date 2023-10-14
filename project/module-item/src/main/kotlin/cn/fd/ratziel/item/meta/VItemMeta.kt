@@ -4,7 +4,6 @@ package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.adventure.ComponentSerializer
 import cn.fd.ratziel.adventure.jsonToComponent
-import com.google.common.collect.LinkedHashMultimap
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -17,7 +16,6 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
-import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.module.nms.MinecraftVersion
 import java.util.function.Consumer
 
@@ -231,25 +229,29 @@ class VItemMeta {
         fAttributeModifiers.accept(this)
     }
 
-    /**
-     * 转换成Bukkit.ItemMeta
-     */
-    fun toBukkit(itemMeta: ItemMeta) =
-        itemMeta.clone().also { meta ->
-            meta.setDisplayName(displayName ?: Component.empty())
-            meta.setLocalizedName(localizedName)
-            meta.setProperty("lore", lore.toList())
-            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                setProperty("customModelData", customModelData?.let { Integer.valueOf(it) })
-            }
-            meta.enchants.clear()
-            this.enchants.forEach { meta.addEnchant(it.key, it.value, true) }
-            meta.itemFlags.clear()
-            meta.addItemFlags(*this.itemFlags.toSet().toTypedArray())
-            meta.isUnbreakable = this.unbreakable
-            meta.attributeModifiers = LinkedHashMultimap.create<Attribute, AttributeModifier>().apply {
-                this@VItemMeta.attributeModifiers.forEach { putAll(it.key, it.value) }
-            }
-        }
+//    /**
+//     * 转换成ItemTag
+//     * TODO 该如何设计这个函数
+//     */
+//    fun toItemTag(itemTag: ItemTag = ItemTag()) =
+//        itemTag.apply {
+//            val display = this.computeIfAbsent("display") { ItemTag() } as ItemTag
+//            display["Name"] = ItemTagData(nmsComponent(displayName ?: Component.empty()))
+//            display["Lore"] = lore.map {
+//                ItemTagData(nmsComponent(displayName ?: Component.empty()))
+//            }.toCollection(ItemTagList())
+////            meta.setLocalizedName(localizedName)
+////            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
+////                setProperty("customModelData", customModelData?.let { Integer.valueOf(it) })
+////            }
+////            meta.enchants.clear()
+////            this.enchants.forEach { meta.addEnchant(it.key, it.value, true) }
+////            meta.itemFlags.clear()
+////            meta.addItemFlags(*this.itemFlags.toSet().toTypedArray())
+////            meta.isUnbreakable = this.unbreakable
+////            meta.attributeModifiers = LinkedHashMultimap.create<Attribute, AttributeModifier>().apply {
+////                this@VItemMeta.attributeModifiers.forEach { putAll(it.key, it.value) }
+////            }
+//        }
 
 }
