@@ -1,9 +1,6 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.item.api.ItemMetadata
-import kotlinx.serialization.ExperimentalSerializationApi
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.module.nms.MinecraftVersion
