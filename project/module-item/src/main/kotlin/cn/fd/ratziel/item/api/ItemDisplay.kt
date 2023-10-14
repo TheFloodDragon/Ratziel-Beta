@@ -1,11 +1,9 @@
 package cn.fd.ratziel.item.api
 
+import net.kyori.adventure.text.Component
+
 /**
  * ItemDisplay - 物品的显示部分
- *
- * NMS:
- *   1.13+ > Json Format
- *   1.13- > Original Format (§)
  *
  * @author TheFloodDragon
  * @since 2023/10/14 16:08
@@ -15,11 +13,11 @@ interface ItemDisplay {
     /**
      * 物品名称
      */
-    var name: String?
+    var name: Component?
 
     /**
      * 物品描述
      */
-    var lore: List<String>
+    var lore: List<Component>
 
 }

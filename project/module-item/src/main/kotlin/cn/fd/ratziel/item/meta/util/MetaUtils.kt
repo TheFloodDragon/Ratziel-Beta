@@ -10,6 +10,11 @@ import taboolib.module.nms.MinecraftVersion
 typealias ItemChar = ItemCharacteristic
 typealias VItemChar = VItemCharacteristic
 
+/**
+ * NMS:
+ *   1.13+ > Json Format
+ *   1.13- > Original Format (§)
+ */
 fun nmsComponent(component: Component): String =
     if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
         serializeByMiniMessage(component)

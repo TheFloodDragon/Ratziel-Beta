@@ -1,7 +1,9 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.item.api.ItemMetadata
-import kotlinx.serialization.Contextual
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
@@ -15,16 +17,15 @@ import java.util.function.Consumer
  * @since 2023/10/14 16:15
  */
 @Serializable
-class VItemMeta : ItemMetadata {
-
-    override val display: @Contextual VItemDisplay? = null
-
-    override val characteristic: @Contextual VItemCharacteristic? = null
+class VItemMeta(
+    override val display: VItemDisplay? = null,
+    override val characteristic: VItemCharacteristic? = null,
+) : ItemMetadata {
 
     /**
      * 通过Bukkit.ItemMeta构造
      */
-    constructor(meta: ItemMeta, replace: Boolean = true) {
+    constructor(meta: ItemMeta, replace: Boolean = true) : this() {
         applyForm(meta, replace)
     }
 
