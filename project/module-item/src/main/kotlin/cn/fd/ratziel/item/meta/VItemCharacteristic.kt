@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemFlag
  * @since 2023/10/14 18:38
  */
 @Serializable
-class VItemCharacteristic(
+data class VItemCharacteristic(
     @JsonNames("loc-name", "local-name")
     override var localizedName: String? = null,
     @JsonNames("custom-model-data", "cmd")

@@ -16,7 +16,7 @@ import net.kyori.adventure.text.Component
  * @since 2023/10/14 16:15
  */
 @Serializable
-class VItemDisplay(
+data class VItemDisplay(
     @JsonNames("name", "display-name", "displayname")
     override var name: String? = null,
     @JsonNames("lores")
@@ -26,7 +26,7 @@ class VItemDisplay(
     /**
      * 设置显示名称
      */
-    fun setDisplayName(component: Component) {
+    fun setName(component: Component) {
         name = nmsComponent(component)
     }
 
