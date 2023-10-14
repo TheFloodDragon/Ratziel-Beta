@@ -19,12 +19,13 @@ import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.module.nms.MinecraftVersion
+import java.util.function.Consumer
 
 
 /**
  * VItemMeta
  * 对Bukkit.ItemMeta的包装
- * 用于Kotlin序列化
+ * 可以用于Kotlin序列化
  *
  * @author TheFloodDragon
  * @since 2023/10/2 16:46
@@ -166,29 +167,74 @@ class VItemMeta {
     }
 
     /**
-     * 通过ItemMeta构造
+     * 通过Bukkit.ItemMeta构造
      */
-    constructor(meta: ItemMeta) {
-        displayName = meta.getProperty<String?>("displayName")?.let { jsonToComponent(it) }
-        localizedName = meta.localizedName
-        lore = meta.getProperty<List<String>?>("lore")?.map { jsonToComponent(it) }?.toMutableList() ?: mutableListOf()
-        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-            customModelData = getProperty<Int>("customModelData")
-        }
-        enchants = meta.enchants
-        itemFlags = meta.itemFlags
-        unbreakable = meta.isUnbreakable
-        attributeModifiers.apply {
-            meta.attributeModifiers?.forEach { key, value ->
-                addAttributeModifiers(key, value)
-            }
-        }
+    constructor(meta: ItemMeta, replace: Boolean = true) {
+        applyForm(meta, replace)
     }
 
     /**
-     * 将数据转移到ItemMeta(克隆后的)中
+     * 应用 Bukkit.ItemMeta
+     * @param replace 如果元数据存在,是否替换 (默认true)
      */
-    fun itemMetaBy(itemMeta: ItemMeta) =
+    fun applyForm(
+        meta: ItemMeta, replace: Boolean = true,
+        /**
+         * 值的设置
+         * 使用变量的形式是为了自定义性
+         */
+        fDisplayName: Consumer<VItemMeta> = Consumer {
+            if (it.displayName == null || replace)
+                it.displayName = meta.getProperty<String?>("displayName")?.let { jsonToComponent(it) }
+        },
+        fLocalizedName: Consumer<VItemMeta> = Consumer {
+            if (it.localizedName == null || replace)
+                it.localizedName = meta.localizedName
+        },
+        fLore: Consumer<VItemMeta> = Consumer {
+            if (it.lore.isEmpty() || replace)
+                it.lore = meta.getProperty<List<String>?>("lore")
+                    ?.map { jsonToComponent(it) }?.toMutableList() ?: mutableListOf()
+        },
+        fCustomModelData: Consumer<VItemMeta> = Consumer {
+            if (it.customModelData == null || replace)
+                it.customModelData = getProperty<Int>("customModelData")
+        },
+        fEnchants: Consumer<VItemMeta> = Consumer {
+            if (it.enchants.isEmpty() || replace)
+                it.enchants = meta.enchants
+        },
+        fItemFlags: Consumer<VItemMeta> = Consumer {
+            if (it.itemFlags.isEmpty() || replace)
+                it.itemFlags = meta.itemFlags
+        },
+        fUnbreakable: Consumer<VItemMeta> = Consumer {
+            it.unbreakable = meta.isUnbreakable
+        },
+        fAttributeModifiers: Consumer<VItemMeta> = Consumer {
+            if (it.attributeModifiers.isEmpty() || replace)
+                it.attributeModifiers.apply {
+                    meta.attributeModifiers?.forEach { key, value ->
+                        addAttributeModifiers(key, value)
+                    }
+                }
+        },
+    ) {
+        fDisplayName.accept(this)
+        fLocalizedName.accept(this)
+        fLore.accept(this)
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
+            fCustomModelData.accept(this)
+        fEnchants.accept(this)
+        fItemFlags.accept(this)
+        fUnbreakable.accept(this)
+        fAttributeModifiers.accept(this)
+    }
+
+    /**
+     * 转换成Bukkit.ItemMeta
+     */
+    fun toBukkit(itemMeta: ItemMeta) =
         itemMeta.clone().also { meta ->
             meta.setDisplayName(displayName ?: Component.empty())
             meta.setLocalizedName(localizedName)

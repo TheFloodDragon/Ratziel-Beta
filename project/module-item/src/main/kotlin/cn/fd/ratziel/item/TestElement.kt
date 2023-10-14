@@ -55,16 +55,9 @@ class TestElement : ElementHandler {
     override fun handle(element: Element) = try {
         println(element.property)
 
-        println("Handle Result: " + handlePrimitives(element.property) {
-            println("Handling: $it")
-            if (it.isString) JsonPrimitive(it.content.replace("1", "2")) else it
-        }.toString())
+        handlePrimitives(element.property) { if (it.isString) JsonPrimitive(it.content.replace("1", "2")) else it }
 
         val meta = json.decodeFromJsonElement<VItemMeta>(element.property)
-
-        println(meta.displayName)
-        println(meta.lore)
-
     } catch (ex: Exception) {
         ex.printStackTrace()
     }

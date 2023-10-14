@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    compileCore(12001)
+    compileCore(12002)
     compileOnly("com.google.code.gson:gson:2.8.9")
     compileOnly("net.md-5:bungeecord-chat:1.17")
     compileOnly("me.clip:placeholderapi:2.11.4")
