@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package cn.fd.ratziel.item.meta.serializers
+package cn.fd.ratziel.item.meta.serializers.bmeta
 
 import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer
 import kotlinx.serialization.ExperimentalSerializationApi

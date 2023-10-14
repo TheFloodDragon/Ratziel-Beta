@@ -1,6 +1,7 @@
 package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.item.api.ItemMetadata
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
@@ -16,9 +17,9 @@ import java.util.function.Consumer
 @Serializable
 class VItemMeta : ItemMetadata {
 
-    override val display: VItemDisplay? = null
+    override val display: @Contextual VItemDisplay? = null
 
-    override val characteristic: VItemCharacteristic? = null
+    override val characteristic: @Contextual VItemCharacteristic? = null
 
     /**
      * 通过Bukkit.ItemMeta构造

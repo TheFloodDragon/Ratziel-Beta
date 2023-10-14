@@ -7,10 +7,10 @@ import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.handlePrimitives
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.item.meta.OItemMeta
-import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
-import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
-import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
-import cn.fd.ratziel.item.meta.serializers.ItemFlagSerializer
+import cn.fd.ratziel.item.meta.serializers.bmeta.AttributeModifierSerializer
+import cn.fd.ratziel.item.meta.serializers.bmeta.AttributeSerializer
+import cn.fd.ratziel.item.meta.serializers.bmeta.EnchantmentSerializer
+import cn.fd.ratziel.item.meta.serializers.bmeta.ItemFlagSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.decodeFromJsonElement

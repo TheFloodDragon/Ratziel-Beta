@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item.meta.serializers
+package cn.fd.ratziel.item.meta.serializers.bmeta
 
 import cn.fd.ratziel.item.meta.util.MetaMather
 import kotlinx.serialization.KSerializer
