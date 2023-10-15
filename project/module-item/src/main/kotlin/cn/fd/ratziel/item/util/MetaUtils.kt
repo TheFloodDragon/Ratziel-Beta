@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item.meta.util
+package cn.fd.ratziel.item.util
 
 import cn.fd.ratziel.adventure.serializeByMiniMessage
 import cn.fd.ratziel.adventure.toJsonFormat
@@ -7,6 +7,7 @@ import cn.fd.ratziel.item.api.ItemCharacteristic
 import cn.fd.ratziel.item.meta.VItemCharacteristic
 import cn.fd.ratziel.item.meta.VItemDisplay
 import cn.fd.ratziel.item.meta.VItemMeta
+import cn.fd.ratziel.item.meta.serializers.vmeta.ItemDurabilitySerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -32,5 +33,6 @@ fun nmsComponent(component: Component): String =
 fun buildVMeta(json: Json, element: JsonElement): VItemMeta {
     val display = quickFuture { json.decodeFromJsonElement<VItemDisplay>(element) }
     val char = quickFuture { json.decodeFromJsonElement<VItemChar>(element) }
-    return VItemMeta(display.get(), char.get())
+    val durability = quickFuture { json.decodeFromJsonElement(ItemDurabilitySerializer, element) }
+    return VItemMeta(display.get(), char.get(), durability.get())
 }
