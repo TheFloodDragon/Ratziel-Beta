@@ -6,10 +6,7 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
-import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
-import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
-import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
-import cn.fd.ratziel.item.meta.serializers.ItemFlagSerializer
+import cn.fd.ratziel.item.meta.serializers.*
 import cn.fd.ratziel.item.util.MetaMather
 import cn.fd.ratziel.item.util.buildVMeta
 import kotlinx.serialization.json.Json
@@ -65,8 +62,8 @@ object ItemElement : ElementHandler {
         // Test
         val item = MetaMather.matchMaterial("Stone Sword").parseItem()!!
         item.apply {
-            itemMeta.setDisplayName("sb")
-            itemMeta.setLocalizedName("cnms")
+            itemMeta?.setDisplayName("sb")
+            itemMeta?.setLocalizedName("cnms")
             durability = 100
         }
         println(item.getItemTag())
