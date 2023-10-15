@@ -64,5 +64,5 @@
 
 - ##### 源码参考
 
-    - @Bkm016 - [Zaphkiel](https://github.com/TabooLib/zaphkiel/)
-    - @Lanscarlos - [Vulpecula](https://github.com/Lanscarlos/Vulpecula/)
+    - Bkm016 - [Zaphkiel](https://github.com/TabooLib/zaphkiel/)
+    - Lanscarlos - [Vulpecula](https://github.com/Lanscarlos/Vulpecula/)

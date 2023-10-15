@@ -18,4 +18,9 @@ interface ItemMetadata {
      */
     val characteristic: ItemCharacteristic?
 
+    /**
+     * 物品耐久
+     */
+    val durability: ItemDurability?
+
 }

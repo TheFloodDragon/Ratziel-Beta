@@ -4,7 +4,6 @@ import cn.fd.ratziel.common.annotation.OnLifeCycle
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.core.element.util.ElementMemory
 import cn.fd.ratziel.kether.KetherCompiler
 import cn.fd.ratziel.kether.KetherHandler
 import taboolib.common.LifeCycle
@@ -20,7 +19,7 @@ import taboolib.common.LifeCycle
     alias = ["actions"]
 )
 @OnLifeCycle(LifeCycle.ENABLE)
-object ActionElement : ElementHandler, ElementMemory() {
+object ActionElement : ElementHandler {
 
     override fun handle(element: Element) {
         element.property.let { json ->

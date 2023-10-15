@@ -15,6 +15,7 @@ import java.util.function.Consumer
 class VItemMeta(
     override val display: VItemDisplay = VItemDisplay(),
     override val characteristic: VItemCharacteristic = VItemCharacteristic(),
+    override val durability: VItemDurability = VItemDurability(),
 ) : ItemMetadata {
 
     /**
