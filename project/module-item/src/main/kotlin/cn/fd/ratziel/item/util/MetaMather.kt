@@ -4,7 +4,7 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemFlag
 import taboolib.common.util.Strings
 import taboolib.library.xseries.XEnchantment
-import taboolib.library.xseries.parseToMaterial
+import taboolib.library.xseries.XMaterial
 import taboolib.module.nms.BukkitAttribute
 import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrElse
@@ -76,6 +76,9 @@ object MetaMather {
      * 匹配物品材质
      */
     @JvmStatic
-    fun matchItemMaterial(source: String) = source.parseToMaterial()
+    fun matchMaterial(source: String) =
+        XMaterial.matchXMaterial(source).getOrElse {
+            XMaterial.entries.maxBy { Strings.similarDegree(it.name, source) }
+        }
 
 }

@@ -20,17 +20,10 @@ import java.util.function.Consumer
 @Serializable
 class VItemMeta(
     override var display: VItemDisplay = VItemDisplay(),
-    @JsonNames("char")
+    @JsonNames("char", "chars", "feature", "features")
     override var characteristic: VItemCharacteristic = VItemCharacteristic(),
     override var durability: VItemDurability = VItemDurability(),
 ) : ItemMetadata {
-
-    /**
-     * 通过Bukkit.ItemMeta构造
-     */
-    constructor(meta: ItemMeta, replace: Boolean = true) : this() {
-        applyForm(meta, replace)
-    }
 
     /**
      * 应用 Bukkit.ItemMeta

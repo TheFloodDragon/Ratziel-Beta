@@ -2,7 +2,6 @@ package cn.fd.ratziel.item.util
 
 import cn.fd.ratziel.adventure.serializeByMiniMessage
 import cn.fd.ratziel.adventure.toJsonFormat
-import cn.fd.ratziel.core.util.quickFuture
 import cn.fd.ratziel.item.api.ItemCharacteristic
 import cn.fd.ratziel.item.meta.VItemCharacteristic
 import cn.fd.ratziel.item.meta.VItemDisplay
@@ -13,8 +12,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.kyori.adventure.text.Component
 import taboolib.module.nms.MinecraftVersion
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentLinkedDeque
 
 typealias ItemChar = ItemCharacteristic
 typealias VItemChar = VItemCharacteristic
@@ -30,18 +27,14 @@ fun nmsComponent(component: Component): String =
     } else component.toJsonFormat()
 
 /**
- * 快速构建VItemMeta
+ * 构建 VItemMeta
  */
-fun buildVMeta(json: Json, element: JsonElement): VItemMeta {
-    val futures: ConcurrentLinkedDeque<CompletableFuture<*>> = ConcurrentLinkedDeque()
-    return json.decodeFromJsonElement<VItemMeta>(element).apply {
+fun buildVMeta(json: Json, element: JsonElement): VItemMeta =
+    json.decodeFromJsonElement<VItemMeta>(element).apply {
         if (display == VItemDisplay())
-            futures += quickFuture { display = json.decodeFromJsonElement<VItemDisplay>(element) }
+            display = json.decodeFromJsonElement<VItemDisplay>(element)
         if (characteristic == VItemCharacteristic())
-            futures += quickFuture { characteristic = json.decodeFromJsonElement<VItemCharacteristic>(element) }
+            characteristic = json.decodeFromJsonElement<VItemCharacteristic>(element)
         if (durability == VItemDurability())
-            futures += quickFuture { durability = json.decodeFromJsonElement<VItemDurability>(element) }
-        // 等待异步任务完成
-        CompletableFuture.allOf(*futures.toTypedArray())
+            durability = json.decodeFromJsonElement<VItemDurability>(element)
     }
-}

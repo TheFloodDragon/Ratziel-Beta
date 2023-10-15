@@ -15,11 +15,10 @@ import kotlinx.serialization.json.JsonNames
  */
 @Serializable
 data class VItemDurability(
-    @JsonNames("max-durability", "durability-max","max")
+    @JsonNames("max-durability", "durability-max", "max")
     override var maxDurability: Int? = null,
-    @JsonNames("current-durability", "durability-current", "durability","current")
+    @JsonNames("current-durability", "durability-current", "durability", "current")
     override var currentDurability: Int? = null,
     @JsonNames("repair-cost")
     override var repairCost: Int? = null,
-) : ItemDurability {
-}
+) : ItemDurability

@@ -5,7 +5,8 @@ object DefaultFileRegistry {
     const val PATH: String = "default"
 
     val files: Array<String> = arrayOf(
-        "actionTest.yml"
+        "actionTest.yml",
+        "Item-Test01.yml"
     )
 
 }
