@@ -1,6 +1,11 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.item.api.ItemMetadata
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.module.nms.MinecraftVersion
@@ -12,10 +17,12 @@ import java.util.function.Consumer
  * @author TheFloodDragon
  * @since 2023/10/14 16:15
  */
+@Serializable
 class VItemMeta(
-    override val display: VItemDisplay = VItemDisplay(),
-    override val characteristic: VItemCharacteristic = VItemCharacteristic(),
-    override val durability: VItemDurability = VItemDurability(),
+    override var display: VItemDisplay = VItemDisplay(),
+    @JsonNames("char")
+    override var characteristic: VItemCharacteristic = VItemCharacteristic(),
+    override var durability: VItemDurability = VItemDurability(),
 ) : ItemMetadata {
 
     /**
