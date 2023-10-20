@@ -18,31 +18,31 @@ interface ItemCharacteristic {
     /**
      * 物品本地化名称
      */
-    var localizedName: String?
+    val localizedName: String?
 
     /**
      * 物品自定义模型数据 (1.14+)
      */
-    var customModelData: Int?
+    val customModelData: Int?
 
     /**
      * 物品魔咒
      */
-    var enchants: MutableMap<Enchantment, Int>
+    val enchants: Map<Enchantment, Int>
 
     /**
      * 物品标志
      */
-    var itemFlags: MutableSet<ItemFlag>
+    val itemFlags: Set<ItemFlag>
 
     /**
      * 物品无法破坏属性
      */
-    var unbreakable: Boolean
+    val unbreakable: Boolean
 
     /**
      * 物品属性修饰符
      */
-    var attributeModifiers: MutableMap<Attribute, MutableList<AttributeModifier>>
+    val attributeModifiers: Map<Attribute, MutableList<AttributeModifier>>
 
 }

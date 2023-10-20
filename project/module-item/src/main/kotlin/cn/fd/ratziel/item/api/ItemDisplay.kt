@@ -13,11 +13,11 @@ interface ItemDisplay {
     /**
      * 物品名称
      */
-    var name: Component?
+    val name: Component?
 
     /**
      * 物品描述
      */
-    var lore: List<Component>
+    val lore: List<Component>
 
 }

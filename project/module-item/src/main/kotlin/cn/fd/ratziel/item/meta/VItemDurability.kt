@@ -5,6 +5,7 @@ package cn.fd.ratziel.item.meta
 import cn.fd.ratziel.item.api.ItemDurability
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonNames
 
 /**
@@ -15,10 +16,19 @@ import kotlinx.serialization.json.JsonNames
  */
 @Serializable
 data class VItemDurability(
-    @JsonNames("max-durability", "durability-max", "max")
+    @JsonNames("max-durability", "durability-max", "durability")
     override var maxDurability: Int? = null,
-    @JsonNames("current-durability", "durability-current", "durability", "current")
-    override var currentDurability: Int? = null,
+    @Transient
+    override var currentDurability: Int? = maxDurability,
     @JsonNames("repair-cost")
     override var repairCost: Int? = null,
-) : ItemDurability
+) : ItemDurability {
+
+    /**
+     * 物品损伤值
+     *   = 最大耐久-当前耐久
+     */
+    val damage: Int?
+        get() = currentDurability?.let { maxDurability?.minus(it) }
+
+}

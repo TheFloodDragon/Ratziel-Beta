@@ -14,18 +14,18 @@ package cn.fd.ratziel.item.api
 interface ItemDurability {
 
     /**
-     * 耐久最大值
+     * 最大耐久
      */
-    var maxDurability: Int?
+    val maxDurability: Int?
 
     /**
      * 当前耐久
      */
-    var currentDurability: Int?
+    val currentDurability: Int?
 
     /**
      * 修复消耗
      */
-    var repairCost: Int?
+    val repairCost: Int?
 
 }

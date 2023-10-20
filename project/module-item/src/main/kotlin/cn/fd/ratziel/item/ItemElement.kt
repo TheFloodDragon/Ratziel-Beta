@@ -6,10 +6,14 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
-import cn.fd.ratziel.item.meta.serializers.*
+import cn.fd.ratziel.item.meta.VItemMeta
+import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
+import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
+import cn.fd.ratziel.item.meta.serializers.ItemFlagSerializer
 import cn.fd.ratziel.item.util.MetaMather
-import cn.fd.ratziel.item.util.buildVMeta
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import net.kyori.adventure.text.Component
@@ -53,7 +57,8 @@ object ItemElement : ElementHandler {
     override fun handle(element: Element) = try {
         println(element.property)
 
-        val meta = buildVMeta(json, element.property)
+//        val meta = buildVMeta(json, element.property)
+        val meta = json.decodeFromJsonElement<VItemMeta>(element.property)
 
         println(meta.display)
         println(meta.characteristic)
