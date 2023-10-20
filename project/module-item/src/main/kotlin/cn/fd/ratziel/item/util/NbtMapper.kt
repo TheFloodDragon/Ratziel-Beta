@@ -13,16 +13,16 @@ import taboolib.module.nms.ItemTagData
 object NbtMapper {
 
     @JvmStatic
-    fun mapFromJson(itemTag: ItemTag, json: JsonElement): ItemTag {
+    fun mapFromJson(json: JsonElement, itemTag: ItemTag = ItemTag()): ItemTag {
         fun translate(json: JsonElement): ItemTagData? =
             when (json) {
                 is JsonPrimitive -> ItemTagData.toNBT(json.contentOrNull)
                 is JsonArray -> ItemTagData.toNBT(json.map { translate(it) })
-                is JsonObject -> mapFromJson(ItemTag(), json)
+                is JsonObject -> mapFromJson(json)
                 else -> null
             }
         (json as? JsonObject)?.forEach { key, value ->
-            itemTag.putDeep(key,translate(value))
+            itemTag.putDeep(key, translate(value))
         }
         return itemTag
     }

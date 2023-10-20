@@ -5,8 +5,7 @@ package cn.fd.ratziel.item.meta
 import cn.fd.ratziel.item.api.ItemMetadata
 import cn.fd.ratziel.item.api.TranslatableItemTag
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
+import taboolib.module.nms.ItemTag
 import taboolib.module.nms.ItemTagData
 
 /**
@@ -15,13 +14,12 @@ import taboolib.module.nms.ItemTagData
  * @author TheFloodDragon
  * @since 2023/10/14 16:15
  */
-@Serializable(ItemMetaSerializer::class)
 open class VItemMeta(
-    override var display: VItemDisplay,
-    @JsonNames("char", "chars", "feature", "features")
-    override var characteristic: VItemCharacteristic,
-    override var durability: VItemDurability,
-) : ItemMetadata , TranslatableItemTag {
+    override var display: VItemDisplay = VItemDisplay(),
+    override var characteristic: VItemCharacteristic = VItemCharacteristic(),
+    override var durability: VItemDurability = VItemDurability(),
+    override var nbt: ItemTag = ItemTag(),
+) : ItemMetadata, TranslatableItemTag {
 
     //    /**
 //     * 应用 Bukkit.ItemMeta

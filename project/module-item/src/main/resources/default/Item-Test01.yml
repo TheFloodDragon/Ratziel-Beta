@@ -1,31 +1,21 @@
 Item01:
   meta:
-    display:
-      name: "<red>Mi<green>ni<gold>Message <reset><key:key.jump>"
-      lore:
-        - "第一行\n第二行" # 换行符
-        - "第三行<{dl}>" # 删行符
-    durability:
-      max: 114514
-      current: 666
-    feature:
-      unbreakable: true
-      enchant:
-        PROTECTION_ENVIRONMENTAL: 1
-        ARROW_KNOSCKBACK: 100
-      hideFlags:
-        - HIDE_ATTRIBUTES
-        - HIDE_DESTROYS
-      attributeModifiers:
-        GENERIC_MAX_HEALTH:
-          - uid: 3c11403a-3a1a-386b-b72f-9b8826cb913e
-            name: minecraft:generic.max_health
-            operation: ADD_NUMBER
-            amount: 10
-            slot: FEET
-
-Item02-Simple:
-  meta:
-    name: "简单用法,但是生成效率没上一种高"
-    durability-max: 110120 # 其实也可以用 max: 666 , 但是不推荐
-    unbreakable: true
+    name: "<red>Mi<green>ni<gold>Message <reset><key:key.jump>"
+    lore:
+      - "第一行\n第二行" # 换行符
+      - "第三行<{dl}>" # 删行符
+    durability: 114514 # 耐久
+    unbreakable: true # 无法破坏
+    enchant: # 附魔
+      PROTECTION_ENVIRONMENTAL: 1
+      ARROW_KNOCKBACK: 100
+    hideFlags: # 隐藏标签
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+    attributeModifiers: # 属性修饰符
+      GENERIC_MAX_HEALTH:
+        - uid: 3c11403a-3a1a-386b-b72f-9b8826cb913e
+          name: minecraft:generic.max_health
+          operation: ADD_NUMBER
+          amount: 10
+          slot: FEET

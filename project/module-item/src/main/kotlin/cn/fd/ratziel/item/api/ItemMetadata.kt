@@ -1,5 +1,7 @@
 package cn.fd.ratziel.item.api
 
+import taboolib.module.nms.ItemTag
+
 /**
  * ItemMetadata - 物品元数据
  *
@@ -22,5 +24,10 @@ interface ItemMetadata {
      * 物品耐久
      */
     val durability: ItemDurability?
+
+    /**
+     * 自定义NBT
+     */
+    val nbt : ItemTag?
 
 }
