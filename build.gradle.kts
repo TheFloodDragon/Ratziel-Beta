@@ -76,6 +76,7 @@ subprojects {
             destinationDirectory.set(file("$rootDir/outs")) //输出路径
             // Exclude
             exclude("META-INF/**")
+            exclude("exclude/**")
             // Taboolib
             relocate("tb.", "$rootGroup.taboolib.")
             relocate("taboolib.", "$rootGroup.taboolib.")

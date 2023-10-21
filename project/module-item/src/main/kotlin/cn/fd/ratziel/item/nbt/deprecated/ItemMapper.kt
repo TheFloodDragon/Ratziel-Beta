@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item.nms
+package cn.fd.ratziel.item.nbt.deprecated
 
 import taboolib.library.reflex.ClassAnalyser
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
