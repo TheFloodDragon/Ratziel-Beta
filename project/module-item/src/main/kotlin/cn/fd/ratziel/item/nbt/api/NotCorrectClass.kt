@@ -10,5 +10,5 @@ class NotCorrectClass(
     unresolved: Any,
     target: Class<*>,
 ) : RuntimeException(
-    message = "Unsupported type of class \"${unresolved::class.qualifiedName}\" , it need \"${target.name}\" !"
+    "Unsupported type of class \"${unresolved::class.qualifiedName}\" , it need \"${target.name}\" !"
 )
