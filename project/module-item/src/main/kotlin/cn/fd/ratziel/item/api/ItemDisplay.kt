@@ -16,6 +16,11 @@ interface ItemDisplay {
     val name: Component?
 
     /**
+     * 物品本地化名称
+     */
+    val localizedName: Component?
+
+    /**
      * 物品描述
      */
     val lore: List<Component>

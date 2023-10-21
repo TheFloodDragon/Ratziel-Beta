@@ -12,6 +12,10 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.meta.ItemMeta
+import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.module.nms.MinecraftVersion
+import java.util.function.Consumer
 
 /**
  * VItemCharacteristic
@@ -21,8 +25,6 @@ import org.bukkit.inventory.ItemFlag
  */
 @Serializable
 data class VItemCharacteristic(
-    @JsonNames("loc-name", "local-name")
-    override var localizedName: String? = null,
     @JsonNames("custom-model-data", "cmd")
     override var customModelData: Int? = null,
     @JsonNames("enchant", "enchantment", "enchantments")
@@ -114,6 +116,88 @@ data class VItemCharacteristic(
 
     fun removeAttributeModifier(attribute: Attribute, modifier: AttributeModifier) {
         attributeModifiers[attribute]?.remove(modifier)
+    }
+
+    /**
+     * Bukkit.ItemMeta -> VItemCharacteristic
+     * @param replace 如果元数据存在,是否替换 (默认true)
+     */
+    fun applyForm(
+        meta: ItemMeta, replace: Boolean = true,
+        /**
+         * 值的设置
+         * 使用变量的形式是为了自定义性
+         */
+        fCustomModelData: Consumer<VItemCharacteristic> = Consumer {
+            if (it.customModelData == null || replace)
+                it.customModelData = getProperty<Int>("customModelData")
+        },
+        fEnchants: Consumer<VItemCharacteristic> = Consumer {
+            if (it.enchants.isEmpty() || replace)
+                it.enchants = meta.enchants
+        },
+        fItemFlags: Consumer<VItemCharacteristic> = Consumer {
+            if (it.itemFlags.isEmpty() || replace)
+                it.itemFlags = meta.itemFlags
+        },
+        fUnbreakable: Consumer<VItemCharacteristic> = Consumer {
+            it.unbreakable = meta.isUnbreakable
+        },
+        fAttributeModifiers: Consumer<VItemCharacteristic> = Consumer {
+            if (it.attributeModifiers.isEmpty() || replace)
+                it.attributeModifiers.apply {
+                    meta.attributeModifiers?.forEach { key, value ->
+                        addAttributeModifiers(key, value)
+                    }
+                }
+        },
+    ) {
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
+            fCustomModelData.accept(this)
+        fEnchants.accept(this)
+        fItemFlags.accept(this)
+        fUnbreakable.accept(this)
+        fAttributeModifiers.accept(this)
+    }
+
+    /**
+     * VItemCharacteristic -> Bukkit.ItemMeta (空的)
+     * @param clone 是否对 Bukkit.ItemMeta 进行克隆 (默认true)
+     */
+    fun applyTo(
+        source: ItemMeta, clone: Boolean = true,
+        /**
+         * 值的设置
+         * 使用变量的形式是为了自定义性
+         */
+        fCustomModelData: Consumer<ItemMeta> = Consumer {
+            it.setCustomModelData(customModelData)
+        },
+        fEnchants: Consumer<ItemMeta> = Consumer {
+            enchants.forEach { (key, value) ->
+                it.addEnchant(key, value, true)
+            }
+        },
+        fItemFlags: Consumer<ItemMeta> = Consumer {
+            it.addItemFlags(*itemFlags.toTypedArray())
+        },
+        fUnbreakable: Consumer<ItemMeta> = Consumer {
+            it.isUnbreakable = unbreakable
+        },
+        fAttributeModifiers: Consumer<ItemMeta> = Consumer {
+            this@VItemCharacteristic.attributeModifiers.forEach { (key, value) ->
+                value.forEach {
+                    addAttributeModifiers(key, it)
+                }
+            }
+        },
+    ) = (if (clone) source.clone() else source).apply {
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
+            fCustomModelData.accept(this)
+        fEnchants.accept(this)
+        fItemFlags.accept(this)
+        fUnbreakable.accept(this)
+        fAttributeModifiers.accept(this)
     }
 
 }

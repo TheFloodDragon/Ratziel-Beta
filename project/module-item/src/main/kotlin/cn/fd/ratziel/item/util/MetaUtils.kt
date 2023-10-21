@@ -25,10 +25,10 @@ typealias VItemChar = VItemCharacteristic
  *   1.13+ > Json Format
  *   1.13- > Original Format (§)
  */
-fun nmsComponent(component: Component): String =
+fun nmsComponent(component: Component?): String? =
     if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
-        serializeByMiniMessage(component)
-    } else component.toJsonFormat()
+        component?.let { serializeByMiniMessage(it) }
+    } else component?.toJsonFormat()
 
 /**
  * 构建 VItemMeta
@@ -39,7 +39,10 @@ fun buildVMeta(json: Json, element: JsonElement): VItemMeta {
     val durability = quickFuture { json.decodeFromJsonElement<VItemDurability>(element) }
     val nbt: CompletableFuture<ItemTag?> = quickFuture {
         try {
-            element.jsonObject["nbt"]?.let { NbtMapper.mapFromJson(it) }
+            (element.jsonObject["nbt"]
+                ?: element.jsonObject["itemTag"]
+                ?: element.jsonObject["itemTags"])
+                ?.let { NbtMapper.mapFromJson(it) }
         } catch (_: IllegalArgumentException) {
             null
         }

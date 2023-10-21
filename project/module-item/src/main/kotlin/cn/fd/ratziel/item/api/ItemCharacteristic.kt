@@ -16,11 +16,6 @@ import org.bukkit.inventory.ItemFlag
 interface ItemCharacteristic {
 
     /**
-     * 物品本地化名称
-     */
-    val localizedName: String?
-
-    /**
      * 物品自定义模型数据 (1.14+)
      */
     val customModelData: Int?
