@@ -19,6 +19,7 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
+import taboolib.module.nms.obcClass
 
 /**
  * ItemElement
@@ -65,6 +66,7 @@ object ItemElement : ElementHandler {
         // Test
         val testMeta = meta.test()
         println(testMeta)
+        obcClass("inventory.CraftMetaItem").constructors.forEach { println(it.toGenericString()) }
 
     } catch (ex: Exception) {
         ex.printStackTrace()

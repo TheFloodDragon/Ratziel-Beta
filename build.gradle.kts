@@ -27,8 +27,6 @@ subprojects {
                 password = project.findProperty("githubKey") as String? ?: System.getenv("GITHUB_TOKEN")
             }
         }
-        // NMS
-        maven("https://repo.codemc.io/repository/nms")
         // PlaceholderAPI
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }

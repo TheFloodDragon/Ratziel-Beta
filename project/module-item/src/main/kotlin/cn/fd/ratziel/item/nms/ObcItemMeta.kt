@@ -3,7 +3,6 @@ package cn.fd.ratziel.item.nms
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
-import taboolib.module.nms.obcClass
 
 /**
  * ObcItemMeta
@@ -27,7 +26,7 @@ object ObcItemMeta {
 
     @JvmStatic
     val metaClass by lazy {
-        obcClass("inventory.CraftMetaItem")
+        Class.forName("org.bukkit.inventory.meta.ItemMeta")
     }
 
     /**
