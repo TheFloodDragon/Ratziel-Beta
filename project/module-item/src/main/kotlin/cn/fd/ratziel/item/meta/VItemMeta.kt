@@ -1,9 +1,11 @@
 package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.item.api.ItemMetadata
-import cn.fd.ratziel.item.api.nbt.ItemTagTranslator
+import cn.fd.ratziel.item.nms.ObcItemMeta
+import org.bukkit.inventory.meta.ItemMeta
 import taboolib.module.nms.ItemTag
-import taboolib.module.nms.ItemTagData
+import taboolib.module.nms.NMSItemTag
+import taboolib.module.nms.nmsProxy
 
 /**
  * VItemMeta
@@ -16,10 +18,14 @@ open class VItemMeta(
     override var characteristic: VItemCharacteristic = VItemCharacteristic(),
     override var durability: VItemDurability = VItemDurability(),
     override var nbt: ItemTag = ItemTag(),
-) : ItemMetadata, ItemTagTranslator {
+) : ItemMetadata {
 
-    override fun toItemTag(): ItemTagData {
-        TODO("Not yet implemented")
+    fun test(): ItemMeta {
+        val nmsTag = nmsProxy<NMSItemTag>().itemTagToNMSCopy(display.toItemTag())
+        println(nmsTag)
+        val displayedMeta = ObcItemMeta.build(nmsTag) as ItemMeta
+        val charedMeta = characteristic.applyTo(displayedMeta, false)
+        return charedMeta
     }
 
 }

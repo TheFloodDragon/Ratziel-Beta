@@ -1,6 +1,6 @@
-package cn.fd.ratziel.item.nbt.ref
+package cn.fd.ratziel.item.nms.deprecated
 
-import cn.fd.ratziel.item.nbt.api.RefClass
+import cn.fd.ratziel.item.nms.deprecated.api.RefClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 

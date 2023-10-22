@@ -10,7 +10,6 @@ import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.item.meta.serializers.ItemFlagSerializer
-import cn.fd.ratziel.item.util.MetaMather
 import cn.fd.ratziel.item.util.buildVMeta
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -20,7 +19,6 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
-import taboolib.module.nms.getItemTag
 
 /**
  * ItemElement
@@ -65,13 +63,8 @@ object ItemElement : ElementHandler {
 
         println("————————————————")
         // Test
-        val item = MetaMather.matchMaterial("Stone Sword").parseItem()!!
-        item.apply {
-            itemMeta?.setDisplayName("sb")
-            itemMeta?.setLocalizedName("cnms")
-            durability = 100
-        }
-        println(item.getItemTag())
+        val testMeta = meta.test()
+        println(testMeta)
 
     } catch (ex: Exception) {
         ex.printStackTrace()

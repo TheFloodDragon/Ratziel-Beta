@@ -20,13 +20,15 @@ subprojects {
         }
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
-        // Kether API From GitHub
+        // Kether API
         maven("https://maven.pkg.github.com/TheFloodDragon/Kether-API") {
             credentials {
                 username = project.findProperty("githubUser") as String? ?: System.getenv("GITHUB_USERNAME")
                 password = project.findProperty("githubKey") as String? ?: System.getenv("GITHUB_TOKEN")
             }
         }
+        // NMS
+        maven("https://repo.codemc.io/repository/nms")
         // PlaceholderAPI
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
@@ -76,7 +78,6 @@ subprojects {
             destinationDirectory.set(file("$rootDir/outs")) //输出路径
             // Exclude
             exclude("META-INF/**")
-            exclude("exclude/**")
             // Taboolib
             relocate("tb.", "$rootGroup.taboolib.")
             relocate("taboolib.", "$rootGroup.taboolib.")

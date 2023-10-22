@@ -6,4 +6,5 @@ dependencies {
     compileTaboo("module-nms")
     compileTaboo("module-nms-util")
     compileModule("runtime-bukkit")
+    compileOnly("org.bukkit:craftbukkit:1.12.2-R0.1-SNAPSHOT")
 }

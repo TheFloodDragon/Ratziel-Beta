@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item.nbt.api
+package cn.fd.ratziel.item.nms.deprecated.api
 
 /**
  * NotCorrectClass
