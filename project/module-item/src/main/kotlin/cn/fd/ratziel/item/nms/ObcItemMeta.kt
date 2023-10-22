@@ -1,8 +1,10 @@
 package cn.fd.ratziel.item.nms
 
+import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
+import taboolib.module.nms.obcClass
 
 /**
  * ObcItemMeta
@@ -26,7 +28,7 @@ object ObcItemMeta {
 
     @JvmStatic
     val metaClass by lazy {
-        Class.forName("org.bukkit.inventory.meta.ItemMeta")
+        obcClass("inventory.CraftMetaItem")
     }
 
     /**
@@ -35,8 +37,7 @@ object ObcItemMeta {
      * @return CraftMetaItem
      */
     @JvmStatic
-    fun build(tag: Any) =
-        metaClass.getConstructor(nbtTagClass).newInstance(tag)
+    fun createInstance(tag: Any) = metaClass.invokeConstructor(tag)
 
     /**
      * CraftMetaItem#applyToItem(itemTag)

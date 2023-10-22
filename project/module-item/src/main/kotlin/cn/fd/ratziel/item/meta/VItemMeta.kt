@@ -20,12 +20,13 @@ open class VItemMeta(
     override var nbt: ItemTag = ItemTag(),
 ) : ItemMetadata {
 
-    fun test(): ItemMeta {
-        val nmsTag = nmsProxy<NMSItemTag>().itemTagToNMSCopy(display.toItemTag())
+    fun toItemMeta(): ItemMeta {
+        val tbTag = nbt.apply { display.applyTo(this) }
+        val nmsTag = nmsProxy<NMSItemTag>().itemTagToNMSCopy(tbTag)
         println(nmsTag)
-        val displayedMeta = ObcItemMeta.build(nmsTag) as ItemMeta
-        val charedMeta = characteristic.applyTo(displayedMeta, false)
-        return charedMeta
+        val baseMeta = ObcItemMeta.createInstance(nmsTag) as ItemMeta
+        val finalMeta = characteristic.applyTo(baseMeta, false)
+        return finalMeta
     }
 
 }

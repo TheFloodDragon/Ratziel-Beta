@@ -185,9 +185,9 @@ data class VItemCharacteristic(
             it.isUnbreakable = unbreakable
         },
         fAttributeModifiers: Consumer<ItemMeta> = Consumer {
-            this@VItemCharacteristic.attributeModifiers.forEach { (key, value) ->
-                value.forEach {
-                    addAttributeModifiers(key, it)
+            this@VItemCharacteristic.attributeModifiers.forEach { (key, values) ->
+                values.forEach { v ->
+                    it.addAttributeModifier(key, v)
                 }
             }
         },

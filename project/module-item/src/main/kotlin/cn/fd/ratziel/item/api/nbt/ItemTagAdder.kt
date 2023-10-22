@@ -12,6 +12,7 @@ interface ItemTagAdder {
 
     /**
      * 应用到物品标签中
+     * @param source 原始物品标签
      */
     fun applyTo(source: ItemTag)
 
