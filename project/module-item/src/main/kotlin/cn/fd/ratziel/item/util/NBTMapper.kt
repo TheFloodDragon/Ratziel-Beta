@@ -5,12 +5,12 @@ import taboolib.module.nms.ItemTag
 import taboolib.module.nms.ItemTagData
 
 /**
- * NbtMapper
+ * NBTMapper
  *
  * @author TheFloodDragon
  * @since 2023/10/15 9:08
  */
-object NbtMapper {
+object NBTMapper {
 
     @JvmStatic
     fun mapFromJson(json: JsonElement, itemTag: ItemTag = ItemTag()): ItemTag {

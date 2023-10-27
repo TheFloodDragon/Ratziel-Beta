@@ -46,7 +46,7 @@ taboolib {
 
     }
 
-    // 排除原有的防止重复 (为了支持Folia)
+    // 删除原有文件使得重写得到应用
     exclude("taboolib/platform/BukkitPlugin")
     exclude("taboolib/platform/type/BukkitPlayer")
 

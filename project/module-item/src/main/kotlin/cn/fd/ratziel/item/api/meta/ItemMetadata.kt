@@ -1,5 +1,8 @@
-package cn.fd.ratziel.item.api
+package cn.fd.ratziel.item.api.meta
 
+import cn.fd.ratziel.item.api.meta.ItemCharacteristic
+import cn.fd.ratziel.item.api.meta.ItemDisplay
+import cn.fd.ratziel.item.api.meta.ItemDurability
 import taboolib.module.nms.ItemTag
 
 /**

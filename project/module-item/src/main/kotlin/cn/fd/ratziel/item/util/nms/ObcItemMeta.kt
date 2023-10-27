@@ -1,9 +1,7 @@
-package cn.fd.ratziel.item.nms
+package cn.fd.ratziel.item.util.nms
 
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
-import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
 
 /**
@@ -14,26 +12,13 @@ import taboolib.module.nms.obcClass
  */
 object ObcItemMeta {
 
-    /**
-     * NBTTagCompound
-     *   1.17+ net.minecraft.nbt.NBTTagCompound
-     *   1.16- net.minecraft.server.v1_16_R3.NBTTagCompound
-     */
-    @JvmStatic
-    val nbtTagClass by lazy {
-        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17))
-            Class.forName("net.minecraft.nbt.NBTTagCompound")
-        else nmsClass("NBTTagCompound")
-    }
-
     @JvmStatic
     val metaClass by lazy {
         obcClass("inventory.CraftMetaItem")
     }
 
     /**
-     * CraftMetaItem#constructor(itemTag)
-     * @param tag NBTTagCompound
+     * CraftMetaItem#constructor(net.minecraft.nbt.NBTTagCompound)
      * @return CraftMetaItem
      */
     @JvmStatic

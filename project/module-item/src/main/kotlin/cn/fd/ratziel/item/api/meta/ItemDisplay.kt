@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item.api
+package cn.fd.ratziel.item.api.meta
 
 import net.kyori.adventure.text.Component
 

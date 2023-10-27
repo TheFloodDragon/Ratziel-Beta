@@ -10,7 +10,6 @@ import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.item.meta.serializers.ItemFlagSerializer
-import cn.fd.ratziel.item.util.buildVMeta
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -54,7 +53,7 @@ object ItemElement : ElementHandler {
     override fun handle(element: Element) = try {
         println(element.property)
 
-        val meta = buildVMeta(json, element.property)
+        val meta = DefaultItemBuilder().buildVMeta(json, element.property)
 
         println(meta.display)
         println(meta.characteristic)
@@ -63,7 +62,7 @@ object ItemElement : ElementHandler {
 
         println("————————————————")
         // Test
-        val testMeta = meta.toItemMeta()
+        val testMeta = DefaultItemStream().build(meta)
         println(testMeta)
 
     } catch (ex: Exception) {

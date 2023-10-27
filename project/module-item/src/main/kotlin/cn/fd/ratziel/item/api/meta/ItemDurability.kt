@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item.api
+package cn.fd.ratziel.item.api.meta
 
 /**
  * ItemDurability - 物品耐久

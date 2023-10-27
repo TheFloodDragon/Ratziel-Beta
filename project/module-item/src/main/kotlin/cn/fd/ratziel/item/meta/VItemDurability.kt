@@ -2,7 +2,11 @@
 
 package cn.fd.ratziel.item.meta
 
-import cn.fd.ratziel.item.api.ItemDurability
+import cn.fd.ratziel.bukkit.nbt.NBTInt
+import cn.fd.ratziel.bukkit.nbt.NBTTag
+import cn.fd.ratziel.item.api.meta.ItemDurability
+import cn.fd.ratziel.item.api.nbt.SerializableNBT
+import cn.fd.ratziel.item.nbtnode.MetaNode
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -21,7 +25,7 @@ data class VItemDurability(
     override var currentDurability: Int? = maxDurability,
     @JsonNames("repair-cost")
     override var repairCost: Int? = null,
-) : ItemDurability {
+) : ItemDurability, SerializableNBT {
 
     /**
      * 物品损伤值
@@ -29,5 +33,10 @@ data class VItemDurability(
      */
     val damage: Int?
         get() = currentDurability?.let { maxDurability?.minus(it) }
+
+    override fun applyTo(tag: NBTTag) {
+        damage?.also { tag[MetaNode.DAMAGE.value] = NBTInt(it) }
+        repairCost?.also { tag[MetaNode.REPAIR.value] = NBTInt(it) }
+    }
 
 }

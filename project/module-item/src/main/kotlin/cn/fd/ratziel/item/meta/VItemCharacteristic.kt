@@ -2,7 +2,8 @@
 
 package cn.fd.ratziel.item.meta
 
-import cn.fd.ratziel.item.api.ItemCharacteristic
+import cn.fd.ratziel.item.api.meta.ItemCharacteristic
+import cn.fd.ratziel.item.api.meta.ItemMetaBuilder
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -28,24 +29,24 @@ data class VItemCharacteristic(
     @JsonNames("custom-model-data", "cmd")
     override var customModelData: Int? = null,
     @JsonNames("enchant", "enchantment", "enchantments")
-    override var enchants: MutableMap<@Contextual Enchantment, Int> = mutableMapOf(),
-    @JsonNames("hideflag", "hideflags", "hideFlag", "hideFlags", "flag", "flags", "itemFlag", "itemflag", "itemflags")
-    override var itemFlags: MutableSet<@Contextual ItemFlag> = mutableSetOf(),
+    override var enchants: MutableMap<@Contextual Enchantment, Int>? = null,
+    @JsonNames("hideflag", "hideflags", "hideFlag")
+    override var hideFlags: MutableSet<@Contextual ItemFlag>? = null,
     @JsonNames("isUnbreakable", "unbreak")
-    override var unbreakable: Boolean = false,
+    override var unbreakable: Boolean? = null,
     @JsonNames("attribute", "attributes", "modifier", "modifiers")
-    override var attributeModifiers: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>> = mutableMapOf(),
-) : ItemCharacteristic {
+    override var attributeModifiers: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null,
+) : ItemCharacteristic, ItemMetaBuilder {
 
     /**
      * 是否含有魔咒
      */
-    fun hasEnchant(enchantment: Enchantment): Boolean = enchants.contains(enchantment)
+    fun hasEnchant(enchantment: Enchantment): Boolean = enchants?.contains(enchantment) ?: false
 
     /**
      * 获取魔咒等级
      */
-    fun getEnchantLevel(enchantment: Enchantment): Int? = enchants[enchantment]
+    fun getEnchantLevel(enchantment: Enchantment): Int? = enchants?.get(enchantment)
 
     /**
      * 添加魔咒
@@ -57,40 +58,43 @@ data class VItemCharacteristic(
         if (!ignoreLevelRestriction) {
             level.coerceIn(enchantment.startLevel, enchantment.maxLevel)
         }
-        this.enchants[enchantment] = level
+        if (enchants == null) enchants = mutableMapOf() // Null Check
+        this.enchants!![enchantment] = level
     }
 
     /**
      * 删除魔咒
      */
     fun removeEnchant(enchantment: Enchantment) {
-        enchants.remove(enchantment)
+        enchants?.remove(enchantment)
     }
 
     /**
      * 魔咒是否有冲突
      */
-    fun hasConflictingEnchant(enchantment: Enchantment): Boolean = enchants.keys.contains(enchantment)
+    fun hasConflictingEnchant(enchantment: Enchantment): Boolean = enchants?.keys?.contains(enchantment) ?: false
 
     /**
      * 添加物品标志
      */
     fun addItemFlags(vararg flags: ItemFlag) {
-        flags.forEach { itemFlags.add(it) }
+        flags.forEach { hideFlags?.add(it) }
     }
 
     /**
      * 删除物品标志
      */
     fun removeItemFlags(vararg flags: ItemFlag) {
-        flags.forEach { itemFlags.remove(it) }
+        flags.forEach { hideFlags?.remove(it) }
     }
 
     /**
      * 获取属性修饰符
      */
-    fun getAttributeModifiers(attribute: Attribute): MutableList<AttributeModifier> =
-        attributeModifiers.computeIfAbsent(attribute) { mutableListOf() }
+    fun getAttributeModifiers(attribute: Attribute): MutableList<AttributeModifier> {
+        if (attributeModifiers == null) attributeModifiers = mutableMapOf() // Null Check
+        return attributeModifiers!!.computeIfAbsent(attribute) { mutableListOf() }
+    }
 
     /**
      * 添加属性修饰符
@@ -103,19 +107,19 @@ data class VItemCharacteristic(
      * 删除属性修饰符
      */
     fun removeAttributeModifiers(attribute: Attribute) {
-        attributeModifiers[attribute] = mutableListOf()
+        attributeModifiers?.set(attribute, mutableListOf())
     }
 
     fun removeAttributeModifiers(slot: EquipmentSlot) {
-        attributeModifiers.forEach { (key, value) ->
+        attributeModifiers?.forEach { (key, value) ->
             value.forEach {
-                if (it.slot == slot) attributeModifiers[key]?.remove(it)
+                if (it.slot == slot) attributeModifiers?.get(key)?.remove(it)
             }
         }
     }
 
     fun removeAttributeModifier(attribute: Attribute, modifier: AttributeModifier) {
-        attributeModifiers[attribute]?.remove(modifier)
+        attributeModifiers?.get(attribute)?.remove(modifier)
     }
 
     /**
@@ -133,18 +137,18 @@ data class VItemCharacteristic(
                 it.customModelData = getProperty<Int>("customModelData")
         },
         fEnchants: Consumer<VItemCharacteristic> = Consumer {
-            if (it.enchants.isEmpty() || replace)
+            if (it.enchants?.isEmpty() == true || replace)
                 it.enchants = meta.enchants
         },
         fItemFlags: Consumer<VItemCharacteristic> = Consumer {
-            if (it.itemFlags.isEmpty() || replace)
-                it.itemFlags = meta.itemFlags
+            if (it.hideFlags?.isEmpty() == true || replace)
+                it.hideFlags = meta.itemFlags
         },
         fUnbreakable: Consumer<VItemCharacteristic> = Consumer {
             it.unbreakable = meta.isUnbreakable
         },
         fAttributeModifiers: Consumer<VItemCharacteristic> = Consumer {
-            if (it.attributeModifiers.isEmpty() || replace)
+            if (it.attributeModifiers?.isEmpty() == true || replace)
                 it.attributeModifiers.apply {
                     meta.attributeModifiers?.forEach { key, value ->
                         addAttributeModifiers(key, value)
@@ -174,18 +178,18 @@ data class VItemCharacteristic(
             it.setCustomModelData(customModelData)
         },
         fEnchants: Consumer<ItemMeta> = Consumer {
-            enchants.forEach { (key, value) ->
+            enchants?.forEach { (key, value) ->
                 it.addEnchant(key, value, true)
             }
         },
         fItemFlags: Consumer<ItemMeta> = Consumer {
-            it.addItemFlags(*itemFlags.toTypedArray())
+            it.addItemFlags(*hideFlags?.toTypedArray() ?: emptyArray())
         },
         fUnbreakable: Consumer<ItemMeta> = Consumer {
-            it.isUnbreakable = unbreakable
+            it.isUnbreakable = unbreakable == true
         },
         fAttributeModifiers: Consumer<ItemMeta> = Consumer {
-            this@VItemCharacteristic.attributeModifiers.forEach { (key, values) ->
+            this@VItemCharacteristic.attributeModifiers?.forEach { (key, values) ->
                 values.forEach { v ->
                     it.addAttributeModifier(key, v)
                 }
@@ -198,6 +202,10 @@ data class VItemCharacteristic(
         fItemFlags.accept(this)
         fUnbreakable.accept(this)
         fAttributeModifiers.accept(this)
+    }
+
+    override fun build(meta: ItemMeta) {
+        applyTo(meta, false)
     }
 
 }
