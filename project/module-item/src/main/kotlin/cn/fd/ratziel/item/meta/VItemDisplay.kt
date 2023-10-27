@@ -30,7 +30,7 @@ data class VItemDisplay(
     override var localizedName: @Contextual Component? = null,
     @JsonNames("lores")
     override var lore: @Contextual List<Component> = emptyList(),
-) : ItemDisplay,SerializableNBT{
+) : ItemDisplay, SerializableNBT{
 
     /**
      * 设置显示名称

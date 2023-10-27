@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item
+package cn.fd.ratziel.item.impl
 
 import cn.fd.ratziel.core.util.quickFuture
 import cn.fd.ratziel.item.meta.VItemCharacteristic

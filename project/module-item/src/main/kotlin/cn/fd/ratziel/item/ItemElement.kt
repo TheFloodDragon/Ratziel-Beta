@@ -6,6 +6,8 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
+import cn.fd.ratziel.item.impl.DefaultItemBuilder
+import cn.fd.ratziel.item.impl.DefaultItemStream
 import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer

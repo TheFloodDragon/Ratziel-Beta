@@ -1,5 +1,6 @@
 package cn.fd.ratziel.bukkit.nbt
 
+import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.module.nms.*
 
 typealias NBTType = ItemTagType
@@ -25,6 +26,11 @@ open class NBTCompound(data: NBTTag) : NBTTagData(NBTType.COMPOUND, data) {
                 Class.forName("net.minecraft.nbt.NBTTagCompound")
             else nmsClass("NBTTagCompound")
         }
+
+        /**
+         * NBTTagCompound#constructor()
+         */
+        fun createInstance() = clazz.invokeConstructor()
     }
 
     fun getData() = asCompound()
