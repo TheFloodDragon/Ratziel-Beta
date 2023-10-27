@@ -1,4 +1,4 @@
-package cn.fd.ratziel.env;
+package cn.fd.ratziel.core.env;
 
 import taboolib.common.env.RuntimeDependency;
 
