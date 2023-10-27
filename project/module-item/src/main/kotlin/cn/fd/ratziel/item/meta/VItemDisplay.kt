@@ -5,7 +5,7 @@ package cn.fd.ratziel.item.meta
 import cn.fd.ratziel.adventure.buildMessageMJ
 import cn.fd.ratziel.bukkit.nbt.NBTString
 import cn.fd.ratziel.item.api.meta.ItemDisplay
-import cn.fd.ratziel.item.api.nbt.SerializableNBT
+import cn.fd.ratziel.item.api.meta.ItemMetaBuilder
 import cn.fd.ratziel.item.nbtnode.MetaNode
 import cn.fd.ratziel.item.util.nmsComponent
 import kotlinx.serialization.Contextual
@@ -13,6 +13,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import net.kyori.adventure.text.Component
+import org.bukkit.inventory.meta.ItemMeta
+import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.module.nms.ItemTag
 import taboolib.module.nms.ItemTagList
 
@@ -30,7 +32,7 @@ data class VItemDisplay(
     override var localizedName: @Contextual Component? = null,
     @JsonNames("lores")
     override var lore: @Contextual List<Component> = emptyList(),
-) : ItemDisplay, SerializableNBT{
+) : ItemDisplay, ItemMetaBuilder {
 
     /**
      * 设置显示名称
@@ -49,12 +51,19 @@ data class VItemDisplay(
     /**
      * 应用到物品标签
      */
-    override fun applyTo(tag: ItemTag) {
+    @Deprecated("可能会被弃用")
+    fun applyTo(tag: ItemTag) {
         val display = tag.computeIfAbsent(MetaNode.DISPLAY.value) { ItemTag() } as ItemTag
         nmsComponent(name)?.let { display[MetaNode.NAME.value] = NBTString(it) }
         nmsComponent(localizedName)?.let { display[MetaNode.LOCAL_NAME.value] = NBTString(it) }
         display[MetaNode.LORE.value] =
             lore.mapNotNull { c -> nmsComponent(c)?.let { NBTString(it) } }.toCollection(ItemTagList())
+    }
+
+    override fun build(meta: ItemMeta) {
+        meta.setProperty("displayName", nmsComponent(name))
+        meta.setProperty("lore", lore.mapNotNull { nmsComponent(it) })
+        meta.setProperty("locName", nmsComponent(localizedName))
     }
 
 }

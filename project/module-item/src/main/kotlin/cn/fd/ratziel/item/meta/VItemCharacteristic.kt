@@ -2,11 +2,8 @@
 
 package cn.fd.ratziel.item.meta
 
-import cn.fd.ratziel.bukkit.nbt.NBTCompound
-import cn.fd.ratziel.bukkit.nbt.NBTTag
 import cn.fd.ratziel.item.api.meta.ItemCharacteristic
-import cn.fd.ratziel.item.api.nbt.SerializableNBT
-import cn.fd.ratziel.item.util.nms.ObcItemMeta
+import cn.fd.ratziel.item.api.meta.ItemMetaBuilder
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -18,10 +15,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
-import taboolib.module.nms.ItemTag
 import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.NMSItemTag
-import taboolib.module.nms.nmsProxy
 import java.util.function.Consumer
 
 /**
@@ -42,7 +36,7 @@ data class VItemCharacteristic(
     override var unbreakable: Boolean? = null,
     @JsonNames("attribute", "attributes", "modifier", "modifiers")
     override var attributeModifiers: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null,
-) : ItemCharacteristic, SerializableNBT {
+) : ItemCharacteristic, ItemMetaBuilder {
 
     /**
      * 是否含有魔咒
@@ -171,22 +165,6 @@ data class VItemCharacteristic(
     }
 
     /**
-     * 貌似高耗能
-     */
-    override fun applyTo(tag: NBTTag) {
-        // 创建一个空的CraftItemMeta
-        val emptyMeta = ObcItemMeta.createInstance(NBTCompound.createInstance()) as ItemMeta
-        // 应用内容
-        val applied = applyTo(emptyMeta, clone = false)
-        // 转化成ItemTag
-        val transformed = nmsProxy<NMSItemTag>().itemTagToBukkitCopy(applied) as ItemTag
-        // 扔进去
-        transformed.forEach { key, value ->
-            tag[key] = value
-        }
-    }
-
-    /**
      * VItemCharacteristic -> Bukkit.ItemMeta (空的)
      * @param clone 是否对 Bukkit.ItemMeta 进行克隆 (默认true)
      */
@@ -224,6 +202,10 @@ data class VItemCharacteristic(
         fItemFlags.accept(this)
         fUnbreakable.accept(this)
         fAttributeModifiers.accept(this)
+    }
+
+    override fun build(meta: ItemMeta) {
+        applyTo(meta, clone = false)
     }
 
 }
