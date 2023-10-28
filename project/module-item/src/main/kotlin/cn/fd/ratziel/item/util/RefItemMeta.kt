@@ -22,7 +22,7 @@ object RefItemMeta {
      * @return CraftMetaItem
      */
     @JvmStatic
-    fun createInstance(tag: Any) = metaClass.invokeConstructor(tag)
+    fun createInstance(value: Any) = metaClass.invokeConstructor(value)
 
     /**
      * CraftMetaItem#applyToItem(itemTag)
@@ -30,8 +30,8 @@ object RefItemMeta {
      * @param itemTag NBTTagCompound
      */
     @JvmStatic
-    fun applyToItem(craft: Any, itemTag: Any) {
-        craft.invokeMethod<Void>("applyToItem", itemTag)
+    fun applyToItem(craft: Any, nbtTag: Any) {
+        craft.invokeMethod<Void>("applyToItem", nbtTag, findToParent = false)
     }
 
 }

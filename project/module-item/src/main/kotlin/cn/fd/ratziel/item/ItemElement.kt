@@ -67,7 +67,6 @@ object ItemElement : ElementHandler {
         val testMeta = generator.build(meta)
         println(testMeta)
         println(testMeta.getProperty("displayName"))
-        println(testMeta.displayName)
 
     } catch (ex: Exception) {
         ex.printStackTrace()

@@ -2,8 +2,8 @@
 
 package cn.fd.ratziel.item.meta
 
-import cn.fd.ratziel.item.api.meta.ItemCharacteristic
 import cn.fd.ratziel.item.api.builder.ItemMetaBuilder
+import cn.fd.ratziel.item.api.meta.ItemCharacteristic
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -166,10 +166,9 @@ data class VItemCharacteristic(
 
     /**
      * VItemCharacteristic -> Bukkit.ItemMeta (空的)
-     * @param clone 是否对 Bukkit.ItemMeta 进行克隆 (默认true)
      */
     fun applyTo(
-        source: ItemMeta, clone: Boolean = true,
+        source: ItemMeta,
         /**
          * 值的设置
          * 使用变量的形式是为了自定义性
@@ -195,7 +194,7 @@ data class VItemCharacteristic(
                 }
             }
         },
-    ) = (if (clone) source.clone() else source).apply {
+    ) = source.apply {
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
             fCustomModelData.accept(this)
         fEnchants.accept(this)
@@ -205,7 +204,7 @@ data class VItemCharacteristic(
     }
 
     override fun build(meta: ItemMeta) {
-        applyTo(meta, clone = false)
+        applyTo(meta)
     }
 
 }

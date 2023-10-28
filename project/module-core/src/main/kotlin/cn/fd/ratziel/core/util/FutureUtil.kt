@@ -38,8 +38,11 @@ open class FutureFactory<T> : ConcurrentLinkedDeque<CompletableFuture<T>>() {
     /**
      * 等待所有任务完成
      */
-    fun waitForAll() {
-        CompletableFuture.allOf(*this.toTypedArray()).join()
+    fun waitForAll() = this.apply {
+        packedFuture.join()
     }
+
+    protected val packedFuture
+        get() = CompletableFuture.allOf(*this.toTypedArray())
 
 }
