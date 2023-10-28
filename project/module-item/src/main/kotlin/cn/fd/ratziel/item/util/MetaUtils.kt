@@ -1,7 +1,7 @@
 package cn.fd.ratziel.item.util
 
-import cn.fd.ratziel.adventure.serializeLegacy
-import cn.fd.ratziel.adventure.toJsonFormat
+import cn.fd.ratziel.common.adventure.serializeLegacy
+import cn.fd.ratziel.common.adventure.toJsonFormat
 import cn.fd.ratziel.bukkit.nbt.NBTCompound
 import cn.fd.ratziel.item.api.meta.ItemCharacteristic
 import cn.fd.ratziel.item.meta.VItemCharacteristic

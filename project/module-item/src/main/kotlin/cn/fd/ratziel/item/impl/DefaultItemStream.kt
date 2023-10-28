@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta
  * @author TheFloodDragon
  * @since 2023/10/27 22:23
  */
+@Deprecated("意义不明")
 class DefaultItemStream(nbtTag: NBTTag = NBTTag()) : ItemStream(nbtTag) {
 
     fun build(vm: VItemMeta): ItemMeta {

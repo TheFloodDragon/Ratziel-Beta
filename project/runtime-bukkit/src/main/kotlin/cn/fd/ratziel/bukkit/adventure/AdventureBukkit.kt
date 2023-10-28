@@ -1,5 +1,6 @@
-package cn.fd.ratziel.adventure
+package cn.fd.ratziel.bukkit.adventure
 
+import cn.fd.ratziel.common.adventure.buildMessage
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.title.Title

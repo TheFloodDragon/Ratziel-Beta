@@ -1,4 +1,4 @@
-package cn.fd.ratziel.adventure
+package cn.fd.ratziel.common.adventure
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent

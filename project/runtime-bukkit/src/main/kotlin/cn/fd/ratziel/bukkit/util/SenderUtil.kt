@@ -1,6 +1,8 @@
 package cn.fd.ratziel.bukkit.util
 
 import cn.fd.ratziel.adventure.*
+import cn.fd.ratziel.bukkit.adventure.audiencePlayer
+import cn.fd.ratziel.bukkit.adventure.audienceSender
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender

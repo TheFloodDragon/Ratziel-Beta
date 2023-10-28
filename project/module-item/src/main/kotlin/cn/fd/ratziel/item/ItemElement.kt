@@ -1,6 +1,6 @@
 package cn.fd.ratziel.item
 
-import cn.fd.ratziel.adventure.ComponentSerializer
+import cn.fd.ratziel.common.adventure.ComponentSerializer
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler

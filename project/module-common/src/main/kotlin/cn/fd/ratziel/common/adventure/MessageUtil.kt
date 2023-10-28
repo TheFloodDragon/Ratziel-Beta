@@ -1,4 +1,4 @@
-package cn.fd.ratziel.adventure
+package cn.fd.ratziel.common.adventure
 
 import cn.fd.ratziel.core.serialization.isJson
 import net.kyori.adventure.text.Component

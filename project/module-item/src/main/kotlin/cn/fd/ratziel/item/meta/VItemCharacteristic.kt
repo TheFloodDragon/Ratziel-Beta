@@ -3,7 +3,7 @@
 package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.item.api.meta.ItemCharacteristic
-import cn.fd.ratziel.item.api.meta.ItemMetaBuilder
+import cn.fd.ratziel.item.api.builder.ItemMetaBuilder
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable

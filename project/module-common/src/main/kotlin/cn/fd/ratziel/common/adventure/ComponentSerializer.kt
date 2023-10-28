@@ -1,4 +1,4 @@
-package cn.fd.ratziel.adventure
+package cn.fd.ratziel.common.adventure
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

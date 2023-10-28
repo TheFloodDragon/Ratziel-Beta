@@ -1,7 +1,7 @@
 package cn.fd.ratziel.bukkit.command
 
-import cn.fd.ratziel.adventure.audienceSender
-import cn.fd.ratziel.adventure.sendMessage
+import cn.fd.ratziel.bukkit.adventure.audienceSender
+import cn.fd.ratziel.bukkit.adventure.sendMessage
 import cn.fd.ratziel.common.command.CommandElement
 import cn.fd.ratziel.core.util.quickRunFuture
 import cn.fd.ratziel.kether.KetherHandler
