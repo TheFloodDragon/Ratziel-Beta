@@ -27,7 +27,7 @@ data class VItemDisplay(
     @JsonNames("loc-name", "locName", "local-name", "localName")
     override var localizedName: @Contextual Component? = null,
     @JsonNames("lores")
-    override var lore: @Contextual List<Component> = emptyList(),
+    override var lore: @Contextual List<Component>? = emptyList(),
 ) : ItemDisplay, ItemMetaBuilder {
 
     /**
@@ -46,20 +46,8 @@ data class VItemDisplay(
 
     override fun build(meta: ItemMeta) {
         meta.setProperty("displayName", nmsComponent(name))
-        meta.setProperty("lore", lore.mapNotNull { nmsComponent(it) })
+        meta.setProperty("lore", lore?.mapNotNull { nmsComponent(it) })
         meta.setProperty("locName", nmsComponent(localizedName))
     }
-
-//    /**
-//     * 应用到物品标签
-//     */
-//    @Deprecated("可能会被弃用")
-//    fun applyTo(tag: ItemTag) {
-//        val display = tag.computeIfAbsent(MetaNode.DISPLAY.value) { ItemTag() } as ItemTag
-//        nmsComponent(name)?.let { display[MetaNode.NAME.value] = NBTString(it) }
-//        nmsComponent(localizedName)?.let { display[MetaNode.LOCAL_NAME.value] = NBTString(it) }
-//        display[MetaNode.LORE.value] =
-//            lore.mapNotNull { c -> nmsComponent(c)?.let { NBTString(it) } }.toCollection(ItemTagList())
-//    }
 
 }

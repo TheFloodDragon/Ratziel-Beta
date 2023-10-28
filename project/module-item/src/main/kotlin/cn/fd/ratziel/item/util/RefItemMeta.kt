@@ -31,7 +31,7 @@ object RefItemMeta {
      */
     @JvmStatic
     fun applyToItem(craft: Any, nbtTag: Any) {
-        craft.invokeMethod<Void>("applyToItem", nbtTag, findToParent = false)
+        craft.invokeMethod<Void>("applyToItem", nbtTag)
     }
 
 }

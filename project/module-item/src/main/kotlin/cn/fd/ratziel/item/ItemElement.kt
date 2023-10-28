@@ -63,7 +63,7 @@ object ItemElement : ElementHandler {
         println(meta.nbt)
 
         println("————————————————")
-        // Test
+        // TODO NBT标签应该在生成ItemStack之后应用
         val testMeta = generator.build(meta)
         println(testMeta)
         println(testMeta.getProperty("displayName"))

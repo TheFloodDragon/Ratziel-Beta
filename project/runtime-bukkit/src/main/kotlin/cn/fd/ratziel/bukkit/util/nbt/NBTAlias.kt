@@ -18,7 +18,7 @@ open class NBTCompound(data: NBTTag) : NBTTagData(NBTType.COMPOUND, data) {
         /**
          * NBTTagCompound
          *   1.17+ net.minecraft.nbt.NBTTagCompound
-         *   1.16- net.minecraft.server.v1_16_R3.NBTTagCompound
+         *   1.17- net.minecraft.server.$VERSION.NBTTagCompound
          */
         @JvmStatic
         val clazz by lazy {

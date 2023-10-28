@@ -24,6 +24,6 @@ interface ItemDisplay : ItemPart {
     /**
      * 物品描述
      */
-    val lore: List<Component>
+    val lore: List<Component>?
 
 }
