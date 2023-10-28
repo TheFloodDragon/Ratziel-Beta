@@ -4,13 +4,12 @@ import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.util.handle
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.util.quickFuture
+import cn.fd.ratziel.core.util.FutureFactory
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.system.measureTimeMillis
 import cn.fd.ratziel.common.WorkspaceManager as wsm
@@ -40,25 +39,25 @@ object WorkspaceLoader {
         /**
          * 加载元素文件
          */
-        val loading = ConcurrentLinkedDeque<CompletableFuture<List<Element>>>()
-        val handling = ConcurrentLinkedDeque<CompletableFuture<Unit>>()
+        val loading = FutureFactory<List<Element>>()
+        val handling = FutureFactory<Unit>()
         measureTimeMillis {
             wsm.gerFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
-                    loading += quickFuture {
+                    loading.submit {
                         DefaultElementLoader.load(file).onEach { em ->
                             elements.add(em) // 插入缓存
                             // 处理元素
-                            handling += quickFuture {
+                            handling.submit {
                                 em.handle()
                             }
                         }
                     }
                 }
             // 等待所有任务完成
-            CompletableFuture.allOf(*loading.toTypedArray()).join()
-            CompletableFuture.allOf(*handling.toTypedArray()).join()
+            loading.waitForAll()
+            handling.waitForAll()
         }.let {
             sender.sendLang("Workspace-Finished", elements.size, it)
         }

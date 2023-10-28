@@ -2,10 +2,9 @@ package cn.fd.ratziel.item.util
 
 import cn.fd.ratziel.common.adventure.serializeLegacy
 import cn.fd.ratziel.common.adventure.toJsonFormat
-import cn.fd.ratziel.bukkit.nbt.NBTCompound
+import cn.fd.ratziel.bukkit.util.nbt.NBTCompound
 import cn.fd.ratziel.item.api.meta.ItemCharacteristic
 import cn.fd.ratziel.item.meta.VItemCharacteristic
-import cn.fd.ratziel.item.util.nms.ObcItemMeta
 import net.kyori.adventure.text.Component
 import taboolib.module.nms.MinecraftVersion
 
@@ -25,4 +24,4 @@ fun nmsComponent(component: Component?): String? =
 /**
  * 创建一个空的CraftItemMeta
  */
-fun emptyCraftItemMeta() = ObcItemMeta.createInstance(NBTCompound.createInstance())
+fun emptyCraftItemMeta() = RefItemMeta.createInstance(NBTCompound.createInstance())

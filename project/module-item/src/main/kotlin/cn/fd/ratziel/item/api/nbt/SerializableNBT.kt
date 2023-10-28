@@ -1,6 +1,6 @@
 package cn.fd.ratziel.item.api.nbt
 
-import cn.fd.ratziel.bukkit.nbt.NBTTag
+import cn.fd.ratziel.bukkit.util.nbt.NBTTag
 
 /**
  * SerializableNBT

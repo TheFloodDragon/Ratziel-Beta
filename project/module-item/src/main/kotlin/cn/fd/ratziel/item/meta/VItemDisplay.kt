@@ -3,7 +3,7 @@
 package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.common.adventure.buildMessageMJ
-import cn.fd.ratziel.bukkit.nbt.NBTString
+import cn.fd.ratziel.bukkit.util.nbt.NBTString
 import cn.fd.ratziel.item.api.meta.ItemDisplay
 import cn.fd.ratziel.item.api.builder.ItemMetaBuilder
 import cn.fd.ratziel.item.nbtnode.MetaNode

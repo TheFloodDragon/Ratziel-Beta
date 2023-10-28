@@ -1,6 +1,6 @@
 package cn.fd.ratziel.item.impl
 
-import cn.fd.ratziel.bukkit.nbt.NBTTag
+import cn.fd.ratziel.bukkit.util.nbt.NBTTag
 import cn.fd.ratziel.item.api.ItemStream
 import cn.fd.ratziel.item.meta.VItemMeta
 import cn.fd.ratziel.item.util.emptyCraftItemMeta

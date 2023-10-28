@@ -1,7 +1,5 @@
 package cn.fd.ratziel.common.element
 
-import cn.fd.ratziel.common.LogLevel
-import cn.fd.ratziel.common.debug
 import cn.fd.ratziel.common.element.parser.DefaultElementParser
 import cn.fd.ratziel.common.util.serializeToJson
 import cn.fd.ratziel.core.element.Element
@@ -20,7 +18,6 @@ object DefaultElementLoader : FileElementLoader {
 
     override fun load(file: File): List<Element> {
         try {
-            debug("Loading file... ${file.name}", level = LogLevel.Higher)
             // 获取 Config (转换成Json)
             Configuration.loadFromFile(file).serializeToJson().let { json ->
                 return DefaultElementParser.parse(json)

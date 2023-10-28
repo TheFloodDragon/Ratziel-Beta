@@ -1,4 +1,4 @@
-package cn.fd.ratziel.bukkit.nbt
+package cn.fd.ratziel.bukkit.util.nbt
 
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.module.nms.*

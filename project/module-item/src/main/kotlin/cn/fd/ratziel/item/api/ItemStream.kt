@@ -1,6 +1,6 @@
 package cn.fd.ratziel.item.api
 
-import cn.fd.ratziel.bukkit.nbt.NBTTag
+import cn.fd.ratziel.bukkit.util.nbt.NBTTag
 
 /**
  * ItemStream - 用于构建物品数据的流

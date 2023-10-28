@@ -6,6 +6,7 @@ package cn.fd.ratziel.item.nbtnode
  * @author TheFloodDragon
  * @since 2023/10/27 20:41
  */
+@Deprecated("可能会被弃用")
 enum class MetaNode(val value: String) {
     NAME("Name"),
     LOCAL_NAME("LocName"),

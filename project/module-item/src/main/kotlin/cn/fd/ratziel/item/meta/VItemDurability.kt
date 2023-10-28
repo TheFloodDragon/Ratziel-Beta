@@ -2,8 +2,8 @@
 
 package cn.fd.ratziel.item.meta
 
-import cn.fd.ratziel.bukkit.nbt.NBTInt
-import cn.fd.ratziel.bukkit.nbt.NBTTag
+import cn.fd.ratziel.bukkit.util.nbt.NBTInt
+import cn.fd.ratziel.bukkit.util.nbt.NBTTag
 import cn.fd.ratziel.item.api.meta.ItemDurability
 import cn.fd.ratziel.item.nbtnode.MetaNode
 import kotlinx.serialization.ExperimentalSerializationApi
