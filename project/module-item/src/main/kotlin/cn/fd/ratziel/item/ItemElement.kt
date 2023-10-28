@@ -6,8 +6,8 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
-import cn.fd.ratziel.item.impl.DefaultItemBuilder
-import cn.fd.ratziel.item.impl.DefaultItemStream
+import cn.fd.ratziel.item.impl.DefaultItemGenerator
+import cn.fd.ratziel.item.impl.ItemMetadataSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.item.meta.serializers.EnchantmentSerializer
@@ -16,10 +16,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import net.kyori.adventure.text.Component
-import org.bukkit.attribute.Attribute
-import org.bukkit.attribute.AttributeModifier
-import org.bukkit.enchantments.Enchantment
-import org.bukkit.inventory.ItemFlag
+import taboolib.library.reflex.Reflex.Companion.getProperty
 
 /**
  * ItemElement
@@ -39,10 +36,10 @@ object ItemElement : ElementHandler {
             contextual(Component::class, ComponentSerializer)
             contextual(EnhancedListSerializer(ComponentSerializer))
             // Bukkit Serializers
-            contextual(Enchantment::class, EnchantmentSerializer)
-            contextual(ItemFlag::class, ItemFlagSerializer)
-            contextual(Attribute::class, AttributeSerializer)
-            contextual(AttributeModifier::class, AttributeModifierSerializer)
+            contextual(org.bukkit.enchantments.Enchantment::class, EnchantmentSerializer)
+            contextual(org.bukkit.inventory.ItemFlag::class, ItemFlagSerializer)
+            contextual(org.bukkit.attribute.Attribute::class, AttributeSerializer)
+            contextual(org.bukkit.attribute.AttributeModifier::class, AttributeModifierSerializer)
         }
     }
 
@@ -55,7 +52,10 @@ object ItemElement : ElementHandler {
     override fun handle(element: Element) = try {
         println(element.property)
 
-        val meta = DefaultItemBuilder().buildVMeta(json, element.property)
+        val serializer = ItemMetadataSerializer()
+        val generator = DefaultItemGenerator()
+
+        val meta = serializer.serializeByJson(json, element.property)
 
         println(meta.display)
         println(meta.characteristic)
@@ -64,8 +64,10 @@ object ItemElement : ElementHandler {
 
         println("————————————————")
         // Test
-        val testMeta = DefaultItemStream().build(meta)
+        val testMeta = generator.build(meta)
         println(testMeta)
+        println(testMeta.getProperty("displayName"))
+        println(testMeta.displayName)
 
     } catch (ex: Exception) {
         ex.printStackTrace()

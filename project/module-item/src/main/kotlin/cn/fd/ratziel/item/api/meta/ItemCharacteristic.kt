@@ -1,5 +1,6 @@
 package cn.fd.ratziel.item.api.meta
 
+import cn.fd.ratziel.item.api.ItemPart
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemFlag
  * @author TheFloodDragon
  * @since 2023/10/14 18:21
  */
-interface ItemCharacteristic {
+interface ItemCharacteristic: ItemPart {
 
     /**
      * 物品自定义模型数据 (1.14+)

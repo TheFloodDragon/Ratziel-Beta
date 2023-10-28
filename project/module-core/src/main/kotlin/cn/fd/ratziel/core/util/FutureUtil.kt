@@ -3,7 +3,6 @@ package cn.fd.ratziel.core.util
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.Executor
-import java.util.function.Consumer
 import java.util.function.Supplier
 
 fun <T> quickFuture(function: Supplier<T>) = CompletableFuture.supplyAsync(function)!!
@@ -16,13 +15,13 @@ fun quickRunFuture(executor: Executor, function: Runnable): CompletableFuture<Vo
     CompletableFuture.runAsync(function, executor)
 
 /**
- * 快速获取一个FutureFactory
+ * 简化多异步任务的过程
  */
-fun <T> futureFactory(function: Consumer<FutureFactory<T>>) = function.accept(FutureFactory())
+fun <T> futureFactory(block: FutureFactory<T>.() -> Unit) = FutureFactory<T>().also { block(it) }
 
-/**
- * 用于多异步任务的控制
- */
+@JvmName("futureFactoryWithUnit")
+fun futureFactory(block: FutureFactory<Unit>.() -> Unit) = futureFactory<Unit>(block)
+
 open class FutureFactory<T> : ConcurrentLinkedDeque<CompletableFuture<T>>() {
 
     /**

@@ -5,7 +5,7 @@ package cn.fd.ratziel.item.meta
 import cn.fd.ratziel.bukkit.util.nbt.NBTInt
 import cn.fd.ratziel.bukkit.util.nbt.NBTTag
 import cn.fd.ratziel.item.api.meta.ItemDurability
-import cn.fd.ratziel.item.nbtnode.MetaNode
+import cn.fd.ratziel.item.deprecated.MetaNode
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames

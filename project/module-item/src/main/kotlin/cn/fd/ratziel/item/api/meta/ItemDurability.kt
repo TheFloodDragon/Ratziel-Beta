@@ -1,5 +1,7 @@
 package cn.fd.ratziel.item.api.meta
 
+import cn.fd.ratziel.item.api.ItemPart
+
 /**
  * ItemDurability - 物品耐久
  *
@@ -11,7 +13,7 @@ package cn.fd.ratziel.item.api.meta
  * @author TheFloodDragon
  * @since 2023/10/15 8:42
  */
-interface ItemDurability {
+interface ItemDurability : ItemPart {
 
     /**
      * 最大耐久

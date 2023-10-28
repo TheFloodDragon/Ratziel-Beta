@@ -1,8 +1,6 @@
 package cn.fd.ratziel.item.api.meta
 
-import cn.fd.ratziel.item.api.meta.ItemCharacteristic
-import cn.fd.ratziel.item.api.meta.ItemDisplay
-import cn.fd.ratziel.item.api.meta.ItemDurability
+import cn.fd.ratziel.item.api.ItemPart
 import taboolib.module.nms.ItemTag
 
 /**
@@ -11,7 +9,7 @@ import taboolib.module.nms.ItemTag
  * @author TheFloodDragon
  * @since 2023/10/14 16:12
  */
-interface ItemMetadata {
+interface ItemMetadata : ItemPart {
 
     /**
      * 物品显示部分
@@ -31,6 +29,6 @@ interface ItemMetadata {
     /**
      * 自定义NBT
      */
-    val nbt : ItemTag?
+    val nbt: ItemTag?
 
 }

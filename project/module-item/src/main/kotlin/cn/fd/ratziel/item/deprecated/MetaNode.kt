@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item.nbtnode
+package cn.fd.ratziel.item.deprecated
 
 /**
  * MetaNode

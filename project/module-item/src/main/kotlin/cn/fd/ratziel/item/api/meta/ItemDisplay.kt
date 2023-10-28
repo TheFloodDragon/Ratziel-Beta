@@ -1,5 +1,6 @@
 package cn.fd.ratziel.item.api.meta
 
+import cn.fd.ratziel.item.api.ItemPart
 import net.kyori.adventure.text.Component
 
 /**
@@ -8,7 +9,7 @@ import net.kyori.adventure.text.Component
  * @author TheFloodDragon
  * @since 2023/10/14 16:08
  */
-interface ItemDisplay {
+interface ItemDisplay : ItemPart {
 
     /**
      * 物品名称

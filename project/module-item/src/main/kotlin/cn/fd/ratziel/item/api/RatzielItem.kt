@@ -8,7 +8,7 @@ import cn.fd.ratziel.item.api.meta.ItemMetadata
  * @author TheFloodDragon
  * @since 2023/10/27 22:21
  */
-interface RatzielItem {
+interface RatzielItem : ItemPart {
     /**
      * 物品元数据
      */

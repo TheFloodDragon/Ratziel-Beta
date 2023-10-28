@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item.api.nbt
+package cn.fd.ratziel.item.deprecated.nbt
 
 import cn.fd.ratziel.bukkit.util.nbt.NBTTag
 
