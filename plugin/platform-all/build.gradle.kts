@@ -9,6 +9,6 @@ dependencies {
 
 tasks {
     withType<ShadowJar> {
-        archiveFileName.set("$rootName-$rootVersion.jar") //输出名称
+        archiveFileName.set("$rootName-$rootVersion.jar")
     }
 }
