@@ -10,6 +10,11 @@ import cn.fd.ratziel.item.api.meta.ItemMetadata
  */
 interface RatzielItem : ItemPart {
     /**
+     * 物品信息
+     */
+    val info: ItemInfo
+
+    /**
      * 物品元数据
      */
     val meta: ItemMetadata

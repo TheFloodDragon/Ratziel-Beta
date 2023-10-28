@@ -1,10 +1,11 @@
-package cn.fd.ratziel.item.util
+package cn.fd.ratziel.item.util.meta
 
 import cn.fd.ratziel.common.adventure.serializeLegacy
 import cn.fd.ratziel.common.adventure.toJsonFormat
 import cn.fd.ratziel.bukkit.util.nbt.NBTCompound
 import cn.fd.ratziel.item.api.meta.ItemCharacteristic
 import cn.fd.ratziel.item.meta.VItemCharacteristic
+import cn.fd.ratziel.item.util.ref.RefItemMeta
 import net.kyori.adventure.text.Component
 import taboolib.module.nms.MinecraftVersion
 

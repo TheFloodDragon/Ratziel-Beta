@@ -1,6 +1,8 @@
 package cn.fd.ratziel.item.impl
 
+import cn.fd.ratziel.bukkit.util.nbt.NBTTag
 import cn.fd.ratziel.core.util.quickFuture
+import cn.fd.ratziel.item.api.ItemInfo
 import cn.fd.ratziel.item.api.builder.ItemSerializer
 import cn.fd.ratziel.item.meta.VItemCharacteristic
 import cn.fd.ratziel.item.meta.VItemDisplay
@@ -20,7 +22,12 @@ import java.util.concurrent.CompletableFuture
  * @author TheFloodDragon
  * @since 2023/10/28 13:26
  */
+// TODO 完善This
 open class DefaultItemSerializer(
+    /**
+     * 物品ID
+     */
+    val itemID:String,
     /**
      * 物品元数据序列化器
      */
@@ -29,7 +36,7 @@ open class DefaultItemSerializer(
 
     override fun serializeByJson(json: Json, element: JsonElement): RazItem {
         val serialized = metaSerializer.serializeByJson(json, element)
-        return RazItem(serialized)
+        return RazItem(ItemInfo(itemID, NBTTag()),serialized)
     }
 }
 

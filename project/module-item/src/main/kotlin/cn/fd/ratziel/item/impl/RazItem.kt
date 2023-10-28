@@ -1,5 +1,6 @@
 package cn.fd.ratziel.item.impl
 
+import cn.fd.ratziel.item.api.ItemInfo
 import cn.fd.ratziel.item.api.RatzielItem
 import cn.fd.ratziel.item.meta.VItemMeta
 
@@ -9,7 +10,11 @@ import cn.fd.ratziel.item.meta.VItemMeta
  * @author TheFloodDragon
  * @since 2023/10/27 22:10
  */
-open class RazItem(
+data class RazItem(
+    /**
+     * 物品信息
+     */
+    override val info: ItemInfo,
     /**
      * 物品元数据
      */

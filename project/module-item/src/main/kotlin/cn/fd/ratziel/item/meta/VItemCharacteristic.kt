@@ -4,6 +4,7 @@ package cn.fd.ratziel.item.meta
 
 import cn.fd.ratziel.item.api.builder.ItemMetaBuilder
 import cn.fd.ratziel.item.api.meta.ItemCharacteristic
+import cn.fd.ratziel.item.util.meta.applyTo
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -58,7 +59,7 @@ data class VItemCharacteristic(
         if (!ignoreLevelRestriction) {
             level.coerceIn(enchantment.startLevel, enchantment.maxLevel)
         }
-        if (enchants == null) enchants = mutableMapOf() // Null Check
+        if (enchants == null) enchants = LinkedHashMap() // Null Check
         this.enchants!![enchantment] = level
     }
 
@@ -123,18 +124,19 @@ data class VItemCharacteristic(
     }
 
     /**
-     * Bukkit.ItemMeta -> VItemCharacteristic
-     * @param replace 如果元数据存在,是否替换 (默认true)
+     * Bukkit.ItemMeta(BI) -> VItemCharacteristic
+     * @param replace 如果BI的元数据存在(空),是否替换
      */
+    @Deprecated("考虑转移到别的地方")
     fun applyForm(
-        meta: ItemMeta, replace: Boolean = true,
+        meta: ItemMeta, replace: Boolean = false,
         /**
          * 值的设置
          * 使用变量的形式是为了自定义性
          */
         fCustomModelData: Consumer<VItemCharacteristic> = Consumer {
             if (it.customModelData == null || replace)
-                it.customModelData = getProperty<Int>("customModelData")
+                it.customModelData = meta.getProperty<Int>("customModelData")
         },
         fEnchants: Consumer<VItemCharacteristic> = Consumer {
             if (it.enchants?.isEmpty() == true || replace)
@@ -164,47 +166,6 @@ data class VItemCharacteristic(
         fAttributeModifiers.accept(this)
     }
 
-    /**
-     * VItemCharacteristic -> Bukkit.ItemMeta (空的)
-     */
-    fun applyTo(
-        source: ItemMeta,
-        /**
-         * 值的设置
-         * 使用变量的形式是为了自定义性
-         */
-        fCustomModelData: Consumer<ItemMeta> = Consumer {
-            it.setCustomModelData(customModelData)
-        },
-        fEnchants: Consumer<ItemMeta> = Consumer {
-            enchants?.forEach { (key, value) ->
-                it.addEnchant(key, value, true)
-            }
-        },
-        fItemFlags: Consumer<ItemMeta> = Consumer {
-            it.addItemFlags(*hideFlags?.toTypedArray() ?: emptyArray())
-        },
-        fUnbreakable: Consumer<ItemMeta> = Consumer {
-            it.isUnbreakable = unbreakable == true
-        },
-        fAttributeModifiers: Consumer<ItemMeta> = Consumer {
-            this@VItemCharacteristic.attributeModifiers?.forEach { (key, values) ->
-                values.forEach { v ->
-                    it.addAttributeModifier(key, v)
-                }
-            }
-        },
-    ) = source.apply {
-        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
-            fCustomModelData.accept(this)
-        fEnchants.accept(this)
-        fItemFlags.accept(this)
-        fUnbreakable.accept(this)
-        fAttributeModifiers.accept(this)
-    }
-
-    override fun build(meta: ItemMeta) {
-        applyTo(meta)
-    }
+    override fun build(meta: ItemMeta) = applyTo(meta, false)
 
 }

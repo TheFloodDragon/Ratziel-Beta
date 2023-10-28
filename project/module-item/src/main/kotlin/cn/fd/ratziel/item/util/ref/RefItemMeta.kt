@@ -1,4 +1,4 @@
-package cn.fd.ratziel.item.util
+package cn.fd.ratziel.item.util.ref
 
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod

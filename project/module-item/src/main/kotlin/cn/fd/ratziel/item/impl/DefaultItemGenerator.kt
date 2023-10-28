@@ -3,7 +3,7 @@ package cn.fd.ratziel.item.impl
 import cn.fd.ratziel.core.util.futureFactory
 import cn.fd.ratziel.item.api.builder.ItemGenerator
 import cn.fd.ratziel.item.meta.VItemMeta
-import cn.fd.ratziel.item.util.emptyCraftItemMeta
+import cn.fd.ratziel.item.util.meta.emptyCraftItemMeta
 import org.bukkit.inventory.meta.ItemMeta
 
 /**

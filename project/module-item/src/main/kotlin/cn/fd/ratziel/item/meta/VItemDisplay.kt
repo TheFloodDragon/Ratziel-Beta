@@ -5,14 +5,13 @@ package cn.fd.ratziel.item.meta
 import cn.fd.ratziel.common.adventure.buildMessageMJ
 import cn.fd.ratziel.item.api.builder.ItemMetaBuilder
 import cn.fd.ratziel.item.api.meta.ItemDisplay
-import cn.fd.ratziel.item.util.nmsComponent
+import cn.fd.ratziel.item.util.meta.applyTo
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.meta.ItemMeta
-import taboolib.library.reflex.Reflex.Companion.setProperty
 
 /**
  * VItemDisplay
@@ -44,10 +43,6 @@ data class VItemDisplay(
         lore = components.map { buildMessageMJ(it) }
     }
 
-    override fun build(meta: ItemMeta) {
-        meta.setProperty("displayName", nmsComponent(name))
-        meta.setProperty("lore", lore?.mapNotNull { nmsComponent(it) })
-        meta.setProperty("locName", nmsComponent(localizedName))
-    }
+    override fun build(meta: ItemMeta) = applyTo(meta, false)
 
 }
