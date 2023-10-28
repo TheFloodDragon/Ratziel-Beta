@@ -1,44 +1,12 @@
 package cn.fd.ratziel.item.impl
 
-import cn.fd.ratziel.bukkit.util.nbt.NBTTag
 import cn.fd.ratziel.core.util.quickFuture
-import cn.fd.ratziel.item.api.ItemInfo
 import cn.fd.ratziel.item.api.builder.ItemSerializer
-import cn.fd.ratziel.item.meta.VItemCharacteristic
-import cn.fd.ratziel.item.meta.VItemDisplay
-import cn.fd.ratziel.item.meta.VItemDurability
-import cn.fd.ratziel.item.meta.VItemMeta
+import cn.fd.ratziel.item.meta.*
 import cn.fd.ratziel.item.util.NBTMapper
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.*
 import taboolib.module.nms.ItemTag
 import java.util.concurrent.CompletableFuture
-
-/**
- * DefaultItemSerializer
- *
- * @author TheFloodDragon
- * @since 2023/10/28 13:26
- */
-// TODO 完善This
-open class DefaultItemSerializer(
-    /**
-     * 物品ID
-     */
-    val itemID:String,
-    /**
-     * 物品元数据序列化器
-     */
-    val metaSerializer: ItemMetadataSerializer = ItemMetadataSerializer(),
-) : ItemSerializer {
-
-    override fun serializeByJson(json: Json, element: JsonElement): RazItem {
-        val serialized = metaSerializer.serializeByJson(json, element)
-        return RazItem(ItemInfo(itemID, NBTTag()),serialized)
-    }
-}
 
 /**
  * ItemMetadata

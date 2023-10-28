@@ -1,7 +1,7 @@
 package cn.fd.ratziel.item.meta
 
+import cn.fd.ratziel.bukkit.util.nbt.NBTTag
 import cn.fd.ratziel.item.api.meta.ItemMetadata
-import taboolib.module.nms.ItemTag
 
 /**
  * VItemMeta
@@ -13,5 +13,5 @@ data class VItemMeta(
     override var display: VItemDisplay = VItemDisplay(),
     override var characteristic: VItemCharacteristic = VItemCharacteristic(),
     override var durability: VItemDurability = VItemDurability(),
-    override var nbt: ItemTag = ItemTag(),
+    override var nbt: NBTTag = NBTTag(),
 ) : ItemMetadata

@@ -21,6 +21,13 @@ val baseJson by lazy {
 }
 
 /**
+ * JsonPrimitive类型的自适应
+ */
+fun JsonPrimitive.adapt(): Any = if (isString || this is JsonNull) content else {
+    booleanOrNull ?: intOrNull ?: doubleOrNull ?: longOrNull ?: floatOrNull
+}!!
+
+/**
  * 构造一个空Json如"{}"
  */
 fun emptyJson() = JsonObject(emptyMap())

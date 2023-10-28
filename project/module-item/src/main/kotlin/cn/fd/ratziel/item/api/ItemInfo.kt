@@ -20,7 +20,7 @@ data class ItemInfo(
      * 储存的数据
      */
     var data: NBTTag?,
-) {
+) : ItemPart {
 
     constructor(nbtTag: NBTTag) : this(
         nbtTag.getDeep("$pluginId.id")!!.asString(), nbtTag.getDeep("$pluginId.data") as NBTTag

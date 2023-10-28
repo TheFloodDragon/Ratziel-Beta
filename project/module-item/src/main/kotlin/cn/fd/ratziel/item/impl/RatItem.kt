@@ -5,12 +5,12 @@ import cn.fd.ratziel.item.api.RatzielItem
 import cn.fd.ratziel.item.meta.VItemMeta
 
 /**
- * RazItem - Ratziel 物品
+ * RatItem - Ratziel 物品
  *
  * @author TheFloodDragon
  * @since 2023/10/27 22:10
  */
-data class RazItem(
+data class RatItem(
     /**
      * 物品信息
      */
