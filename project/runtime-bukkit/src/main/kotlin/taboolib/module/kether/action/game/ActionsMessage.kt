@@ -1,9 +1,9 @@
-package tb.module.kether.action.game
+package taboolib.module.kether.action.game
 
-import cn.fd.ratziel.bukkit.adventure.sendActionBar
-import cn.fd.ratziel.bukkit.adventure.sendMessage
-import cn.fd.ratziel.bukkit.adventure.sendTitle
-import cn.fd.ratziel.bukkit.util.castAudience
+import cn.fd.ratziel.common.adventure.castAudience
+import cn.fd.ratziel.common.adventure.sendActionBar
+import cn.fd.ratziel.common.adventure.sendMessage
+import cn.fd.ratziel.common.adventure.sendTitle
 import taboolib.common.platform.function.onlinePlayers
 import taboolib.module.chat.colored
 import taboolib.module.chat.uncolored

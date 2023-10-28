@@ -46,10 +46,6 @@ taboolib {
 
     }
 
-    // 删除原有文件使得重写得到应用
-    exclude("taboolib/platform/BukkitPlugin")
-    exclude("taboolib/platform/type/BukkitPlayer")
-
     classifier = null
     options("skip-minimize", "keep-kotlin-module", "skip-taboolib-relocate")
 }

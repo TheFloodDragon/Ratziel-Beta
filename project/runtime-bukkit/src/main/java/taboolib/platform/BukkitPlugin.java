@@ -1,4 +1,4 @@
-package tb.platform;
+package taboolib.platform;
 
 import cn.fd.ratziel.folia.FoliaAPI;
 import org.bukkit.Bukkit;
@@ -17,7 +17,6 @@ import taboolib.common.platform.Plugin;
 import taboolib.common.platform.function.ExecutorKt;
 import taboolib.library.reflex.Reflex;
 import taboolib.module.lang.Language;
-import taboolib.platform.BukkitWorldGenerator;
 import taboolib.platform.lang.TypeBossBar;
 
 import java.io.File;

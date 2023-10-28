@@ -1,4 +1,4 @@
-package tb.module.kether.action.game
+package taboolib.module.kether.action.game
 
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction

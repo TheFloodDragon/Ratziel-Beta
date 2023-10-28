@@ -7,13 +7,13 @@ import cn.fd.ratziel.core.element.api.ElementHandler
 import taboolib.common.platform.function.postpone
 
 /**
- * BaseElementEvaluator
- * 基础元素处理评估者
+ * BasicElementEvaluator
+ * 基本元素处理评估者
  *
  * @author TheFloodDragon
  * @since 2023/10/4 13:03
  */
-object BaseElementEvaluator : ElementEvaluator {
+object BasicElementEvaluator : ElementEvaluator {
 
     override fun eval(handler: ElementHandler, element: Element) {
         // 处理函数 (非立即执行)

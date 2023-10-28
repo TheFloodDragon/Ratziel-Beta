@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION", "LocalVariableName")
 
-package tb.platform.type
+package taboolib.platform.type
 
 import cn.fd.ratziel.folia.FoliaAPI
 import net.md_5.bungee.api.ChatMessageType
@@ -19,7 +19,6 @@ import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.common.util.unsafeLazy
-import taboolib.platform.type.BukkitCommandSender
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation
 import java.net.InetSocketAddress
@@ -434,7 +433,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun teleport(location: Location) {
-//        player.teleport(Location(Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch))
+        // player.teleport(Location(Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch))
         // Use FoliaAPI to teleport
         FoliaAPI.teleport(player,Location(Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch))
     }

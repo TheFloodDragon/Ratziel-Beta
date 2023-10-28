@@ -1,4 +1,4 @@
-package tb.module.kether.action.game
+package taboolib.module.kether.action.game
 
 import taboolib.common.platform.ProxyPlayer
 import taboolib.module.kether.PlayerOperator

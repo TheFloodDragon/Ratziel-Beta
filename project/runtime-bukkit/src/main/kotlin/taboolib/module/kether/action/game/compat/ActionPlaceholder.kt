@@ -1,4 +1,4 @@
-package tb.module.kether.action.game.compat
+package taboolib.module.kether.action.game.compat
 
 import me.clip.placeholderapi.PlaceholderAPI
 import taboolib.common.platform.Platform

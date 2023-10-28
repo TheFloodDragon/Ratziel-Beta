@@ -16,7 +16,7 @@ object ApexElementEvaluator {
     /**
      * 基础评估者
      */
-    val evaluators: MutableList<ElementEvaluator> = mutableListOf(BaseElementEvaluator)
+    val evaluators: MutableList<ElementEvaluator> = mutableListOf(BasicElementEvaluator)
 
     /**
      * 对一个元素处理器评估

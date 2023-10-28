@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION", "SpellCheckingInspection")
 
-package tb.module.kether.action.game.bukkit
+package taboolib.module.kether.action.game.bukkit
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack

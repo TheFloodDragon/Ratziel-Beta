@@ -1,23 +1,36 @@
-package cn.fd.ratziel.bukkit.adventure
+package cn.fd.ratziel.common.adventure
 
-import cn.fd.ratziel.common.adventure.buildMessage
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.title.Title
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import taboolib.platform.util.bukkitPlugin
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.ProxyPlayer
+import taboolib.platform.BukkitPlugin
 import java.time.Duration
 
 val bukkitAudiences by lazy {
-    BukkitAudiences.create(bukkitPlugin)
+    BukkitAudiences.create(BukkitPlugin.getInstance())
 }
+
+val ProxyPlayer.castBukkit
+    get() = this.cast<Player>()
 
 val CommandSender.audienceSender
     get() = bukkitAudiences.sender(this)
 
 val Player.audiencePlayer
     get() = bukkitAudiences.player(this)
+
+val ProxyPlayer.castAudience
+    get() = this.castBukkit.audiencePlayer
+
+val ProxyCommandSender.castBukkit
+    get() = this.cast<CommandSender>()
+
+val ProxyCommandSender.castAudience
+    get() = this.castBukkit.audienceSender
 
 /**
  * 观众方法扩展

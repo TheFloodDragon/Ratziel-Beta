@@ -12,7 +12,7 @@ import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.info
 import taboolib.module.kether.printKetherErrorMessage
-import tb.platform.type.BukkitPlayer
+import taboolib.platform.type.BukkitPlayer
 
 @PlatformSide([Platform.BUKKIT])
 @CommandHeader(name = "ftest")

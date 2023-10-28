@@ -1,4 +1,4 @@
-package tb.module.kether.action.game.bukkit
+package taboolib.module.kether.action.game.bukkit
 
 import org.bukkit.command.CommandSender
 import org.bukkit.permissions.Permission
