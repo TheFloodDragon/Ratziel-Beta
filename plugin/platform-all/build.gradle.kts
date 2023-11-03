@@ -7,8 +7,6 @@ dependencies {
         }
 }
 
-tasks {
-    withType<ShadowJar> {
-        archiveFileName.set("$rootName-$rootVersion.jar")
-    }
+tasks.withType<ShadowJar> {
+    archiveFileName.set("$rootName-$rootVersion.jar")
 }

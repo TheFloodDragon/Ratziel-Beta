@@ -1,8 +1,8 @@
-@file:Suppress("DEPRECATION", "LocalVariableName")
+@file:Suppress("DEPRECATION", "LocalVariableName", "removal")
 
 package taboolib.platform.type
 
-import cn.fd.ratziel.folia.FoliaAPI
+import cn.fd.ratziel.library.folia.teleportQuick
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.chat.ComponentSerializer
@@ -435,7 +435,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     override fun teleport(location: Location) {
         // player.teleport(Location(Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch))
         // Use FoliaAPI to teleport
-        FoliaAPI.teleport(player,Location(Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch))
+        player.teleportQuick(Location(Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch))
     }
 
     override fun giveExp(exp: Int) {

@@ -15,9 +15,7 @@ subprojects {
     repositories {
         mavenCentral()
         // 坏黑私人库
-        maven("http://ptms.ink:8081/repository/releases") {
-            isAllowInsecureProtocol = true
-        }
+        maven("http://ptms.ink:8081/repository/releases") { isAllowInsecureProtocol = true }
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
         // Kether API
@@ -29,6 +27,8 @@ subprojects {
         }
         // PlaceholderAPI
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        // FoliaLib
+        maven("https://nexuslite.gcnt.net/repos/other/")
     }
 
     dependencies {

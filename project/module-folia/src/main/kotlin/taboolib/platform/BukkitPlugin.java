@@ -1,6 +1,6 @@
 package taboolib.platform;
 
-import cn.fd.ratziel.folia.FoliaAPI;
+import cn.fd.ratziel.library.folia.Folia;
 import org.bukkit.Bukkit;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -144,14 +144,10 @@ public class BukkitPlugin extends JavaPlugin {
 //                    }
 //                });
                 // Try to Support Folia
-                FoliaAPI.INSTANCE.getScheduler().runTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-                        if (pluginInstance != null) {
-                            pluginInstance.onActive();
-                        }
-                    }
+                Folia.runTask(() -> {
+                    TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                    if (pluginInstance != null)
+                        pluginInstance.onActive();
                 });
             }
         }

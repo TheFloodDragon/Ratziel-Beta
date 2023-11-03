@@ -9,8 +9,6 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.4")
     // Module - Kether
     installModule("module-kether")
-    // Module - Folia
-    installModule("module-folia")
 }
 
 taboolib {
