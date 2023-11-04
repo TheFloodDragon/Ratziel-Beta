@@ -12,7 +12,8 @@ enum class ItemMapping(private val value: String) : Supplier<String> {
 
     DISPLAY("display"),
     DISPLAY_NAME("Name"),
-    DISPLAY_LORE("Lore");
+    DISPLAY_LORE("Lore"),
+    DISPLAY_LOCAL_NAME("LocName");
 
     override fun get() = value
 

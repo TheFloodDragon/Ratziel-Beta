@@ -1,7 +1,7 @@
 dependencies {
     parent!!.subprojects
         .forEach {
-            if (name != it.name) implementation(it)
+            if (name != it.name) implementation(project(it.path, ByShadow))
         }
 }
 

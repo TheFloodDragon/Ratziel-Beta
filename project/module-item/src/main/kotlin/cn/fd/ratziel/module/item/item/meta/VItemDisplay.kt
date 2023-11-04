@@ -59,7 +59,7 @@ data class VItemDisplay(
         display[ItemMapping.DISPLAY_NAME.get()] = name?.toJsonFormat()?.asItemTagData() ?: emptyTagData()
         display[ItemMapping.DISPLAY_LORE.get()] =
             lore?.map { it.toJsonFormat().asItemTagData() }?.let { ItemTagList(it) } ?: emptyTagData()
-        // TODO LocalName
+        display[ItemMapping.DISPLAY_LOCAL_NAME.get()] = localizedName?.toJsonFormat()?.asItemTagData() ?: emptyTagData()
     }
 
 }

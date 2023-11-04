@@ -1,6 +1,6 @@
 dependencies {
     // Platform - Bukkit
-    shadowModule("runtime-bukkit", WithShadow)
+    shadowModule("runtime-bukkit", ByShadow)
     // Extension - Item
     shadowModule("module-item")
 }
