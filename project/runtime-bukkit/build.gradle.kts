@@ -23,7 +23,6 @@ dependencies {
 
 
 tasks {
-//    assemble { dependsOn(tabooRelocateJar) }
     shadowJar {
         relocate("com.tcoded.folialib.", "$rootGroup.library.folia.folialib_0_3_1.")
     }
