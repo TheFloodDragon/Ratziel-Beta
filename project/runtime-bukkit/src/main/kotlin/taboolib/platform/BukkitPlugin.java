@@ -1,6 +1,5 @@
 package taboolib.platform;
 
-import cn.fd.ratziel.library.folia.Folia;
 import org.bukkit.Bukkit;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -27,10 +26,10 @@ import java.util.Set;
  * TabooLib
  * taboolib.platform.BukkitPlugin
  *
- * @author sky, TheFloodDragon
- * @since 2023/9/16 11:56
+ * @author sky
+ * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda", "DuplicatedCode", "CallToPrintStackTrace"})
+@SuppressWarnings({"DuplicatedCode", "CallToPrintStackTrace"})
 @PlatformSide(Platform.BUKKIT)
 public class BukkitPlugin extends JavaPlugin {
 
@@ -144,7 +143,7 @@ public class BukkitPlugin extends JavaPlugin {
 //                    }
 //                });
                 // Try to Support Folia
-                Folia.runTask(() -> {
+                cn.fd.ratziel.library.folia.Folia.runTask(() -> {
                     TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
                     if (pluginInstance != null)
                         pluginInstance.onActive();

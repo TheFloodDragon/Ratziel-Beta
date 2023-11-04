@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 subprojects {
 
     dependencies {
@@ -12,7 +10,7 @@ subprojects {
         build {
             dependsOn(shadowJar)
         }
-        withType<ShadowJar> {
+        shadowJar {
             combineFiles.forEach {
                 append(it)
             }

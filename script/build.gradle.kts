@@ -11,7 +11,7 @@ subprojects {
         build {
             dependsOn(shadowJar)
         }
-        withType<ShadowJar> {
+        shadowJar {
             archiveFileName.set("Script-${project.name.capitalized()}-${project.version}.jar") //输出名称
         }
     }

@@ -3,21 +3,34 @@ plugins {
 }
 
 dependencies {
+    // Taboolib 模块
+    taboolibModules.forEach { installTaboo(it) }
+    installTaboo("platform-bukkit")
+    installTaboo("module-nms")
+    installTaboo("module-nms-util")
+    installTaboo("expansion-player-fake-op")
+    // 其它
     compileCore(12002)
     compileOnly("com.google.code.gson:gson:2.8.9")
     compileOnly("net.md-5:bungeecord-chat:1.17")
     compileOnly("me.clip:placeholderapi:2.11.4")
+    // Folia
+    compileOnly("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT")
+    implementation("com.tcoded:FoliaLib:0.3.1")
     // Module - Kether
     installModule("module-kether")
 }
 
+
+tasks {
+    shadowJar {
+        dependsOn(tabooRelocateJar)
+        relocate("com.tcoded.folialib.", "$rootGroup.library.folia.folialib_0_3_1.")
+    }
+}
+
 taboolib {
     version = taboolibVersion
-    taboolibModules.forEach { install(it) }
-    install("platform-bukkit")
-    install("module-nms")
-    install("module-nms-util")
-    install("expansion-player-fake-op")
 
     description {
         name = rootName

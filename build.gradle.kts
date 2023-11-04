@@ -67,13 +67,14 @@ subprojects {
 
     tasks {
         withType<JavaCompile> { options.encoding = "UTF-8" } //UTF-8 编码
-        //一般配置
+        // ShadowJar
         withType<ShadowJar> {
             // Options
             archiveAppendix.set("")
             archiveClassifier.set("")
             archiveVersion.set(rootVersion)
-            destinationDirectory.set(file("$rootDir/outs")) //输出路径
+            if (parent?.name.equals("plugin") || parent?.name.equals("script"))
+                destinationDirectory.set(file("$rootDir/outs"))
             // Exclude
             exclude("META-INF/**")
             // Taboolib

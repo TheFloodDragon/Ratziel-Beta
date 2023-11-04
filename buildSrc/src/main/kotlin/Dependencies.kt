@@ -69,16 +69,16 @@ fun DependencyHandler.compileTabooCommon() {
  * 依赖项目
  * @param name 项目名称
  */
-fun DependencyHandler.compileModule(name: String) {
-    add(ACTION_COMPILE, project(":project:$name"))
+fun DependencyHandler.compileModule(name: String, configuration: String? = null) {
+    add(ACTION_COMPILE, project(":project:$name", configuration))
 }
 
-fun DependencyHandler.installModule(name: String) {
-    add(ACTION_INSTALL, project(":project:$name"))
+fun DependencyHandler.installModule(name: String, configuration: String? = null) {
+    add(ACTION_INSTALL, project(":project:$name", configuration))
 }
 
-fun DependencyHandler.shadowModule(name: String) {
-    add(ACTION_SHADOW, project(":project:$name"))
+fun DependencyHandler.shadowModule(name: String, configuration: String? = null) {
+    add(ACTION_SHADOW, project(":project:$name", configuration))
 }
 
 /**
@@ -100,6 +100,12 @@ fun DependencyHandler.compileTaboo(vararg module: String, version: String = tabo
 fun DependencyHandler.shadowTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {
     add(ACTION_SHADOW, "io.izzel.taboolib:$it:$version")
 }
+
+fun DependencyHandler.installTaboo(vararg module: String, version: String = taboolibVersion) = module.forEach {
+    add(ACTION_INSTALL, "io.izzel.taboolib:$it:$version")
+}
+
+const val ShadowConfig = "shadow"
 
 private const val ACTION_COMPILE = "compileOnly"
 private const val ACTION_INSTALL = "api"

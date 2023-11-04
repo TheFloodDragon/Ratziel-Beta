@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 dependencies {
     parent!!.subprojects
         .forEach {
@@ -7,6 +5,6 @@ dependencies {
         }
 }
 
-tasks.withType<ShadowJar> {
+tasks.shadowJar {
     archiveFileName.set("$rootName-$rootVersion.jar")
 }

@@ -19,6 +19,7 @@ import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.common.util.unsafeLazy
+import taboolib.platform.type.BukkitCommandSender
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation
 import java.net.InetSocketAddress
