@@ -1,37 +1,39 @@
 package cn.fd.ratziel.common
 
-fun debug(info: Any? = Any(), level: LogLevel = LogLevel.Medium, auto: Boolean = true) {
-    if (Logger.debug) log(info, level, auto)
-}
+import taboolib.common.io.isDevelopmentMode
+import taboolib.common.platform.function.info
 
-fun log(info: Any? = Any(), level: LogLevel = LogLevel.Medium, auto: Boolean = true) {
-    if (level.priority >= Logger.level.priority)
-        if (auto) Logger.process(info)
-        else println(info)
-}
+fun debug(info: Any? = "", level: LogLevel = LogLevel.Medium) = Logger.debug(info, level)
+
+fun log(info: Any? = "", level: LogLevel = LogLevel.Medium) = Logger.log(info, level)
 
 object Logger {
 
     /**
      * 是否启用Debug模式
      */
-    val debug: Boolean = true
+    var debug: Boolean = false
+        get() = field || isDevelopmentMode
 
     /**
      * 日志等级
      */
-    val level: LogLevel = LogLevel.Highest
+    var level: LogLevel = LogLevel.Highest
 
     /**
-     * 日志智能处理
+     * 发送日志
      */
-    fun process(info: Any?) {
-        when (info) {
-            is Iterable<*> -> info.forEach { println(it) }
-            is Map<*, *> -> info.forEach { println(it.key.toString() + "  |  " + it.value.toString()) }
-            else -> println(info)
-        }
+    fun log(info: Any?, level: LogLevel = LogLevel.Medium) {
+        if (level.priority >= Logger.level.priority) info(info.toString())
     }
+
+    /**
+     * 发送Debug日志
+     */
+    fun debug(info: Any?, level: LogLevel = LogLevel.Medium) {
+        if (debug) log(info, level)
+    }
+
 }
 
 /**

@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.common.adventure.ComponentSerializer
 import cn.fd.ratziel.common.element.registry.NewElement
+import cn.fd.ratziel.common.log
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
@@ -57,17 +58,17 @@ object ItemElement : ElementHandler {
 
         val meta = serializer.serializeByJson(json, element.property)
 
-        println(meta.display)
-        println(meta.characteristic)
-        println(meta.durability)
-        println(meta.nbt)
+        log(meta.display)
+        log(meta.characteristic)
+        log(meta.durability)
+        log(meta.nbt)
 
-        println("————————————————")
+        log("————————————————")
 
         val testMeta = generator.build(meta)
 
-        println(testMeta)
-        println(testMeta.getProperty("displayName"))
+        log(testMeta)
+        log(testMeta.getProperty("displayName"))
 
     } catch (ex: Exception) {
         ex.printStackTrace()
