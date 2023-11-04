@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.bukkit.util.nbt.NBTInt
-import cn.fd.ratziel.bukkit.util.nbt.NBTString
-import cn.fd.ratziel.bukkit.util.nbt.NBTTag
+import cn.fd.ratziel.module.item.nbt.NBTInt
+import cn.fd.ratziel.module.item.nbt.NBTString
+import cn.fd.ratziel.module.item.nbt.NBTTag
 import taboolib.common.platform.function.pluginId
 
 /**

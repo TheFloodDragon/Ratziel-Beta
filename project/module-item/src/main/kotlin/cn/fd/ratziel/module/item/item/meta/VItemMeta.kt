@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.item.meta
 
-import cn.fd.ratziel.bukkit.util.nbt.NBTTag
+import cn.fd.ratziel.module.item.nbt.NBTTag
 import cn.fd.ratziel.module.item.api.meta.ItemMetadata
 
 /**

@@ -1,19 +1,19 @@
-package cn.fd.ratziel.bukkit.util.nbt
+package cn.fd.ratziel.module.item.nbt
 
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.module.nms.*
 
 typealias NBTType = ItemTagType
-typealias NBTTagData = ItemTagData
+typealias NBTData = ItemTagData
 typealias NBTTag = ItemTag
-typealias NBTTagList = ItemTagList
+typealias NBTList = ItemTagList
 
 /**
  * NBT各种类型的封装
  * 注意: 请勿使用NBTTagData原有的获取数据方法
  */
 
-open class NBTCompound(data: NBTTag) : NBTTagData(NBTType.COMPOUND, data) {
+open class NBTCompound(data: NBTTag) : NBTData(NBTType.COMPOUND, data) {
     companion object {
         /**
          * NBTTagCompound
@@ -36,7 +36,7 @@ open class NBTCompound(data: NBTTag) : NBTTagData(NBTType.COMPOUND, data) {
     fun getData() = asCompound()
 }
 
-open class NBTByte(data: Byte) : NBTTagData(NBTType.BYTE, data) {
+open class NBTByte(data: Byte) : NBTData(NBTType.BYTE, data) {
     fun getData() = asByte()
 }
 
@@ -47,38 +47,34 @@ open class NBTBoolean(private val bl: Boolean) : NBTByte(if (bl) bTrue else bFal
     fun getBoolean() = bl
 }
 
-open class NBTShort(data: Short) : NBTTagData(NBTType.SHORT, data) {
+open class NBTShort(data: Short) : NBTData(NBTType.SHORT, data) {
     fun getData() = asShort()
 }
 
-open class NBTInt(data: Int) : NBTTagData(NBTType.INT, data) {
+open class NBTInt(data: Int) : NBTData(NBTType.INT, data) {
     fun getData() = asInt()
 }
 
-open class NBTIntArray(data: IntArray) : NBTTagData(NBTType.INT_ARRAY, data) {
+open class NBTIntArray(data: IntArray) : NBTData(NBTType.INT_ARRAY, data) {
     fun getData() = asIntArray()
 }
 
-open class NBTLong(data: Long) : NBTTagData(NBTType.LONG, data) {
+open class NBTLong(data: Long) : NBTData(NBTType.LONG, data) {
     fun getData() = asLong()
 }
 
-open class NBTFloat(data: Float) : NBTTagData(NBTType.FLOAT, data) {
+open class NBTFloat(data: Float) : NBTData(NBTType.FLOAT, data) {
     fun getData() = asFloat()
 }
 
-open class NBTDouble(data: Double) : NBTTagData(NBTType.DOUBLE, data) {
+open class NBTDouble(data: Double) : NBTData(NBTType.DOUBLE, data) {
     fun getData() = asDouble()
 }
 
-open class NBTByteArray(data: ByteArray) : NBTTagData(NBTType.BYTE_ARRAY, data) {
+open class NBTByteArray(data: ByteArray) : NBTData(NBTType.BYTE_ARRAY, data) {
     fun getData() = asByteArray()
 }
 
-class NBTString(data: String) : NBTTagData(NBTType.STRING, data) {
+class NBTString(data: String) : NBTData(NBTType.STRING, data) {
     fun getData() = asString()
-}
-
-class NBTList(data: NBTTagList) : NBTTagData(ItemTagType.LIST, data) {
-    fun getData() = asList()
 }

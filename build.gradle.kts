@@ -73,8 +73,7 @@ subprojects {
             archiveAppendix.set("")
             archiveClassifier.set("")
             archiveVersion.set(rootVersion)
-            if (parent?.name.equals("plugin") || parent?.name.equals("script"))
-                destinationDirectory.set(file("$rootDir/outs"))
+            destinationDirectory.set(file("$rootDir/outs"))
             // Exclude
             exclude("META-INF/**")
             // Taboolib

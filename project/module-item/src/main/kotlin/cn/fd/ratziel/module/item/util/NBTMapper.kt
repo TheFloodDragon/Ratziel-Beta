@@ -2,9 +2,9 @@
 
 package cn.fd.ratziel.module.item.util
 
-import cn.fd.ratziel.bukkit.util.nbt.NBTTag
-import cn.fd.ratziel.bukkit.util.nbt.NBTTagData
 import cn.fd.ratziel.core.serialization.adapt
+import cn.fd.ratziel.module.item.nbt.NBTData
+import cn.fd.ratziel.module.item.nbt.NBTTag
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -29,10 +29,10 @@ object NBTMapper : KSerializer<NBTTag> {
 
     @JvmStatic
     fun mapFromJson(json: JsonElement, nbtTag: NBTTag = NBTTag()): NBTTag {
-        fun translate(json: JsonElement): NBTTagData? =
+        fun translate(json: JsonElement): NBTData? =
             when (json) {
-                is JsonPrimitive -> NBTTagData.toNBT(json.adapt())
-                is JsonArray -> NBTTagData.toNBT(json.map { translate(it) })
+            is JsonPrimitive -> NBTData.toNBT(json.adapt())
+                is JsonArray -> NBTData.toNBT(json.map { translate(it) })
                 is JsonObject -> mapFromJson(json)
                 else -> null
             }
