@@ -29,6 +29,9 @@ tasks {
     tabooRelocateJar {
         dependsOn(shadowJar)
     }
+    assemble{
+        dependsOn(tabooRelocateJar)
+    }
 }
 
 taboolib {
