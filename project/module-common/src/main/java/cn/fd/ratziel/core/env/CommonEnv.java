@@ -9,14 +9,13 @@ import taboolib.common.env.RuntimeDependency;
  * @since 2023/5/21 11:06
  */
 @RuntimeDependency(
-        value = "!net.kyori:adventure-api:4.14.0",
-        initiative = true,
-        transitive = false
-)
-@RuntimeDependency(
-        value = "!net.kyori:adventure-text-minimessage:4.14.0",
-        transitive = false
+        value = "!net.kyori:adventure-api:" + CommonEnv.version,
+        test = "net.kyori.adventure.Adventure"
 )
 
+@RuntimeDependency(
+        value = "!net.kyori:adventure-text-minimessage:" + CommonEnv.version
+)
 public class CommonEnv {
+    public static final String version = "4.14.0";
 }

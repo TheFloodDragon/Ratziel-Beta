@@ -1,6 +1,5 @@
 package cn.fd.ratziel.bukkit.command
 
-import cn.fd.ratziel.common.debug
 import cn.fd.ratziel.common.util.runningClassesWithoutTaboolib
 import cn.fd.ratziel.kether.bacikal.toBacikalQuest
 import taboolib.common.platform.Platform
@@ -45,21 +44,21 @@ object TestCommand {
     @CommandBody
     val main = mainCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            debug("Test")
+            println("Test")
         }
     }
 
     @CommandBody
     val test = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            debug()
+            println()
         }
     }
 
     @CommandBody
     val classes = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            debug(runningClassesWithoutTaboolib)
+            println(runningClassesWithoutTaboolib)
         }
     }
 

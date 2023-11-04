@@ -7,14 +7,8 @@ subprojects {
     }
 
     tasks {
-        build {
-            dependsOn(shadowJar)
-        }
-        shadowJar {
-            combineFiles.forEach {
-                append(it)
-            }
-        }
+        build { dependsOn(shadowJar) }
+        shadowJar { combineFiles.forEach { append(it) } }
     }
 
 }

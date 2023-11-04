@@ -2,6 +2,8 @@ package cn.fd.ratziel.core.env;
 
 import taboolib.common.env.RuntimeDependency;
 
+import static cn.fd.ratziel.core.env.CoreEnv.kotlin_version_escaped;
+
 /**
  * CoreEnv
  *
@@ -10,21 +12,22 @@ import taboolib.common.env.RuntimeDependency;
  */
 @RuntimeDependency(
         value = "!org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.0",
-        test = "!kotlinx@kotlin_version_escape@.serialization.Serializer",
-        relocate = {"!kotlin.", "!kotlin@kotlin_version_escape@.", "!kotlinx.", "!kotlinx@kotlin_version_escape@."},
+        test = "!kotlinx" + kotlin_version_escaped + ".serialization.Serializer",
+        relocate = {"!kotlin.", "!kotlin" + kotlin_version_escaped + ".", "!kotlinx.", "!kotlinx" + kotlin_version_escaped + "."},
         transitive = false
 )
 @RuntimeDependency(
         value = "!org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0",
-        test = "!kotlinx1920.serialization.json.JsonKt",
-        relocate = {"!kotlin.", "!kotlin@kotlin_version_escape@.", "!kotlinx.", "!kotlinx@kotlin_version_escape@."},
+        test = "!kotlinx" + kotlin_version_escaped + ".serialization.json.JsonKt",
+        relocate = {"!kotlin.", "!kotlin" + kotlin_version_escaped + ".", "!kotlinx.", "!kotlinx" + kotlin_version_escaped + "."},
         transitive = false
 )
 @RuntimeDependency(
         value = "!org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3",
-        relocate = {"!kotlin.", "!kotlin@kotlin_version_escape@.", "!kotlinx.", "!kotlinx@kotlin_version_escape@."},
+        relocate = {"!kotlin.", "!kotlin" + kotlin_version_escaped + ".", "!kotlinx.", "!kotlinx" + kotlin_version_escaped + "."},
         transitive = false
 )
 
 public class CoreEnv {
+    public static final String kotlin_version_escaped = "1920";
 }
