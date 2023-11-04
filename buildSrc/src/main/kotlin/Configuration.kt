@@ -1,5 +1,3 @@
-import java.text.SimpleDateFormat
-
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
 const val rootVersion = "A.0.1.12.9"
@@ -12,7 +10,7 @@ const val taboolibPluginVersion = "1.56"
 
 val taboolibVersion = getLatestRelease("TabooLib", "taboolib").also { println("Using taboolib-version = $it") }
 
-val isoInstantFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+val isoInstantFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
 val taboolibModules = setOf(
     "common",
