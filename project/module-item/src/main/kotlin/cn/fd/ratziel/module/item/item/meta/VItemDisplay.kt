@@ -3,8 +3,12 @@
 package cn.fd.ratziel.module.item.item.meta
 
 import cn.fd.ratziel.common.adventure.buildMessageMJ
+import cn.fd.ratziel.common.adventure.toJsonFormat
 import cn.fd.ratziel.module.item.api.builder.ItemMetaBuilder
 import cn.fd.ratziel.module.item.api.meta.ItemDisplay
+import cn.fd.ratziel.module.item.item.mapping.ItemMapping
+import cn.fd.ratziel.module.item.util.asItemTagData
+import cn.fd.ratziel.module.item.util.emptyTagData
 import cn.fd.ratziel.module.item.util.meta.applyTo
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -12,6 +16,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.meta.ItemMeta
+import taboolib.module.nms.ItemTag
+import taboolib.module.nms.ItemTagList
 
 /**
  * VItemDisplay
@@ -44,5 +50,16 @@ data class VItemDisplay(
     }
 
     override fun build(meta: ItemMeta) = applyTo(meta, false)
+
+    /**
+     * 将信息写入物品标签
+     */
+    fun write(tag: ItemTag) {
+        val display = tag.computeIfAbsent(ItemMapping.DISPLAY.get()) { emptyTagData() } as ItemTag
+        display[ItemMapping.DISPLAY_NAME.get()] = name?.toJsonFormat()?.asItemTagData() ?: emptyTagData()
+        display[ItemMapping.DISPLAY_LORE.get()] =
+            lore?.map { it.toJsonFormat().asItemTagData() }?.let { ItemTagList(it) } ?: emptyTagData()
+        // TODO LocalName
+    }
 
 }

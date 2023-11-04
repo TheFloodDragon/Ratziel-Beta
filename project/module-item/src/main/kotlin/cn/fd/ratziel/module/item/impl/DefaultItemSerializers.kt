@@ -2,11 +2,12 @@ package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.core.util.quickFuture
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
-import cn.fd.ratziel.module.item.util.NBTMapper
 import cn.fd.ratziel.module.item.item.meta.VItemCharacteristic
 import cn.fd.ratziel.module.item.item.meta.VItemDisplay
 import cn.fd.ratziel.module.item.item.meta.VItemDurability
 import cn.fd.ratziel.module.item.item.meta.VItemMeta
+import cn.fd.ratziel.module.item.util.NBTMapper
+import cn.fd.ratziel.module.item.util.emptyTag
 import kotlinx.serialization.json.*
 import taboolib.module.nms.ItemTag
 import java.util.concurrent.CompletableFuture
@@ -28,7 +29,7 @@ open class ItemMetadataSerializer(
         val characteristic = quickFuture { charSerializer.serializeByJson(json, element) }
         val durability = quickFuture { durabilitySerializer.serializeByJson(json, element) }
         val nbt: CompletableFuture<ItemTag> = quickFuture { itemTagSerializer.serializeByJson(element) }
-        return VItemMeta(display.get(), characteristic.get(), durability.get(), nbt.get() ?: ItemTag())
+        return VItemMeta(display.get(), characteristic.get(), durability.get(), nbt.get() ?: emptyTag())
     }
 }
 
@@ -69,5 +70,5 @@ open class ItemNBTTagSerializer {
                 ?.let { NBTMapper.mapFromJson(it) }
         } catch (_: IllegalArgumentException) {
             null
-        } ?: ItemTag()
+        } ?: emptyTag()
 }
