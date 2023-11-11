@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.util.meta
+package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.meta.ItemCharacteristic
 import cn.fd.ratziel.module.item.api.meta.ItemDisplay
@@ -13,6 +13,7 @@ import java.util.function.Consumer
 /**
  * ItemDisplay -> Bukkit.ItemMeta
  */
+@Deprecated("似乎没有用")
 fun ItemDisplay.applyTo(
     target: ItemMeta, replace: Boolean = false,
     fDisplayName: Consumer<ItemDisplay> = Consumer {
@@ -36,6 +37,7 @@ fun ItemDisplay.applyTo(
 /**
  * ItemCharacteristic -> Bukkit.ItemMeta
  */
+@Deprecated("似乎没有用")
 fun ItemCharacteristic.applyTo(
     target: ItemMeta, replace: Boolean = false,
     /**

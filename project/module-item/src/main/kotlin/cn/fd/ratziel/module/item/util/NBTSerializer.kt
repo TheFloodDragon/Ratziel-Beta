@@ -3,8 +3,8 @@
 package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.core.serialization.adapt
-import cn.fd.ratziel.module.item.nbt.NBTData
-import cn.fd.ratziel.module.item.nbt.NBTTag
+import cn.fd.ratziel.module.item.util.nbt.NBTData
+import cn.fd.ratziel.module.item.util.nbt.NBTTag
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -13,13 +13,13 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 /**
- * NBTMapper
+ * NBTSerializer
  *
  * @author TheFloodDragon
  * @since 2023/10/15 9:08
  */
 @Serializer(NBTTag::class)
-object NBTMapper : KSerializer<NBTTag> {
+object NBTSerializer : KSerializer<NBTTag> {
 
     override fun deserialize(decoder: Decoder): NBTTag =
         mapFromJson((decoder as JsonDecoder).decodeJsonElement(), NBTTag())
@@ -29,15 +29,14 @@ object NBTMapper : KSerializer<NBTTag> {
 
     @JvmStatic
     fun mapFromJson(json: JsonElement, nbtTag: NBTTag = NBTTag()): NBTTag {
-        fun translate(json: JsonElement): NBTData? =
-            when (json) {
+        fun transform(json: JsonElement): NBTData? = when (json) {
             is JsonPrimitive -> NBTData.toNBT(json.adapt())
-                is JsonArray -> NBTData.toNBT(json.map { translate(it) })
-                is JsonObject -> mapFromJson(json)
-                else -> null
-            }
-        (json as? JsonObject)?.forEach { key, value ->
-            nbtTag.putDeep(key, translate(value))
+            is JsonArray -> NBTData.toNBT(json.mapNotNull { transform(it) })
+            is JsonObject -> mapFromJson(json)
+            else -> null
+        }
+        if (json is JsonObject) json.forEach { key, value ->
+            transform(value)?.also { nbtTag.putDeep(key, it) }
         }
         return nbtTag
     }

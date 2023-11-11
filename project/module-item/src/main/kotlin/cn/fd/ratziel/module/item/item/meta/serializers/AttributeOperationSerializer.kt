@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.item.meta.serializers
 
-import cn.fd.ratziel.module.item.util.meta.MetaMather
+import cn.fd.ratziel.module.item.util.MetaMather
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

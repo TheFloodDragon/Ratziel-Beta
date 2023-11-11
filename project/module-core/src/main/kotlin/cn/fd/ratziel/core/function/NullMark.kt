@@ -6,6 +6,7 @@ package cn.fd.ratziel.core.function
  * @author TheFloodDragon
  * @since 2023/11/4 12:27
  */
+@Deprecated("暂时没用")
 object NullMark {
 
     /**
@@ -17,4 +18,5 @@ object NullMark {
 
 }
 
+@Deprecated("暂时没用", ReplaceWith("CNM"))
 fun Any.isMarkedNull() = this is NullMark

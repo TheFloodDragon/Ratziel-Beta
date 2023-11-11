@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.util.ref
 
+import cn.fd.ratziel.module.item.util.nbt.NBTCompound
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.nms.obcClass
@@ -22,12 +23,18 @@ object RefItemMeta {
      * @return CraftMetaItem
      */
     @JvmStatic
-    fun createInstance(value: Any) = metaClass.invokeConstructor(value)
+    fun new(value: Any) = metaClass.invokeConstructor(value)
+
+    /**
+     * 创建空对象
+     */
+    @JvmStatic
+    fun new() = new(NBTCompound.new())
 
     /**
      * CraftMetaItem#applyToItem(itemTag)
      * @param craft CraftMetaItem
-     * @param itemTag NBTTagCompound
+     * @param nbtTag NBTTagCompound
      */
     @JvmStatic
     fun applyToItem(craft: Any, nbtTag: Any) {

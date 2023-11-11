@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.util.meta
+package cn.fd.ratziel.module.item.util
 
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemFlag

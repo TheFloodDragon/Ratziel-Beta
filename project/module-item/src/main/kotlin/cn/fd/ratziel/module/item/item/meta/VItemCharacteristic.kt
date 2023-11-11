@@ -2,9 +2,11 @@
 
 package cn.fd.ratziel.module.item.item.meta
 
-import cn.fd.ratziel.module.item.api.builder.ItemMetaBuilder
+import cn.fd.ratziel.module.item.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.item.api.meta.ItemCharacteristic
-import cn.fd.ratziel.module.item.util.meta.applyTo
+import cn.fd.ratziel.module.item.util.nbt.NBTCompound
+import cn.fd.ratziel.module.item.util.nbt.nbtFromNMS
+import cn.fd.ratziel.module.item.util.ref.RefItemMeta
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -16,6 +18,8 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.library.reflex.Reflex.Companion.setProperty
+import taboolib.module.nms.ItemTag
 import taboolib.module.nms.MinecraftVersion
 import java.util.function.Consumer
 
@@ -37,7 +41,7 @@ data class VItemCharacteristic(
     override var unbreakable: Boolean? = null,
     @JsonNames("attribute", "attributes", "modifier", "modifiers")
     override var attributeModifiers: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null,
-) : ItemCharacteristic, ItemMetaBuilder {
+) : ItemCharacteristic, ItemTagBuilder {
 
     /**
      * 是否含有魔咒
@@ -166,6 +170,41 @@ data class VItemCharacteristic(
         fAttributeModifiers.accept(this)
     }
 
-    override fun build(meta: ItemMeta) = applyTo(meta, false)
+    override fun build(tag: ItemTag) {
+        // 创建一个空的 ItemMeta
+        val meta = RefItemMeta.new() as ItemMeta
+        // 创建一个空的 NBTCompound (nms)
+        val nbt = NBTCompound.new()
+        // 应用到 ItemMeta
+        applyTo(meta)
+        // 应用到 NBTCompound (nms)
+        RefItemMeta.applyToItem(meta, nbt)
+        // 构建物品标签
+        (nbtFromNMS(nbt) as ItemTag).forEach { key, value ->
+            tag[key] = value
+        }
+    }
+
+    /**
+     * 直接转换
+     * ItemCharacteristic -> Bukkit.ItemMeta
+     */
+    fun applyTo(target: ItemMeta) {
+        // 自定义模型数据
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
+            target.setProperty("customModelData", this.customModelData)
+        // 附魔
+        this.enchants?.forEach { (key, value) ->
+            target.addEnchant(key, value, true)
+        }
+        // 物品隐藏标签
+        target.addItemFlags(*this.hideFlags?.toTypedArray() ?: emptyArray())
+        // 无法破坏 TODO 移动到耐久那边去
+        target.isUnbreakable = this.unbreakable == true
+        // 属性修饰符
+        this.attributeModifiers?.forEach { (key, value) ->
+            value.forEach { target.addAttributeModifier(key, it) }
+        }
+    }
 
 }

@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.module.item.nbt.NBTInt
-import cn.fd.ratziel.module.item.nbt.NBTString
-import cn.fd.ratziel.module.item.nbt.NBTTag
+import cn.fd.ratziel.module.item.util.nbt.NBTInt
+import cn.fd.ratziel.module.item.util.nbt.NBTString
+import cn.fd.ratziel.module.item.util.nbt.NBTTag
 import taboolib.common.platform.function.pluginId
 
 /**
@@ -37,9 +37,9 @@ data class ItemInfo(
      */
     fun toNBTTag() = NBTTag().also { apex ->
         apex[pluginId] = NBTTag().apply {
-            this["id"] = NBTString(id)
+            this["id"] = NBTString(id).data
             this["data"] = data ?: NBTTag()
-            this["hash"] = NBTInt(hash)
+            this["hash"] = NBTInt(hash).data
         }
     }
 

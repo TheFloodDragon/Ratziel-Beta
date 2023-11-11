@@ -20,5 +20,5 @@ object ComponentSerializer : KSerializer<Component> {
 
     override fun deserialize(decoder: Decoder): Component = buildMessageMJ(decoder.decodeString())
 
-    override fun serialize(encoder: Encoder, value: Component) = encoder.encodeString(value.toJsonFormat())
+    override fun serialize(encoder: Encoder, value: Component) = encoder.encodeString(value.toJsonString())
 }

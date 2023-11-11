@@ -22,7 +22,9 @@ private val gsonComponentSerializer by lazy {
 /**
  * 将组件转换成Json
  */
-fun Component.toJsonFormat() = gsonComponentSerializer.serialize(this)
+fun Component.toJsonString() = gsonComponentSerializer.serialize(this)
+
+fun Component.toJsonFormat() = gsonComponentSerializer.serializeToTree(this)
 
 /**
  * 将Json转化成组件

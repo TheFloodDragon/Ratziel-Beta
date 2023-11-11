@@ -21,13 +21,6 @@ val baseJson by lazy {
 }
 
 /**
- * JsonPrimitive类型的自适应
- */
-fun JsonPrimitive.adapt(): Any = if (isString || this is JsonNull) content else {
-    booleanOrNull ?: intOrNull ?: doubleOrNull ?: longOrNull ?: floatOrNull
-}!!
-
-/**
  * 构造一个空Json如"{}"
  */
 fun emptyJson() = JsonObject(emptyMap())
@@ -53,3 +46,21 @@ fun handlePrimitives(element: JsonElement, handle: Function<JsonPrimitive, JsonE
             }
         }
     }
+
+
+/**
+ * JsonPrimitive类型的判断
+ */
+fun JsonPrimitive.isInt() = !this.isString && this.intOrNull != null
+
+fun JsonPrimitive.isLong() = !this.isString && this.longOrNull != null
+
+fun JsonPrimitive.isBoolean() = !this.isString && this.booleanOrNull != null
+
+fun JsonPrimitive.isDouble() = !this.isString && this.doubleOrNull != null
+
+fun JsonPrimitive.isFloat() = !this.isString && this.floatOrNull != null
+
+fun JsonPrimitive.adapt(): Any = if (isString || this is JsonNull) content else {
+    booleanOrNull ?: intOrNull ?: doubleOrNull ?: longOrNull ?: floatOrNull
+}!!

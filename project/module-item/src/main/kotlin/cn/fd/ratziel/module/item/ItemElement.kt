@@ -16,7 +16,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import net.kyori.adventure.text.Component
-import taboolib.library.reflex.Reflex.Companion.getProperty
 
 /**
  * ItemElement
@@ -67,7 +66,8 @@ object ItemElement : ElementHandler {
         val testMeta = generator.build(meta)
 
         println(testMeta)
-        println(testMeta.getProperty("displayName"))
+        println(testMeta.displayName)
+        println(testMeta.lore)
 
     } catch (ex: Exception) {
         ex.printStackTrace()

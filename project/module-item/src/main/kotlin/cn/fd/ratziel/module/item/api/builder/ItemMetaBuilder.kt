@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta
  * @author TheFloodDragon
  * @since 2023/10/27 22:18
  */
+@Deprecated("Use ItemTagBuilder")
 interface ItemMetaBuilder : ItemBuilder {
 
     /**

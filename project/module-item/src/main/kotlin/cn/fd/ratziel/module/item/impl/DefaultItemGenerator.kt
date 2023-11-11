@@ -3,7 +3,9 @@ package cn.fd.ratziel.module.item.impl
 import cn.fd.ratziel.core.util.futureFactory
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.item.meta.VItemMeta
-import cn.fd.ratziel.module.item.util.meta.emptyCraftItemMeta
+import cn.fd.ratziel.module.item.util.nbt.NBTTag
+import cn.fd.ratziel.module.item.util.nbt.toNMS
+import cn.fd.ratziel.module.item.util.ref.RefItemMeta
 import org.bukkit.inventory.meta.ItemMeta
 
 /**
@@ -14,12 +16,12 @@ import org.bukkit.inventory.meta.ItemMeta
  */
 class DefaultItemGenerator : ItemGenerator {
 
-    fun build(vm: VItemMeta): ItemMeta = (emptyCraftItemMeta() as ItemMeta).also { meta ->
+    fun build(vm: VItemMeta): ItemMeta = NBTTag().also { tag ->
         // 基础信息构建
         futureFactory {
-            submit { vm.display.build(meta) }
-            submit { vm.characteristic.build(meta) }
+            submit { vm.display.build(tag) }
+            submit { vm.characteristic.build(tag) }
         }.waitForAll()
-    }
+    }.let { RefItemMeta.new(it.toNMS()) as ItemMeta }
 
 }

@@ -6,9 +6,12 @@ import cn.fd.ratziel.module.item.item.meta.VItemCharacteristic
 import cn.fd.ratziel.module.item.item.meta.VItemDisplay
 import cn.fd.ratziel.module.item.item.meta.VItemDurability
 import cn.fd.ratziel.module.item.item.meta.VItemMeta
-import cn.fd.ratziel.module.item.util.NBTMapper
-import cn.fd.ratziel.module.item.util.emptyTag
-import kotlinx.serialization.json.*
+import cn.fd.ratziel.module.item.util.NBTSerializer
+import cn.fd.ratziel.module.item.util.nbt.NBTTag
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import taboolib.module.nms.ItemTag
 import java.util.concurrent.CompletableFuture
 
@@ -28,8 +31,8 @@ open class ItemMetadataSerializer(
         val display = quickFuture { displaySerializer.serializeByJson(json, element) }
         val characteristic = quickFuture { charSerializer.serializeByJson(json, element) }
         val durability = quickFuture { durabilitySerializer.serializeByJson(json, element) }
-        val nbt: CompletableFuture<ItemTag> = quickFuture { itemTagSerializer.serializeByJson(element) }
-        return VItemMeta(display.get(), characteristic.get(), durability.get(), nbt.get() ?: emptyTag())
+        val nbt: CompletableFuture<ItemTag?> = quickFuture { itemTagSerializer.serializeByJson(element) }
+        return VItemMeta(display.get(), characteristic.get(), durability.get(), nbt.get() ?: NBTTag())
     }
 }
 
@@ -62,13 +65,13 @@ open class ItemDurabilitySerializer : ItemSerializer {
  * ItemTag
  */
 open class ItemNBTTagSerializer {
-    fun serializeByJson(element: JsonElement) =
+    fun serializeByJson(element: JsonElement, source: NBTTag = NBTTag()) =
         try {
             (element.jsonObject["nbt"]
                 ?: element.jsonObject["itemTag"]
                 ?: element.jsonObject["itemTags"])
-                ?.let { NBTMapper.mapFromJson(it) }
+                ?.let { NBTSerializer.mapFromJson(it, source) }
         } catch (_: IllegalArgumentException) {
             null
-        } ?: emptyTag()
+        }
 }
