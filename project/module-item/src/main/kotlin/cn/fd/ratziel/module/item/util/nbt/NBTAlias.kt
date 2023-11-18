@@ -1,8 +1,6 @@
 package cn.fd.ratziel.module.item.util.nbt
 
-import cn.fd.ratziel.core.util.getMethodUnsafe
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
-import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.*
 
 typealias NBTType = ItemTagType
@@ -53,12 +51,6 @@ open class NBTCompound(rawData: NBTTag) : PackagedNBT(rawData) {
         @JvmStatic
         fun new() = clazz.invokeConstructor()
 
-        /**
-         * 合并两个NMS复合NBT
-         * NBTTagCompound#a(NBTTagCompound)
-         */
-        fun merge(source: Any, target: Any) =
-            ReflexClass.of(clazz).structure.getMethodUnsafe("a", clazz).invoke(source, target)
     }
 
 }

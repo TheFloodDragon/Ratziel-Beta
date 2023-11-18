@@ -1,6 +1,11 @@
 package cn.fd.ratziel.module.item.util.ref
 
 import cn.fd.ratziel.module.item.util.nbt.NBTCompound
+import com.google.common.collect.Multimap
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
+import org.bukkit.enchantments.Enchantment
+import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.nms.obcClass
@@ -14,16 +19,16 @@ import taboolib.module.nms.obcClass
 object RefItemMeta {
 
     @JvmStatic
-    val metaClass by lazy {
+    val clazz by lazy {
         obcClass("inventory.CraftMetaItem")
     }
 
     /**
-     * CraftMetaItem#constructor(net.minecraft.nbt.NBTTagCompound)
+     * CraftMetaItem#constructor(NBTTagCompound)
      * @return CraftMetaItem
      */
     @JvmStatic
-    fun new(value: Any) = metaClass.invokeConstructor(value)
+    fun new(value: Any) = clazz.invokeConstructor(value)
 
     /**
      * 创建空对象
@@ -32,13 +37,36 @@ object RefItemMeta {
     fun new() = new(NBTCompound.new())
 
     /**
-     * CraftMetaItem#applyToItem(itemTag)
+     * CraftMetaItem#applyToItem(NBTTagCompound)
      * @param craft CraftMetaItem
      * @param nbtTag NBTTagCompound
      */
     @JvmStatic
     fun applyToItem(craft: Any, nbtTag: Any) {
         craft.invokeMethod<Void>("applyToItem", nbtTag)
+    }
+
+
+    /**
+     * CraftMetaItem#applyEnchantments(Map<Enchantment,Int>,NBTTagCompound,ItemMetaKey);Static
+     * @param nbtTag NBTTagCompound
+     * CraftMetaItem#ENCHANTMENTS:ItemMetaKey;Static
+     */
+    @JvmStatic
+    fun applyEnchantments(nbtTag: Any, enchantments: Map<Enchantment, Int>) {
+        val key = clazz.getProperty<Any>("ENCHANTMENTS", isStatic = true)
+        clazz.invokeMethod<Void>("applyEnchantments", enchantments, nbtTag, key, isStatic = true)
+    }
+
+    /**
+     * CraftMetaItem#applyModifiers(Multimap<Attribute,AttributeModifier>,NBTTagCompound,ItemMetaKey);Static
+     * @param nbtTag NBTTagCompound
+     * CraftMetaItem#ATTRIBUTES:ItemMetaKey;Static
+     */
+    @JvmStatic
+    fun applyModifiers(nbtTag: Any, modifiers: Multimap<Attribute, AttributeModifier>) {
+        val key = clazz.getProperty<Any>("ATTRIBUTES", isStatic = true)
+        clazz.invokeMethod<Void>("applyModifiers", modifiers, nbtTag, key, isStatic = true)
     }
 
 }

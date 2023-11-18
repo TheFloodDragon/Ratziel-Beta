@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.common.adventure.ComponentSerializer
+import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
@@ -12,8 +13,7 @@ import cn.fd.ratziel.module.item.item.meta.serializers.AttributeModifierSerializ
 import cn.fd.ratziel.module.item.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.item.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.item.item.meta.serializers.ItemFlagSerializer
-import cn.fd.ratziel.module.item.util.nbt.NBTCompound
-import cn.fd.ratziel.module.item.util.ref.RefItemMeta
+import cn.fd.ratziel.module.item.util.nbt.toNMS
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -29,6 +29,7 @@ import net.kyori.adventure.text.Component
     "meta",
     space = "test"
 )
+@ElementConfig(sync = true)
 object ItemElement : ElementHandler {
 
     val serializers by lazy {
@@ -61,22 +62,29 @@ object ItemElement : ElementHandler {
         println(meta.display)
         println(meta.characteristic)
         println(meta.durability)
-        println(meta.nbt)
+        println(meta.nbt.toNMS())
 
         println("————————————————")
 
         val testMeta = generator.build(meta)
 
         println(testMeta)
-        println(testMeta.displayName)
-        println(testMeta.lore)
 
-        println("——————NMS复合NBT合并测试——————")
-        val nbt = NBTCompound.new()
-        RefItemMeta.applyToItem(testMeta, nbt)
-        println("原始NBT: $nbt")
-        NBTCompound.merge(nbt, meta.nbt) // 合并
-        println("合并后的NBT: $nbt")
+//        println("——————NMS复合NBT合并测试——————")
+//        val nbt = NBTCompound.new()
+//        RefItemMeta.applyToItem(testMeta, nbt)
+//        println("原始NBT: $nbt")
+//        println(meta.nbt.toNMS().javaClass.name)
+//        println(nbt.javaClass.name)
+//        NBTCompound.merge(nbt, meta.nbt.toNMS()).let { println(it) }
+//        println(nbt.invokeMethod("a",nbt))
+//        println("合并后的NBT: $nbt")
+
+//        println("——————RefItemMeta方法测试——————")
+//        val enchants = meta.characteristic.enchants!!
+//        val enchantsTag = NBTCompound.new()
+//        RefItemMeta.applyEnchantments(enchantsTag, enchants)
+//        println(enchantsTag)
 
 
     } catch (ex: Exception) {
