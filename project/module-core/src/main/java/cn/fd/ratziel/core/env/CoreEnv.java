@@ -11,13 +11,13 @@ import static cn.fd.ratziel.core.env.CoreEnv.kotlin_version_escaped;
  * @since 2023/8/23 16:20
  */
 @RuntimeDependency(
-        value = "!org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.0",
+        value = "!org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.1",
         test = "!kotlinx" + kotlin_version_escaped + ".serialization.Serializer",
         relocate = {"!kotlin.", "!kotlin" + kotlin_version_escaped + ".", "!kotlinx.", "!kotlinx" + kotlin_version_escaped + "."},
         transitive = false
 )
 @RuntimeDependency(
-        value = "!org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0",
+        value = "!org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.1",
         test = "!kotlinx" + kotlin_version_escaped + ".serialization.json.JsonKt",
         relocate = {"!kotlin.", "!kotlin" + kotlin_version_escaped + ".", "!kotlinx.", "!kotlinx" + kotlin_version_escaped + "."},
         transitive = false

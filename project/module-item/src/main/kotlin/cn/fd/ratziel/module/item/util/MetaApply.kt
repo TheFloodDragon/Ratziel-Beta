@@ -63,10 +63,10 @@ fun ItemCharacteristic.applyTo(
             target.addItemFlags(*it.hideFlags?.toTypedArray() ?: emptyArray())
         }
     },
-    fUnbreakable: Consumer<ItemCharacteristic> = Consumer {
-        if (it.unbreakable != null || replace)
-            target.isUnbreakable = it.unbreakable == true
-    },
+//    fUnbreakable: Consumer<ItemCharacteristic> = Consumer {
+//        if (it.unbreakable != null || replace)
+//            target.isUnbreakable = it.unbreakable == true
+//    },
     fAttributeModifiers: Consumer<ItemCharacteristic> = Consumer {
         if (it.attributeModifiers != null || replace)
             target.attributeModifiers = LinkedHashMultimap.create<Attribute, AttributeModifier>().apply {
@@ -80,6 +80,6 @@ fun ItemCharacteristic.applyTo(
         fCustomModelData.accept(this)
     fEnchants.accept(this)
     fItemFlags.accept(this)
-    fUnbreakable.accept(this)
+    //fUnbreakable.accept(this)
     fAttributeModifiers.accept(this)
 }
