@@ -37,8 +37,6 @@ data class VItemCharacteristic(
     override var enchants: MutableMap<@Contextual Enchantment, Int>? = null,
     @JsonNames("hideflag", "hideflags", "hideFlag")
     override var hideFlags: MutableSet<@Contextual ItemFlag>? = null,
-    @JsonNames("isUnbreakable", "unbreak")
-    override var unbreakable: Boolean? = null,
     @JsonNames("attribute", "attributes", "modifier", "modifiers")
     override var attributeModifiers: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null,
 ) : ItemCharacteristic, ItemTagBuilder {
@@ -150,9 +148,6 @@ data class VItemCharacteristic(
             if (it.hideFlags?.isEmpty() == true || replace)
                 it.hideFlags = meta.itemFlags
         },
-        fUnbreakable: Consumer<VItemCharacteristic> = Consumer {
-            it.unbreakable = meta.isUnbreakable
-        },
         fAttributeModifiers: Consumer<VItemCharacteristic> = Consumer {
             if (it.attributeModifiers?.isEmpty() == true || replace)
                 it.attributeModifiers.apply {
@@ -166,10 +161,10 @@ data class VItemCharacteristic(
             fCustomModelData.accept(this)
         fEnchants.accept(this)
         fItemFlags.accept(this)
-        fUnbreakable.accept(this)
         fAttributeModifiers.accept(this)
     }
 
+    // TODO 给这坨优化了
     override fun build(tag: ItemTag) {
         // 创建一个空的 ItemMeta
         val meta = RefItemMeta.new() as ItemMeta
@@ -199,8 +194,6 @@ data class VItemCharacteristic(
         }
         // 物品隐藏标签
         target.addItemFlags(*this.hideFlags?.toTypedArray() ?: emptyArray())
-        // 无法破坏 TODO 移动到耐久那边去
-        target.isUnbreakable = this.unbreakable == true
         // 属性修饰符
         this.attributeModifiers?.forEach { (key, value) ->
             value.forEach { target.addAttributeModifier(key, it) }

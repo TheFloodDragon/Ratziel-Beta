@@ -41,7 +41,7 @@ object WorkspaceManager {
     /**
      * 获取工作空间内过滤后的文件
      */
-    fun gerFilteredFiles(spaces: Iterable<Workspace> = workspaces) =
+    fun getFilteredFiles(spaces: Iterable<Workspace> = workspaces) =
         Settings.fileFilter.toRegex().let { mather ->
             getAllFiles(spaces).filter { it.name.matches(mather) }
         }

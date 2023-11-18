@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.util.nbt
 
+import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.module.nms.*
 
@@ -10,7 +11,6 @@ typealias NBTTagList = ItemTagList
 
 /**
  * NBT各种类型的封装
- * 注意: 请勿使用NBTTagData原有的获取数据方法
  */
 
 abstract class PackagedNBT(
@@ -50,6 +50,33 @@ open class NBTCompound(rawData: NBTTag) : PackagedNBT(rawData) {
          */
         @JvmStatic
         fun new() = clazz.invokeConstructor()
+
+        /**
+         * NBTTagCompound#constructor(Map<String,NBTBase>)
+         */
+        @JvmStatic
+        fun new(map: HashMap<String, Any>) = clazz.invokeConstructor(map)
+
+        /**
+         * 合并两个 NBTTagCompound 并返回值
+         * @param replace 是否替换原有的标签
+         * @return 合并后的 NBTTagCompound
+         */
+        @JvmStatic
+        fun merge(source: Any, target: Any, replace: Boolean = true): Any {
+            val fieldName = if (MinecraftVersion.isUniversal) "x" else "map"
+            return new(HashMap(source.getProperty<Map<String, Any>>(fieldName)!!).also { sourceMap ->
+                val targetMap = target.getProperty<Map<String, Any>>(fieldName)
+                targetMap?.forEach { (key, value) ->
+                    val origin = sourceMap[key]
+                    if (value::class.java.isAssignableFrom(clazz)) {
+                        sourceMap[key] = merge(origin ?: new(), value, replace)
+                    } else {
+                        if (origin == null || replace) sourceMap[key] = value
+                    }
+                }
+            })
+        }
 
     }
 

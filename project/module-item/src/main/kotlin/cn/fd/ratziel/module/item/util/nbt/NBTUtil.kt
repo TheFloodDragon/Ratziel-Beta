@@ -6,7 +6,7 @@ import taboolib.module.nms.nmsProxy
 /**
  * 将包装的NBT数据转为NMS形式
  */
-fun NBTData.toNMS() : Any = nmsProxy<NMSItemTag>().itemTagToNMSCopy(this)
+fun NBTData.toNMS(): Any = nmsProxy<NMSItemTag>().itemTagToNMSCopy(this)
 
 /**
  * 将NMS的NBT数据转为包装形式

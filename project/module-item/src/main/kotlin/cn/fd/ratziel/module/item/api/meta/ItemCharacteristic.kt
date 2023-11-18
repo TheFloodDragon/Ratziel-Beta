@@ -32,11 +32,6 @@ interface ItemCharacteristic: ItemPart {
     val hideFlags: Set<ItemFlag>?
 
     /**
-     * 物品无法破坏属性
-     */
-    val unbreakable: Boolean?
-
-    /**
      * 物品属性修饰符
      */
     val attributeModifiers: Map<Attribute, MutableList<AttributeModifier>>?

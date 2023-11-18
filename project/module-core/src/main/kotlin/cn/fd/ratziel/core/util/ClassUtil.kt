@@ -39,7 +39,33 @@ fun ClassStructure.findMethod(
             (!matchParameter || Reflection.isAssignableFrom(
                 it.parameterTypes, parameter.toList().toTypedArray()
             ))
-} ?: throw NoSuchMethodException("${this.name}#$name(${parameter.joinToString(";") { it.name }})")
+} ?: throw NoSuchMethodException("${this.name}#$name(${parameter.joinToString(";") { it.name }}):$returnType")
+
+/**
+ * 获取类中的字段 (不安全)
+ * 注意: 请务必确认类中的同类型字段只有一个,否则会出现其他字段的错误获取!
+ * @param name 不确定的字段名,会尝试 (若成功则是安全的,不安全性在于 [findField] )
+ */
+fun ClassStructure.getFieldUnsafe(
+    name: String,
+    type: Class<*>? = null,
+) = try {
+    getField(name) // 尝试通过方法名和参数类型寻找
+} catch (_: NoSuchMethodException) {
+    findField(null, type) // 尝试根据线索寻找
+}
+
+/**
+ * 寻找类中的字段
+ * @param name 匹配字段名 (若空则不匹配)
+ * @param type 匹配字段类型 (若空则不匹配)
+ */
+fun ClassStructure.findField(
+    name: String? = null,
+    type: Class<*>? = null,
+) = fields.firstOrNull {
+    (name == null || it.name == name) && (type == null || it.fieldType == type)
+} ?: throw NoSuchFieldException("${this.name}#$name:$type")
 
 /**
  * 查找类是否存在

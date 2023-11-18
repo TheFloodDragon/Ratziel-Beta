@@ -30,4 +30,9 @@ interface ItemDurability : ItemPart {
      */
     val repairCost: Int?
 
+    /**
+     * 无法破坏
+     */
+    val unbreakable: Boolean?
+
 }

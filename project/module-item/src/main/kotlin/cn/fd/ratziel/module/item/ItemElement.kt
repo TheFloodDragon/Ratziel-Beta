@@ -13,7 +13,9 @@ import cn.fd.ratziel.module.item.item.meta.serializers.AttributeModifierSerializ
 import cn.fd.ratziel.module.item.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.item.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.item.item.meta.serializers.ItemFlagSerializer
+import cn.fd.ratziel.module.item.util.nbt.NBTCompound
 import cn.fd.ratziel.module.item.util.nbt.toNMS
+import cn.fd.ratziel.module.item.util.ref.RefItemMeta
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -62,7 +64,7 @@ object ItemElement : ElementHandler {
         println(meta.display)
         println(meta.characteristic)
         println(meta.durability)
-        println(meta.nbt.toNMS())
+        println(meta.nbt)
 
         println("————————————————")
 
@@ -70,21 +72,11 @@ object ItemElement : ElementHandler {
 
         println(testMeta)
 
-//        println("——————NMS复合NBT合并测试——————")
-//        val nbt = NBTCompound.new()
-//        RefItemMeta.applyToItem(testMeta, nbt)
-//        println("原始NBT: $nbt")
-//        println(meta.nbt.toNMS().javaClass.name)
-//        println(nbt.javaClass.name)
-//        NBTCompound.merge(nbt, meta.nbt.toNMS()).let { println(it) }
-//        println(nbt.invokeMethod("a",nbt))
-//        println("合并后的NBT: $nbt")
-
-//        println("——————RefItemMeta方法测试——————")
-//        val enchants = meta.characteristic.enchants!!
-//        val enchantsTag = NBTCompound.new()
-//        RefItemMeta.applyEnchantments(enchantsTag, enchants)
-//        println(enchantsTag)
+        println("——————NMS复合NBT合并测试——————")
+        val nbt = NBTCompound.new()
+        RefItemMeta.applyToItem(testMeta, nbt)
+        val merged = NBTCompound.merge(nbt, meta.nbt.toNMS())
+        println("NBT标签: $merged")
 
 
     } catch (ex: Exception) {

@@ -21,6 +21,8 @@ data class VItemDurability(
     override var currentDurability: Int? = maxDurability,
     @JsonNames("repair-cost")
     override var repairCost: Int? = null,
+    @JsonNames("isUnbreakable", "unbreak")
+    override val unbreakable: Boolean? = null,
 ) : ItemDurability {
 
     /**

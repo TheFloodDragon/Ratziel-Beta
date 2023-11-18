@@ -41,7 +41,7 @@ object WorkspaceLoader {
          */
         val loading = FutureFactory<List<Element>>()
         measureTimeMillis {
-            wsm.gerFilteredFiles()
+            wsm.getFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
                     loading.submit {
