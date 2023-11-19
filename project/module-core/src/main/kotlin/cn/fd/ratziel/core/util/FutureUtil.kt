@@ -19,21 +19,31 @@ fun quickRunFuture(executor: Executor, function: Runnable): CompletableFuture<Vo
  */
 fun <T> futureFactory(block: FutureFactory<T>.() -> Unit) = FutureFactory<T>().also { block(it) }
 
-@JvmName("futureFactoryWithUnit")
+@JvmName("futureFactoryUnit")
 fun futureFactory(block: FutureFactory<Unit>.() -> Unit) = futureFactory<Unit>(block)
 
+/**
+ * FutureFactory - 用于管控多 [CompletableFuture] 的任务
+ *
+ * @author TheFloodDragon
+ * @since 2023/11/19 11:27
+ */
 open class FutureFactory<T> : ConcurrentLinkedDeque<CompletableFuture<T>>() {
 
     /**
      * 提交任务
      */
-    fun submit(task: CompletableFuture<T>) {
-        this += task
-    }
+    fun submitFuture(task: CompletableFuture<T>) = task.also { this += it }
 
-    fun submit(function: Supplier<T>) {
-        this += quickFuture(function)
-    }
+    /**
+     * 异步执行任务
+     */
+    fun newAsync(function: Supplier<T>) = submitFuture(quickFuture(function))
+
+    /**
+     * 创建一个 [CompletableFuture]
+     */
+    fun newFuture() = submitFuture(CompletableFuture<T>())
 
     /**
      * 等待所有任务完成

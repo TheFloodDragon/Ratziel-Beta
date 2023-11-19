@@ -40,18 +40,25 @@ object WorkspaceLoader {
          * 加载元素文件
          */
         val loading = FutureFactory<List<Element>>()
+        val handling = FutureFactory<Unit>()
         measureTimeMillis {
             wsm.getFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
-                    loading.submit {
+                    loading.newAsync {
+                        DefaultElementLoader.load(file).onEach { em ->
+                            elements.add(em) // 插入缓存
+                            // 处理元素
+                            handling.newAsync {
+                                em.handle()
+                            }
+                        }
                         DefaultElementLoader.load(file).onEach { em -> elements.add(em) } // 插入缓存
                     }
                 }
-            // 等待所有加载任务完成
+            // 等待所有任务完成
             loading.waitForAll()
-            // 处理元素
-            elements.forEach { it.handle() }
+            handling.waitForAll()
         }.let {
             sender.sendLang("Workspace-Finished", elements.size, it)
         }

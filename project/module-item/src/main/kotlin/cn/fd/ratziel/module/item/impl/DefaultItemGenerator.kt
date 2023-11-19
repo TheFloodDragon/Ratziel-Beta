@@ -19,8 +19,8 @@ class DefaultItemGenerator : ItemGenerator {
     fun build(vm: VItemMeta): ItemMeta = NBTTag().also { tag ->
         // 基础信息构建
         futureFactory {
-            submit { vm.display.build(tag) }
-            submit { vm.characteristic.build(tag) }
+            newAsync { vm.display.build(tag) }
+            newAsync { vm.characteristic.build(tag) }
         }.waitForAll()
     }.let { RefItemMeta.new(it.toNMS()) as ItemMeta }
 

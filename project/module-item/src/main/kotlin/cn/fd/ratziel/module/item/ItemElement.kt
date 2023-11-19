@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.common.adventure.ComponentSerializer
-import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
@@ -31,7 +30,6 @@ import net.kyori.adventure.text.Component
     "meta",
     space = "test"
 )
-@ElementConfig(sync = true)
 object ItemElement : ElementHandler {
 
     val serializers by lazy {
@@ -66,7 +64,7 @@ object ItemElement : ElementHandler {
         println(meta.durability)
         println(meta.nbt)
 
-        println("————————————————")
+        println("————————————————————————————————")
 
         val testMeta = generator.build(meta)
 
