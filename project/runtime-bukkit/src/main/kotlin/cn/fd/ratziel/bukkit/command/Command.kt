@@ -1,7 +1,6 @@
 package cn.fd.ratziel.bukkit.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
-import cn.fd.ratziel.core.util.quickRunFuture
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -29,38 +28,17 @@ object Command {
     @CommandBody
     val reload = subCommand {
         execute<ProxyCommandSender> { sender, _, _ ->
-            quickRunFuture {
-                measureTimeMillis {
-                    /**
-                     * 重载语言
-                     */
-                    /**
-                     * 重载语言
-                     */
-                    /**
-                     * 重载语言
-                     */
-
-                    /**
-                     * 重载语言
-                     */
-                    Language.reload()
-                    /**
-                     * 重载工作空间
-                     */
-                    /**
-                     * 重载工作空间
-                     */
-                    /**
-                     * 重载工作空间
-                     */
-                    /**
-                     * 重载工作空间
-                     */
-                    WorkspaceLoader.reload(sender)
-                }.let {
-                    sender.sendLang("Plugin-Reloaded", it)
-                }
+            measureTimeMillis {
+                /**
+                 * 重载语言
+                 */
+                Language.reload()
+                /**
+                 * 重载工作空间
+                 */
+                WorkspaceLoader.reload(sender)
+            }.let {
+                sender.sendLang("Plugin-Reloaded", it)
             }
         }
     }

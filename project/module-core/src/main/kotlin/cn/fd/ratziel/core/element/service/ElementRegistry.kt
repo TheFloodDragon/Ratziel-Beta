@@ -83,8 +83,7 @@ object ElementRegistry {
         getHandlerGroup(etype)?.handlerMap
 
     /**
-     * 接受优先级和处理器并操作(消费)
-     * 用于简化代码
+     * 根据优先级提供处理器以供操作
      */
     @JvmStatic
     fun runWithHandlers(etype: ElementType, function: Consumer<Pair<Byte, ElementHandler>>) =
