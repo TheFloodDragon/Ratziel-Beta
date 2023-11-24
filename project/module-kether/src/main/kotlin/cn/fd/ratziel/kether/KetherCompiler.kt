@@ -8,7 +8,7 @@ import kotlinx.serialization.json.*
  * @author TheFloodDragon
  * @since 2023/9/2 13:01
  */
-@Deprecated("Use BlockBuilder")
+//@Deprecated("Use BlockBuilder")
 object KetherCompiler {
 
     fun buildSection(section: Any, builder: StringBuilder = StringBuilder()): StringBuilder {

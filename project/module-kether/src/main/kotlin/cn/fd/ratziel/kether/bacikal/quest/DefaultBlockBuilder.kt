@@ -7,6 +7,7 @@ import taboolib.library.configuration.ConfigurationSection
  * @author Lanscarlos
  * @since 2023-08-25 01:07
  */
+@Deprecated("待定")
 class DefaultBlockBuilder(override var name: String) : BacikalBlockBuilder {
 
     override val namespace = mutableListOf<String>()

@@ -4,6 +4,7 @@ package cn.fd.ratziel.kether.bacikal.quest
  * @author Lanscarlos
  * @since 2023-08-25 01:04
  */
+@Deprecated("待定")
 interface BacikalBlockBuilder {
 
     /**
