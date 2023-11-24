@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.itemengine.api
 
 import cn.fd.ratziel.module.itemengine.nbt.NBTInt
 import cn.fd.ratziel.module.itemengine.nbt.NBTString
-import cn.fd.ratziel.module.itemengine.nbt.NBTTag
+import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
 import taboolib.common.platform.function.pluginId
 
 /**
@@ -19,11 +19,11 @@ data class ItemInfo(
     /**
      * 储存的数据
      */
-    var data: NBTTag?,
+    var data: TiNBTTag?,
 ) : ItemPart {
 
-    constructor(nbtTag: NBTTag) : this(
-        nbtTag.getDeep("$pluginId.id")!!.asString(), nbtTag.getDeep("$pluginId.data") as NBTTag
+    constructor(nbtTag: TiNBTTag) : this(
+        nbtTag.getDeep("$pluginId.id")!!.asString(), nbtTag.getDeep("$pluginId.data") as TiNBTTag
     )
 
     /**
@@ -35,11 +35,11 @@ data class ItemInfo(
     /**
      * 将物品信息转化成NBT标签的形式
      */
-    fun toNBTTag() = NBTTag().also { apex ->
-        apex[pluginId] = NBTTag().apply {
-            this["id"] = NBTString(id).data
-            this["data"] = data ?: NBTTag()
-            this["hash"] = NBTInt(hash).data
+    fun toNBTTag() = TiNBTTag().also { apex ->
+        apex[pluginId] = TiNBTTag().apply {
+            this["id"] = NBTString(id).getAsTiNBT()
+            this["data"] = data ?: TiNBTTag()
+            this["hash"] = NBTInt(hash).getAsTiNBT()
         }
     }
 

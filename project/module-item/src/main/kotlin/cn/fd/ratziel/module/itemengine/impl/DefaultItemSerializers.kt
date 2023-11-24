@@ -6,13 +6,13 @@ import cn.fd.ratziel.module.itemengine.item.meta.VItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.VItemDisplay
 import cn.fd.ratziel.module.itemengine.item.meta.VItemDurability
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
-import cn.fd.ratziel.module.itemengine.util.NBTSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
+import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
+import cn.fd.ratziel.module.itemengine.util.NBTSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
-import taboolib.module.nms.ItemTag
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -25,14 +25,14 @@ open class ItemMetadataSerializer(
     val displaySerializer: ItemDisplaySerializer = ItemDisplaySerializer(),
     val charSerializer: ItemCharSerializer = ItemCharSerializer(),
     val durabilitySerializer: ItemDurabilitySerializer = ItemDurabilitySerializer(),
-    val itemTagSerializer: ItemNBTTagSerializer = ItemNBTTagSerializer(),
+    val itemTagSerializer: TiNBTTagSerializer = TiNBTTagSerializer(),
 ) : ItemSerializer {
     override fun serializeByJson(json: Json, element: JsonElement): VItemMeta {
         val display = quickFuture { displaySerializer.serializeByJson(json, element) }
         val characteristic = quickFuture { charSerializer.serializeByJson(json, element) }
         val durability = quickFuture { durabilitySerializer.serializeByJson(json, element) }
-        val nbt: CompletableFuture<ItemTag?> = quickFuture { itemTagSerializer.serializeByJson(element) }
-        return VItemMeta(display.get(), characteristic.get(), durability.get(), nbt.get() ?: NBTTag())
+        val nbt: CompletableFuture<TiNBTTag?> = quickFuture { itemTagSerializer.serializeByJson(element) }
+        return VItemMeta(display.get(), characteristic.get(), durability.get(), NBTTag.of(nbt.get() ?: TiNBTTag()))
     }
 }
 
@@ -62,10 +62,10 @@ open class ItemDurabilitySerializer : ItemSerializer {
 }
 
 /**
- * ItemTag
+ * TiNBTTag
  */
-open class ItemNBTTagSerializer {
-    fun serializeByJson(element: JsonElement, source: NBTTag = NBTTag()) =
+open class TiNBTTagSerializer {
+    fun serializeByJson(element: JsonElement, source: TiNBTTag = TiNBTTag()) =
         try {
             (element.jsonObject["nbt"]
                 ?: element.jsonObject["itemTag"]

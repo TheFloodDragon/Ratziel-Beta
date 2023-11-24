@@ -13,8 +13,7 @@ import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.ItemFlagSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
-import cn.fd.ratziel.module.itemengine.nbt.toNMS
-import cn.fd.ratziel.module.itemengine.util.ref.RefItemMeta
+import cn.fd.ratziel.module.itemengine.ref.RefItemMeta
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -73,7 +72,7 @@ object ItemElement : ElementHandler {
         println("——————NMS复合NBT合并测试——————")
         val nbt = NBTCompound.new()
         RefItemMeta.applyToItem(testMeta, nbt)
-        val merged = NBTCompound.merge(nbt, meta.nbt.toNMS())
+        val merged = NBTCompound.merge(nbt, meta.nbt.getAsNmsNBT())
         println("NBT标签: $merged")
 
 

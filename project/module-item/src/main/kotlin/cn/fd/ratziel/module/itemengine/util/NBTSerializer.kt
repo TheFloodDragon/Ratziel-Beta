@@ -3,8 +3,8 @@
 package cn.fd.ratziel.module.itemengine.util
 
 import cn.fd.ratziel.core.serialization.adapt
-import cn.fd.ratziel.module.itemengine.nbt.NBTData
-import cn.fd.ratziel.module.itemengine.nbt.NBTTag
+import cn.fd.ratziel.module.itemengine.nbt.TiNBTData
+import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -18,20 +18,20 @@ import kotlinx.serialization.json.*
  * @author TheFloodDragon
  * @since 2023/10/15 9:08
  */
-@Serializer(NBTTag::class)
-object NBTSerializer : KSerializer<NBTTag> {
+@Serializer(TiNBTTag::class)
+object NBTSerializer : KSerializer<TiNBTTag> {
 
-    override fun deserialize(decoder: Decoder): NBTTag =
-        mapFromJson((decoder as JsonDecoder).decodeJsonElement(), NBTTag())
+    override fun deserialize(decoder: Decoder): TiNBTTag =
+        mapFromJson((decoder as JsonDecoder).decodeJsonElement(), TiNBTTag())
 
-    override fun serialize(encoder: Encoder, value: NBTTag) =
+    override fun serialize(encoder: Encoder, value: TiNBTTag) =
         (encoder as JsonEncoder).encodeJsonElement(encoder.json.parseToJsonElement(value.toJson()))
 
     @JvmStatic
-    fun mapFromJson(json: JsonElement, nbtTag: NBTTag = NBTTag()): NBTTag {
-        fun transform(json: JsonElement): NBTData? = when (json) {
-            is JsonPrimitive -> NBTData.toNBT(json.adapt())
-            is JsonArray -> NBTData.toNBT(json.mapNotNull { transform(it) })
+    fun mapFromJson(json: JsonElement, nbtTag: TiNBTTag = TiNBTTag()): TiNBTTag {
+        fun transform(json: JsonElement): TiNBTData? = when (json) {
+            is JsonPrimitive -> TiNBTData.toNBT(json.adapt())
+            is JsonArray -> TiNBTData.toNBT(json.mapNotNull { transform(it) })
             is JsonObject -> mapFromJson(json)
             else -> null
         }

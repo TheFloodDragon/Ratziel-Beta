@@ -5,8 +5,8 @@ package cn.fd.ratziel.module.itemengine.item.meta
 import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.itemengine.api.meta.ItemCharacteristic
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
-import cn.fd.ratziel.module.itemengine.nbt.nbtFromNMS
-import cn.fd.ratziel.module.itemengine.util.ref.RefItemMeta
+import cn.fd.ratziel.module.itemengine.nbt.toTiNBT
+import cn.fd.ratziel.module.itemengine.ref.RefItemMeta
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -175,7 +175,7 @@ data class VItemCharacteristic(
         // 应用到 NBTCompound (nms)
         RefItemMeta.applyToItem(meta, nbt)
         // 构建物品标签
-        (nbtFromNMS(nbt) as ItemTag).forEach { key, value ->
+        (toTiNBT(nbt) as ItemTag).forEach { key, value ->
             tag[key] = value
         }
     }

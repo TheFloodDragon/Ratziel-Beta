@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.itemengine.api.meta
 
 import cn.fd.ratziel.module.itemengine.api.ItemPart
-import taboolib.module.nms.ItemTag
+import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 
 /**
  * ItemMetadata - 物品元数据
@@ -29,6 +29,6 @@ interface ItemMetadata : ItemPart {
     /**
      * 自定义NBT
      */
-    val nbt: ItemTag?
+    val nbt: NBTTag?
 
 }
