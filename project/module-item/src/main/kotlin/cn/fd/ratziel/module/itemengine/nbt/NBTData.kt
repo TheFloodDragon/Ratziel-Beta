@@ -40,7 +40,7 @@ abstract class NBTData(
     /**
      * NBT数据类型是否为 [net.minecraft.nbt] 的 [NmsNBT]
      */
-    open fun isNmsNBT() = !isTiNBT()
+    open fun isNmsNBT() = isNmsNBT(data)
 
     /**
      * 获取 [TiNBT] 形式

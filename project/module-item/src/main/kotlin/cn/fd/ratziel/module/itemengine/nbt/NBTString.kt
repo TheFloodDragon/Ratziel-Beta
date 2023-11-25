@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
 import cn.fd.ratziel.core.util.MirrorClass
+import taboolib.module.nms.nmsClass
 
 /**
  * NBTString
@@ -16,9 +17,7 @@ open class NBTString(rawData: Any) : NBTData(
     companion object : MirrorClass<NBTString>() {
 
         @JvmStatic
-        override val clazz: Class<out Any> by lazy {
-            refNBTClass("NBTTagString")
-        }
+        override val clazz: Class<out Any> by lazy { nmsClass("NBTTagString") }
 
         @JvmStatic
         override fun of(obj: Any) = NBTString(obj)

@@ -15,9 +15,7 @@ package cn.fd.ratziel.module.itemengine.nbt
 //    companion object : RefClass<NBTLongArray>() {
 //
 //        @JvmStatic
-//        override val clazz: Class<out Any> by lazy {
-//            refNBTClass("NBTTagLongArray")
-//        }
+//        override val clazz: Class<out Any> by lazy { nmsClass("NBTTagLongArray") }
 //
 //        @JvmStatic
 //        override fun of(obj: Any) = NBTLongArray(obj)
