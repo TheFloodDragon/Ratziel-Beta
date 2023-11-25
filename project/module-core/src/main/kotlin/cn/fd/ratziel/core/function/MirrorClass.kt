@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.util
+package cn.fd.ratziel.core.function
 
 /**
  * MirrorClass - 镜像类

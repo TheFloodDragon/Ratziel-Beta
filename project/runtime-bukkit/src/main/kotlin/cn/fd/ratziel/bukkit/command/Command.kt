@@ -1,6 +1,7 @@
 package cn.fd.ratziel.bukkit.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
+import cn.fd.ratziel.common.function.executeAsync
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -27,7 +28,7 @@ object Command {
 
     @CommandBody
     val reload = subCommand {
-        execute<ProxyCommandSender> { sender, _, _ ->
+        executeAsync<ProxyCommandSender> { sender, _, _ ->
             measureTimeMillis {
                 /**
                  * 重载语言

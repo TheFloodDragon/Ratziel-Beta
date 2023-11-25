@@ -2,8 +2,8 @@
 
 package cn.fd.ratziel.module.itemengine.nbt
 
-import cn.fd.ratziel.core.util.MirrorClass
-import cn.fd.ratziel.core.util.getMethodUnsafe
+import cn.fd.ratziel.core.function.MirrorClass
+import cn.fd.ratziel.core.function.getMethodUnsafe
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.ReflexClass
@@ -29,7 +29,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * 获取数据
      * @param node 节点
      */
-    operator fun get(node: String) =
+    operator fun get(node: String): NBTData? =
         (if (isTiNBT()) (data as TiNBTTag)[node]
         else NMSMethods.getMethod.invoke(data, node))?.let { toNBTData(it) }
 
@@ -37,9 +37,9 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * 深度获取
      * @param node 节点
      */
-    fun getDeep(node: String) =
+    fun getDeep(node: String): NBTData? =
         (if (isTiNBT()) (data as TiNBTTag).getDeep(node)
-        else getDeepWith(node, false) { it[node.substringAfterLast('.')] })?.let { toNBTData(it) }
+        else getDeepWith(node, false) { it[node.substringAfterLast(DEEP_SEPARATION)] })?.let { toNBTData(it) }
 
     /**
      * 写入数据
@@ -62,7 +62,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      */
     fun putDeep(node: String, value: NBTData) {
         if (isTiNBT()) (data as TiNBTTag).putDeep(node, value.getAsTiNBT())
-        else getDeepWith(node, true) { it.put(node.substringAfterLast('.'), value) }
+        else getDeepWith(node, true) { it.put(node.substringAfterLast(DEEP_SEPARATION), value) }
     }
 
     fun putDeep(node: String, value: Any) = putDeep(node, toNBTData(value))
@@ -70,29 +70,42 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     /**
      * 针对"深度方法"的重复代码做出的优化
      */
-    fun getDeepWith(key: String, create: Boolean, action: (NBTCompound) -> Any?): NBTData? {
-        val keys = key.split(DEEP_SEPARATION).dropLast(1)
-        if (keys.isEmpty()) {
-            return null
-        }
+    fun getDeepWith(node: String, create: Boolean, action: (NBTCompound) -> Any?): NBTData? {
+        // 分割节点 (丢弃最后一层)
+        val keys = node.split(DEEP_SEPARATION).dropLast(1)
+        // 找到的标签
         var find: NBTCompound = this
+        // 遍历各级节点
         for (element in keys) {
-            var next = find[element]
+            var next = find[element] // 下一级节点
             if (next == null) {
                 if (create) {
-                    next = NBTCompound()
+                    next = NBTCompound(new())
                     find[element] = next
-                } else {
-                    return null
-                }
+                } else return null
             }
-            if (next.type == NBTDataType.COMPOUND) {
-                find = next as NBTCompound
-            } else {
-                return null
-            }
+            // 如果下一级节点还是复合标签,则代表可以继续获取
+            if (next is NBTCompound) find = next else return null
         }
         return action(find) as? NBTData
+    }
+
+    /**
+     * 合并复合标签
+     * @param replace 是否替换原有的标签
+     */
+    fun merge(target: NBTCompound, replace: Boolean = true): NBTCompound = this.also { source ->
+        (if (target.isTiNBT()) target.data as TiNBTTag else target.data.getProperty<Map<String, Any>>(NMSMethods.mapFieldName))
+            ?.forEach { (key, value) ->
+                val origin = source[key]
+                // 如果存在该标签并且不允许替换,则直接跳出循环
+                if (origin != null && !replace) return@forEach
+                // 设置值
+                source[key] = toNBTData(value).let {
+                    // 复合标签和基本标签判断
+                    if (it is NBTCompound) NBTCompound().merge(it, replace) else it
+                }
+            }
     }
 
     companion object : MirrorClass<NBTCompound>() {
@@ -120,33 +133,13 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
         @JvmStatic
         fun new(map: HashMap<String, Any>) = clazz.invokeConstructor(map)
 
-        /**
-         * 合并两个 NmsNBT 并返回值
-         * @param replace 是否替换原有的标签
-         * @return 合并后的 NmsNBT
-         */
-        @JvmStatic
-        @Deprecated("正在考虑别的方法")
-        fun merge(source: Any, target: Any, replace: Boolean = true): Any {
-            val fieldName = if (MinecraftVersion.isUniversal) "x" else "map"
-            return new(HashMap(source.getProperty<Map<String, Any>>(fieldName)!!).also { sourceMap ->
-                val targetMap = target.getProperty<Map<String, Any>>(fieldName)
-                targetMap?.forEach { (key, value) ->
-                    val origin = sourceMap[key]
-                    if (value::class.java.isAssignableFrom(clazz)) {
-                        sourceMap[key] = merge(origin ?: new(), value, replace)
-                    } else {
-                        if (origin == null || replace) sourceMap[key] = value
-                    }
-                }
-            })
-        }
-
     }
 
     object NMSMethods {
 
         private val classStructure by lazy { ReflexClass.of(clazz).structure }
+
+        internal val mapFieldName = if (MinecraftVersion.isUniversal) "x" else "map"
 
         internal val getMethod by lazy {
             classStructure.getMethodUnsafe(

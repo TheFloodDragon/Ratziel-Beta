@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.util
+package cn.fd.ratziel.core.function
 
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedDeque

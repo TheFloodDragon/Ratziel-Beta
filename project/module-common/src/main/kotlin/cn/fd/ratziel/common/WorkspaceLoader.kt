@@ -4,7 +4,7 @@ import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.util.handle
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.util.FutureFactory
+import cn.fd.ratziel.core.function.FutureFactory
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
@@ -16,7 +16,9 @@ import cn.fd.ratziel.common.WorkspaceManager as wsm
 
 object WorkspaceLoader {
 
-    // 已加载的元素
+    /**
+     * 已加载的元素
+     */
     val elements = ConcurrentLinkedDeque<Element>()
 
     /**
@@ -46,12 +48,13 @@ object WorkspaceLoader {
                     // 加载元素文件
                     loading.newAsync {
                         DefaultElementLoader.load(file).onEach { em -> elements.add(em) } // 插入缓存
+                    }.thenAccept { ems ->
+                        // 处理元素 (不记录总时长)
+                        ems.forEach { it.handle() }
                     }
                 }
             // 等待所有加载任务完成
             loading.waitForAll()
-            // 处理元素
-            elements.forEach { it.handle() }
         }.let {
             sender.sendLang("Workspace-Finished", elements.size, it)
         }

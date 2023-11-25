@@ -1,7 +1,7 @@
 package cn.fd.ratziel.common.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
-import cn.fd.ratziel.common.util.executeAsync
+import cn.fd.ratziel.common.function.executeAsync
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody

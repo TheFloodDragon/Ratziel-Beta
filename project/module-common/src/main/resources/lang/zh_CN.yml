@@ -10,7 +10,7 @@ Plugin-Reloaded: '&8[&6R&8] &7插件已重载完毕 &8({0}ms)'
 
 # 工作空间
 Workspace-Inited: '&8[&6R&8] &7已初始化 &a{0} &7个工作空间... 开始加载配置 &8({1}ms)'
-Workspace-Finished: '&8[&6R&8] &7成功载入 &a{0} &7个有效元素... &8({1}ms)'
+Workspace-Finished: '&8[&6R&8] &7成功加载 &a{0} &7个有效元素... &8({1}ms)'
 
 # 元素
 Element-Header: '&8[&6R&8] &b信息 &8| &3已加载元素列表:'

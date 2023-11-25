@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
+import cn.fd.ratziel.core.function.isAssignableTo
 import taboolib.module.nms.NMSItemTag
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
@@ -21,7 +22,8 @@ fun toTiNBT(nmsData: Any): TiNBTData = nmsProxy<NMSItemTag>().itemTagToBukkitCop
  * 将 TiNBT 或者 NmsNBT 转化成 NBTData
  */
 fun toNBTData(obj: Any): NBTData =
-    (if (obj is TiNBTData) {
+    (if (obj is NBTData) obj
+    else if (obj is TiNBTData) {
         // 特殊类型直接套 ; 基本类型往下处理
         when (obj) {
             is TiNBTTag -> NBTTag(obj)
@@ -30,20 +32,22 @@ fun toNBTData(obj: Any): NBTData =
         }
     } else if (isNmsNBT(obj)) {
         // 麻烦死了
-        obj::class.java.let {
-            if (it.isAssignableFrom(NBTCompound.clazz)) NBTCompound(obj)
-            else if (it.isAssignableFrom(NBTList.clazz)) NBTList(obj)
-            else if (it.isAssignableFrom(NBTString.clazz)) NBTString(obj)
-            else if (it.isAssignableFrom(NBTInt.clazz)) NBTInt(obj)
-            else if (it.isAssignableFrom(NBTDouble.clazz)) NBTDouble(obj)
-            else if (it.isAssignableFrom(NBTByte.clazz)) NBTByte(obj)
-            else if (it.isAssignableFrom(NBTFloat.clazz)) NBTFloat(obj)
-            else if (it.isAssignableFrom(NBTLong.clazz)) NBTLong(obj)
-            else if (it.isAssignableFrom(NBTShort.clazz)) NBTShort(obj)
-            else if (it.isAssignableFrom(NBTIntArray.clazz)) NBTIntArray(obj)
-            else if (it.isAssignableFrom(NBTByteArray.clazz)) NBTByteArray(obj)
-//            else if (it.isAssignableFrom(NBTLongArray.clazz)) NBTLongArray(obj) TODO 等更新
-            else null
+        obj::class.java.run {
+            when {
+                isAssignableTo(NBTCompound.clazz) -> NBTCompound(obj)
+                isAssignableTo(NBTList.clazz) -> NBTList(obj)
+                isAssignableTo(NBTString.clazz) -> NBTString(obj)
+                isAssignableTo(NBTInt.clazz) -> NBTInt(obj)
+                isAssignableTo(NBTDouble.clazz) -> NBTDouble(obj)
+                isAssignableTo(NBTByte.clazz) -> NBTByte(obj)
+                isAssignableTo(NBTFloat.clazz) -> NBTFloat(obj)
+                isAssignableTo(NBTLong.clazz) -> NBTLong(obj)
+                isAssignableTo(NBTShort.clazz) -> NBTShort(obj)
+                isAssignableTo(NBTIntArray.clazz) -> NBTIntArray(obj)
+                isAssignableTo(NBTByteArray.clazz) -> NBTByteArray(obj)
+//                isAssignableTo(NBTLongArray.clazz) -> NBTLongArray(obj) TODO 等更新
+                else -> null
+            }
         }
     } else when (obj) {
         // 基本类型转换
@@ -61,6 +65,9 @@ fun toNBTData(obj: Any): NBTData =
         else -> null
     }) ?: error("Unsupported nbt: $obj (${obj.javaClass})")
 
+@JvmName("toNBTDataKt")
+fun toNBTData(obj: Any?): NBTData? = obj?.let { toNBTData(it) }
+
 /**
  * [net.minecraft.nbt] 中的 NBTBase
  */
@@ -69,4 +76,4 @@ val classNBTBase by lazy { nmsClass("NBTBase") }
 /**
  * 判断是否为 NmsNBT
  */
-fun isNmsNBT(obj: Any?) = obj != null && obj::class.java.isAssignableFrom(classNBTBase)
+fun isNmsNBT(obj: Any?) = obj != null && obj::class.java.isAssignableTo(classNBTBase)

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.util
+package cn.fd.ratziel.core.function
 
 import taboolib.library.reflex.ClassStructure
 import taboolib.library.reflex.Reflection
@@ -66,6 +66,12 @@ fun ClassStructure.findField(
 ) = fields.firstOrNull {
     (name == null || it.name == name) && (type == null || it.fieldType == type)
 } ?: throw NoSuchFieldException("${this.name}#$name:$type")
+
+/**
+ * 判断 [parent] 是否是当前类的 "父类"
+ * 其实就是反转了 [Class.isAssignableFrom]
+ */
+fun Class<*>.isAssignableTo(parent: Class<*>) = parent.isAssignableFrom(this)
 
 /**
  * 查找类是否存在

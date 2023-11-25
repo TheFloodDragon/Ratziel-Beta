@@ -2,7 +2,7 @@ package cn.fd.ratziel.common.element
 
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.element.ElementType
-import cn.fd.ratziel.core.util.quickFuture
+import cn.fd.ratziel.core.function.quickFuture
 import java.util.concurrent.CompletableFuture
 
 /**

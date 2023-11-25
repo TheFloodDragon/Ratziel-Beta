@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.item.builder
 
-import cn.fd.ratziel.core.util.futureFactory
+import cn.fd.ratziel.core.function.futureFactory
 import cn.fd.ratziel.module.itemengine.api.builder.ItemGenerator
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
