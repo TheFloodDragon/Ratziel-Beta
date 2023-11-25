@@ -62,7 +62,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      */
     fun putDeep(node: String, value: NBTData) {
         if (isTiNBT()) (data as TiNBTTag).putDeep(node, value.getAsTiNBT())
-        else getDeepWith(node, true) { it.put(node.substringAfterLast(DEEP_SEPARATION), value) }
+        else getDeepWith(node, true) { it.put(node.substringAfterLast(DEEP_SEPARATION), value.getAsNmsNBT()) }
     }
 
     fun putDeep(node: String, value: Any) = putDeep(node, toNBTData(value))
@@ -80,7 +80,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
             var next = find[element] // 下一级节点
             if (next == null) {
                 if (create) {
-                    next = NBTCompound(new())
+                    next = NBTCompound()
                     find[element] = next
                 } else return null
             }
