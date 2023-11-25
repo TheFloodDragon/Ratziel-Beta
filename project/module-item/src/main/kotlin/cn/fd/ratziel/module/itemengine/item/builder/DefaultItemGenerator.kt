@@ -1,11 +1,11 @@
-package cn.fd.ratziel.module.itemengine.impl
+package cn.fd.ratziel.module.itemengine.item.builder
 
 import cn.fd.ratziel.core.util.futureFactory
 import cn.fd.ratziel.module.itemengine.api.builder.ItemGenerator
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
 import cn.fd.ratziel.module.itemengine.nbt.toNmsNBT
-import cn.fd.ratziel.module.itemengine.ref.RefItemMeta
+import cn.fd.ratziel.module.itemengine.util.ref.RefItemMeta
 import org.bukkit.inventory.meta.ItemMeta
 
 /**

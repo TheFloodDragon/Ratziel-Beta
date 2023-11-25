@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.impl
+package cn.fd.ratziel.module.itemengine.item.builder
 
 import cn.fd.ratziel.core.util.quickFuture
 import cn.fd.ratziel.module.itemengine.api.builder.ItemSerializer

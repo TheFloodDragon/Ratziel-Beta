@@ -8,6 +8,7 @@ import java.util.function.Supplier
  * @author TheFloodDragon
  * @since 2023/11/4 11:41
  */
+@Deprecated("以后在别的地方")
 enum class ItemMapping(private val value: String) : Supplier<String> {
 
     DISPLAY("display"),

@@ -6,14 +6,14 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
-import cn.fd.ratziel.module.itemengine.impl.DefaultItemGenerator
-import cn.fd.ratziel.module.itemengine.impl.ItemMetadataSerializer
+import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemGenerator
+import cn.fd.ratziel.module.itemengine.item.builder.ItemMetadataSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.ItemFlagSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
-import cn.fd.ratziel.module.itemengine.ref.RefItemMeta
+import cn.fd.ratziel.module.itemengine.util.ref.RefItemMeta
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual

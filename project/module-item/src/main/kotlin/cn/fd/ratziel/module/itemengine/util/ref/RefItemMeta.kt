@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.ref
+package cn.fd.ratziel.module.itemengine.util.ref
 
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
 import com.google.common.collect.Multimap
