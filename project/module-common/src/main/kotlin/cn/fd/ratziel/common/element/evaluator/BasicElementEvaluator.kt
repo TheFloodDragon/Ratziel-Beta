@@ -6,7 +6,6 @@ import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import taboolib.common.platform.function.postpone
 import taboolib.common.platform.function.submit
-import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.service.PlatformExecutor
 
 /**
@@ -37,8 +36,7 @@ object BasicElementEvaluator : ElementEvaluator {
             // 处理函数 (非立即执行)
             val function: PlatformExecutor.PlatformTask.() -> Unit = { handler.handle(element) }
             // 异步或同步执行
-            if (config.sync) submit(now = true, executor = function)
-            else submitAsync(now = true, executor = function)
+            submit(now = true, async = !config.sync, executor = function)
         }
     }
 

@@ -29,5 +29,5 @@ import static cn.fd.ratziel.core.env.CoreEnv.kotlin_version_escaped;
 )
 
 public class CoreEnv {
-    public static final String kotlin_version_escaped = "1920";
+    public static final String kotlin_version_escaped = "1921";
 }

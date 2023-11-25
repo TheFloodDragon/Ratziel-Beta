@@ -3,7 +3,7 @@ package cn.fd.ratziel.bukkit.command
 import cn.fd.ratziel.common.adventure.audienceSender
 import cn.fd.ratziel.common.adventure.sendMessage
 import cn.fd.ratziel.common.command.CommandElement
-import cn.fd.ratziel.common.util.executeFuture
+import cn.fd.ratziel.common.util.executeAsync
 import cn.fd.ratziel.kether.KetherHandler
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -37,7 +37,7 @@ object CommandDev {
     @CommandBody
     val runKether = subCommand {
         dynamic {
-            executeFuture<CommandSender> { sender, _, context ->
+            executeAsync<CommandSender> { sender, _, context ->
                 KetherHandler.invoke(context, sender, mapOf()).thenApply {
                     sender.sendMessage("§7Result: $it")
                 }
