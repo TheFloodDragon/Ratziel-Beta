@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.item.builder
 
-import cn.fd.ratziel.core.function.quickFuture
+import cn.fd.ratziel.core.function.futureAsync
 import cn.fd.ratziel.module.itemengine.api.builder.ItemSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.VItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.VItemDisplay
@@ -28,10 +28,10 @@ open class ItemMetadataSerializer(
     val itemTagSerializer: TiNBTTagSerializer = TiNBTTagSerializer(),
 ) : ItemSerializer {
     override fun serializeByJson(json: Json, element: JsonElement): VItemMeta {
-        val display = quickFuture { displaySerializer.serializeByJson(json, element) }
-        val characteristic = quickFuture { charSerializer.serializeByJson(json, element) }
-        val durability = quickFuture { durabilitySerializer.serializeByJson(json, element) }
-        val nbt: CompletableFuture<TiNBTTag?> = quickFuture { itemTagSerializer.serializeByJson(element) }
+        val display = futureAsync { displaySerializer.serializeByJson(json, element) }
+        val characteristic = futureAsync { charSerializer.serializeByJson(json, element) }
+        val durability = futureAsync { durabilitySerializer.serializeByJson(json, element) }
+        val nbt: CompletableFuture<TiNBTTag?> = futureAsync { itemTagSerializer.serializeByJson(element) }
         return VItemMeta(display.get(), characteristic.get(), durability.get(), NBTTag.of(nbt.get() ?: TiNBTTag()))
     }
 }

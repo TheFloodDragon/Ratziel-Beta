@@ -5,13 +5,13 @@ import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.Executor
 import java.util.function.Supplier
 
-fun <T> quickFuture(function: Supplier<T>) = CompletableFuture.supplyAsync(function)!!
+fun <T> futureAsync(function: Supplier<T>) = CompletableFuture.supplyAsync(function)!!
 
-fun <T> quickFuture(executor: Executor, function: Supplier<T>) = CompletableFuture.supplyAsync(function, executor)!!
+fun <T> futureAsync(executor: Executor, function: Supplier<T>) = CompletableFuture.supplyAsync(function, executor)!!
 
-fun quickRunFuture(function: Runnable) = CompletableFuture.runAsync(function)!!
+fun futureRunAsync(function: Runnable) = CompletableFuture.runAsync(function)!!
 
-fun quickRunFuture(executor: Executor, function: Runnable): CompletableFuture<Void> =
+fun futureRunAsync(executor: Executor, function: Runnable): CompletableFuture<Void> =
     CompletableFuture.runAsync(function, executor)
 
 /**
@@ -19,8 +19,8 @@ fun quickRunFuture(executor: Executor, function: Runnable): CompletableFuture<Vo
  */
 fun <T> futureFactory(block: FutureFactory<T>.() -> Unit) = FutureFactory<T>().also { block(it) }
 
-@JvmName("futureFactoryUnit")
-fun futureFactory(block: FutureFactory<Unit>.() -> Unit) = futureFactory<Unit>(block)
+@JvmName("futureFactoryAny")
+fun futureFactory(block: FutureFactory<Any?>.() -> Unit) = futureFactory<Any?>(block)
 
 /**
  * FutureFactory - 用于管控多 [CompletableFuture] 的任务
@@ -38,7 +38,7 @@ open class FutureFactory<T> : ConcurrentLinkedDeque<CompletableFuture<T>>() {
     /**
      * 异步执行任务
      */
-    fun newAsync(function: Supplier<T>) = submitFuture(quickFuture(function))
+    fun newAsync(function: Supplier<T>) = submitFuture(futureAsync(function))
 
     /**
      * 创建一个 [CompletableFuture]
