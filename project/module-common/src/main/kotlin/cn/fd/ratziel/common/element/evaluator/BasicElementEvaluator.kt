@@ -5,8 +5,8 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.function.FutureFactory
-import cn.fd.ratziel.core.function.futureRunAsync
 import taboolib.common.platform.function.postpone
+import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 import kotlin.system.measureTimeMillis
 
@@ -35,14 +35,14 @@ object BasicElementEvaluator : ElementEvaluator {
         }
         // 提交任务
         val future = CompletableFuture<Long>().also { futures += it }
-        // 处理函数 (非立即执行)
-        val function = Runnable { handler.handle(element) }
         // 推送任务
         postpone(config.lifeCycle) {
-            measureTimeMillis {
-                // 执行任务
-                if (config.async) futureRunAsync(function) else function.run()
-            }.let { future.complete(it) }
+            // 提交到调度器
+            submit(now = true, async = config.async) {
+                measureTimeMillis {
+                    handler.handle(element) // 处理
+                }.let { future.complete(it) }
+            }
         }
     }
 

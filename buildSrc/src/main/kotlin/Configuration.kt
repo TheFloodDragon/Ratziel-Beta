@@ -1,6 +1,6 @@
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.1.17.6"
+const val rootVersion = "A.0.1.18.0"
 
 const val kotlinVersion = "1.9.21"
 const val serializationVersion = "1.6.1"
