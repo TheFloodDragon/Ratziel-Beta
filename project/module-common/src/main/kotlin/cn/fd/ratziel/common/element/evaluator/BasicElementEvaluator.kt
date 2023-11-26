@@ -6,7 +6,6 @@ import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.function.FutureFactory
 import taboolib.common.platform.function.postpone
-import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 import kotlin.system.measureTimeMillis
 
@@ -37,12 +36,9 @@ object BasicElementEvaluator : ElementEvaluator {
         val future = CompletableFuture<Long>().also { futures += it }
         // 推送任务
         postpone(config.lifeCycle) {
-            // 提交到调度器
-            submit(now = true, async = config.async) {
-                measureTimeMillis {
-                    handler.handle(element) // 处理
-                }.let { future.complete(it) }
-            }
+            measureTimeMillis {
+                handler.handle(element) // 处理
+            }.let { future.complete(it) }
         }
     }
 
