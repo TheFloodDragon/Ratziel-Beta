@@ -4,10 +4,11 @@ import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.core.function.FutureFactory
+import cn.fd.ratziel.core.function.futureRunAsync
 import taboolib.common.platform.function.postpone
 import java.util.concurrent.CompletableFuture
-import kotlin.system.measureTimeMillis
+import kotlin.time.Duration
+import kotlin.time.measureTime
 
 /**
  * BasicElementEvaluator - 基本元素处理评估者
@@ -16,8 +17,6 @@ import kotlin.system.measureTimeMillis
  * @since 2023/10/4 13:03
  */
 object BasicElementEvaluator : ElementEvaluator {
-
-    internal val futures = FutureFactory<Long>()
 
     override fun eval(handler: ElementHandler, element: Element) {
         // 分析注解
@@ -32,14 +31,17 @@ object BasicElementEvaluator : ElementEvaluator {
             // 默认配置
             else -> ElementConfig()
         }
-        // 提交任务
-        val future = CompletableFuture<Long>().also { futures += it }
-        // 推送任务
+        // 创建评估任务并提交
+        val future = CompletableFuture<Duration>().also { ApexElementEvaluator.evalTasks += it }
+        // 函数 (非立即执行) - 处理元素并完成评估任务
+        val function = Runnable { measureTime { handler.handle(element) }.let { future.complete(it) } }
+        // 推迟加载
         postpone(config.lifeCycle) {
-            measureTimeMillis {
-                handler.handle(element) // 处理
-            }.let { future.complete(it) }
+            // 异步同步处理
+            if (config.async) futureRunAsync(function)
+            else function.run()
         }
+
     }
 
 }

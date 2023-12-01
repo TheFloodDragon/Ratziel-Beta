@@ -2,11 +2,10 @@ package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
-import cn.fd.ratziel.common.element.evaluator.BasicElementEvaluator
+import cn.fd.ratziel.common.element.evaluator.ApexElementEvaluator
 import cn.fd.ratziel.common.util.handle
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.FutureFactory
-import cn.fd.ratziel.core.function.futureAsync
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
@@ -14,6 +13,7 @@ import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
 import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.system.measureTimeMillis
+import kotlin.time.measureTime
 import cn.fd.ratziel.common.WorkspaceManager as wsm
 
 object WorkspaceLoader {
@@ -26,59 +26,52 @@ object WorkspaceLoader {
     /**
      * 初始化工作空间
      */
-    fun init(sender: ProxyCommandSender) {
+    fun init(sender: ProxyCommandSender) =
         measureTimeMillis {
             Settings.workspacePaths.forEach { path ->
                 wsm.initializeWorkspace(path, true)
             }
-        }.let {
+        }.also {
             sender.sendLang("Workspace-Inited", wsm.workspaces.size, it)
         }
-    }
 
     /**
      * 加载工作空间中的元素
      */
-    fun load(sender: ProxyCommandSender) =
-        measureTimeMillis {
+    fun load(sender: ProxyCommandSender) = measureTime {
+        FutureFactory<List<Element>>().also { loading ->
             /**
              * 加载元素文件
              */
-            val loading = FutureFactory<List<Element>>()
             wsm.getFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
                     loading.newAsync {
-                        DefaultElementLoader.load(file).onEach { em -> elements.add(em) } // 插入缓存
+                        DefaultElementLoader.load(file).onEach {
+                            elements += it  // 插入缓存
+                            it.handle() // 预处理元素
+                        }
                     }
                 }
-            // 等待所有加载任务完成
-            loading.waitForAll()
-        }.let { loadTime ->
-            futureAsync {
-                measureTimeMillis {
-                    BasicElementEvaluator.futures.apply {
-                        this.clear() // 清空缓存
-                        elements.forEach {
-                            it.handle() //处理元素
-                        }
-                    }.waitForAll()
-                }.let { handleTime ->
-                    sender.sendLang("Workspace-Finished", elements.size, loadTime + handleTime)
-                }
-            }
+        }.wait() // 等待所有加载任务完成
+    }.let { time ->
+        ApexElementEvaluator.evalTasks.whenFinished { durations ->
+            durations.forEach { time.plus(it) } // 合并时间
+            sender.sendLang("Workspace-Finished", elements.size, time.inWholeMilliseconds)
         }
+    }
 
     /**
-     * 重新加载命名空间
+     * 重新加载工作空间
      */
     fun reload(sender: ProxyCommandSender) {
-        wsm.workspaces.clear()
-        elements.clear()
+        ApexElementEvaluator.evalTasks.clear() // 清空评估任务
+        elements.clear() // 清空缓存
+        wsm.workspaces.clear() // 清空工作空间
         // 初始化工作空间
         init(sender)
         // 加载元素文件
-        load(sender).get()
+        load(sender).join()
     }
 
     /**

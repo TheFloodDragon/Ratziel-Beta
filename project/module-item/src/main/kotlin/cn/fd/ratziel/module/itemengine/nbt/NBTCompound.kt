@@ -95,7 +95,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * @param replace 是否替换原有的标签
      */
     fun merge(target: NBTCompound, replace: Boolean = true): NBTCompound = this.also { source ->
-        (if (target.isTiNBT()) target.data as TiNBTTag else target.data.getProperty<Map<String, Any>>(NMSMethods.mapFieldName))
+        (if (target.isTiNBT()) target.data as TiNBTTag else NMSMethods.getAsMap(target))
             ?.forEach { (key, value) ->
                 val origin = source[key]
                 // 如果存在该标签并且不允许替换,则直接跳出循环
@@ -103,7 +103,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
                 // 设置值
                 source[key] = toNBTData(value).let {
                     // 复合标签和基本标签判断
-                    if (it is NBTCompound) NBTCompound().merge(it, replace) else it
+                    if (it is NBTCompound) NBTCompound(new()).merge(it, replace) else it
                 }
             }
     }
@@ -135,20 +135,22 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
 
     }
 
-    object NMSMethods {
+    internal object NMSMethods {
 
-        private val classStructure by lazy { ReflexClass.of(clazz).structure }
+        val classStructure by lazy { ReflexClass.of(clazz).structure }
 
-        internal val mapFieldName = if (MinecraftVersion.isUniversal) "x" else "map"
+        val mapFieldName = if (MinecraftVersion.isUniversal) "x" else "map"
 
-        internal val getMethod by lazy {
+        fun getAsMap(target: NBTCompound) = target.data.getProperty<Map<String, Any>>(mapFieldName)
+
+        val getMethod by lazy {
             classStructure.getMethodUnsafe(
                 name = if (MinecraftVersion.isUniversal) "c" else "get",
                 String::class.java
             )
         }
 
-        internal val putMethod by lazy {
+        val putMethod by lazy {
             classStructure.getMethodUnsafe(
                 name = if (MinecraftVersion.isUniversal) "a" else "set",
                 String::class.java, classNBTBase

@@ -75,21 +75,6 @@ object ItemElement : ElementHandler {
         nbt.merge(meta.nbt)
         println("NBT标签: $nbt")
 
-        println("———————————————NBT测试———————————————")
-        val testNBT = NBTCompound(NBTCompound.new())
-
-        testNBT.putDeep("cnm.sb.wsnd", "我是你爹")
-        testNBT.putDeep("cnm.rnm", "傻逼玩意")
-        testNBT.putDeep("nmsl", NBTCompound().apply {
-            putDeep("illness", "有病")
-            putDeep("dog", "傻狗")
-        })
-
-        println(testNBT)
-        println(testNBT["nmsl"])
-        println(testNBT.getDeep("cnm.rnm"))
-        println(testNBT.getDeep("cnm.sb.wsnd"))
-
 
     } catch (ex: Exception) {
         ex.printStackTrace()

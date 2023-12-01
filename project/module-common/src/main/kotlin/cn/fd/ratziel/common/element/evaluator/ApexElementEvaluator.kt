@@ -5,8 +5,10 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
+import cn.fd.ratziel.core.function.FutureFactory
 import cn.fd.ratziel.core.util.callThenRun
 import taboolib.common.platform.function.severe
+import kotlin.time.Duration
 
 /**
  * ApexElementEvaluator
@@ -23,6 +25,11 @@ object ApexElementEvaluator {
     val evaluators: MutableList<ElementEvaluator> = mutableListOf(BasicElementEvaluator)
 
     /**
+     * 进行中的评估任务
+     */
+    val evalTasks = FutureFactory<Duration>()
+
+    /**
      * 对一个元素处理器评估
      * 本质是调用所有评估者评估
      */
@@ -30,7 +37,7 @@ object ApexElementEvaluator {
     fun eval(handler: ElementHandler, element: Element) = evaluators.forEach { it.eval(handler, element) }
 
     /**
-     * 添加评估者成员
+     * 添加评估者成员.0
      */
     @JvmStatic
     fun addMember(evaluator: ElementEvaluator) = evaluators.add(evaluator)

@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.item.builder
 
-import cn.fd.ratziel.core.function.futureFactory
+import cn.fd.ratziel.core.function.futureFactoryAny
 import cn.fd.ratziel.module.itemengine.api.builder.ItemGenerator
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
@@ -18,10 +18,10 @@ class DefaultItemGenerator : ItemGenerator {
 
     fun build(vm: VItemMeta): ItemMeta = TiNBTTag().also { tag ->
         // 基础信息构建
-        futureFactory {
+        futureFactoryAny {
             newAsync { vm.display.build(tag) }
             newAsync { vm.characteristic.build(tag) }
-        }.waitForAll()
+        }.wait()
     }.let { RefItemMeta.new(it.toNmsNBT()) as ItemMeta }
 
 }
