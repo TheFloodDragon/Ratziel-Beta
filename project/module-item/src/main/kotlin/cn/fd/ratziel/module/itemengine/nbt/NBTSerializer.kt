@@ -1,10 +1,8 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package cn.fd.ratziel.module.itemengine.util
+package cn.fd.ratziel.module.itemengine.nbt
 
 import cn.fd.ratziel.core.serialization.adapt
-import cn.fd.ratziel.module.itemengine.nbt.TiNBTData
-import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -19,6 +17,7 @@ import kotlinx.serialization.json.*
  * @since 2023/10/15 9:08
  */
 @Serializer(TiNBTTag::class)
+@Deprecated("待改进")
 object NBTSerializer : KSerializer<TiNBTTag> {
 
     override fun deserialize(decoder: Decoder): TiNBTTag =

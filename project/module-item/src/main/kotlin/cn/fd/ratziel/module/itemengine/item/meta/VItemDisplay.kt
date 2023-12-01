@@ -6,7 +6,7 @@ import cn.fd.ratziel.common.adventure.buildMessageMJ
 import cn.fd.ratziel.common.adventure.toJsonString
 import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.itemengine.api.meta.ItemDisplay
-import cn.fd.ratziel.module.itemengine.item.mapping.ItemMapping
+import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable

@@ -5,7 +5,7 @@ import cn.fd.ratziel.module.itemengine.api.builder.ItemGenerator
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
 import cn.fd.ratziel.module.itemengine.nbt.toNmsNBT
-import cn.fd.ratziel.module.itemengine.util.ref.RefItemMeta
+import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
 import org.bukkit.inventory.meta.ItemMeta
 
 /**

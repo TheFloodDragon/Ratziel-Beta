@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.itemengine.item.meta.VItemDurability
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
-import cn.fd.ratziel.module.itemengine.util.NBTSerializer
+import cn.fd.ratziel.module.itemengine.nbt.NBTSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement

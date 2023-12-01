@@ -6,7 +6,7 @@ import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.itemengine.api.meta.ItemCharacteristic
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
 import cn.fd.ratziel.module.itemengine.nbt.toTiNBT
-import cn.fd.ratziel.module.itemengine.util.ref.RefItemMeta
+import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
