@@ -6,6 +6,10 @@ import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
 
 /**
+ * TODO 可以试试用Taboolib的多模块框架
+ */
+
+/**
  * 基本消息构建
  */
 fun buildMessage(source: String?): Component = source?.let { parseAdventure(it) } ?: Component.empty()

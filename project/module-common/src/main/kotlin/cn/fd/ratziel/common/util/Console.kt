@@ -4,6 +4,10 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.asLangText
 
+/**
+ * TODO 迟早要淘汰
+ */
+
 inline fun <T, R> T.alert(block: (T) -> R): R? {
     return alertBlock { block(this) }.getOrNull()
 }

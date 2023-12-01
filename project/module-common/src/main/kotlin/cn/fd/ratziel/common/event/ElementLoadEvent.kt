@@ -1,12 +1,10 @@
 package cn.fd.ratziel.common.event
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.common.event.api.ElementEvent
 import taboolib.common.platform.event.ProxyEvent
 
 /**
- * ElementLoadEvent
- * 元素加载时触发
+ * ElementLoadEvent - 元素加载事件
  *
  * @author TheFloodDragon
  * @since 2023/9/2 10:32

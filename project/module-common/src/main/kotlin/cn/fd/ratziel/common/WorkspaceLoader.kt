@@ -3,7 +3,7 @@ package cn.fd.ratziel.common
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.element.evaluator.ApexElementEvaluator
-import cn.fd.ratziel.common.util.handle
+import cn.fd.ratziel.common.element.evaluator.ApexElementEvaluator.handle
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.FutureFactory
 import taboolib.common.LifeCycle
@@ -74,9 +74,7 @@ object WorkspaceLoader {
         load(sender).join()
     }
 
-    /**
-     * 自动加载工作空间和加载元素
-     */
+
     @Awake(LifeCycle.LOAD)
     private fun load() {
         init(console())

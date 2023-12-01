@@ -54,6 +54,7 @@ object WorkspaceManager {
 
     /**
      * 复制默认工作空间内文件到默认工作空间
+     * TODO 使用别的方法
      */
     fun releaseWorkspace(files: Array<String> = DefaultFileRegistry.files, target: String) {
         files.forEach {

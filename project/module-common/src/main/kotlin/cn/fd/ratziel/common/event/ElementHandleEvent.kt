@@ -1,12 +1,11 @@
-package cn.fd.ratziel.common.event.api
+package cn.fd.ratziel.common.event
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import taboolib.common.platform.event.ProxyEvent
 
 /**
- * ElementHandleEvent
- * 处理元素时触发
+ * ElementHandleEvent - 元素处理事件
  *
  * @author TheFloodDragon
  * @since 2023/9/2 10:56

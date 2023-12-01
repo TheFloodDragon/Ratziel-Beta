@@ -1,3 +1,1 @@
-dependencies {
-    compileTaboo("module-nms")
-}
+dependencies {}

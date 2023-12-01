@@ -15,8 +15,7 @@ fun <T> CommandComponent.executeAsync(
     bind: Class<T>,
     function: (sender: T, context: CommandContext<T>, argument: String) -> Unit,
 ) = this.execute(bind) { sender, context, argument ->
-    val id = function.hashCode()
-    val locker = locks.computeIfAbsent(id) { ReentrantLock(true) }
+    val locker = locks.computeIfAbsent(function.hashCode()) { ReentrantLock(true) }
     futureRunAsync {
         locker.lock() // 上锁
         function.invoke(sender, context, argument)

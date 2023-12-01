@@ -1,11 +1,12 @@
 package cn.fd.ratziel.common.element
 
 import cn.fd.ratziel.common.element.parser.DefaultElementParser
-import cn.fd.ratziel.common.util.serializeToJson
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.FileElementLoader
+import cn.fd.ratziel.core.serialization.baseJson
 import taboolib.common.platform.function.severe
 import taboolib.module.configuration.Configuration
+import taboolib.module.configuration.Type
 import java.io.File
 
 /**
@@ -28,5 +29,8 @@ object DefaultElementLoader : FileElementLoader {
         }
         return emptyList()
     }
+
+    fun Configuration.serializeToJson() =
+        baseJson.parseToJsonElement(this.apply { changeType(Type.JSON) }.saveToString())
 
 }

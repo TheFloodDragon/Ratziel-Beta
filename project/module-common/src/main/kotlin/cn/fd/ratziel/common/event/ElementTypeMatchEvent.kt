@@ -3,8 +3,7 @@ package cn.fd.ratziel.common.event
 import taboolib.common.platform.event.ProxyEvent
 
 /**
- * ElementTypeMatchEvent
- * 匹配元素事件
+ * ElementTypeMatchEvent - 元素类型匹配事件
  *
  * @author TheFloodDragon
  * @since 2023/9/2 10:48

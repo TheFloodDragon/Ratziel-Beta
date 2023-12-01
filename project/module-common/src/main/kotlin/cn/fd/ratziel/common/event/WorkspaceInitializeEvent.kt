@@ -4,8 +4,7 @@ import taboolib.common.platform.event.ProxyEvent
 import java.io.File
 
 /**
- * WorkspaceInitializeEvent
- * 工作空间初始化时触发
+ * WorkspaceInitializeEvent - 工作空间初始化事件
  *
  * @author TheFloodDragon
  * @since 2023/10/4 13:45
