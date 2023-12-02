@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.itemengine
 
-import cn.fd.ratziel.common.message.builder.ComponentSerializer
 import cn.fd.ratziel.common.element.registry.NewElement
+import cn.fd.ratziel.common.message.builder.ComponentSerializer
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
@@ -49,7 +49,6 @@ object ItemElement : ElementHandler {
     }
 
     override fun handle(element: Element) = try {
-        println(element.property)
 
         val serializer = ItemMetadataSerializer()
         val generator = DefaultItemGenerator()
@@ -66,6 +65,9 @@ object ItemElement : ElementHandler {
         val testMeta = generator.build(meta)
 
         println(testMeta)
+
+        val tag = meta.display.getNBT().value
+        println(tag)
 
 
     } catch (ex: Exception) {
