@@ -4,7 +4,9 @@ import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.event.WorkspaceInitializeEvent
 import cn.fd.ratziel.core.Workspace
 import cn.fd.ratziel.core.util.callThenRun
-import taboolib.common.platform.function.releaseResourceFile
+import cn.fd.ratziel.core.util.findInJar
+import taboolib.common.io.newFile
+import taboolib.common.platform.function.getJarFile
 import java.io.File
 
 object WorkspaceManager {
@@ -17,16 +19,16 @@ object WorkspaceManager {
     /**
      * 加载工作空间
      *
-     * @param file 工作空间路径
+     * @param folder 工作空间路径
      * @param copyDefaults 是否复制默认文件
      */
-    fun initializeWorkspace(file: File, copyDefaults: Boolean = true) {
-        WorkspaceInitializeEvent(file,copyDefaults).callThenRun {
+    fun initializeWorkspace(folder: File, copyDefaults: Boolean = true) {
+        WorkspaceInitializeEvent(folder, copyDefaults).callThenRun {
             // 复制默认文件
-            if (copyDefaults && !file.exists()) // 文件夹未创建时
-                releaseWorkspace(target = file.name)
-            else file.mkdirs()
-            workspaces.add(Workspace(file))
+            if (copyDefaults && !folder.exists()) // 文件夹未创建时
+                releaseWorkspace(folder)
+            else folder.mkdirs()
+            workspaces.add(Workspace(folder))
         }
     }
 
@@ -49,16 +51,16 @@ object WorkspaceManager {
     /**
      * 获取所有工作空间内的所有文件
      */
-    fun getAllFiles(spaces: Iterable<Workspace> = workspaces) =
-        spaces.flatMap { it.getFiles() }
+    fun getAllFiles(spaces: Iterable<Workspace> = workspaces) = spaces.flatMap { it.getFiles() }
 
     /**
      * 复制默认工作空间内文件到默认工作空间
-     * TODO 使用别的方法
      */
-    fun releaseWorkspace(files: Array<String> = DefaultFileRegistry.files, target: String) {
-        files.forEach {
-            releaseResourceFile("${DefaultFileRegistry.PATH}/$it", target = "$target/$it")
+    fun releaseWorkspace(folder: File) {
+        findInJar(getJarFile()) {
+            !it.isDirectory && it.name.startsWith("default/")
+        }.forEach {
+            newFile(File(folder, it.first.name.substringAfter('/'))).writeBytes(it.second.readBytes())
         }
     }
 

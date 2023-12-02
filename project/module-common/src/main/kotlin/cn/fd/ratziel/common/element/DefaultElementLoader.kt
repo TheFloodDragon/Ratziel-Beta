@@ -17,18 +17,17 @@ import java.io.File
  */
 object DefaultElementLoader : FileElementLoader {
 
-    override fun load(file: File): List<Element> {
+    override fun load(file: File): List<Element> =
         try {
             // 获取 Config (转换成Json)
             Configuration.loadFromFile(file).serializeToJson().let { json ->
-                return DefaultElementParser.parse(json)
+                DefaultElementParser.parse(json, file)
             }
         } catch (e: Exception) {
             severe("Failed to load element form file: ${file.name}")
             e.printStackTrace()
+            emptyList() // 失败时返回空列表
         }
-        return emptyList()
-    }
 
     fun Configuration.serializeToJson() =
         baseJson.parseToJsonElement(this.apply { changeType(Type.JSON) }.saveToString())

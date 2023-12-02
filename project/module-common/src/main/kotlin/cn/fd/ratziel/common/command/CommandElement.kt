@@ -35,11 +35,11 @@ object CommandElement {
         executeAsync<ProxyCommandSender> { sender, _, _ ->
             sender.sendLang("Element-Header")
             WorkspaceLoader.elements.forEach {
-                sender.sendLang("Element-Identifier-Format", it.id) // 标识符
+                sender.sendLang("Element-Identifier-Format", it.name) // 名称
                 sender.sendLang(
                     "Element-Info-Format",
-                    it.address.file?.name ?: "无", // 文件
                     it.type.toString(), // 类型
+                    it.path ?: "无", // 文件
                     it.property.toString() // 属性
                 )
             }
@@ -54,7 +54,7 @@ object CommandElement {
     val listTypes = subCommand {
         executeAsync<ProxyCommandSender> { sender, _, _ ->
             sender.sendLang("Element-Type-Header")
-            ElementRegistry.registry.forEach { etype, group ->
+            ElementRegistry.registry.keys.forEach { etype ->
                 // 命名空间消息
                 sender.sendLang("Element-Type-Namespace-Format", etype.space)
                 // 具体消息
@@ -62,18 +62,13 @@ object CommandElement {
                     "Element-Type-Info-Format",
                     etype.name, // 名称
                     format(etype.alias.toList()), // 别名
-                    format(group.handlerMap.map { it::class.java.name }) //处理器
+                    format(ElementRegistry.getHandlers(etype).map { it::class.java.name }) //处理器
                 )
             }
         }
     }
 
-    private fun format(set: Set<*>?): String {
-        return format(set?.toList())
-    }
-
-    private fun format(list: List<*>?): String {
-        return list?.joinToString(separator = ", ") ?: "无"
-    }
+    private fun format(list: Iterable<String>?) =
+        list?.joinToString(separator = ", ")?.takeUnless { it.isEmpty() } ?: "无"
 
 }

@@ -18,8 +18,8 @@ val systemIP: String
 val String.escapedVersion
     get() = this.replace(".", "").replace("_", "").replace("-", "")
 
-fun getLatestRelease(repoOwner: String, repoName: String, fallback: String? = null): String =
-    try {
+fun getLatestRelease(repoOwner: String, repoName: String, overwrite: String? = null, fallback: String? = null): String =
+    overwrite ?: try {
         val url = URL("https://api.github.com/repos/$repoOwner/$repoName/releases/latest")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"

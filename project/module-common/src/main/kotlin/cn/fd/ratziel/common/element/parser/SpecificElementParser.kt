@@ -31,9 +31,7 @@ class SpecificElementParser(val type: ElementType) : ElementParser {
     /**
      * 从JsonObject解析成Element
      */
-    fun parse(jsonO: JsonObject, file: File? = null): List<Element> {
-        // 成功加载的所有元素
-        val successes: MutableList<Element> = mutableListOf()
+    fun parse(jsonO: JsonObject, file: File? = null): List<Element> = mutableListOf<Element>().also { successes ->
         // 获取所有元素标识符
         jsonO.keys.forEach { id ->
             // 获取当前元素下的所有元素类型
@@ -47,8 +45,7 @@ class SpecificElementParser(val type: ElementType) : ElementParser {
                 }
             }
         }
-        return DefaultElementParser.exclude(successes)
-    }
+    }.let { DefaultElementParser.exclude(it) }
 
     fun parse(jsonE: JsonElement, file: File? = null): List<Element> {
         return parse(jsonE.jsonObject, file)

@@ -26,9 +26,7 @@ object DefaultElementParser : ElementParser {
     /**
      * 从JsonObject解析成Element
      */
-    fun parse(jsonO: JsonObject, file: File? = null): List<Element> {
-        // 成功加载的所有元素
-        val successes: MutableList<Element> = mutableListOf()
+    fun parse(jsonO: JsonObject, file: File? = null): List<Element> = mutableListOf<Element>().also { successes ->
         // 获取所有元素标识符
         jsonO.keys.forEach { id ->
             // 获取当前元素下的所有元素类型
@@ -45,8 +43,7 @@ object DefaultElementParser : ElementParser {
                 }
             }
         }
-        return exclude(successes)
-    }
+    }.let { exclude(it) }
 
     fun parse(jsonE: JsonElement, file: File? = null): List<Element> {
         return parse(jsonE.jsonObject, file)
@@ -67,14 +64,14 @@ object DefaultElementParser : ElementParser {
         // 元素加载事件
         ElementLoadEvent(
             // 初始化元素对象
-            Element(id, file, type, property ?: emptyJson())
+            Element(id, type, file, property ?: emptyJson())
         )
 
     /**
      * 防止表达式指向同一类型导致的有多个相同地址的元素
      */
     fun exclude(list: Iterable<Element>): List<Element> {
-        return list.distinctBy { Pair(it.id, it.type) }
+        return list.distinctBy { Pair(it.name, it.type) }
     }
 
 }

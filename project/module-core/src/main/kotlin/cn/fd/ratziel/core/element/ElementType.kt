@@ -25,8 +25,11 @@ open class ElementType(
     var alias: Array<String> = emptyArray()
         protected set
 
+    /**
+     * 元素类型名称包括别名
+     */
     val appellations
-        get() = alias.toMutableList().apply { add(name) }
+        get() = alias.plus(name)
 
     /**
      * 带别名的构造函数
@@ -35,24 +38,14 @@ open class ElementType(
         this.alias = alias.toMutableSet().apply { remove(name) }.toTypedArray() // 规范别名
     }
 
-    override fun toString(): String {
-        return this::class.java.simpleName + '{' +
+    override fun toString() =
+        this::class.java.simpleName + '{' +
                 "space=" + space + ";" +
                 "name=" + name + ';' +
-                "alias=" + alias.toString() + '}'
-    }
+                "alias=" + alias.toList().toString() + '}'
 
-    override fun equals(other: Any?): Boolean {
-        return if (other is ElementType) {
-            this.space == other.space && this.name == other.name
-        } else super.equals(other)
-    }
+    override fun equals(other: Any?) = other is ElementType && this.space == other.space && this.name == other.name
 
-    override fun hashCode(): Int {
-        var result = space.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + alias.hashCode()
-        return result
-    }
+    override fun hashCode() = space.hashCode() + name.hashCode()
 
 }

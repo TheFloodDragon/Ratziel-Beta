@@ -14,10 +14,10 @@ Workspace-Finished: '&8[&6R&8] &7Successfully loaded &a{0} &7valid elements... &
 
 # 元素
 Element-Header: '&8[&6R&8] &bINFO &8| &3Loaded Elements:'
-Element-Identifier-Format: '  &6Id &d{0}&6:'
+Element-Identifier-Format: '  &6Name &d{0}&6:'
 Element-Info-Format:
-  - '    &eFile: &7{0}'
-  - '    &eType: &7{1}'
+  - '    &eType: &7{0}'
+  - '    &eFile: &7{1}'
   - '    &eProperty: &7{2}'
 Element-Type-Header: '&8[&6R&8] &bInfo &8| &3Registered ElementTypes:'
 Element-Type-Namespace-Format: '  &6Space &d{0}&6:  &8(Name:Alias:Handlers)'

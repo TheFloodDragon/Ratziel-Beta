@@ -19,3 +19,7 @@ Item01:
           operation: ADD_NUMBER
           amount: 10
           slot: FEET
+    nbt:
+      display.Lore:
+        - '{"text": "NMSL"}'
+      display.Name: '{"text":"CNMSB"}'
