@@ -2,11 +2,11 @@
 
 package cn.fd.ratziel.module.itemengine.item.meta
 
-import cn.fd.ratziel.common.adventure.buildMessageMJ
-import cn.fd.ratziel.common.adventure.toJsonString
+import cn.fd.ratziel.common.message.buildMessage
 import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.itemengine.api.meta.ItemDisplay
 import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
+import cn.fd.ratziel.module.itemengine.util.nmsComponent
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -36,14 +36,14 @@ data class VItemDisplay(
      * 设置显示名称
      */
     fun setName(origin: String?) {
-        name = buildMessageMJ(origin)
+        name = buildMessage(origin)
     }
 
     /**
      * 设置描述
      */
     fun setLore(components: Iterable<String?>) {
-        lore = components.map { buildMessageMJ(it) }
+        lore = components.map { buildMessage(it) }
     }
 
     /**
@@ -52,12 +52,12 @@ data class VItemDisplay(
     override fun build(tag: ItemTag) {
         val display = tag.computeIfAbsent(ItemMapping.DISPLAY.get()) { ItemTag() } as ItemTag
         if (name != null)
-            display[ItemMapping.DISPLAY_NAME.get()] = ItemTagData(name!!.toJsonString())
+            display[ItemMapping.DISPLAY_NAME.get()] = ItemTagData(nmsComponent(name)!!)
         if (lore != null)
             display[ItemMapping.DISPLAY_LORE.get()] =
-                ItemTagList(lore!!.map { ItemTagData(it.toJsonString()) })
+                ItemTagList(lore!!.map { ItemTagData(nmsComponent(it)!!) })
         if (localizedName != null)
-            display[ItemMapping.DISPLAY_LOCAL_NAME.get()] = ItemTagData(localizedName!!.toJsonString())
+            display[ItemMapping.DISPLAY_LOCAL_NAME.get()] = ItemTagData(nmsComponent(localizedName)!!)
     }
 
 }

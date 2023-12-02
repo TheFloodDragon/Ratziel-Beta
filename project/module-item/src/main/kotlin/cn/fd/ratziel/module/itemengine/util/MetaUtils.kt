@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.itemengine.util
 
-import cn.fd.ratziel.common.adventure.serializeLegacy
-import cn.fd.ratziel.common.adventure.toJsonString
+import cn.fd.ratziel.common.message.Message
+import cn.fd.ratziel.common.message.toJsonString
 import cn.fd.ratziel.module.itemengine.api.meta.ItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.VItemCharacteristic
 import net.kyori.adventure.text.Component
@@ -17,5 +17,5 @@ typealias VItemChar = VItemCharacteristic
  */
 fun nmsComponent(component: Component?): String? =
     if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
-        component?.let { serializeLegacy(it) }
+        component?.let { Message.wrapper.legacyBuilder.serialize(it) }
     } else component?.toJsonString()

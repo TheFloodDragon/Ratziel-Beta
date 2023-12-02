@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine
 
-import cn.fd.ratziel.common.adventure.ComponentSerializer
+import cn.fd.ratziel.common.message.builder.ComponentSerializer
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
@@ -12,8 +12,6 @@ import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSe
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.ItemFlagSerializer
-import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
-import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.common.adventure
+package cn.fd.ratziel.common.message
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
