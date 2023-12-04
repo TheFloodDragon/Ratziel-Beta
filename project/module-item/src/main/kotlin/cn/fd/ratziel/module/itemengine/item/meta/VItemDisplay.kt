@@ -3,7 +3,6 @@
 package cn.fd.ratziel.module.itemengine.item.meta
 
 import cn.fd.ratziel.common.message.buildMessage
-import cn.fd.ratziel.module.itemengine.api.attribute.NBTAttribute
 import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.itemengine.api.meta.ItemDisplay
 import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
@@ -61,15 +60,6 @@ data class VItemDisplay(
         if (localizedName != null)
             display[ItemMapping.DISPLAY_LOCAL_NAME.get()] = ItemTagData(nmsComponent(localizedName)!!)
     }
-
-    fun getNBT() = NBTAttribute(
-        node = ItemMapping.DISPLAY.get(),
-        value = arrayOf(
-            ItemMapping.DISPLAY_NAME.get() to componentToNBT(name),
-            ItemMapping.DISPLAY_LORE.get() to lore?.mapNotNull { componentToNBT(it) },
-            ItemMapping.DISPLAY_LOCAL_NAME.get() to componentToNBT(name)
-        )
-    )
 
     private fun componentToNBT(component: Component?): TiNBTData? = nmsComponent(component)?.let { TiNBTData(it) }
 

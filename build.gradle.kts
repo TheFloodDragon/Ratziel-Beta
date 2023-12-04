@@ -75,7 +75,7 @@ subprojects {
             archiveVersion.set(rootVersion)
             destinationDirectory.set(file("$rootDir/outs"))
             // Exclude
-            exclude("META-INF/**", "taboolib/test/**")
+            exclude("META-INF/**")
             // Taboolib
             relocate("tb.", "$rootGroup.taboolib.")
             relocate("taboolib.", "$rootGroup.taboolib.")
@@ -83,6 +83,15 @@ subprojects {
             // Kotlin
             relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude("kotlin.Metadata") }
             relocate("kotlinx.", "kotlinx${kotlinVersion.escapedVersion}.")
+        }
+    }
+
+    // 发布
+    publishing {
+        publications {
+            register<MavenPublication>("publishToMavenLocal") {
+                from(components["java"])
+            }
         }
     }
 

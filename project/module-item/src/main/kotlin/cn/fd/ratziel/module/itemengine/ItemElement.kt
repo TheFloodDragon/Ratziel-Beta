@@ -66,9 +66,6 @@ object ItemElement : ElementHandler {
 
         println(testMeta)
 
-        val tag = meta.display.getNBT().value
-        println(tag)
-
 
     } catch (ex: Exception) {
         ex.printStackTrace()

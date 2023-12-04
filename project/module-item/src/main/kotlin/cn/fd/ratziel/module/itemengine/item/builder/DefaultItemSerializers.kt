@@ -11,8 +11,8 @@ import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -66,12 +66,8 @@ open class ItemDurabilitySerializer : ItemSerializer {
  */
 open class TiNBTTagSerializer {
     fun serializeByJson(element: JsonElement, source: TiNBTTag = TiNBTTag()) =
-        try {
-            (element.jsonObject["nbt"]
-                ?: element.jsonObject["itemTag"]
-                ?: element.jsonObject["itemTags"])
-                ?.let { NBTMapper.mapFromJson(it, source) }
-        } catch (_: IllegalArgumentException) {
-            null
+        (element.takeIf { element is JsonObject } as? JsonObject)?.let {
+            val json = it["nbt"] ?: it["itemTag"] ?: it["itemTags"]
+            json?.let { j -> NBTMapper.mapFromJson(j, source) }
         }
 }

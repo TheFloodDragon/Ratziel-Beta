@@ -9,6 +9,7 @@ import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
+import java.util.function.Supplier
 
 /**
  * NBT别名
@@ -53,10 +54,6 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
 
     fun put(node: String, value: Any) = put(node, toNBTData(value))
 
-    operator fun set(node: String, value: NBTData) = put(node, value)
-
-    operator fun set(node: String, value: Any) = put(node, value)
-
     /**
      * 深度写入
      */
@@ -66,6 +63,23 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     }
 
     fun putDeep(node: String, value: Any) = putDeep(node, toNBTData(value))
+
+    /**
+     * 删除数据
+     * @param node 节点
+     */
+    fun remove(node: String) {
+        if (isTiNBT()) (data as TiNBTTag).remove(node)
+        else NMSMethods.removeMethod.invoke(data, node)
+    }
+
+    /**
+     * 深度删除，以 "." 作为分层符
+     */
+    fun removeDeep(node: String) {
+        if (isTiNBT()) (data as TiNBTTag).removeDeep(node)
+        else getDeepWith(node, false) { it.remove(node.substringAfterLast(DEEP_SEPARATION)) }
+    }
 
     /**
      * 针对"深度方法"的重复代码做出的优化
@@ -91,6 +105,16 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     }
 
     /**
+     * 获取数据
+     * 如果存在,则直接返回
+     * 如果不存在,则返回默认值并将其扔(Put)进原始数据中
+     */
+    fun computeIfAbsent(
+        node: String,
+        default: Supplier<NBTData>,
+    ): NBTData = this[node].takeIf { it != null } ?: default.get().also { this.put(node, it) }
+
+    /**
      * 合并复合标签
      * @param replace 是否替换原有的标签
      */
@@ -107,6 +131,13 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
                 }
             }
     }
+
+    /**
+     * Kotlin操作符
+     */
+    operator fun set(node: String, value: NBTData) = put(node, value)
+
+    operator fun set(node: String, value: Any) = put(node, value)
 
     companion object : MirrorClass<NBTCompound>() {
 
@@ -154,6 +185,13 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
             classStructure.getMethodUnsafe(
                 name = if (MinecraftVersion.isUniversal) "a" else "set",
                 String::class.java, classNBTBase
+            )
+        }
+
+        val removeMethod by lazy {
+            classStructure.getMethodUnsafe(
+                name = if (MinecraftVersion.isUniversal) "r" else "remove",
+                String::class.java
             )
         }
 
