@@ -31,8 +31,8 @@ open class ItemMetadataSerializer(
         val display = futureAsync { displaySerializer.serializeByJson(json, element) }
         val characteristic = futureAsync { charSerializer.serializeByJson(json, element) }
         val durability = futureAsync { durabilitySerializer.serializeByJson(json, element) }
-        val nbt: CompletableFuture<TiNBTTag?> = futureAsync { itemTagSerializer.serializeByJson(element) }
-        return VItemMeta(display.get(), characteristic.get(), durability.get(), NBTTag.of(nbt.get() ?: TiNBTTag()))
+        val nbt: CompletableFuture<NBTTag?> = futureAsync { itemTagSerializer.serializeByJson(element) }
+        return VItemMeta(display.get(), characteristic.get(), durability.get(), nbt.get() ?: NBTTag())
     }
 }
 
@@ -65,9 +65,11 @@ open class ItemDurabilitySerializer : ItemSerializer {
  * TiNBTTag
  */
 open class TiNBTTagSerializer {
-    fun serializeByJson(element: JsonElement, source: TiNBTTag = TiNBTTag()) =
-        (element.takeIf { element is JsonObject } as? JsonObject)?.let {
-            val json = it["nbt"] ?: it["itemTag"] ?: it["itemTags"]
-            json?.let { j -> NBTMapper.mapFromJson(j, source) }
+    fun serializeByJson(element: JsonElement, source: NBTTag = NBTTag()): NBTTag? =
+        (element.takeIf { element is JsonObject } as? JsonObject)?.let { o ->
+            val json = o["nbt"] ?: o["itemTag"] ?: o["itemTags"]
+            json?.let {
+                NBTMapper.mapFromJson(it, source.getAsTiNBT() as TiNBTTag).let { t -> NBTTag.of(t) }
+            }
         }
 }

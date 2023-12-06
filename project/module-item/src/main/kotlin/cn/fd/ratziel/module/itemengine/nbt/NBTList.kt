@@ -10,15 +10,14 @@ import taboolib.module.nms.nmsClass
  * @author TheFloodDragon
  * @since 2023/11/24 22:18
  */
-@Suppress("UNCHECKED_CAST")
 open class NBTList(rawData: Any) : NBTData(
     if (rawData is List<*>) {
         // 查找第一个并判断类型
         rawData.takeUnless { it.isEmpty() }?.first()?.let {
             when {
                 isNmsNBT(it) -> new(rawData)
-                it is TiNBTData -> TiNBTList(rawData as List<TiNBTData>)
-                else -> null
+                it is TiNBTData -> TiNBTData.translateList(TiNBTList(), rawData)
+                else -> toNBTData(it)
             }
         } ?: new()
     } else rawData,

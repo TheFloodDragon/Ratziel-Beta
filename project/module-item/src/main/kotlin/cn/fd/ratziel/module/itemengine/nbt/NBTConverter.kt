@@ -15,8 +15,6 @@ object NBTConverter {
         obj is NBTData -> obj
         obj is TiNBTData -> TiConverter.convert(obj)
         isNmsNBT(obj) -> NmsConverter.convert(obj)
-        obj is Array<*> -> NBTList.of(obj.map { it?.let { o -> convert(o) } })
-        obj is Iterable<*> -> NBTList.of(obj.map { it?.let { o -> convert(o) } })
         else -> BasicConverter.convert(obj)
     } ?: error("Unsupported nbt: $obj (${obj.javaClass})")
 
@@ -35,6 +33,8 @@ object NBTConverter {
             is IntArray -> NBTIntArray(obj)
             is ByteArray -> NBTByteArray(obj)
             is LongArray -> NBTLongArray(obj)
+            is Array<*> -> NBTList.of(obj.map { it?.let { o -> NBTConverter.convert(o) } })
+            is Iterable<*> -> NBTList.of(obj.map { it?.let { o -> NBTConverter.convert(o) } })
             else -> null
         }
     }

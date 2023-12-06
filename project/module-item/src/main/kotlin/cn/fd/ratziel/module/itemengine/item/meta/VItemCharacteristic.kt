@@ -4,9 +4,12 @@ package cn.fd.ratziel.module.itemengine.item.meta
 
 import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.itemengine.api.meta.ItemCharacteristic
-import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
-import cn.fd.ratziel.module.itemengine.nbt.toTiNBT
+import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
 import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
+import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
+import cn.fd.ratziel.module.itemengine.nbt.NBTTag
+import cn.fd.ratziel.module.itemengine.nbt.toTiNBT
+import com.google.common.collect.LinkedHashMultimap
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -165,7 +168,7 @@ data class VItemCharacteristic(
     }
 
     // TODO 给这坨优化了
-    override fun build(tag: ItemTag) {
+    override fun build(tag: NBTTag) {
         // 创建一个空的 ItemMeta
         val meta = RefItemMeta.new() as ItemMeta
         // 创建一个空的 NBTCompound (nms)
@@ -177,6 +180,20 @@ data class VItemCharacteristic(
         // 构建物品标签
         (toTiNBT(nbt) as ItemTag).forEach { key, value ->
             tag[key] = value
+        }
+    }
+
+    fun build2(tag: NBTTag) {
+        // 属性修饰符处理
+        NBTTag.new().also { nmsTag ->
+            val modifierMap = LinkedHashMultimap.create<Attribute, AttributeModifier>().also { map ->
+                attributeModifiers?.forEach { map.putAll(it.key, it.value) }
+            }
+            RefItemMeta.applyModifiers(nmsTag, modifierMap)
+        }.let {
+            tag.merge(NBTTag(NBTTag.new()).apply {
+                put(ItemMapping.ATTRIBUTE_MODIFIERS.get(), it)
+            })
         }
     }
 

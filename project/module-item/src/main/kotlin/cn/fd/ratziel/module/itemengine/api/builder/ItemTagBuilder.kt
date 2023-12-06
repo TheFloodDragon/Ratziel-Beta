@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.api.builder
 
-import taboolib.module.nms.ItemTag
+import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 
 /**
  * ItemTagBuilder - 物品标签构建器
@@ -13,6 +13,11 @@ interface ItemTagBuilder {
     /**
      * 构建物品标签
      */
-    fun build(tag: ItemTag)
+    fun build(tag: NBTTag)
+
+    /**
+     * 应用物品标签
+     */
+    fun apply(tag: NBTTag) {} // TODO
 
 }

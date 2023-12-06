@@ -6,16 +6,15 @@ import cn.fd.ratziel.common.message.buildMessage
 import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.itemengine.api.meta.ItemDisplay
 import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
-import cn.fd.ratziel.module.itemengine.nbt.TiNBTData
+import cn.fd.ratziel.module.itemengine.nbt.NBTList
+import cn.fd.ratziel.module.itemengine.nbt.NBTString
+import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import cn.fd.ratziel.module.itemengine.util.nmsComponent
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import net.kyori.adventure.text.Component
-import taboolib.module.nms.ItemTag
-import taboolib.module.nms.ItemTagData
-import taboolib.module.nms.ItemTagList
 
 /**
  * VItemDisplay
@@ -50,17 +49,14 @@ data class VItemDisplay(
     /**
      * 将信息写入物品标签
      */
-    override fun build(tag: ItemTag) {
-        val display = tag.computeIfAbsent(ItemMapping.DISPLAY.get()) { ItemTag() } as ItemTag
-        if (name != null)
-            display[ItemMapping.DISPLAY_NAME.get()] = ItemTagData(nmsComponent(name)!!)
-        if (lore != null)
-            display[ItemMapping.DISPLAY_LORE.get()] =
-                ItemTagList(lore!!.map { ItemTagData(nmsComponent(it)!!) })
-        if (localizedName != null)
-            display[ItemMapping.DISPLAY_LOCAL_NAME.get()] = ItemTagData(nmsComponent(localizedName)!!)
+    override fun build(tag: NBTTag) {
+        tag.edit(ItemMapping.DISPLAY.get(), NBTTag()) { display ->
+            display[ItemMapping.DISPLAY_NAME.get()] = componentToNBT(name)
+            display[ItemMapping.DISPLAY_LORE.get()] = lore?.map { componentToNBT(it) }?.let { NBTList(it) }
+            display[ItemMapping.DISPLAY_LOCAL_NAME.get()] = componentToNBT(localizedName)
+        }
     }
 
-    private fun componentToNBT(component: Component?): TiNBTData? = nmsComponent(component)?.let { TiNBTData(it) }
+    private fun componentToNBT(component: Component?): NBTString? = nmsComponent(component)?.let { NBTString(it) }
 
 }

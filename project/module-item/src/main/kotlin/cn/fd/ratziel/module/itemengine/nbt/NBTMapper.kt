@@ -20,7 +20,7 @@ import taboolib.module.nms.ItemTagSerializer
 @Serializer(TiNBTTag::class)
 object NBTMapper : KSerializer<TiNBTTag> {
 
-    const val SPECIAL_TYPE_SIGN = ';'
+    const val SPECIAL_TYPE_SIGN = ";"
 
     override fun deserialize(decoder: Decoder): TiNBTTag = mapFromJson((decoder as JsonDecoder).decodeJsonElement())
 
@@ -39,7 +39,7 @@ object NBTMapper : KSerializer<TiNBTTag> {
 
     fun deserializePrimitive(json: JsonPrimitive): TiNBTData =
         // 当末尾有 ';' 时,使用 Taboolib 的 ItemTagSerializer 解析
-        if (json.isString && json.content.endsWith(SPECIAL_TYPE_SIGN))
+        if (json.isString && json.content.endsWith(SPECIAL_TYPE_SIGN) && !json.content.endsWith('\\'+SPECIAL_TYPE_SIGN))
             ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(json.content.dropLast(1)))
         else TiNBTData.toNBT(json.adapt()) // 正常解析
 

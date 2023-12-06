@@ -58,6 +58,7 @@ object ItemElement : ElementHandler {
         println(meta.display)
         println(meta.characteristic)
         println(meta.durability)
+        println(meta)
         println(meta.nbt)
 
         println("————————————————————————————————")

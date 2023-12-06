@@ -75,7 +75,7 @@ subprojects {
             archiveVersion.set(rootVersion)
             destinationDirectory.set(file("$rootDir/outs"))
             // Exclude
-            exclude("META-INF/**")
+            exclude("META-INF/**", "taboolib/test/**")
             // Taboolib
             relocate("tb.", "$rootGroup.taboolib.")
             relocate("taboolib.", "$rootGroup.taboolib.")

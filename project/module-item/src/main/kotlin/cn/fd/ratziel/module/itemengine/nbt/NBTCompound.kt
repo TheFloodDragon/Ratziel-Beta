@@ -9,7 +9,7 @@ import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
-import java.util.function.Supplier
+import java.util.function.Consumer
 
 /**
  * NBT别名
@@ -47,22 +47,24 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * @param node 节点
      * @param value NBT数据
      */
-    fun put(node: String, value: NBTData) {
+    fun put(node: String, value: NBTData?) {
+        if (value == null) return
         if (isTiNBT()) (data as TiNBTTag)[node] = value.getAsTiNBT()
         else NMSMethods.putMethod.invoke(data, node, value.getAsNmsNBT())
     }
 
-    fun put(node: String, value: Any) = put(node, toNBTData(value))
+    fun put(node: String, value: Any?) = put(node, toNBTData(value))
 
     /**
      * 深度写入
      */
-    fun putDeep(node: String, value: NBTData) {
+    fun putDeep(node: String, value: NBTData?) {
+        if (value == null) return
         if (isTiNBT()) (data as TiNBTTag).putDeep(node, value.getAsTiNBT())
         else getDeepWith(node, true) { it.put(node.substringAfterLast(DEEP_SEPARATION), value.getAsNmsNBT()) }
     }
 
-    fun putDeep(node: String, value: Any) = putDeep(node, toNBTData(value))
+    fun putDeep(node: String, value: Any?) = putDeep(node, toNBTData(value))
 
     /**
      * 删除数据
@@ -105,14 +107,17 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     }
 
     /**
-     * 获取数据
-     * 如果存在,则直接返回
-     * 如果不存在,则返回默认值并将其扔(Put)进原始数据中
+     * 修改数据
      */
-    fun computeIfAbsent(
+    @Suppress("UNCHECKED_CAST")
+    fun <T : NBTData> edit(
         node: String,
-        default: Supplier<NBTData>,
-    ): NBTData = this[node].takeIf { it != null } ?: default.get().also { this.put(node, it) }
+        default: T,
+        function: Consumer<T>,
+    ): T = (this[node] as? T ?: default).also {
+        function.accept(it) // 修改数据
+        this.put(node, it) // 放置
+    }
 
     /**
      * 合并复合标签
@@ -135,9 +140,9 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     /**
      * Kotlin操作符
      */
-    operator fun set(node: String, value: NBTData) = put(node, value)
+    operator fun set(node: String, value: NBTData?) = put(node, value)
 
-    operator fun set(node: String, value: Any) = put(node, value)
+    operator fun set(node: String, value: Any?) = put(node, value)
 
     companion object : MirrorClass<NBTCompound>() {
 

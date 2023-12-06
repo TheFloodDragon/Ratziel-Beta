@@ -2,10 +2,7 @@
 
 package cn.fd.ratziel.module.itemengine.nbt
 
-import taboolib.module.nms.ItemTag
-import taboolib.module.nms.ItemTagData
-import taboolib.module.nms.ItemTagList
-import taboolib.module.nms.ItemTagType
+import taboolib.module.nms.*
 
 
 /**
@@ -66,7 +63,10 @@ abstract class NBTData(
             else other == toTiNBT(data)
         }
 
-    override fun toString() = data.toString()
+    override fun toString() =
+        if (isTiNBT()) // 特殊处理
+            ItemTagSerializer.serializeData(data as TiNBTData).toString()
+        else data.toString()
 
     override fun hashCode() = data.hashCode()
 
