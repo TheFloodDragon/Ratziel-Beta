@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.api
+package cn.fd.ratziel.module.itemengine.api.part
 
 import cn.fd.ratziel.module.itemengine.nbt.NBTInt
 import cn.fd.ratziel.module.itemengine.nbt.NBTString

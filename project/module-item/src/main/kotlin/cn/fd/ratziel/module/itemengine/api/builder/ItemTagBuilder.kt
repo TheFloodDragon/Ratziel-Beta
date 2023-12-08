@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.itemengine.nbt.NBTTag
  * @author TheFloodDragon
  * @since 2023/11/11 15:44
  */
+@Deprecated("Use AttributeTransformer")
 interface ItemTagBuilder {
 
     /**

@@ -2,7 +2,7 @@
 
 package cn.fd.ratziel.module.itemengine.item.meta
 
-import cn.fd.ratziel.module.itemengine.api.meta.ItemDurability
+import cn.fd.ratziel.module.itemengine.api.part.meta.ItemDurability
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames

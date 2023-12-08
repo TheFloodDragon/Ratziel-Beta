@@ -63,10 +63,7 @@ abstract class NBTData(
             else other == toTiNBT(data)
         }
 
-    override fun toString() =
-        if (isTiNBT()) // 特殊处理
-            ItemTagSerializer.serializeData(data as TiNBTData).toString()
-        else data.toString()
+    override fun toString() = data.toString()
 
     override fun hashCode() = data.hashCode()
 

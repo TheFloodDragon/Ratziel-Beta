@@ -1,6 +1,6 @@
-package cn.fd.ratziel.module.itemengine.api.meta
+package cn.fd.ratziel.module.itemengine.api.part.meta
 
-import cn.fd.ratziel.module.itemengine.api.ItemPart
+import cn.fd.ratziel.module.itemengine.api.part.ItemPart
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment

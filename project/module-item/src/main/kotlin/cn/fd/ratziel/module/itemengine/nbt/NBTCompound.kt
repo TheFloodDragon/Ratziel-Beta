@@ -31,7 +31,8 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * @param node 节点
      */
     operator fun get(node: String): NBTData? =
-        (if (isTiNBT()) (data as TiNBTTag)[node]
+        (if (node == APEX_NODE_SIGN) this // 如果为顶级节点则返回自身
+        else if (isTiNBT()) (data as TiNBTTag)[node]
         else NMSMethods.getMethod.invoke(data, node))?.let { toNBTData(it) }
 
     /**
@@ -107,17 +108,29 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     }
 
     /**
-     * 修改数据
+     * 批量设置数据
+     */
+    fun putAll(vararg dataPair: Pair<String, NBTData?>, deep: Boolean = false) = this.apply {
+        dataPair.forEach { if (deep) putDeep(it.first, it.second) else put(it.first, it.second) }
+    }
+
+    /**
+     * 浅度修改 - 不允许深层节点的修改 (不会起效除非你套娃)
+     * @param node 浅层节点
+     * @param default 不存在时使用的默认消费品
+     * @param function 对消费品进行操作
      */
     @Suppress("UNCHECKED_CAST")
-    fun <T : NBTData> edit(
+    fun <T : NBTData> editShallow(
         node: String,
         default: T,
         function: Consumer<T>,
     ): T = (this[node] as? T ?: default).also {
         function.accept(it) // 修改数据
-        this.put(node, it) // 放置
+        this.put(node, it) // 重设置
     }
+
+    fun editShallow(node: String, function: Consumer<NBTTag>): NBTTag = editShallow(node, NBTTag(), function)
 
     /**
      * 合并复合标签
@@ -156,6 +169,11 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
          * 深度操作分层符
          */
         const val DEEP_SEPARATION = "."
+
+        /**
+         * 顶级节点符号
+         */
+        const val APEX_NODE_SIGN = "!"
 
         /**
          * NBTTagCompound#constructor()

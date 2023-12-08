@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.mapping
+package cn.fd.ratziel.module.itemengine.util.mapping
 
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
 import com.google.common.collect.Multimap

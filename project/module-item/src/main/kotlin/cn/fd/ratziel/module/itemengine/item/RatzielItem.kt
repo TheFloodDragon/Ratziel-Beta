@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.item
 
-import cn.fd.ratziel.module.itemengine.api.ItemInfo
+import cn.fd.ratziel.module.itemengine.api.part.ItemInfo
 import cn.fd.ratziel.module.itemengine.api.NeoItem
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 

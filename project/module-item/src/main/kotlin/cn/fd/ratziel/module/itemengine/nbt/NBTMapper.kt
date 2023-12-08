@@ -27,19 +27,30 @@ object NBTMapper : KSerializer<TiNBTTag> {
     override fun serialize(encoder: Encoder, value: TiNBTTag) =
         (encoder as JsonEncoder).encodeJsonElement(encoder.json.parseToJsonElement(value.toJson()))
 
-    fun mapFromJson(json: JsonElement, nbtTag: TiNBTTag = TiNBTTag()): TiNBTTag = nbtTag.also { tag ->
+    /**
+     * 将 Json 反序列化成 TiNBTTag
+     */
+    @JvmStatic
+    fun mapFromJson(json: JsonElement, source: TiNBTTag = TiNBTTag()): TiNBTTag = deserialize(json, source) as TiNBTTag
+
+    /**
+     * 将 Json 反序列化成 TiNBTData
+     */
+    fun deserialize(json: JsonElement, source: TiNBTTag = TiNBTTag()): TiNBTData =
         when (json) {
             is JsonPrimitive -> deserializePrimitive(json)
-            is JsonArray -> TiNBTData.translateList(TiNBTList(), json.map { mapFromJson(it, tag) })
-            is JsonObject -> json.forEach {
-                tag.putDeep(it.key, mapFromJson(it.value, tag))
+            is JsonArray -> TiNBTData.translateList(TiNBTList(), json.map { mapFromJson(it) })
+            is JsonObject -> source.also { tag ->
+                json.forEach { tag.putDeep(it.key, mapFromJson(it.value)) }
             }
         }
-    }
 
+    /**
+     * 对基本类型的反序列处理
+     */
     fun deserializePrimitive(json: JsonPrimitive): TiNBTData =
         // 当末尾有 ';' 时,使用 Taboolib 的 ItemTagSerializer 解析
-        if (json.isString && json.content.endsWith(SPECIAL_TYPE_SIGN) && !json.content.endsWith('\\'+SPECIAL_TYPE_SIGN))
+        if (json.isString && json.content.endsWith(SPECIAL_TYPE_SIGN) && !json.content.endsWith('\\' + SPECIAL_TYPE_SIGN))
             ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(json.content.dropLast(1)))
         else TiNBTData.toNBT(json.adapt()) // 正常解析
 

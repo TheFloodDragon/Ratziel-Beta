@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.mapping
+package cn.fd.ratziel.module.itemengine.util.mapping
 
 import java.util.function.Supplier
 

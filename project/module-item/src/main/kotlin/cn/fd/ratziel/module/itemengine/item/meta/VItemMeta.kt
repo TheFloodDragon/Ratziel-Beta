@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.item.meta
 
-import cn.fd.ratziel.module.itemengine.api.meta.ItemMetadata
+import cn.fd.ratziel.module.itemengine.api.part.meta.ItemMetadata
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 
 /**

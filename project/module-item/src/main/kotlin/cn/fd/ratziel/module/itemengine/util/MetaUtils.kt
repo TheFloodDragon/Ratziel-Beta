@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.itemengine.util
 
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.toJsonString
-import cn.fd.ratziel.module.itemengine.api.meta.ItemCharacteristic
+import cn.fd.ratziel.module.itemengine.api.part.meta.ItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.VItemCharacteristic
 import net.kyori.adventure.text.Component
 import taboolib.module.nms.MinecraftVersion

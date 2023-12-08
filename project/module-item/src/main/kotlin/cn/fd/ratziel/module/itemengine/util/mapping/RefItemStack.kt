@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.mapping
+package cn.fd.ratziel.module.itemengine.util.mapping
 
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.module.nms.MinecraftVersion

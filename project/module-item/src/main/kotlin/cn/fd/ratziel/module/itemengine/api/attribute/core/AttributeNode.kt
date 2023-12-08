@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.api.attribute
+package cn.fd.ratziel.module.itemengine.api.attribute.core
 
 /**
  * AttributeNode - 属性的节点

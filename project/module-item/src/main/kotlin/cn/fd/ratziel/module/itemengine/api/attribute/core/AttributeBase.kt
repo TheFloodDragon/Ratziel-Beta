@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.api.attribute
+package cn.fd.ratziel.module.itemengine.api.attribute.core
 
 /**
  * AttributeBase - 构成属性的最底层部分

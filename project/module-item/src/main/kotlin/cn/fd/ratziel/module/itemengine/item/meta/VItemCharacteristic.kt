@@ -2,13 +2,14 @@
 
 package cn.fd.ratziel.module.itemengine.item.meta
 
+import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
-import cn.fd.ratziel.module.itemengine.api.meta.ItemCharacteristic
-import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
-import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
+import cn.fd.ratziel.module.itemengine.api.part.meta.ItemCharacteristic
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import cn.fd.ratziel.module.itemengine.nbt.toTiNBT
+import cn.fd.ratziel.module.itemengine.util.mapping.ItemMapping
+import cn.fd.ratziel.module.itemengine.util.mapping.RefItemMeta
 import com.google.common.collect.LinkedHashMultimap
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -42,7 +43,7 @@ data class VItemCharacteristic(
     override var hideFlags: MutableSet<@Contextual ItemFlag>? = null,
     @JsonNames("attribute", "attributes", "modifier", "modifiers")
     override var attributeModifiers: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null,
-) : ItemCharacteristic, ItemTagBuilder {
+) : ItemCharacteristic, ItemAttribute<VItemCharacteristic>(NBTTag.APEX_NODE_SIGN), ItemTagBuilder {
 
     /**
      * 是否含有魔咒
@@ -183,7 +184,7 @@ data class VItemCharacteristic(
         }
     }
 
-    fun build2(tag: NBTTag) {
+    override fun transform(source: NBTTag) = source.also { tag ->
         // 属性修饰符处理
         NBTTag.new().also { nmsTag ->
             val modifierMap = LinkedHashMultimap.create<Attribute, AttributeModifier>().also { map ->
@@ -195,6 +196,10 @@ data class VItemCharacteristic(
                 put(ItemMapping.ATTRIBUTE_MODIFIERS.get(), it)
             })
         }
+    }
+
+    override fun detransform(input: NBTTag) {
+        TODO("Not yet implemented")
     }
 
     /**

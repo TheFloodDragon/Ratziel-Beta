@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.itemengine.api
 
-import cn.fd.ratziel.module.itemengine.api.meta.ItemMetadata
+import cn.fd.ratziel.module.itemengine.api.part.ItemInfo
+import cn.fd.ratziel.module.itemengine.api.part.meta.ItemMetadata
+import cn.fd.ratziel.module.itemengine.api.part.ItemPart
 
 /**
  * NeoItem - 物品

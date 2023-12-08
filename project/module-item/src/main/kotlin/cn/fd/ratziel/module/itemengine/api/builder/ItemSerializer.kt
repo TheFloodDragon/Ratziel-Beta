@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.api.builder
 
-import cn.fd.ratziel.module.itemengine.api.ItemPart
+import cn.fd.ratziel.module.itemengine.api.part.ItemPart
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
