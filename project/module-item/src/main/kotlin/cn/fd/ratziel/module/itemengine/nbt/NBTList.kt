@@ -15,7 +15,7 @@ import taboolib.module.nms.nmsClass
 open class NBTList(rawData: Any) : NBTData(
     if (rawData is List<*>) {
         // 查找第一个并判断类型
-        rawData.takeUnless { it.isEmpty() }?.first()?.let {
+        rawData.firstOrNull()?.let {
             when {
                 checkIsNmsNBT(it) -> new(rawData) // Nms 下的 NBTTagList
                 it is TiNBTData -> TiNBTData.translateList(TiNBTList(), rawData) // Taboolib 下的 ItemTagList
@@ -52,7 +52,7 @@ open class NBTList(rawData: Any) : NBTData(
         fun new(list: ArrayList<Any?>) = clazz.invokeConstructor(list, 0)
 
         @JvmStatic
-        fun new(collection: Collection<Any?>) = ArrayList(collection)
+        fun new(collection: Collection<Any?>) = new(ArrayList(collection))
 
         internal val listFieldName = if (MinecraftVersion.isUniversal) "c" else "list"
 
