@@ -17,9 +17,9 @@ open class NBTList(rawData: Any) : NBTData(
         // 查找第一个并判断类型
         rawData.takeUnless { it.isEmpty() }?.first()?.let {
             when {
-                isNmsNBT(it) -> new(rawData)
-                it is TiNBTData -> TiNBTData.translateList(TiNBTList(), rawData)
-                else -> toNBTData(it)
+                checkIsNmsNBT(it) -> new(rawData) // Nms 下的 NBTTagList
+                it is TiNBTData -> TiNBTData.translateList(TiNBTList(), rawData) // Taboolib 下的 ItemTagList
+                else -> null
             }
         } ?: new()
     } else rawData,

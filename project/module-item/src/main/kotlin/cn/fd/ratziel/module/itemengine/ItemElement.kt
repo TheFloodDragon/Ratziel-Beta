@@ -8,10 +8,14 @@ import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.itemengine.item.builder.ItemMetadataSerializer
+import cn.fd.ratziel.module.itemengine.item.meta.VItemCharacteristic
+import cn.fd.ratziel.module.itemengine.item.meta.VItemDisplay
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
-import cn.fd.ratziel.module.itemengine.item.meta.serializers.ItemFlagSerializer
+import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
+import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
+import cn.fd.ratziel.module.itemengine.util.mapping.RefItemMeta
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -36,7 +40,7 @@ object ItemElement : ElementHandler {
             contextual(EnhancedListSerializer(ComponentSerializer))
             // Bukkit Serializers
             contextual(org.bukkit.enchantments.Enchantment::class, EnchantmentSerializer)
-            contextual(org.bukkit.inventory.ItemFlag::class, ItemFlagSerializer)
+            contextual(org.bukkit.inventory.ItemFlag::class, HideFlagSerializer)
             contextual(org.bukkit.attribute.Attribute::class, AttributeSerializer)
             contextual(org.bukkit.attribute.AttributeModifier::class, AttributeModifierSerializer)
         }
@@ -58,7 +62,6 @@ object ItemElement : ElementHandler {
         println(meta.display)
         println(meta.characteristic)
         println(meta.durability)
-        println(meta)
         println(meta.nbt)
 
         println("————————————————————————————————")
@@ -67,6 +70,11 @@ object ItemElement : ElementHandler {
 
         println(testMeta)
 
+        println(NBTCompound.new().also { RefItemMeta.applyToItem(testMeta, it) })
+
+        println("————————————————————————————————")
+        println(VItemDisplay().detransform(meta.display.transform()))
+        println(VItemCharacteristic().detransform(meta.characteristic.transform()))
 
     } catch (ex: Exception) {
         ex.printStackTrace()

@@ -48,6 +48,7 @@ object RefItemMeta {
 
 
     /**
+     * Enchantments to NmsTag
      * CraftMetaItem#applyEnchantments(Map<Enchantment,Int>,NBTTagCompound,ItemMetaKey);Static
      */
     @JvmStatic
@@ -59,7 +60,8 @@ object RefItemMeta {
 
 
     /**
-     * CraftMetaItem#applyModifiers(Multimap<Attribute,AttributeModifier>,NBTTagCompound,ItemMetaKey);Static
+     * AttributeModifiers to NmsTag
+     * CraftMetaItem#applyModifiers(MultiMap<Attribute,AttributeModifier>,NBTTagCompound,ItemMetaKey);Static
      */
     @JvmStatic
     fun applyModifiers(nbtTag: Any, modifiers: Multimap<Attribute, AttributeModifier>) =
@@ -69,13 +71,35 @@ object RefItemMeta {
         )
 
     /**
+     * NmsTag to AttributeModifiers
+     * CraftMetaItem#buildModifiers(NBTTagCompound,ItemMetaKey):MultiMap<Attribute,AttributeModifier>;Static
+     */
+    @JvmStatic
+    fun buildModifiers(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
+        clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
+            "buildModifiers", nbtTag,
+            ItemMapping.ATTRIBUTE_MODIFIERS.key, isStatic = true
+        )!!
+
+    /**
+     * NmsTag to Enchantments
+     * CraftMetaItem#buildEnchantments(NBTTagCompound,ItemMetaKey):Map<Enchantment,Integer>;Static
+     */
+    @JvmStatic
+    fun buildEnchantments(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
+        clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
+            "buildEnchantments", nbtTag,
+            ItemMapping.ENCHANTMENTS.key, isStatic = true
+        )!!
+
+    /**
      * CraftMetaItem中的ItemMetaKey
      */
     class RefItemMetaKey(val fieldName: String) {
 
         val obcData by lazy { clazz.getProperty<Any?>(fieldName, isStatic = true) }
 
-        val NNM_NAME
+        val NMS_NAME
             get() = obcData?.getProperty<String>("NBT")
 
         val BUKKIT_NAME

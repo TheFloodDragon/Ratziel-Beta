@@ -4,7 +4,6 @@ package cn.fd.ratziel.module.itemengine.item.meta
 
 import cn.fd.ratziel.common.message.buildMessage
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
-import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemDisplay
 import cn.fd.ratziel.module.itemengine.nbt.NBTList
 import cn.fd.ratziel.module.itemengine.nbt.NBTString
@@ -31,7 +30,7 @@ data class VItemDisplay(
     override var localizedName: @Contextual Component? = null,
     @JsonNames("lores")
     override var lore: @Contextual List<Component>? = emptyList(),
-) : ItemDisplay, ItemAttribute<VItemDisplay>, ItemTagBuilder {
+) : ItemDisplay, ItemAttribute<VItemDisplay> {
 
     /**
      * 设置显示名称
@@ -52,13 +51,6 @@ data class VItemDisplay(
      */
     fun setLocalizedName(origin: String?) {
         localizedName = buildMessage(origin)
-    }
-
-    /**
-     * 将信息写入物品标签
-     */
-    override fun build(tag: NBTTag) {
-        tag.editShallow(ItemMapping.DISPLAY.get()) { transform(it) }
     }
 
     override fun transform(source: NBTTag) = source.putAll(

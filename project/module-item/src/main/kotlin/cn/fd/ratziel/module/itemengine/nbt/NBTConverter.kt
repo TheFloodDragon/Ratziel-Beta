@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
+import cn.fd.ratziel.core.function.UnsupportedTypeException
 import cn.fd.ratziel.core.function.isAssignableTo
 
 /**
@@ -14,9 +15,9 @@ object NBTConverter {
     fun convert(obj: Any): NBTData = when {
         obj is NBTData -> obj
         obj is TiNBTData -> TiConverter.convert(obj)
-        isNmsNBT(obj) -> NmsConverter.convert(obj)
+        checkIsNmsNBT(obj) -> NmsConverter.convert(obj)
         else -> BasicConverter.convert(obj)
-    } ?: error("Unsupported nbt: $obj (${obj.javaClass})")
+    } ?: throw UnsupportedTypeException(obj)
 
 
     object BasicConverter : Converter<Any> {
@@ -40,7 +41,6 @@ object NBTConverter {
     }
 
     object NmsConverter : Converter<Any> {
-        // 麻烦死了
         override fun convert(obj: Any) = obj::class.java.run {
             when {
                 isAssignableTo(NBTCompound.clazz) -> NBTCompound(obj)

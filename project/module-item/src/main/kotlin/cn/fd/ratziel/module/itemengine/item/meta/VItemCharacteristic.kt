@@ -3,9 +3,10 @@
 package cn.fd.ratziel.module.itemengine.item.meta
 
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
-import cn.fd.ratziel.module.itemengine.api.builder.ItemTagBuilder
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemCharacteristic
+import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
+import cn.fd.ratziel.module.itemengine.nbt.NBTInt
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import cn.fd.ratziel.module.itemengine.nbt.toTiNBT
 import cn.fd.ratziel.module.itemengine.util.mapping.ItemMapping
@@ -38,12 +39,12 @@ data class VItemCharacteristic(
     @JsonNames("custom-model-data", "cmd")
     override var customModelData: Int? = null,
     @JsonNames("enchant", "enchantment", "enchantments")
-    override var enchants: MutableMap<@Contextual Enchantment, Int>? = null,
+    override var enchants: MutableMap<@Contextual Enchantment, Int>? = null, // TODO 到时候要单独出来
     @JsonNames("hideflag", "hideflags", "hideFlag")
     override var hideFlags: MutableSet<@Contextual ItemFlag>? = null,
     @JsonNames("attribute", "attributes", "modifier", "modifiers")
     override var attributeModifiers: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null,
-) : ItemCharacteristic, ItemAttribute<VItemCharacteristic>, ItemTagBuilder {
+) : ItemCharacteristic, ItemAttribute<VItemCharacteristic> {
 
     /**
      * 是否含有魔咒
@@ -65,7 +66,7 @@ data class VItemCharacteristic(
         if (!ignoreLevelRestriction) {
             level.coerceIn(enchantment.startLevel, enchantment.maxLevel)
         }
-        if (enchants == null) enchants = LinkedHashMap() // Null Check
+        if (enchants == null) enchants = LinkedHashMap() // 排空
         this.enchants!![enchantment] = level
     }
 
@@ -129,11 +130,76 @@ data class VItemCharacteristic(
         attributeModifiers?.get(attribute)?.remove(modifier)
     }
 
+    @Deprecated("Use transform(source: NBTTag)")
+    fun build(tag: NBTTag) {
+        // 创建一个空的 ItemMeta
+        val meta = RefItemMeta.new() as ItemMeta
+        // 创建一个空的 NBTCompound (nms)
+        val nbt = NBTCompound.new()
+        // 应用到 ItemMeta
+        applyTo(meta)
+        // 应用到 NBTCompound (nms)
+        RefItemMeta.applyToItem(meta, nbt)
+        // 构建物品标签
+        (toTiNBT(nbt) as ItemTag).forEach { key, value ->
+            tag[key] = value
+        }
+    }
+
+    override fun transform(source: NBTTag): NBTTag {
+        // 自定义模型数据 (1.14+)
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
+            source.put(ItemMapping.CUSTOM_MODEL_DATA.get(), this.customModelData?.let { NBTInt(it) })
+        // 物品隐藏标签
+        source.put(ItemMapping.HIDE_FLAG.get(), this.hideFlags?.let { HideFlagSerializer.translateFlags(it) })
+        // 属性修饰符
+        source.merge(NBTTag.of(NBTTag.new().also { nmsTag ->
+            // 创建修饰符表
+            val modifierMap = LinkedHashMultimap.create<Attribute, AttributeModifier>().also { map ->
+                this.attributeModifiers?.forEach { map.putAll(it.key, it.value) }
+            }
+            // 应用到属性修饰符中
+            RefItemMeta.applyModifiers(nmsTag, modifierMap)
+        }))
+        return source
+    }
+
+    override fun detransform(input: NBTTag) {
+        // 自定义模型数据 (1.14+) - Int
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
+            this.customModelData = (input[ItemMapping.CUSTOM_MODEL_DATA.get()] as? NBTInt)?.content
+        // 物品隐藏标签 - Int
+        this.hideFlags = (input[ItemMapping.HIDE_FLAG.get()] as? NBTInt)?.content
+            ?.let { HideFlagSerializer.getFlagFromBit(it) }?.toMutableSet()
+        // 属性修饰符 - Compound
+        val modifierMap = RefItemMeta.buildModifiers(input.getAsNmsNBT()) // 构造属性修饰符表
+        modifierMap.asMap().forEach { this.addAttributeModifiers(it.key, *it.value.toTypedArray()) }
+    }
+
+    /**
+     * 直接转换
+     * ItemCharacteristic -> Bukkit.ItemMeta
+     */
+    fun applyTo(target: ItemMeta) {
+        // 自定义模型数据
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
+            target.setProperty("customModelData", this.customModelData)
+        // 附魔
+        this.enchants?.forEach { (key, value) ->
+            target.addEnchant(key, value, true)
+        }
+        // 物品隐藏标签
+        target.addItemFlags(*this.hideFlags?.toTypedArray() ?: emptyArray())
+        // 属性修饰符
+        this.attributeModifiers?.forEach { (key, value) ->
+            value.forEach { target.addAttributeModifier(key, it) }
+        }
+    }
+
     /**
      * Bukkit.ItemMeta(BI) -> VItemCharacteristic
      * @param replace 如果BI的元数据存在(空),是否替换
      */
-    @Deprecated("考虑转移到别的地方")
     fun applyForm(
         meta: ItemMeta, replace: Boolean = false,
         /**
@@ -166,60 +232,6 @@ data class VItemCharacteristic(
         fEnchants.accept(this)
         fItemFlags.accept(this)
         fAttributeModifiers.accept(this)
-    }
-
-    // TODO 给这坨优化了
-    override fun build(tag: NBTTag) {
-        // 创建一个空的 ItemMeta
-        val meta = RefItemMeta.new() as ItemMeta
-        // 创建一个空的 NBTCompound (nms)
-        val nbt = NBTCompound.new()
-        // 应用到 ItemMeta
-        applyTo(meta)
-        // 应用到 NBTCompound (nms)
-        RefItemMeta.applyToItem(meta, nbt)
-        // 构建物品标签
-        (toTiNBT(nbt) as ItemTag).forEach { key, value ->
-            tag[key] = value
-        }
-    }
-
-    override fun transform(source: NBTTag) = source.also { tag ->
-        // 属性修饰符处理
-        NBTTag.new().also { nmsTag ->
-            val modifierMap = LinkedHashMultimap.create<Attribute, AttributeModifier>().also { map ->
-                attributeModifiers?.forEach { map.putAll(it.key, it.value) }
-            }
-            RefItemMeta.applyModifiers(nmsTag, modifierMap)
-        }.let {
-            tag.merge(NBTTag(NBTTag.new()).apply {
-                put(ItemMapping.ATTRIBUTE_MODIFIERS.get(), it)
-            })
-        }
-    }
-
-    override fun detransform(input: NBTTag) {
-        TODO("Not yet implemented")
-    }
-
-    /**
-     * 直接转换
-     * ItemCharacteristic -> Bukkit.ItemMeta
-     */
-    fun applyTo(target: ItemMeta) {
-        // 自定义模型数据
-        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
-            target.setProperty("customModelData", this.customModelData)
-        // 附魔
-        this.enchants?.forEach { (key, value) ->
-            target.addEnchant(key, value, true)
-        }
-        // 物品隐藏标签
-        target.addItemFlags(*this.hideFlags?.toTypedArray() ?: emptyArray())
-        // 属性修饰符
-        this.attributeModifiers?.forEach { (key, value) ->
-            value.forEach { target.addAttributeModifier(key, it) }
-        }
     }
 
 }

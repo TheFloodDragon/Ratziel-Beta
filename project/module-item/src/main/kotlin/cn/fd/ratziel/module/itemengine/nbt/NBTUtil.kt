@@ -34,4 +34,4 @@ val classNBTBase by lazy { nmsClass("NBTBase") }
 /**
  * 判断是否为 NmsNBT
  */
-fun isNmsNBT(obj: Any?) = obj != null && obj::class.java.isAssignableTo(classNBTBase)
+fun checkIsNmsNBT(obj: Any?) = obj != null && obj::class.java.isAssignableTo(classNBTBase)

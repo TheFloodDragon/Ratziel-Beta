@@ -8,11 +8,12 @@ import java.util.function.Supplier
  * @author TheFloodDragon
  * @since 2023/11/4 11:41
  */
+@Suppress("SpellCheckingInspection")
 enum class ItemMapping(
     val fieldName: String,
     val default: String,
     internal val key: RefItemMeta.RefItemMetaKey = RefItemMeta.RefItemMetaKey(fieldName),
-    internal val value: String = key.NNM_NAME ?: default,
+    internal val value: String = key.NMS_NAME ?: default,
 ) : Supplier<String> {
 
     DISPLAY("DISPLAY", "display"),
@@ -20,7 +21,9 @@ enum class ItemMapping(
     DISPLAY_LORE("LORE", "Lore"),
     DISPLAY_LOCAL_NAME("LOCNAME", "LocName"),
     ENCHANTMENTS("ENCHANTMENTS", "Enchantments"),
-    ATTRIBUTE_MODIFIERS("ATTRIBUTES", "AttributeModifiers");
+    ATTRIBUTE_MODIFIERS("ATTRIBUTES", "AttributeModifiers"),
+    CUSTOM_MODEL_DATA("CUSTOM_MODEL_DATA", "CustomModelData"),
+    HIDE_FLAG("HIDEFLAGS", "HideFlags");
 
     override fun get() = value
 

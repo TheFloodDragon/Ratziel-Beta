@@ -20,8 +20,6 @@ fun futureRunAsync(executor: Executor, function: Runnable): CompletableFuture<Vo
  */
 fun <T> futureFactory(block: FutureFactory<T>.() -> Unit) = FutureFactory<T>().apply(block)
 
-fun futureFactoryAny(block: FutureFactory<Any?>.() -> Unit) = futureFactory(block)
-
 /**
  * FutureFactory - 用于管控多 [CompletableFuture] 的任务
  *
