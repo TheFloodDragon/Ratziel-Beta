@@ -55,7 +55,7 @@ object RefItemMeta {
     fun applyEnchantments(nbtTag: Any, enchantments: Map<Enchantment, Int>) =
         clazz.invokeMethod<Void>(
             "applyEnchantments", enchantments, nbtTag,
-            ItemMapping.ENCHANTMENTS.key, isStatic = true
+            ItemMapping.ENCHANTMENTS.key.obcData, isStatic = true
         )
 
 
@@ -67,7 +67,7 @@ object RefItemMeta {
     fun applyModifiers(nbtTag: Any, modifiers: Multimap<Attribute, AttributeModifier>) =
         clazz.invokeMethod<Void>(
             "applyModifiers", modifiers, nbtTag,
-            ItemMapping.ATTRIBUTE_MODIFIERS.key, isStatic = true
+            ItemMapping.ATTRIBUTE_MODIFIERS.key.obcData, isStatic = true
         )
 
     /**
@@ -78,7 +78,7 @@ object RefItemMeta {
     fun buildModifiers(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
         clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
             "buildModifiers", nbtTag,
-            ItemMapping.ATTRIBUTE_MODIFIERS.key, isStatic = true
+            ItemMapping.ATTRIBUTE_MODIFIERS.key.obcData, isStatic = true
         )!!
 
     /**
@@ -89,7 +89,7 @@ object RefItemMeta {
     fun buildEnchantments(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
         clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
             "buildEnchantments", nbtTag,
-            ItemMapping.ENCHANTMENTS.key, isStatic = true
+            ItemMapping.ENCHANTMENTS.key.obcData, isStatic = true
         )!!
 
     /**
