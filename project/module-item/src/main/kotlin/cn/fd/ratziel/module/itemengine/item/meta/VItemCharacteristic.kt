@@ -5,10 +5,8 @@ package cn.fd.ratziel.module.itemengine.item.meta
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
-import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
 import cn.fd.ratziel.module.itemengine.nbt.NBTInt
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
-import cn.fd.ratziel.module.itemengine.nbt.toTiNBT
 import cn.fd.ratziel.module.itemengine.util.mapping.ItemMapping
 import cn.fd.ratziel.module.itemengine.util.mapping.RefItemMeta
 import com.google.common.collect.LinkedHashMultimap
@@ -24,7 +22,6 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.setProperty
-import taboolib.module.nms.ItemTag
 import taboolib.module.nms.MinecraftVersion
 import java.util.function.Consumer
 
@@ -130,28 +127,13 @@ data class VItemCharacteristic(
         attributeModifiers?.get(attribute)?.remove(modifier)
     }
 
-    @Deprecated("Use transform(source: NBTTag)")
-    fun build(tag: NBTTag) {
-        // 创建一个空的 ItemMeta
-        val meta = RefItemMeta.new() as ItemMeta
-        // 创建一个空的 NBTCompound (nms)
-        val nbt = NBTCompound.new()
-        // 应用到 ItemMeta
-        applyTo(meta)
-        // 应用到 NBTCompound (nms)
-        RefItemMeta.applyToItem(meta, nbt)
-        // 构建物品标签
-        (toTiNBT(nbt) as ItemTag).forEach { key, value ->
-            tag[key] = value
-        }
-    }
-
     override fun transform(source: NBTTag): NBTTag {
         // 自定义模型数据 (1.14+)
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
             source.put(ItemMapping.CUSTOM_MODEL_DATA.get(), this.customModelData?.let { NBTInt(it) })
         // 物品隐藏标签
-        source.put(ItemMapping.HIDE_FLAG.get(), this.hideFlags?.let { HideFlagSerializer.translateFlags(it) })
+        source.put(ItemMapping.HIDE_FLAG.get(),
+            this.hideFlags?.let { HideFlagSerializer.translateFlags(it) }?.let { NBTInt(it) })
         // 属性修饰符
         source.merge(NBTTag.of(NBTTag.new().also { nmsTag ->
             // 创建修饰符表

@@ -23,7 +23,7 @@ fun toTiNBT(nmsData: Any): TiNBTData = nmsProxy<NMSItemTag>().itemTagToBukkitCop
  */
 fun toNBTData(obj: Any): NBTData = NBTConverter.convert(obj)
 
-@JvmName("toNBTDataKt")
+@JvmName("toNBTDataNullable")
 fun toNBTData(obj: Any?): NBTData? = obj?.let { toNBTData(it) }
 
 /**

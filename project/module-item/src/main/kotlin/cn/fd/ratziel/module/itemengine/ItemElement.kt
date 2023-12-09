@@ -14,8 +14,6 @@ import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSe
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
-import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
-import cn.fd.ratziel.module.itemengine.util.mapping.RefItemMeta
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -69,8 +67,6 @@ object ItemElement : ElementHandler {
         val testMeta = generator.build(meta)
 
         println(testMeta)
-
-        println(NBTCompound.new().also { RefItemMeta.applyToItem(testMeta, it) })
 
         println("————————————————————————————————")
         println(VItemDisplay().detransform(meta.display.transform()))

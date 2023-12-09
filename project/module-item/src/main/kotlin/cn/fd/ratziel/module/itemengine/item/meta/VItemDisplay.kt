@@ -42,8 +42,8 @@ data class VItemDisplay(
     /**
      * 设置描述
      */
-    fun setLore(components: Iterable<String?>) {
-        lore = components.map { buildMessage(it) }
+    fun setLore(components: Iterable<String?>?) {
+        lore = components?.map { buildMessage(it) }
     }
 
     /**
@@ -60,9 +60,9 @@ data class VItemDisplay(
     )
 
     override fun detransform(input: NBTTag) {
-        setName((input[ItemMapping.DISPLAY_NAME.get()] as NBTString).content)
-        setLore((input[ItemMapping.DISPLAY_LORE.get()] as NBTList).content.map { (it as NBTString).content })
-        setLocalizedName((input[ItemMapping.DISPLAY_LOCAL_NAME.get()] as NBTString).content)
+        setName((input[ItemMapping.DISPLAY_NAME.get()] as? NBTString)?.content)
+        setLore((input[ItemMapping.DISPLAY_LORE.get()] as? NBTList)?.content?.mapNotNull { (it as? NBTString)?.content })
+        setLocalizedName((input[ItemMapping.DISPLAY_LOCAL_NAME.get()] as? NBTString)?.content)
     }
 
     private fun componentToNBT(component: Component?): NBTString? = nmsComponent(component)?.let { NBTString(it) }

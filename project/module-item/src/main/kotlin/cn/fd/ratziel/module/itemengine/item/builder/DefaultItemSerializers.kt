@@ -25,7 +25,7 @@ open class ItemMetadataSerializer(
     val displaySerializer: ItemDisplaySerializer = ItemDisplaySerializer(),
     val charSerializer: ItemCharSerializer = ItemCharSerializer(),
     val durabilitySerializer: ItemDurabilitySerializer = ItemDurabilitySerializer(),
-    val itemTagSerializer: TiNBTTagSerializer = TiNBTTagSerializer(),
+    val itemTagSerializer: NBTTagSerializer = NBTTagSerializer(),
 ) : ItemSerializer {
     override fun serializeByJson(json: Json, element: JsonElement): VItemMeta {
         val display = futureAsync { displaySerializer.serializeByJson(json, element) }
@@ -62,9 +62,9 @@ open class ItemDurabilitySerializer : ItemSerializer {
 }
 
 /**
- * TiNBTTag
+ * NBTTag
  */
-open class TiNBTTagSerializer {
+open class NBTTagSerializer {
     fun serializeByJson(element: JsonElement, source: NBTTag = NBTTag()): NBTTag? =
         (element.takeIf { element is JsonObject } as? JsonObject)?.let { o ->
             val json = o["nbt"] ?: o["itemTag"] ?: o["itemTags"]
