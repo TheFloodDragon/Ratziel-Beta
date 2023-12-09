@@ -31,7 +31,7 @@ data class VItemDisplay(
     override var localizedName: @Contextual Component? = null,
     @JsonNames("lores")
     override var lore: @Contextual List<Component>? = emptyList(),
-) : ItemDisplay, ItemAttribute<VItemDisplay>(ItemMapping.DISPLAY.get()), ItemTagBuilder {
+) : ItemDisplay, ItemAttribute<VItemDisplay>, ItemTagBuilder {
 
     /**
      * 设置显示名称
@@ -48,6 +48,13 @@ data class VItemDisplay(
     }
 
     /**
+     * 设置本地化名称
+     */
+    fun setLocalizedName(origin: String?) {
+        localizedName = buildMessage(origin)
+    }
+
+    /**
      * 将信息写入物品标签
      */
     override fun build(tag: NBTTag) {
@@ -61,9 +68,13 @@ data class VItemDisplay(
     )
 
     override fun detransform(input: NBTTag) {
-        TODO("Not yet implemented")
+        setName((input[ItemMapping.DISPLAY_NAME.get()] as NBTString).content)
+        setLore((input[ItemMapping.DISPLAY_LORE.get()] as NBTList).content.map { (it as NBTString).content })
+        setLocalizedName((input[ItemMapping.DISPLAY_LOCAL_NAME.get()] as NBTString).content)
     }
 
     private fun componentToNBT(component: Component?): NBTString? = nmsComponent(component)?.let { NBTString(it) }
+
+    override fun node() = ItemMapping.DISPLAY.get()
 
 }

@@ -89,9 +89,7 @@ subprojects {
     // 发布
     publishing {
         publications {
-            register<MavenPublication>("publishToMavenLocal") {
-                from(components["java"])
-            }
+            register<MavenPublication>("publishToMavenLocal") { from(components["java"]) }
         }
     }
 

@@ -43,7 +43,7 @@ data class VItemCharacteristic(
     override var hideFlags: MutableSet<@Contextual ItemFlag>? = null,
     @JsonNames("attribute", "attributes", "modifier", "modifiers")
     override var attributeModifiers: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null,
-) : ItemCharacteristic, ItemAttribute<VItemCharacteristic>(NBTTag.APEX_NODE_SIGN), ItemTagBuilder {
+) : ItemCharacteristic, ItemAttribute<VItemCharacteristic>, ItemTagBuilder {
 
     /**
      * 是否含有魔咒

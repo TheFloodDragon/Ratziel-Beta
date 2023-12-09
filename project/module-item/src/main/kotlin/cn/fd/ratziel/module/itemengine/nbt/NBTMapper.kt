@@ -39,9 +39,12 @@ object NBTMapper : KSerializer<TiNBTTag> {
     fun deserialize(json: JsonElement, source: TiNBTTag = TiNBTTag()): TiNBTData =
         when (json) {
             is JsonPrimitive -> deserializePrimitive(json)
-            is JsonArray -> TiNBTData.translateList(TiNBTList(), json.map { mapFromJson(it) })
+            is JsonArray -> TiNBTData.translateList(TiNBTList(), json.map { deserialize(it) })
             is JsonObject -> source.also { tag ->
-                json.forEach { tag.putDeep(it.key, mapFromJson(it.value)) }
+                json.forEach {
+                    val newSource = tag.getDeep(it.key) as? TiNBTTag ?: TiNBTTag()
+                    tag.putDeep(it.key, deserialize(it.value, newSource))
+                }
             }
         }
 

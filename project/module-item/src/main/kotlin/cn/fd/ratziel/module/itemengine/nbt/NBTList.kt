@@ -1,7 +1,9 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
 import cn.fd.ratziel.core.function.MirrorClass
+import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
+import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 
 /**
@@ -23,6 +25,9 @@ open class NBTList(rawData: Any) : NBTData(
     } else rawData,
     NBTDataType.LIST
 ) {
+
+    val content: List<NBTData>
+        get() = if (isTiNBT()) (data as TiNBTList).map { toNBTData(it) } else getField(this)!!.map { toNBTData(it) }
 
     constructor() : this(TiNBTList())
 
@@ -48,6 +53,10 @@ open class NBTList(rawData: Any) : NBTData(
 
         @JvmStatic
         fun new(collection: Collection<Any?>) = ArrayList(collection)
+
+        internal val listFieldName = if (MinecraftVersion.isUniversal) "c" else "list"
+
+        internal fun getField(target: NBTList) = target.data.getProperty<List<Any>>(listFieldName)
 
     }
 

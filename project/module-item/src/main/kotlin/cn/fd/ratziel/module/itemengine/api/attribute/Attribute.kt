@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.api.attribute.core
+package cn.fd.ratziel.module.itemengine.api.attribute
 
 /**
  * Attribute - 一般属性
