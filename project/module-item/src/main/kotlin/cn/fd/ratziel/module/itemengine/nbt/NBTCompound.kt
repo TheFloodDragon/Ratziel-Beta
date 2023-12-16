@@ -96,12 +96,11 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
         // 遍历各级节点
         for (element in keys) {
             var next = find[element] // 下一级节点
-            if (next == null) {
-                if (create) {
-                    next = NBTCompound()
-                    find[element] = next
-                } else return null
+            if (create) {
+                next = NBTCompound(new())
+                find[element] = next
             }
+            if (next == null) return null
             // 如果下一级节点还是复合标签,则代表可以继续获取
             if (next is NBTCompound) find = next else return null
         }

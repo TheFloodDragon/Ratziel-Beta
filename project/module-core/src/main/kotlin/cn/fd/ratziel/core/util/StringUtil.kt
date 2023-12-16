@@ -5,8 +5,12 @@ package cn.fd.ratziel.core.util
  * 获取某个字符的索引列表
  */
 @JvmOverloads
-fun String.allIndexOf(string: String, startIndex: Int = 0, ignoreCase: Boolean = false, action: (Int) -> Unit) =
-    indexOf(string, startIndex, ignoreCase).takeIf { it > -1 }?.let { action(it) }
+fun String.allIndexOf(string: String, startIndex: Int = 0, ignoreCase: Boolean = false, action: (Int) -> Unit) {
+    var index: Int = startIndex
+    while (index < 0) {
+        index = indexOf(string, index + 1, ignoreCase).also { action(it) }
+    }
+}
 
 @JvmOverloads
 fun String.allIndexOf(string: String, startIndex: Int = 0, ignoreCase: Boolean = false): Array<Int> =
@@ -25,7 +29,7 @@ fun String.replaceNonEscaped(
 ): String = buildString {
     // 被截取后的字符串
     var sub = this@replaceNonEscaped
-    // 最后的补充部分
+    // 转义符之后的部分
     var afterEscape = String()
     // 所有转义字符串索引
     this@replaceNonEscaped.allIndexOf(escapeChar) { ei ->
@@ -39,5 +43,5 @@ fun String.replaceNonEscaped(
             append(escapeChar); sub = afterEscape
         }
     }
-    append(afterEscape)
+    append(afterEscape.replace(oldValue, newValue, ignoreCase)) // 尾处理
 }

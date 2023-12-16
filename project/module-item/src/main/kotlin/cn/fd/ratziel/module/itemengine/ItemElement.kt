@@ -9,14 +9,10 @@ import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.core.util.replaceNonEscaped
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.itemengine.item.builder.ItemMetadataSerializer
-import cn.fd.ratziel.module.itemengine.item.meta.VItemCharacteristic
-import cn.fd.ratziel.module.itemengine.item.meta.VItemDisplay
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
-import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
-import cn.fd.ratziel.module.itemengine.nbt.NBTString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -74,15 +70,7 @@ object ItemElement : ElementHandler {
         println("<red> \\<nmsl> \\<6\\>  <7\\> <cnm>".replaceNonEscaped("<", "{").replaceNonEscaped(">", "}"))
 
         println("————————————————————————————————")
-        val nms = NBTCompound.new()
-        NBTCompound.of(nms).apply {
-            putDeep("cnm", NBTString("nmsl"))
-            putDeep("cnm.rnm", NBTString("666"))
-        }
-        println(nms)
-        println(VItemDisplay().apply { detransform(meta.display.transform()) })
-        println(VItemCharacteristic().apply { detransform(meta.characteristic.transform()) })
-        println(meta.characteristic.transform().toMapDeep())
+        println(meta.nbt.toMapDeep())
 
     } catch (ex: Exception) {
         ex.printStackTrace()

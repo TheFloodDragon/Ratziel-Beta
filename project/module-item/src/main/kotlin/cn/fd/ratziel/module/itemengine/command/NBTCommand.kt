@@ -42,7 +42,6 @@ object NBTCommand {
     @CommandBody
     val main = mainCommand { createHelper() }
 
-
     /**
      * 查看NBT
      */
@@ -57,7 +56,6 @@ object NBTCommand {
                 }
             }
         }
-
     }
 
     /**
@@ -81,8 +79,83 @@ object NBTCommand {
             }
         }
 
+    fun nbtAsComponent(
+        sender: ProxyCommandSender, nbt: NBTData, level: Int, nodeShallow: String, nodeDeep: String,
+    ): ComponentText = Components.empty().apply {
+        // 获取格式
+        val formatKey = getTypeJson(sender, "NBTFormat-Entry-Key")
+        val formatValue = getTypeJson(sender, "NBTFormat-Entry-Value")
+        val formatRetract = getTypeJson(sender, "NBTFormat-Retract")
+        // 遇事不决先换行
+        newLine(); repeat(level) { this.append(sender.asLangText("NBTFormat-Retract")) }
+        // 具体解析
+        when (nbt) {
+            is NBTList -> {
+                nbt.content.forEach {
+                    this.append(sender.asLangText("NBTFormat-Retract-List"))
+                    this.append(nbtAsComponent(sender, it, level, nodeShallow, nodeDeep))
+                }
+            }
+
+            is NBTCompound -> {
+                /* 一开始
+                A: "sb"
+                Test:
+                  cnm: 1
+                  rnm: "???"
+                  anm:
+                    a: 2
+                    b:
+                      c: "fw"
+                 */
+                nbt.toMapDeep().forEach { deep ->
+                    /* 到这后
+                    A: "sb"
+                    Test.cnm: 1
+                    Test.rnm: "???"
+                    Test.anm.a: 2
+                    Test.anm.b.c: "fw"
+                     */
+                    deep.key.split(DEEP_SEPARATION).forEachIndexed { index, shallow ->
+                        append(formatKey.asComponent(sender, shallow, deep.key))
+                        append(translateType(sender, deep.value))
+                        append(nbtAsComponent(sender, deep.value, index, shallow, deep.key))
+                    }
+                }
+            }
+            // 基本类型处理
+            else -> append(formatKey.asComponent(sender, nodeShallow, nodeDeep))
+                .append(formatValue.asComponent(sender, nbt.toString())).append(translateType(sender, nbt))
+        }
+    }
+
     /**
-     * 类型组件
+     * 快捷创建键值对组件
+     */
+    fun componentEntry(
+        sender: ProxyCommandSender,
+        nbt: NBTData,
+        slot: Int,
+        nodeShallow: String,
+        nodeDeep: String,
+        withValue: Boolean = true,
+    ) = componentKey(sender, nodeShallow, nodeDeep).apply {
+        if (withValue) append(componentValue(sender, nbt, slot, nodeDeep))
+    }.append(translateType(sender, nbt))
+
+    fun componentKey(sender: ProxyCommandSender, nodeShallow: String, nodeDeep: String) =
+        getTypeJson(sender, "NBTFormat-Entry-Key").asComponent(sender, nodeShallow, nodeDeep)
+
+    fun componentValue(sender: ProxyCommandSender, nbt: NBTData, slot: Int, nodeDeep: String) =
+        getTypeJson(sender, "NBTFormat-Entry-Value").asComponent(sender, nbt.toString(), slot.toString(), nodeDeep)
+
+    /**
+     * 获取语言文件Json内容
+     */
+    fun getTypeJson(sender: ProxyCommandSender, node: String) = sender.getLocaleFile()?.getType(node) as TypeJson
+
+    /**
+     * 快捷匹配类型组件
      */
     fun translateType(sender: ProxyCommandSender, nbt: NBTData): ComponentText = when (nbt.type) {
         NBTDataType.STRING -> sender.asLangText("NBTFormat-Type-String")
@@ -99,50 +172,5 @@ object NBTCommand {
         NBTDataType.LIST -> sender.asLangText("NBTFormat-Type-List")
         else -> null
     }?.let { Components.parseSimple(it).build { colored() } } ?: Components.empty()
-//
-//
-//    fun formatKey(sender: ProxyCommandSender) = getTypeJson(sender, "NBTFormat-Entry-Key")
-//    fun formatValue(sender: ProxyCommandSender) =getTypeJson(sender, "NBTFormat-Entry-Value")
-
-    fun getTypeJson(sender: ProxyCommandSender, node: String) = sender.getLocaleFile()?.getType(node) as TypeJson
-
-    fun nbtAsComponent(sender: ProxyCommandSender, nbt: NBTData, level: Int): ComponentText = Components.empty().apply {
-        // 获取格式
-        val formatKey = getTypeJson(sender, "NBTFormat-Entry-Key")
-        val formatValue = getTypeJson(sender, "NBTFormat-Entry-Value")
-        val formatRetract = getTypeJson(sender, "NBTFormat-Retract")
-        // 遇事不决先换行
-        newLine(); repeat(level) { this.append(sender.asLangText("NBTFormat-Retract")) }
-        // 具体解析
-        when (nbt) {
-            is NBTList -> {
-                nbt.content.forEach {
-                    this.append(sender.asLangText("NBTFormat-Retract-List"))
-                    this.append(nbtAsComponent(sender, it, level))
-                }
-            }
-
-            is NBTCompound -> {
-                /* 一开始
-                Test:
-                  cnm: 1
-                  rnm: "???"
-                  anm:
-                    a: 2
-                    b:
-                      c: "fw"
-                 */
-                nbt.toMapDeep().forEach { deep ->
-                    /* 到这后
-                    Test.cnm: 1
-                    Test.rnm: "???"
-                    Test.anm.a: 2
-                    Test.anm.b.c: "fw"
-                     */
-                    append(formatKey.asComponent(sender, deep.key, deep.key))
-                }
-            }
-        }
-    }
 
 }
