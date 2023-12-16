@@ -1,18 +1,16 @@
 package cn.fd.ratziel.bukkit.command
 
-import cn.fd.ratziel.common.message.audienceSender
-import cn.fd.ratziel.common.message.sendMessage
 import cn.fd.ratziel.common.command.CommandElement
 import cn.fd.ratziel.common.function.executeAsync
+import cn.fd.ratziel.common.message.audienceSender
+import cn.fd.ratziel.common.message.sendMessage
 import cn.fd.ratziel.kether.KetherHandler
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.expansion.createHelper
-import taboolib.module.nms.getItemTag
 
 /**
  * CommandDev
@@ -50,15 +48,6 @@ object CommandDev {
         dynamic {
             execute<CommandSender> { sender, _, context ->
                 sender.audienceSender.sendMessage(context)
-            }
-        }
-    }
-
-    @CommandBody
-    val itemTag = subCommand {
-        execute<Player> { player, _, _ ->
-            player.inventory.itemInMainHand.getItemTag().let {
-                println(it)
             }
         }
     }

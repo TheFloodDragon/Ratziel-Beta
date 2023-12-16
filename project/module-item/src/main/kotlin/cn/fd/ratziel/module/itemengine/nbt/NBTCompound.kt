@@ -1,4 +1,4 @@
-@file:Suppress("IMPLICIT_CAST_TO_ANY")
+@file:Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
 
 package cn.fd.ratziel.module.itemengine.nbt
 
@@ -121,7 +121,6 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * @param default 不存在时使用的默认消费品
      * @param function 对消费品进行操作
      */
-    @Suppress("UNCHECKED_CAST")
     fun <T : NBTData> editShallow(
         node: String,
         default: T,
@@ -138,18 +137,39 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * @param replace 是否替换原有的标签
      */
     fun merge(target: NBTCompound, replace: Boolean = true): NBTCompound = this.also { source ->
-        (if (target.isTiNBT()) target.data as TiNBTTag else NMSMethods.getAsMap(target.data))
-            ?.forEach { (key, value) ->
-                val origin = source[key]
-                // 如果存在该标签并且不允许替换,则直接跳出循环
-                if (origin != null && !replace) return@forEach
-                // 设置值
-                source[key] = toNBTData(value).let {
-                    // 复合标签和基本标签判断
-                    if (it is NBTCompound) NBTCompound(new()).merge(it, replace) else it
-                }
+        target.toMapUnsafe()?.forEach { (key, value) ->
+            val origin = source[key]
+            // 如果存在该标签并且不允许替换,则直接跳出循环
+            if (origin != null && !replace) return@forEach
+            // 设置值
+            source[key] = toNBTData(value).let {
+                // 复合标签和基本标签判断
+                if (it is NBTCompound) NBTCompound(new()).merge(it, replace) else it
             }
+        }
     }
+
+    /**
+     * 转换成 Map 形式 (全部以深层节点表示)
+     */
+    @JvmOverloads
+    fun toMapDeep(source: Map<String, Any>? = toMapUnsafe()): Map<String, NBTData> = buildMap {
+        source?.forEach { shallow ->
+            toNBTData(shallow.value).let {
+                // 如果还是复合类型,则继续获取
+                if (it is NBTCompound) {
+                    it.toMapDeep().forEach { deep ->
+                        this[shallow.key + DEEP_SEPARATION + deep.key] = deep.value
+                    }
+                } else this[shallow.key] = it // 到底了,基本类型直接设置
+            }
+        }
+    }
+
+    /**
+     * 转化成 Map 形式 - 不安全,因为无法确认值的类型
+     */
+    fun toMapUnsafe(): Map<String, Any>? = if (isTiNBT()) (data as Map<String, Any>) else NMSMethods.getAsMap(data)
 
     /**
      * Kotlin操作符
@@ -190,28 +210,26 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
 
     internal object NMSMethods {
 
-        val classStructure by lazy { ReflexClass.of(clazz).structure }
-
         val mapFieldName = if (MinecraftVersion.isUniversal) "x" else "map"
 
         fun getAsMap(nmsData: Any) = nmsData.getProperty<Map<String, Any>>(mapFieldName)
 
         val getMethod by lazy {
-            classStructure.getMethodUnsafe(
+            ReflexClass.of(clazz).structure.getMethodUnsafe(
                 name = if (MinecraftVersion.isUniversal) "c" else "get",
                 String::class.java
             )
         }
 
         val putMethod by lazy {
-            classStructure.getMethodUnsafe(
+            ReflexClass.of(clazz).structure.getMethodUnsafe(
                 name = if (MinecraftVersion.isUniversal) "a" else "set",
                 String::class.java, classNBTBase
             )
         }
 
         val removeMethod by lazy {
-            classStructure.getMethodUnsafe(
+            ReflexClass.of(clazz).structure.getMethodUnsafe(
                 name = if (MinecraftVersion.isUniversal) "r" else "remove",
                 String::class.java
             )
