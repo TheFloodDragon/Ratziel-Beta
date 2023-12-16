@@ -7,7 +7,7 @@ package cn.fd.ratziel.core.util
 @JvmOverloads
 fun String.allIndexOf(string: String, startIndex: Int = 0, ignoreCase: Boolean = false, action: (Int) -> Unit) {
     var index: Int = startIndex
-    while (index < 0) {
+    while (index > -1) {
         index = indexOf(string, index + 1, ignoreCase).also { action(it) }
     }
 }
