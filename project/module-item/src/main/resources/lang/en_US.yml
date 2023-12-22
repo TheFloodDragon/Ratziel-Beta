@@ -6,7 +6,7 @@ NBTFormat-Entry-Key:
     - copy: '{1}'
 NBTFormat-Entry-Value:
   type: json
-  text: '&e{0}'
+  text: '&e{0} '
   args:
     - suggest: '/nbt edit {1} {2}'
 NBTFormat-Retract: '  '

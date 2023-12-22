@@ -6,7 +6,6 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
-import cn.fd.ratziel.core.util.replaceNonEscaped
 import cn.fd.ratziel.module.itemengine.command.NBTCommand
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.itemengine.item.builder.ItemMetadataSerializer
@@ -68,12 +67,6 @@ object ItemElement : ElementHandler {
         val testMeta = generator.build(meta)
 
         println(testMeta)
-
-        try {
-            println("<red> \\<nmsl> \\<6\\>  <7\\> <cnm>".replaceNonEscaped("<", "{").replaceNonEscaped(">", "}"))
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
 
         println("————————————————————————————————")
         println(meta.nbt.toMapDeep())

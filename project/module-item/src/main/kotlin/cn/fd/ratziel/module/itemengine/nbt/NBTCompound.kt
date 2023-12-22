@@ -172,6 +172,13 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     }
 
     /**
+     * 转换成 Map 形式 (全部以浅层即一层节点表示)
+     */
+    fun toMapShallow(source: Map<String, Any>? = toMapUnsafe()): Map<String, NBTData> = buildMap {
+        source?.forEach { shallow -> this[shallow.key] = toNBTData(shallow.value) }
+    }
+
+    /**
      * 转化成 Map 形式 - 不安全,因为无法确认值的类型
      */
     fun toMapUnsafe(): Map<String, Any>? = if (isTiNBT()) (data as Map<String, Any>) else NMSMethods.getAsMap(data)

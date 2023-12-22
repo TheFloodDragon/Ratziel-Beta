@@ -30,6 +30,8 @@ taboolib {
     description {
         name = rootName
 
+//        description = "Advanced Minecraft Comprehensive Control"
+
         contributors {
             name("TheFloodDragon")
         }
@@ -37,6 +39,10 @@ taboolib {
         dependencies {
             name("PlaceholderAPI").optional(true)
         }
+
+//        links {
+//            name("source-code").url("https://github.com/TheFloodDragon/Ratziel-Beta/")
+//        }
 
         bukkitNodes = HashMap<String, Any>().apply {
             // API Version
@@ -48,6 +54,8 @@ taboolib {
             put("built-by", systemUserName)
             put("built-os", systemOS)
             put("built-ip", systemIP)
+            // Taboolib Info
+            put("taboolib-version", taboolibVersion)
         }
 
     }

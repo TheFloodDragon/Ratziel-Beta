@@ -62,63 +62,52 @@ object NBTCommand {
         val retractComponent = sender.asLangText("NBTFormat-Retract")
         /*
         列表类型特殊处理:
-        键: (类型)
-          - 键:值 (类型)
+        - 键1:值1 (类型)
+        或
+        - 值2 (类型)
          */
         when (nbt) {
             is NBTList -> {
-                if (nodeDeep != null)
-                    append(componentEntry(sender, nbt, slot, nodeDeep, withValue = false)) // 键和类型
+                var first = true
                 nbt.content.forEach {
-                    newLine()
+                    if (!first) newLine() else first = false
                     repeat(level) { append(retractComponent) } // 缩进
                     append(sender.asLangText("NBTFormat-Retract-List")) // 列表前缀
-                    append(componentEntry(sender, nbt, slot, nodeDeep, withValue = true))
-                    append(nbtAsComponent(sender, it, level, slot, nodeDeep))
-                    newLine()
+                    append(nbtAsComponent(sender, it, level + 1, slot, nodeDeep))
                 }
             }
             /*
             复合类型特殊处理:
-            键: (类型)
-              键:值 (类型)
+            键1:值1 (类型)
+            键2:值2 (类型)
              */
             is NBTCompound -> {
-                if (nodeDeep != null)
-                    append(componentEntry(sender, nbt, slot, nodeDeep, withValue = false)) // 键和类型
-                nbt.toMapUnsafe()?.forEach { (shallow, value) ->
-                    val deep = nodeDeep + DEEP_SEPARATION + shallow // 深层节点的合成
-                    newLine()
+                var first = true
+                nbt.toMapShallow().forEach { (shallow, value) ->
+                    val deep = if (nodeDeep == null) shallow else nodeDeep + DEEP_SEPARATION + shallow // 深层节点的合成
+                    if (!first) newLine() else first = false
+                    append(componentKey(sender, deep)) // 添加键
                     repeat(level) { append(retractComponent) } // 缩进
-                    append(componentEntry(sender, nbt, slot, deep, shallow, withValue = true))
                     append(nbtAsComponent(sender, toNBTData(value), level + 1, slot, deep))
-                    newLine()
                 }
             }
             /*
             基本类型处理:
-            键:值 (类型)
+            值 (类型)
              */
-            else -> append(componentValue(sender, nbt, slot, nodeDeep))
+            else -> append(componentValue(sender, nbt, slot, nodeDeep)).append(translateType(sender, nbt))
         }
     }
 
     /**
-     * 快捷创建键值对组件
+     * 快捷创建键或值组件
      */
-    fun componentEntry(
-        sender: ProxyCommandSender,
-        nbt: NBTData,
-        slot: Int,
-        nodeDeep: String?,
-        nodeShallow: String? = nodeDeep?.substringBefore(DEEP_SEPARATION),
-        withValue: Boolean = true,
-    ) = componentKey(sender, nodeShallow, nodeDeep).apply {
-        if (withValue) append(componentValue(sender, nbt, slot, nodeDeep))
-    }.append(translateType(sender, nbt))
 
-    fun componentKey(sender: ProxyCommandSender, nodeShallow: String?, nodeDeep: String?) =
-        unsafeTypeJson(sender, "NBTFormat-Entry-Key").asComponent(sender, nodeShallow.toString(), nodeDeep.toString())
+    fun componentKey(
+        sender: ProxyCommandSender,
+        nodeDeep: String?,
+        nodeShallow: String? = nodeDeep?.substringAfter(DEEP_SEPARATION),
+    ) = unsafeTypeJson(sender, "NBTFormat-Entry-Key").asComponent(sender, nodeShallow.toString(), nodeDeep.toString())
 
     fun componentValue(sender: ProxyCommandSender, nbt: NBTData, slot: Int, nodeDeep: String?) =
         unsafeTypeJson(sender, "NBTFormat-Entry-Value").asComponent(sender, nbt.toString(), slot, nodeDeep.toString())
