@@ -6,6 +6,7 @@ import cn.fd.ratziel.core.function.MirrorClass
 import cn.fd.ratziel.core.function.getMethodUnsafe
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
+import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
@@ -147,6 +148,11 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
             }
         }
     }
+
+    /**
+     * 克隆数据 (既然名字一样那我就偷个懒)
+     */
+    fun clone() = this.data.invokeMethod<Any>("clone").also { this.data = it!! }.let { NBTCompound(it!!) }
 
     /**
      * 转换成 Map 形式 (全部以深层节点表示)

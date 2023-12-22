@@ -1,19 +1,22 @@
 package cn.fd.ratziel.core.util
 
 /**
- * 获取某个字符的索引列表
+ * 获取当前字符串中目标字符的所有索引并执行相应的操作
  */
 @JvmOverloads
-fun String.allIndexOf(string: String, startIndex: Int = 0, ignoreCase: Boolean = false, action: (Int) -> Unit) {
-    var index: Int = startIndex
-    while (index > -1 && index < string.length - 1) {
-        index = indexOf(string, index, ignoreCase).also { if (it > -1) action(it) }
+fun String.allIndexOf(target: String, startIndex: Int = 0, ignoreCase: Boolean = false, action: (Int) -> Unit) {
+    var index = indexOf(target, startIndex, ignoreCase)
+    while (index > -1) {
+        action(index); index = indexOf(target, index + 1, ignoreCase)
     }
 }
 
+/**
+ * 获取当前字符串中目标字符的所有索引的集合
+ */
 @JvmOverloads
-fun String.allIndexOf(string: String, startIndex: Int = 0, ignoreCase: Boolean = false): Array<Int> =
-    buildList { allIndexOf(string, startIndex, ignoreCase) { add(it) } }.toTypedArray()
+fun String.allIndexOf(target: String, startIndex: Int = 0, ignoreCase: Boolean = false): Array<Int> =
+    buildList { allIndexOf(target, startIndex, ignoreCase) { add(it) } }.toTypedArray()
 
 /**
  * 替换非转义字符
@@ -25,19 +28,20 @@ fun String.replaceNonEscaped(
     newValue: String,
     ignoreCase: Boolean = false,
     escapeChar: String = "\\",
+    startIndex: Int = 0,
 ): String = buildString {
     // 索引记录
     var lastIndex = 0
     // 匹配字符串
-    allIndexOf(oldValue, ignoreCase = ignoreCase) { index ->
+    allIndexOf(oldValue, startIndex, ignoreCase) { index ->
         // 从上次找到的位置到当前找到的位置之前的字符串
-        val segment = this.substring(lastIndex, index)
+        val segment = this@replaceNonEscaped.substring(lastIndex, index)
         // 检查转义字符串
-        if (index >= escapeChar.length && this.startsWith(escapeChar, index - escapeChar.length))
+        if (this@replaceNonEscaped.startsWith(escapeChar, index - escapeChar.length))
             append(segment.dropLast(escapeChar.length)).append(oldValue)
         else append(segment).append(newValue)
         // 更新索引
         lastIndex = index + oldValue.length
     }
-    append(this.substring(lastIndex)) // 尾处理
+    append(this@replaceNonEscaped.substring(lastIndex)) // 尾处理
 }
