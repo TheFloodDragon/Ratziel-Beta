@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version kotlinVersion apply false
     id("com.github.johnrengelman.shadow") version shadowJarVersion apply false
     id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion apply false
-    id("trust-all") // 暂时用,信任所有证书
+    id("trust-all") // 信任所有证书
 }
 
 subprojects {
@@ -21,7 +21,12 @@ subprojects {
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
         // Kether API
-        maven("https://maven.pkg.github.com/TheFloodDragon/Kether-API")
+        maven("https://maven.pkg.github.com/TheFloodDragon/Kether-API") {
+            credentials {
+                username = project.findProperty("githubUser") as String? ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("githubKey") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
         // PlaceholderAPI
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         // FoliaLib

@@ -35,8 +35,7 @@ fun String.replaceNonEscaped(
         // 检查转义字符串
         if (index >= escapeChar.length && this.startsWith(escapeChar, index - escapeChar.length))
             append(segment.dropLast(escapeChar.length)).append(oldValue)
-        else
-            append(segment).append(newValue)
+        else append(segment).append(newValue)
         // 更新索引
         lastIndex = index + oldValue.length
     }
