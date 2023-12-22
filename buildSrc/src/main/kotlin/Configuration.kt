@@ -1,6 +1,6 @@
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.2.1.5"
+const val rootVersion = "A.0.2.1.6"
 
 const val kotlinVersion = "1.9.21"
 const val serializationVersion = "1.6.2"
@@ -10,7 +10,7 @@ const val taboolibPluginVersion = "1.56"
 
 val taboolibVersion = getLatestRelease("TabooLib", "taboolib").also { println("Using taboolib-version = $it") }
 
-val isoInstantFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+val isoInstantFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z")
 
 val taboolibModules = setOf(
     "common",

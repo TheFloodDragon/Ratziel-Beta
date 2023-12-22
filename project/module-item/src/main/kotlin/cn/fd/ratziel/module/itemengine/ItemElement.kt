@@ -7,6 +7,7 @@ import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.core.util.replaceNonEscaped
+import cn.fd.ratziel.module.itemengine.command.NBTCommand
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.itemengine.item.builder.ItemMetadataSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSerializer
@@ -17,6 +18,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import net.kyori.adventure.text.Component
+import taboolib.common.platform.function.console
 
 /**
  * ItemElement
@@ -67,10 +69,16 @@ object ItemElement : ElementHandler {
 
         println(testMeta)
 
-        println("<red> \\<nmsl> \\<6\\>  <7\\> <cnm>".replaceNonEscaped("<", "{").replaceNonEscaped(">", "}"))
+        try {
+            println("<red> \\<nmsl> \\<6\\>  <7\\> <cnm>".replaceNonEscaped("<", "{").replaceNonEscaped(">", "}"))
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
 
         println("————————————————————————————————")
         println(meta.nbt.toMapDeep())
+
+        NBTCommand.nbtAsComponent(console(), meta.nbt, 0, 404).sendTo(console())
 
     } catch (ex: Exception) {
         ex.printStackTrace()

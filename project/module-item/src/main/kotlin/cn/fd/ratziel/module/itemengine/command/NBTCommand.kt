@@ -36,7 +36,6 @@ import taboolib.platform.util.sendLang
     permission = "ratziel.command.nbt",
     description = "物品NBT管理命令"
 )
-@Deprecated("操你妈什么傻逼玩意写你妈")
 object NBTCommand {
 
     @CommandBody
@@ -80,52 +79,48 @@ object NBTCommand {
         }
 
     fun nbtAsComponent(
-        sender: ProxyCommandSender, nbt: NBTData, level: Int, nodeShallow: String, nodeDeep: String,
+        sender: ProxyCommandSender, nbt: NBTData, level: Int, slot: Int, nodeDeep: String = String(),
     ): ComponentText = Components.empty().apply {
         // 获取格式
         val formatKey = getTypeJson(sender, "NBTFormat-Entry-Key")
         val formatValue = getTypeJson(sender, "NBTFormat-Entry-Value")
-        val formatRetract = getTypeJson(sender, "NBTFormat-Retract")
-        // 遇事不决先换行
-        newLine(); repeat(level) { this.append(sender.asLangText("NBTFormat-Retract")) }
-        // 具体解析
+        val retractComponent = sender.asLangText("NBTFormat-Retract")
+        /*
+        列表类型特殊处理:
+        键: (类型)
+          - 键:值 (类型)
+         */
         when (nbt) {
             is NBTList -> {
                 nbt.content.forEach {
-                    this.append(sender.asLangText("NBTFormat-Retract-List"))
-                    this.append(nbtAsComponent(sender, it, level, nodeShallow, nodeDeep))
+                    newLine() // 遇事不决先换行
+                    append(componentEntry(sender, nbt, slot, nodeDeep, withValue = false)) // 键和类型
+                    newLine() // 下一行,下一个键值对
+                    repeat(level) { append(retractComponent) } // 缩进
+                    append(sender.asLangText("NBTFormat-Retract-List")) // 列表前缀
+                    append(nbtAsComponent(sender, it, level, slot, nodeDeep))
                 }
             }
-
+            /*
+            复合类型特殊处理:
+            键: (类型)
+              键:值 (类型)
+             */
             is NBTCompound -> {
-                /* 一开始
-                A: "sb"
-                Test:
-                  cnm: 1
-                  rnm: "???"
-                  anm:
-                    a: 2
-                    b:
-                      c: "fw"
-                 */
-                nbt.toMapDeep().forEach { deep ->
-                    /* 到这后
-                    A: "sb"
-                    Test.cnm: 1
-                    Test.rnm: "???"
-                    Test.anm.a: 2
-                    Test.anm.b.c: "fw"
-                     */
-                    deep.key.split(DEEP_SEPARATION).forEachIndexed { index, shallow ->
-                        append(formatKey.asComponent(sender, shallow, deep.key))
-                        append(translateType(sender, deep.value))
-                        append(nbtAsComponent(sender, deep.value, index, shallow, deep.key))
-                    }
+                nbt.toMapUnsafe()?.forEach { (shallow, value) ->
+                    newLine() // 遇事不决先换行
+                    val deep = nodeDeep + DEEP_SEPARATION + shallow // 深层节点的合成
+                    append(componentEntry(sender, nbt, slot, deep, shallow, withValue = false)) // 键和类型
+                    newLine() // 下一行,下一个键值对
+                    repeat(level) { append(retractComponent) } // 缩进
+                    append(nbtAsComponent(sender, NBTCompound.of(value), level + 1, slot, deep))
                 }
             }
-            // 基本类型处理
-            else -> append(formatKey.asComponent(sender, nodeShallow, nodeDeep))
-                .append(formatValue.asComponent(sender, nbt.toString())).append(translateType(sender, nbt))
+            /*
+            基本类型处理:
+            键:值 (类型)
+             */
+            else -> append(componentEntry(sender, nbt, slot, nodeDeep, withValue = true))
         }
     }
 
@@ -136,17 +131,17 @@ object NBTCommand {
         sender: ProxyCommandSender,
         nbt: NBTData,
         slot: Int,
-        nodeShallow: String,
-        nodeDeep: String,
+        nodeDeep: String?,
+        nodeShallow: String? = nodeDeep?.substringBefore(DEEP_SEPARATION),
         withValue: Boolean = true,
     ) = componentKey(sender, nodeShallow, nodeDeep).apply {
         if (withValue) append(componentValue(sender, nbt, slot, nodeDeep))
     }.append(translateType(sender, nbt))
 
-    fun componentKey(sender: ProxyCommandSender, nodeShallow: String, nodeDeep: String) =
+    fun componentKey(sender: ProxyCommandSender, nodeShallow: String?, nodeDeep: String?) =
         getTypeJson(sender, "NBTFormat-Entry-Key").asComponent(sender, nodeShallow, nodeDeep)
 
-    fun componentValue(sender: ProxyCommandSender, nbt: NBTData, slot: Int, nodeDeep: String) =
+    fun componentValue(sender: ProxyCommandSender, nbt: NBTData, slot: Int, nodeDeep: String?) =
         getTypeJson(sender, "NBTFormat-Entry-Value").asComponent(sender, nbt.toString(), slot.toString(), nodeDeep)
 
     /**

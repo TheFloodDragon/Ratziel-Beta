@@ -24,9 +24,9 @@ fun LanguageFile.getType(node: String): LangType? = nodes[node]
  * 构建消息
  * @see TypeJson.send
  */
-fun TypeJson.asComponent(sender: ProxyCommandSender, vararg args: Any): ComponentText {
+fun TypeJson.asComponent(sender: ProxyCommandSender, vararg args: Any?): ComponentText {
     /** 转换文本 */
-    fun String.translated() = translate(sender, *args).replaceWithOrder(*args)
+    fun String.translated() = translate(sender, args).replaceWithOrder(args)
     /** 构建信息 */
     return Components.empty().apply {
         var i = 0

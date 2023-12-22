@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version kotlinVersion apply false
     id("com.github.johnrengelman.shadow") version shadowJarVersion apply false
     id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion apply false
+    id("trust-all") // 暂时用,信任所有证书
 }
 
 subprojects {
@@ -13,18 +14,14 @@ subprojects {
     applyPlugins()
 
     repositories {
+        // 中央库
         mavenCentral()
         // 坏黑私人库
         maven("http://ptms.ink:8081/repository/releases") { isAllowInsecureProtocol = true }
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
         // Kether API
-        maven("https://maven.pkg.github.com/TheFloodDragon/Kether-API") {
-            credentials {
-                username = project.findProperty("githubUser") as String? ?: System.getenv("GITHUB_USERNAME")
-                password = project.findProperty("githubKey") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
+        maven("https://maven.pkg.github.com/TheFloodDragon/Kether-API")
         // PlaceholderAPI
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         // FoliaLib
@@ -89,7 +86,7 @@ subprojects {
     // 发布
     publishing {
         publications {
-            register<MavenPublication>("publishToMavenLocal") { from(components["java"]) }
+            register<MavenPublication>("maven") { from(components["java"]) }
         }
     }
 
