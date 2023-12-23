@@ -1,4 +1,4 @@
-@file:Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST")
 
 package cn.fd.ratziel.module.itemengine.nbt
 
@@ -31,7 +31,9 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * 获取数据
      * @param node 节点
      */
-    operator fun get(node: String): NBTData? =
+    operator fun get(node: String): NBTData? = getGenerally(node)
+
+    fun getGenerally(node: String): NBTData? =
         (if (node == APEX_NODE_SIGN) this // 如果为顶级节点则返回自身
         else if (isTiNBT()) (data as TiNBTTag)[node]
         else NMSMethods.getMethod.invoke(data, node))?.let { toNBTData(it) }
@@ -40,9 +42,10 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * 深度获取
      * @param node 节点
      */
-    fun getDeep(node: String): NBTData? =
+    fun getDeep(node: String): NBTData? = getDeepGenerally(node)
+
+    fun getDeepGenerally(node: String): NBTData? =
         (if (node == APEX_NODE_SIGN) this
-        else if (isTiNBT()) (data as TiNBTTag).getDeep(node)
         else getDeepWith(node, false) { it[node.substringAfterLast(DEEP_SEPARATION)] })?.let { toNBTData(it) }
 
     /**
@@ -50,7 +53,9 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * @param node 节点
      * @param value NBT数据
      */
-    fun put(node: String, value: NBTData?) {
+    fun put(node: String, value: NBTData?) = putGenerally(node, value)
+
+    fun putGenerally(node: String, value: NBTData?) {
         if (value == null || node == APEX_NODE_SIGN) return // 当值为空或者节点为顶级节点时跳过
         else if (isTiNBT()) (data as TiNBTTag)[node] = value.getAsTiNBT()
         else NMSMethods.putMethod.invoke(data, node, value.getAsNmsNBT())
@@ -59,9 +64,10 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     /**
      * 深度写入
      */
-    fun putDeep(node: String, value: NBTData?) {
+    fun putDeep(node: String, value: NBTData?) = putDeepGenerally(node, value)
+
+    fun putDeepGenerally(node: String, value: NBTData?) {
         if (value == null || node == APEX_NODE_SIGN) return
-        else if (isTiNBT()) (data as TiNBTTag).putDeep(node, value.getAsTiNBT())
         else getDeepWith(node, true) {
             it.put(node.substringAfterLast(DEEP_SEPARATION), toNBTData(value.getAsNmsNBT()))
         }
@@ -71,7 +77,9 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * 删除数据
      * @param node 节点
      */
-    fun remove(node: String) {
+    fun remove(node: String) = removeGenerally(node)
+
+    fun removeGenerally(node: String) {
         if (node == APEX_NODE_SIGN) return
         else if (isTiNBT()) (data as TiNBTTag).remove(node)
         else NMSMethods.removeMethod.invoke(data, node)
@@ -80,9 +88,10 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     /**
      * 深度删除，以 "." 作为分层符
      */
-    fun removeDeep(node: String) {
+    fun removeDeep(node: String) = removeDeepGenerally(node)
+
+    fun removeDeepGenerally(node: String) {
         if (node == APEX_NODE_SIGN) return
-        else if (isTiNBT()) (data as TiNBTTag).removeDeep(node)
         else getDeepWith(node, false) { it.remove(node.substringAfterLast(DEEP_SEPARATION)) }
     }
 
@@ -97,11 +106,12 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
         // 遍历各级节点
         for (element in keys) {
             var next = find[element] // 下一级节点
-            if (create) {
-                next = NBTCompound(new())
-                find[element] = next
+            if (next == null) {
+                if (create) {
+                    next = NBTCompound(new())
+                    find[element] = next
+                } else return null
             }
-            if (next == null) return null
             // 如果下一级节点还是复合标签,则代表可以继续获取
             if (next is NBTCompound) find = next else return null
         }

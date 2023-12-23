@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.command
 
-import cn.fd.ratziel.bukkit.command.inferSlotToInt
+import cn.fd.ratziel.bukkit.command.getItemBySlot
 import cn.fd.ratziel.bukkit.command.slot
 import cn.fd.ratziel.common.util.asComponent
 import cn.fd.ratziel.common.util.getType
@@ -47,19 +47,23 @@ object NBTCommand {
     val view = subCommand {
         slot {
             execute<ProxyPlayer> { player, _, arg ->
-                val slot = inferSlotToInt(arg)
-                player.cast<Player>().inventory.getItem(slot)?.let {
+                getItemBySlot(arg, player.cast<Player>().inventory)?.let {
                     RefItemStack.tagFromObc(it) // 获取物品标签
-                }.also { nbt ->
+                }?.also { nbt ->
                     // 构建消息组件并发送
-                    nbtAsComponent(player, nbt!!, 0, slot).sendTo(player)
+                    nbtAsComponent(player, nbt, 0, arg).sendTo(player)
                 }
             }
         }
     }
 
     fun nbtAsComponent(
-        sender: ProxyCommandSender, nbt: NBTData, level: Int, slot: Int, nodeDeep: String? = null,
+        sender: ProxyCommandSender,
+        nbt: NBTData,
+        level: Int,
+        slot: String,
+        nodeDeep: String? = null,
+        isFirst: Boolean = true,
     ): ComponentText = Components.empty().apply {
         val retractComponent = sender.asLangText("NBTFormat-Retract")
         /*
@@ -72,11 +76,11 @@ object NBTCommand {
             is NBTList -> {
                 nbt.content.let { list ->
                     if (list.isEmpty()) append(sender.asLangText("NBTFormat-List-Empty"))
-                    else list.forEach {
-                        newLine()
-                        repeat(level) { append(retractComponent) } // 缩进
+                    else list.forEachIndexed { index, it ->
+                        val deep = nodeDeep + NBTList.INDEX_SIGN_START + index + NBTList.INDEX_SIGN_END
+                        newLine(); repeat(level) { append(retractComponent) } // 缩进
                         append(sender.asLangText("NBTFormat-Retract-List")) // 列表前缀
-                        append(nbtAsComponent(sender, it, level + 1, slot, nodeDeep))
+                        append(nbtAsComponent(sender, it, level + 1, slot, deep))
                     }
                 }
             }
@@ -86,12 +90,15 @@ object NBTCommand {
             键2:值2 (类型)
              */
             is NBTCompound -> {
+                var first = isFirst
                 nbt.toMapShallow().forEach { (shallow, value) ->
                     val deep = if (nodeDeep == null) shallow else nodeDeep + DEEP_SEPARATION + shallow // 深层节点的合成
-                    newLine()
-                    repeat(level) { append(retractComponent) } // 缩进
+                    if (!first) {
+                        newLine(); repeat(level) { append(retractComponent) } // 缩进
+                    }
                     append(componentKey(sender, deep)) // 添加键
-                    append(nbtAsComponent(sender, toNBTData(value), level + 1, slot, deep))
+                    append(nbtAsComponent(sender, toNBTData(value), level + 1, slot, deep, isFirst = false))
+                    first = false
                 }
             }
             /*
@@ -111,7 +118,7 @@ object NBTCommand {
         nodeShallow: String? = nodeDeep?.substringAfterLast(DEEP_SEPARATION),
     ) = unsafeTypeJson(sender, "NBTFormat-Entry-Key").asComponent(sender, nodeShallow.toString(), nodeDeep.toString())
 
-    fun componentValue(sender: ProxyCommandSender, nbt: NBTData, slot: Int, nodeDeep: String?) =
+    fun componentValue(sender: ProxyCommandSender, nbt: NBTData, slot: String, nodeDeep: String?) =
         unsafeTypeJson(sender, "NBTFormat-Entry-Value").asComponent(sender, asString(nbt), slot, nodeDeep.toString())
 
     /**

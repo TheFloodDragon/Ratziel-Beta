@@ -34,7 +34,8 @@ fun TypeJson.asComponent(sender: ProxyCommandSender, vararg args: Any): Componen
             // 加载变量
             bracketParser.readToFlatten(line).forEach { part ->
                 // 获取文本块类型
-                val extra = if (part.isVariable) jsonArgs.getOrNull(i++) else emptyMap()
+//                val extra = if (part.isVariable) jsonArgs.getOrNull(i++) else emptyMap()
+                val extra = jsonArgs.getOrNull(i++)
                 if (extra == null) {
                     append("§c[RAW OPTION NOT FOUND]")
                     return@forEach

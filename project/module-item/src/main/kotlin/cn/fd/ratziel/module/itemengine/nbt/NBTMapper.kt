@@ -22,7 +22,8 @@ object NBTMapper : KSerializer<TiNBTTag> {
 
     const val SPECIAL_TYPE_SIGN = ";"
 
-    override fun deserialize(decoder: Decoder): TiNBTTag = mapFromJson((decoder as JsonDecoder).decodeJsonElement()).getAsTiNBT()
+    override fun deserialize(decoder: Decoder): TiNBTTag =
+        mapFromJson((decoder as JsonDecoder).decodeJsonElement()).getAsTiNBT()
 
     override fun serialize(encoder: Encoder, value: TiNBTTag) =
         (encoder as JsonEncoder).encodeJsonElement(encoder.json.parseToJsonElement(value.toJson()))

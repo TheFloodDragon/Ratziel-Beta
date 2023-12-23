@@ -13,6 +13,8 @@ import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSe
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
+import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
+import cn.fd.ratziel.module.itemengine.nbt.NBTList
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -70,7 +72,16 @@ object ItemElement : ElementHandler {
 
         println("————————————————————————————————")
 
-        NBTCommand.nbtAsComponent(console(), meta.nbt, 0, 404).sendTo(console())
+        NBTCommand.nbtAsComponent(console(), meta.nbt, 0, "404").sendTo(console())
+
+        NBTCompound(NBTCompound.new()).apply {
+            putDeep("a.b.f", NBTList(listOf(1, 2, 3)))
+        }.let {
+            println(it)
+            println(it.getDeep("a.b.f[0]"))
+            println(it.getDeep("a.b.f[1]"))
+            println(it.getDeep("a.b.f[2]"))
+        }
 
     } catch (ex: Exception) {
         ex.printStackTrace()

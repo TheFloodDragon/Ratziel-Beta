@@ -22,8 +22,24 @@ open class NBTList(rawData: Any) : NBTData(
     NBTDataType.LIST
 ) {
 
-    val content: List<NBTData>
+    var content: List<NBTData>
         get() = if (isTiNBT()) (data as TiNBTList).map { toNBTData(it) } else getField(data)!!.map { toNBTData(it) }
+        set(value) {
+            data = if (isTiNBT()) TiNBTList(value.map { it.getAsTiNBT() }) else new(value.map { it.getAsNmsNBT() })
+        }
+
+    /**
+     * 编辑列表
+     * @param action 具体编辑
+     * ps: 妈的NMS的NBTTagList写的是真的依托答辩
+     * 各版本都不一样,麻烦的要死,最终只能这样了
+     * 虽然说牺牲了很大的性能
+     */
+    fun edit(action: MutableList<NBTData>.() -> Unit) = this.apply {
+        val list = content.toMutableList()
+        action(list)
+        content = list
+    }
 
     constructor() : this(TiNBTList())
 
@@ -34,6 +50,12 @@ open class NBTList(rawData: Any) : NBTData(
 
         @JvmStatic
         override fun of(obj: Any) = NBTList(obj)
+
+        /**
+         * 索引标识符
+         */
+        const val INDEX_SIGN_START = "["
+        const val INDEX_SIGN_END = "]"
 
         /**
          * NBTTagList#constructor()
@@ -48,7 +70,7 @@ open class NBTList(rawData: Any) : NBTData(
 
         internal fun getField(nmsData: Any) = nmsData.getProperty<List<Any>>(listFieldName)
 
-        internal fun setField(nmsData: Any, list: List<Any?>) = nmsData.setProperty(listFieldName, list)
+        internal fun setField(nmsData: Any, list: ArrayList<Any?>) = nmsData.setProperty(listFieldName, list)
 
         /**
          * 对数据进行适配以符合标准
@@ -59,6 +81,16 @@ open class NBTList(rawData: Any) : NBTData(
                 // 判断第一个 NBTData
                 if (firstOrNull()?.isNmsNBT() == true) new(this.map { it.getAsNmsNBT() })
                 else TiNBTList().also { list -> this.forEach { list += it.getAsTiNBT() } }
+            }
+
+        internal fun checkIndexed(string: String): Pair<String, Int>? =
+            string.takeIf { it.endsWith(INDEX_SIGN_END) }?.run {
+                val nodeName = substringBeforeLast(INDEX_SIGN_START)
+                val index = substring(
+                    lastIndexOf(INDEX_SIGN_START) + INDEX_SIGN_START.length,
+                    lastIndexOf(INDEX_SIGN_END)
+                ).toInt()
+                nodeName to index
             }
 
     }
