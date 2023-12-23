@@ -1,6 +1,9 @@
 package cn.fd.ratziel.common.message
 
+import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_END
+import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_START
 import cn.fd.ratziel.core.serialization.isJson
+import cn.fd.ratziel.core.util.replaceNonEscaped
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.AMPERSAND_CHAR
@@ -49,11 +52,18 @@ object Message {
      */
     @JvmStatic
     fun parseAdventure(source: String, vararg tagResolver: TagResolver): Component =
-        wrapper.miniBuilder.deserialize(
-            wrapper.miniBuilder.serialize(
-                wrapper.legacyBuilder.deserialize(translateAmpersandColor(source))
-            ).replace("\\<", "<").replace("\\>", ">"), *tagResolver
-        )
+        wrapper.legacyBuilder.deserialize(translateAmpersandColor(mark(source)))
+            .let { wrapper.miniBuilder.serialize(it) }
+            .let { wrapper.miniBuilder.deserialize(deMark(it), *tagResolver) }
+
+    private fun mark(source: String) =
+        source.replaceNonEscaped(TAG_START, MARKED_TAG_START).replaceNonEscaped(TAG_END, MARKED_TAG_END)
+
+    private fun deMark(source: String) =
+        source.replaceNonEscaped(MARKED_TAG_START, TAG_START).replaceNonEscaped(MARKED_TAG_END, TAG_END)
+
+    const val MARKED_TAG_START = "{marked:start}"
+    const val MARKED_TAG_END = "{marked:end}"
 
 }
 

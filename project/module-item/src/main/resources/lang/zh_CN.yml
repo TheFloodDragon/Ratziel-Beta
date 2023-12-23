@@ -10,7 +10,7 @@ NBTFormat-Entry-Value: # 0-值 1-目标位置 2-深层节点
   args:
     - suggest: '/nbt edit {1} {2}'
 NBTFormat-Retract: '  '
-NBTFormat-Retract-List: '  &f - '
+NBTFormat-Retract-List: '&f- '
 NBTFormat-List-Empty: '&f[]'
 NBTFormat-Type-Byte: '&8(&7Byte&8)'
 NBTFormat-Type-Short: '&8(&7Short&8)'

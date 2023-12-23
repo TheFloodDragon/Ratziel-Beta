@@ -31,6 +31,12 @@ fun emptyJson() = JsonObject(emptyMap())
 fun String.isJson(): Boolean = startsWith('{') && endsWith('}')
 
 /**
+ * 编辑Json对象
+ * @return 编辑后的Json对象
+ */
+fun JsonObject.edit(action: HashMap<String, JsonElement>.() -> Unit) = JsonObject(LinkedHashMap(this).apply(action))
+
+/**
  * 对一个Json的所有Primitive值进行处理
  * @param element 原始 Json 元素
  * @param handle 处理方法

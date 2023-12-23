@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.itemengine.nbt.*
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound.Companion.DEEP_SEPARATION
 import cn.fd.ratziel.module.itemengine.util.mapping.RefItemStack
 import org.bukkit.entity.Player
+import org.bukkit.util.NumberConversions
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.CommandBody
@@ -60,7 +61,6 @@ object NBTCommand {
     fun nbtAsComponent(
         sender: ProxyCommandSender, nbt: NBTData, level: Int, slot: Int, nodeDeep: String? = null,
     ): ComponentText = Components.empty().apply {
-        // 获取格式
         val retractComponent = sender.asLangText("NBTFormat-Retract")
         /*
         列表类型特殊处理:
@@ -91,7 +91,7 @@ object NBTCommand {
                     newLine()
                     repeat(level) { append(retractComponent) } // 缩进
                     append(componentKey(sender, deep)) // 添加键
-                    append(nbtAsComponent(sender, toNBTData(value), level, slot, deep))
+                    append(nbtAsComponent(sender, toNBTData(value), level + 1, slot, deep))
                 }
             }
             /*
@@ -112,7 +112,7 @@ object NBTCommand {
     ) = unsafeTypeJson(sender, "NBTFormat-Entry-Key").asComponent(sender, nodeShallow.toString(), nodeDeep.toString())
 
     fun componentValue(sender: ProxyCommandSender, nbt: NBTData, slot: Int, nodeDeep: String?) =
-        unsafeTypeJson(sender, "NBTFormat-Entry-Value").asComponent(sender, nbt.toString(), slot, nodeDeep.toString())
+        unsafeTypeJson(sender, "NBTFormat-Entry-Value").asComponent(sender, asString(nbt), slot, nodeDeep.toString())
 
     /**
      * 获取语言文件Json内容 (不安全)
@@ -136,5 +136,30 @@ object NBTCommand {
         NBTDataType.LONG_ARRAY -> sender.asLangText("NBTFormat-Type-LongArray")
         else -> null
     }?.let { Components.parseSimple(it).build { colored() } } ?: Components.empty()
+
+
+    /**
+     * 获取NBTData的字符串形式
+     */
+    fun asString(nbt: NBTData): String = nbt.toString().let { str ->
+        when (nbt) {
+            is NBTString -> nbt.content
+            is NBTByte -> NumberConversions.toByte(str).let {
+                when (it) {
+                    NBTBoolean.byteTrue -> true.toString()
+                    NBTBoolean.byteFalse -> false.toString()
+                    else -> it.toString()
+                }
+            }
+
+            is NBTInt -> NumberConversions.toInt(str).toString()
+            is NBTFloat -> NumberConversions.toFloat(str).toString()
+            is NBTDouble -> NumberConversions.toDouble(str).toString()
+            is NBTLong -> NumberConversions.toLong(str).toString()
+            is NBTShort -> NumberConversions.toShort(str).toString()
+            else -> str
+        }
+    }
+
 
 }

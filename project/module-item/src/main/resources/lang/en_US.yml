@@ -10,7 +10,7 @@ NBTFormat-Entry-Value:
   args:
     - suggest: '/nbt edit {1} {2}'
 NBTFormat-Retract: '  '
-NBTFormat-Retract-List: '  &f - '
+NBTFormat-Retract-List: '&f- '
 NBTFormat-Type-Byte: '&8(&7Byte&8)'
 NBTFormat-Type-Short: '&8(&7Short&8)'
 NBTFormat-Type-Int: '&8(&7Int&8)'
