@@ -69,7 +69,6 @@ object ItemElement : ElementHandler {
         println(testMeta)
 
         println("————————————————————————————————")
-        println(meta.nbt.toMapDeep())
 
         NBTCommand.nbtAsComponent(console(), meta.nbt, 0, 404).sendTo(console())
 

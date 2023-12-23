@@ -13,5 +13,5 @@ import taboolib.common.env.RuntimeDependency;
         test = "!net.kyori.adventure.platform.bukkit.BukkitAudiences"
 )
 public class BukkitEnv {
-    public static final String version = "4.3.1";
+    public static final String version = "4.3.2";
 }

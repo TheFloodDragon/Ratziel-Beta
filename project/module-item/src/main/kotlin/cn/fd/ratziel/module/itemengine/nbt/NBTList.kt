@@ -14,16 +14,11 @@ import taboolib.module.nms.nmsClass
  * @since 2023/11/24 22:18
  */
 open class NBTList(rawData: Any) : NBTData(
-    if (rawData is List<*>) {
-        // 查找第一个并判断类型
-        rawData.firstOrNull()?.let {
-            when {
-                checkIsNmsNBT(it) -> new(rawData) // Nms 下的 NBTTagList
-                it is TiNBTData -> TiNBTData.translateList(TiNBTList(), rawData) // Taboolib 下的 ItemTagList
-                else -> null
-            }
-        } ?: new()
-    } else rawData,
+    when (rawData) {
+        is List<*> -> adaptData(rawData)
+        is Array<*> -> adaptData(rawData.asIterable())
+        else -> rawData
+    },
     NBTDataType.LIST
 ) {
 
@@ -54,6 +49,17 @@ open class NBTList(rawData: Any) : NBTData(
         internal fun getField(nmsData: Any) = nmsData.getProperty<List<Any>>(listFieldName)
 
         internal fun setField(nmsData: Any, list: List<Any?>) = nmsData.setProperty(listFieldName, list)
+
+        /**
+         * 对数据进行适配以符合标准
+         */
+        internal fun adaptData(rawData: Iterable<*>): Any =
+            // 先转换成 NBTData 的列表
+            rawData.mapNotNull { toNBTData(it) }.run {
+                // 判断第一个 NBTData
+                if (firstOrNull()?.isNmsNBT() == true) new(this.map { it.getAsNmsNBT() })
+                else TiNBTList().also { list -> this.forEach { list += it.getAsTiNBT() } }
+            }
 
     }
 

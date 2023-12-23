@@ -9,6 +9,7 @@ import cn.fd.ratziel.module.itemengine.nbt.NBTCompound.Companion.DEEP_SEPARATION
 import cn.fd.ratziel.module.itemengine.util.mapping.RefItemStack
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.mainCommand
@@ -20,7 +21,6 @@ import taboolib.module.lang.TypeJson
 import taboolib.module.lang.TypeList
 import taboolib.module.lang.asLangText
 import taboolib.module.lang.getLocaleFile
-import taboolib.platform.util.sendLang
 
 /**
  * NBTCommand
@@ -40,16 +40,18 @@ object NBTCommand {
     val main = mainCommand { createHelper() }
 
     /**
-     * 查看NBT
+     * 查看 NBT
      */
     @CommandBody
     val view = subCommand {
         slot {
-            execute<Player> { sender, _, arg ->
-                sender.inventory.getItem(inferSlotToInt(arg))?.let {
+            execute<ProxyPlayer> { player, _, arg ->
+                val slot = inferSlotToInt(arg)
+                player.cast<Player>().inventory.getItem(slot)?.let {
                     RefItemStack.tagFromObc(it) // 获取物品标签
-                }.also {
-                    sender.sendLang("NBTFormat-Entry-Value", it.toString())
+                }.also { nbt ->
+                    // 构建消息组件并发送
+                    nbtAsComponent(player, nbt!!, 0, slot).sendTo(player)
                 }
             }
         }
@@ -68,12 +70,14 @@ object NBTCommand {
          */
         when (nbt) {
             is NBTList -> {
-                var first = true
-                nbt.content.forEach {
-                    if (!first) newLine() else first = false
-                    repeat(level) { append(retractComponent) } // 缩进
-                    append(sender.asLangText("NBTFormat-Retract-List")) // 列表前缀
-                    append(nbtAsComponent(sender, it, level + 1, slot, nodeDeep))
+                nbt.content.let { list ->
+                    if (list.isEmpty()) append(sender.asLangText("NBTFormat-List-Empty"))
+                    else list.forEach {
+                        newLine()
+                        repeat(level) { append(retractComponent) } // 缩进
+                        append(sender.asLangText("NBTFormat-Retract-List")) // 列表前缀
+                        append(nbtAsComponent(sender, it, level + 1, slot, nodeDeep))
+                    }
                 }
             }
             /*
@@ -82,13 +86,12 @@ object NBTCommand {
             键2:值2 (类型)
              */
             is NBTCompound -> {
-                var first = true
                 nbt.toMapShallow().forEach { (shallow, value) ->
                     val deep = if (nodeDeep == null) shallow else nodeDeep + DEEP_SEPARATION + shallow // 深层节点的合成
-                    if (!first) newLine() else first = false
-                    append(componentKey(sender, deep)) // 添加键
+                    newLine()
                     repeat(level) { append(retractComponent) } // 缩进
-                    append(nbtAsComponent(sender, toNBTData(value), level + 1, slot, deep))
+                    append(componentKey(sender, deep)) // 添加键
+                    append(nbtAsComponent(sender, toNBTData(value), level, slot, deep))
                 }
             }
             /*
@@ -102,11 +105,10 @@ object NBTCommand {
     /**
      * 快捷创建键或值组件
      */
-
     fun componentKey(
         sender: ProxyCommandSender,
         nodeDeep: String?,
-        nodeShallow: String? = nodeDeep?.substringAfter(DEEP_SEPARATION),
+        nodeShallow: String? = nodeDeep?.substringAfterLast(DEEP_SEPARATION),
     ) = unsafeTypeJson(sender, "NBTFormat-Entry-Key").asComponent(sender, nodeShallow.toString(), nodeDeep.toString())
 
     fun componentValue(sender: ProxyCommandSender, nbt: NBTData, slot: Int, nodeDeep: String?) =
@@ -115,9 +117,8 @@ object NBTCommand {
     /**
      * 获取语言文件Json内容 (不安全)
      */
-    fun unsafeTypeJson(sender: ProxyCommandSender, node: String) = sender.getLocaleFile()?.getType(node).let {
-        if (it is TypeList) it.list.first() else it
-    } as TypeJson
+    fun unsafeTypeJson(sender: ProxyCommandSender, node: String) =
+        sender.getLocaleFile()?.getType(node).let { if (it is TypeList) it.list.first() else it } as TypeJson
 
     /**
      * 快捷匹配类型组件
@@ -133,8 +134,6 @@ object NBTCommand {
         NBTDataType.BYTE_ARRAY -> sender.asLangText("NBTFormat-Type-ByteArray")
         NBTDataType.INT_ARRAY -> sender.asLangText("NBTFormat-Type-IntArray")
         NBTDataType.LONG_ARRAY -> sender.asLangText("NBTFormat-Type-LongArray")
-        NBTDataType.COMPOUND -> sender.asLangText("NBTFormat-Type-Compound")
-        NBTDataType.LIST -> sender.asLangText("NBTFormat-Type-List")
         else -> null
     }?.let { Components.parseSimple(it).build { colored() } } ?: Components.empty()
 

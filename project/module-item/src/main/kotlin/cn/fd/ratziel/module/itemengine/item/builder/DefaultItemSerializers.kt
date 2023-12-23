@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.itemengine.item.meta.VItemDurability
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.NBTMapper
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
-import cn.fd.ratziel.module.itemengine.nbt.TiNBTTag
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -26,7 +25,7 @@ open class ItemMetadataSerializer(
     val charSerializer: ItemCharSerializer = ItemCharSerializer(),
     val durabilitySerializer: ItemDurabilitySerializer = ItemDurabilitySerializer(),
     val itemTagSerializer: NBTTagSerializer = NBTTagSerializer(),
-) : ItemSerializer {
+) : ItemSerializer<VItemMeta> {
     override fun serializeByJson(json: Json, element: JsonElement): VItemMeta {
         val display = futureAsync { displaySerializer.serializeByJson(json, element) }
         val characteristic = futureAsync { charSerializer.serializeByJson(json, element) }
@@ -40,7 +39,7 @@ open class ItemMetadataSerializer(
 /**
  * ItemDisplay
  */
-open class ItemDisplaySerializer : ItemSerializer {
+open class ItemDisplaySerializer : ItemSerializer<VItemDisplay> {
     override fun serializeByJson(json: Json, element: JsonElement) =
         json.decodeFromJsonElement<VItemDisplay>(element)
 }
@@ -48,7 +47,7 @@ open class ItemDisplaySerializer : ItemSerializer {
 /**
  * ItemCharacteristic
  */
-open class ItemCharSerializer : ItemSerializer {
+open class ItemCharSerializer : ItemSerializer<VItemCharacteristic> {
     override fun serializeByJson(json: Json, element: JsonElement) =
         json.decodeFromJsonElement<VItemCharacteristic>(element)
 }
@@ -56,7 +55,7 @@ open class ItemCharSerializer : ItemSerializer {
 /**
  * ItemDurability
  */
-open class ItemDurabilitySerializer : ItemSerializer {
+open class ItemDurabilitySerializer : ItemSerializer<VItemDurability> {
     override fun serializeByJson(json: Json, element: JsonElement) =
         json.decodeFromJsonElement<VItemDurability>(element)
 }
@@ -64,12 +63,13 @@ open class ItemDurabilitySerializer : ItemSerializer {
 /**
  * NBTTag
  */
-open class NBTTagSerializer {
+open class NBTTagSerializer : ItemSerializer<NBTTag> {
+
     fun serializeByJson(element: JsonElement, source: NBTTag = NBTTag()): NBTTag? =
         (element.takeIf { element is JsonObject } as? JsonObject)?.let { o ->
             val json = o["nbt"] ?: o["itemTag"] ?: o["itemTags"]
-            json?.let {
-                NBTMapper.mapFromJson(it, source.getAsTiNBT() as TiNBTTag).let { t -> NBTTag.of(t) }
-            }
+            json?.let { NBTMapper.mapFromJson(it, source) }
         }
+
+    override fun serializeByJson(json: Json, element: JsonElement) = serializeByJson(element)
 }

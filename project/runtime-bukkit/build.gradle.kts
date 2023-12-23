@@ -28,9 +28,9 @@ taboolib {
     install("expansion-player-fake-op")
 
     description {
-        name = rootName
+        name(rootName)
 
-//        description = "Advanced Minecraft Comprehensive Control"
+        desc("Advanced Minecraft Comprehensive Control")
 
         contributors {
             name("TheFloodDragon")
@@ -40,23 +40,21 @@ taboolib {
             name("PlaceholderAPI").optional(true)
         }
 
-//        links {
-//            name("source-code").url("https://github.com/TheFloodDragon/Ratziel-Beta/")
-//        }
-
-        bukkitNodes = HashMap<String, Any>().apply {
-            // API Version
-            put("api-version", 1.13)
-            // Folia Support
-            put("folia-supported", true)
-            // Build Info
-            put("built-date", currentISODate)
-            put("built-by", systemUserName)
-            put("built-os", systemOS)
-            put("built-ip", systemIP)
-            // Taboolib Info
-            put("taboolib-version", taboolibVersion)
+        links {
+            name("homepage").url("https://github.com/TheFloodDragon/Ratziel-Beta/")
         }
+
+        @Suppress("UNCHECKED_CAST") val nodes = bukkitNodes as HashMap<String, Any>
+
+        // Taboolib Version
+        nodes["taboolib-version"] = taboolibVersion
+        // Folia Support
+        nodes["folia-supported"] = true
+        // Build Info
+        nodes["built-date"] = currentISODate
+        nodes["built-by"] = systemUserName
+        nodes["built-os"] = systemOS
+        nodes["built-ip"] = systemIP
 
     }
 

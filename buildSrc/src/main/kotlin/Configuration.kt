@@ -1,8 +1,8 @@
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.2.1.8"
+const val rootVersion = "A.0.2.1.9"
 
-const val kotlinVersion = "1.9.21"
+const val kotlinVersion = "1.9.22"
 const val serializationVersion = "1.6.2"
 const val coroutineVersion = "1.7.3"
 const val shadowJarVersion = "8.1.1"
@@ -22,9 +22,9 @@ val taboolibModules = setOf(
 )
 
 val adventureModules = setOf(
-    "net.kyori:adventure-api:4.14.0",
-    "net.kyori:adventure-platform-bukkit:4.3.1",
-    "net.kyori:adventure-text-minimessage:4.14.0",
+    "net.kyori:adventure-api:4.15.0",
+    "net.kyori:adventure-platform-bukkit:4.3.2",
+    "net.kyori:adventure-text-minimessage:4.15.0",
 //    "net.kyori:adventure-text-serializer-bungeecord:4.3.1",
 )
 

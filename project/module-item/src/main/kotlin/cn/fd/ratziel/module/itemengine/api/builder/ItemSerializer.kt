@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.itemengine.api.builder
 
-import cn.fd.ratziel.module.itemengine.api.part.ItemPart
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -10,11 +9,11 @@ import kotlinx.serialization.json.JsonElement
  * @author TheFloodDragon
  * @since 2023/10/28 13:24
  */
-interface ItemSerializer {
+interface ItemSerializer<T> {
 
     /**
      * 通过Json序列化器序列化
      */
-    fun serializeByJson(json: Json, element: JsonElement): ItemPart?
+    fun serializeByJson(json: Json, element: JsonElement): T?
 
 }

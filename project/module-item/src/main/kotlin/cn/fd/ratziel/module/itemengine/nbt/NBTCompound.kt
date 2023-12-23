@@ -188,6 +188,11 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      */
     operator fun set(node: String, value: NBTData?) = put(node, value)
 
+    /**
+     * 方法重写以确定类型
+     */
+    override fun getAsTiNBT() = super.getAsTiNBT() as TiNBTTag
+
     companion object : MirrorClass<NBTCompound>() {
 
         @JvmStatic

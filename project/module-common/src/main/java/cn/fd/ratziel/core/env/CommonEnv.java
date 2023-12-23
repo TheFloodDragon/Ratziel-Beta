@@ -17,5 +17,5 @@ import taboolib.common.env.RuntimeDependency;
         value = "!net.kyori:adventure-text-minimessage:" + CommonEnv.version
 )
 public class CommonEnv {
-    public static final String version = "4.14.0";
+    public static final String version = "4.15.0";
 }

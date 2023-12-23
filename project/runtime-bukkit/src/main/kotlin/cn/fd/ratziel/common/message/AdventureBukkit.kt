@@ -33,7 +33,7 @@ val ProxyCommandSender.castAudience
     get() = this.castBukkit.audienceSender
 
 /**
- * 观众方法扩展
+ * 方法扩展
  */
 fun Audience.sendActionBar(message: String) {
     this.sendActionBar(buildMessage(message))
