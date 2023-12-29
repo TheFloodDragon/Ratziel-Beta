@@ -34,8 +34,7 @@ object NBTConverter {
             is IntArray -> NBTIntArray(obj)
             is ByteArray -> NBTByteArray(obj)
             is LongArray -> NBTLongArray(obj)
-            is Array<*> -> NBTList.of(obj.map { it?.let { o -> NBTConverter.convert(o) } })
-            is Iterable<*> -> NBTList.of(obj.map { it?.let { o -> NBTConverter.convert(o) } })
+            is Array<*>, is Iterable<*> -> NBTList(obj)
             else -> null
         }
     }

@@ -79,8 +79,8 @@ subprojects {
             exclude("META-INF/**", "taboolib/test/**")
             // Taboolib
             relocate("tb.", "$rootGroup.taboolib.")
-            relocate("taboolib.", "$rootGroup.taboolib.")
-            relocate("org.tabooproject.", "$rootGroup.taboolib.library.")
+            relocate("taboolib", "$rootGroup.taboolib")
+            relocate("org.tabooproject", "$rootGroup.library")
             // Kotlin
             relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude("kotlin.Metadata") }
             relocate("kotlinx.", "kotlinx${kotlinVersion.escapedVersion}.")

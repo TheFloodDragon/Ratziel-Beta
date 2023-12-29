@@ -92,9 +92,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     /**
      * 深度删除，以 "." 作为分层符
      */
-    fun removeDeep(node: String) = removeDeepGenerally(node)
-
-    fun removeDeepGenerally(node: String) {
+    fun removeDeep(node: String) {
         if (node == APEX_NODE_SIGN) return
         else getDeepWith(node, false) { it.remove(node.substringAfterLast(DEEP_SEPARATION)) }
     }

@@ -25,6 +25,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
                     val viewer = frame.player()
                     viewer.performCommand(command.replace("@sender", viewer.name))
                 }
+
                 Type.OPERATOR -> {
                     val viewer = frame.player()
                     try {
@@ -33,6 +34,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
                         ex.printStackTrace()
                     }
                 }
+
                 Type.CONSOLE -> {
                     console().performCommand(command.replace("@sender", "console"))
                 }
