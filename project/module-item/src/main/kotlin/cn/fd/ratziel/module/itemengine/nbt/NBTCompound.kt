@@ -3,8 +3,8 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
 import cn.fd.ratziel.core.function.MirrorClass
+import cn.fd.ratziel.core.function.getFieldUnsafe
 import cn.fd.ratziel.core.function.getMethodUnsafe
-import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
@@ -31,7 +31,10 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * 获取数据
      * @param node 节点
      */
-    operator fun get(node: String): NBTData? = getGenerally(node)
+    operator fun get(node: String): NBTData? = supportList(node) { pair ->
+        getGenerally(pair.first).let { pair.second?.let { i -> (it as NBTList)[i] } ?: it }
+    }
+
 
     fun getGenerally(node: String): NBTData? =
         (if (node == APEX_NODE_SIGN) this // 如果为顶级节点则返回自身
@@ -42,9 +45,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * 深度获取
      * @param node 节点
      */
-    fun getDeep(node: String): NBTData? = getDeepGenerally(node)
-
-    fun getDeepGenerally(node: String): NBTData? =
+    fun getDeep(node: String): NBTData? =
         (if (node == APEX_NODE_SIGN) this
         else getDeepWith(node, false) { it[node.substringAfterLast(DEEP_SEPARATION)] })?.let { toNBTData(it) }
 
@@ -53,7 +54,9 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * @param node 节点
      * @param value NBT数据
      */
-    fun put(node: String, value: NBTData?) = putGenerally(node, value)
+    fun put(node: String, value: NBTData?) = supportList(node) { pair ->
+        putGenerally(pair.first, pair.second?.let { i -> NBTList().apply { value?.let { set(i, it) } } } ?: value)
+    }
 
     fun putGenerally(node: String, value: NBTData?) {
         if (value == null || node == APEX_NODE_SIGN) return // 当值为空或者节点为顶级节点时跳过
@@ -64,9 +67,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     /**
      * 深度写入
      */
-    fun putDeep(node: String, value: NBTData?) = putDeepGenerally(node, value)
-
-    fun putDeepGenerally(node: String, value: NBTData?) {
+    fun putDeep(node: String, value: NBTData?) {
         if (value == null || node == APEX_NODE_SIGN) return
         else getDeepWith(node, true) {
             it.put(node.substringAfterLast(DEEP_SEPARATION), toNBTData(value.getAsNmsNBT()))
@@ -77,7 +78,10 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * 删除数据
      * @param node 节点
      */
-    fun remove(node: String) = removeGenerally(node)
+    fun remove(node: String) = supportList(node) { pair ->
+        if (pair.second == null) removeGenerally(pair.first)
+        else (getGenerally(pair.first) as? NBTList)?.remove(pair.second!!)
+    }
 
     fun removeGenerally(node: String) {
         if (node == APEX_NODE_SIGN) return
@@ -191,12 +195,14 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     /**
      * 转化成 Map 形式 - 不安全,因为无法确认值的类型
      */
-    fun toMapUnsafe(): Map<String, Any>? = if (isTiNBT()) (data as Map<String, Any>) else NMSMethods.getAsMap(data)
+    fun toMapUnsafe(): Map<String, Any>? =
+        (if (isTiNBT()) data else NMSMethods.mapField.get(data)) as? Map<String, Any>
 
     /**
      * Kotlin操作符
      */
     operator fun set(node: String, value: NBTData?) = put(node, value)
+    operator fun minus(node: String) = remove(node)
 
     /**
      * 方法重写以确定类型
@@ -212,16 +218,6 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
         override fun of(obj: Any) = NBTCompound(obj)
 
         /**
-         * 深度操作分层符
-         */
-        const val DEEP_SEPARATION = "."
-
-        /**
-         * 顶级节点符号
-         */
-        const val APEX_NODE_SIGN = "!"
-
-        /**
          * NBTTagCompound#constructor()
          */
         @JvmStatic
@@ -233,13 +229,50 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
         @JvmStatic
         fun new(map: HashMap<String, Any>) = clazz.invokeConstructor(map)
 
+        /**
+         * 深度操作分层符
+         */
+        const val DEEP_SEPARATION = "."
+
+        /**
+         * 顶级节点符号
+         */
+        const val APEX_NODE_SIGN = "!"
+
+        /**
+         * 列表索引标识符
+         */
+        const val LIST_INDEX_START = "["
+
+        const val LIST_INDEX_END = "]"
+
+        /**
+         * 分割节点以获取索引值
+         * 注: 若索引值为"-1"(节点括号内为"!"), 则代表要新加一个元素
+         */
+        internal fun splitListOrNull(node: String): Pair<String, Int?> {
+            val nodeName = node.substringBeforeLast(LIST_INDEX_START)
+            val index = node.takeIf { it.endsWith(LIST_INDEX_END) }?.run {
+                substring(
+                    lastIndexOf(LIST_INDEX_START) + LIST_INDEX_START.length,
+                    lastIndexOf(LIST_INDEX_END)
+                ).toInt()
+            }
+            return nodeName to index
+        }
+
     }
+
+    internal fun <R> supportList(node: String, action: (Pair<String, Int?>) -> R) = splitListOrNull(node).let(action)
 
     internal object NMSMethods {
 
-        val mapFieldName = if (MinecraftVersion.isUniversal) "x" else "map"
-
-        fun getAsMap(nmsData: Any) = nmsData.getProperty<Map<String, Any>>(mapFieldName)
+        val mapField by lazy {
+            ReflexClass.of(clazz).structure.getFieldUnsafe(
+                name = if (MinecraftVersion.isUniversal) "x" else "map",
+                Map::class.java
+            )
+        }
 
         val getMethod by lazy {
             ReflexClass.of(clazz).structure.getMethodUnsafe(

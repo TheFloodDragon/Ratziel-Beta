@@ -4,11 +4,13 @@ NBTFormat-Entry-Key:
   text: '&6{0}&7: '
   args:
     - copy: '{1}'
+      hover: 'Click to copy'
 NBTFormat-Entry-Value:
   type: json
   text: '&e{0}'
   args:
-    - suggest: '/nbt edit {1} {2}'
+    - suggest: '/nbt edit {1} {2} '
+      hover: 'Click to edit'
 NBTFormat-Retract: '  '
 NBTFormat-Retract-List: '&f- '
 NBTFormat-List-Empty: '&f[ ]'

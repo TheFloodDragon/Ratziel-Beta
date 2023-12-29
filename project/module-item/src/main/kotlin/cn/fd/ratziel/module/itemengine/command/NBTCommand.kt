@@ -77,7 +77,7 @@ object NBTCommand {
                 nbt.content.let { list ->
                     if (list.isEmpty()) append(sender.asLangText("NBTFormat-List-Empty"))
                     else list.forEachIndexed { index, it ->
-                        val deep = nodeDeep + NBTList.INDEX_SIGN_START + index + NBTList.INDEX_SIGN_END
+                        val deep = nodeDeep + NBTTag.LIST_INDEX_START + index + NBTTag.LIST_INDEX_END
                         newLine(); repeat(level) { append(retractComponent) } // 缩进
                         append(sender.asLangText("NBTFormat-Retract-List")) // 列表前缀
                         append(nbtAsComponent(sender, it, level + 1, slot, deep))

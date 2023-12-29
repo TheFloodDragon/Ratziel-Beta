@@ -51,7 +51,7 @@ object CommandElement {
      * 列出所有元素类型
      */
     @CommandBody
-    val listTypes = subCommand {
+    val listType = subCommand {
         executeAsync<ProxyCommandSender> { sender, _, _ ->
             sender.sendLang("Element-Type-Header")
             ElementRegistry.registry.keys.forEach { etype ->

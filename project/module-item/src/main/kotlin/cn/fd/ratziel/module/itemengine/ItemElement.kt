@@ -15,6 +15,8 @@ import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializ
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
 import cn.fd.ratziel.module.itemengine.nbt.NBTList
+import cn.fd.ratziel.module.itemengine.nbt.NBTShort
+import cn.fd.ratziel.module.itemengine.nbt.NBTString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -81,6 +83,12 @@ object ItemElement : ElementHandler {
             println(it.getDeep("a.b.f[0]"))
             println(it.getDeep("a.b.f[1]"))
             println(it.getDeep("a.b.f[2]"))
+        }
+
+        NBTList(NBTList.new()).let {
+            it.add(0, NBTShort(11))
+            it.add(1, NBTString("sdasd"))
+            println(it)
         }
 
     } catch (ex: Exception) {

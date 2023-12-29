@@ -6,7 +6,6 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version kotlinVersion apply false
     id("com.github.johnrengelman.shadow") version shadowJarVersion apply false
     id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion apply false
-    id("trust-all") // 信任所有证书
 }
 
 subprojects {
@@ -20,11 +19,11 @@ subprojects {
         maven("http://ptms.ink:8081/repository/releases") { isAllowInsecureProtocol = true }
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
-        // Kether API
-        maven("https://maven.pkg.github.com/TheFloodDragon/Kether-API") {
+        // Aggregate Script
+        maven("https://maven.pkg.github.com/TheFloodDragon/Aggregate-Script") {
             credentials {
-                username = project.findProperty("githubUser") as String? ?: System.getenv("GITHUB_USERNAME")
-                password = project.findProperty("githubKey") as String? ?: System.getenv("GITHUB_TOKEN")
+                username = githubUser
+                password = githubToken
             }
         }
         // PlaceholderAPI

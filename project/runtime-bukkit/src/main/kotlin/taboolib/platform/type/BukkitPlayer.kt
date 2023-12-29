@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION", "LocalVariableName", "removal")
+@file:Suppress("DEPRECATION", "LocalVariableName")
 
 package taboolib.platform.type
 
@@ -19,7 +19,6 @@ import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.common.util.unsafeLazy
-import taboolib.platform.type.BukkitCommandSender
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation
 import java.net.InetSocketAddress
@@ -129,7 +128,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.isSneaking
 
     override val isSprinting: Boolean
-        get() = player.isSneaking
+        get() = player.isSprinting
 
     override val isBlocking: Boolean
         get() = player.isBlocking
@@ -315,10 +314,18 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun playSound(location: Location, sound: String, volume: Float, pitch: Float) {
+        if (volume == -1f && pitch == -1f) {
+            player.stopSound(sound)
+            return
+        }
         player.playSound(location.toBukkitLocation(), Sound.valueOf(sound), volume, pitch)
     }
 
     override fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float) {
+        if (volume == -1f && pitch == -1f) {
+            player.stopSound(sound)
+            return
+        }
         player.playSound(location.toBukkitLocation(), sound, volume, pitch)
     }
 
@@ -382,9 +389,11 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                     data.size
                 )
             }
+
             is ProxyParticle.DustData -> {
                 Particle.DustOptions(Color.fromRGB(data.color.red, data.color.green, data.color.blue), data.size)
             }
+
             is ProxyParticle.ItemData -> {
                 val item = ItemStack(Material.valueOf(data.material))
                 val itemMeta = item.itemMeta!!
@@ -400,6 +409,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                 }
                 item
             }
+
             is ProxyParticle.BlockData -> {
                 if (bukkitParticle.dataType == MaterialData::class.java) {
                     MaterialData(Material.valueOf(data.material), data.data.toByte())
@@ -407,19 +417,23 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                     Material.valueOf(data.material).createBlockData()
                 }
             }
+
             is ProxyParticle.VibrationData -> {
                 Vibration(
                     data.origin.toBukkitLocation(), when (val destination = data.destination) {
                         is ProxyParticle.VibrationData.LocationDestination -> {
                             Vibration.Destination.BlockDestination(destination.location.toBukkitLocation())
                         }
+
                         is ProxyParticle.VibrationData.EntityDestination -> {
                             Vibration.Destination.EntityDestination(Bukkit.getEntity(destination.entity)!!)
                         }
+
                         else -> error("out of case")
                     }, data.arrivalTime
                 )
             }
+
             else -> null
         }
         player.spawnParticle(bukkitParticle, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, bukkitData)
