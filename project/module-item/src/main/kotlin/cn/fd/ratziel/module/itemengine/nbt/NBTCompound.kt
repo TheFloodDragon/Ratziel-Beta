@@ -55,7 +55,10 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      * @param value NBT数据
      */
     fun put(node: String, value: NBTData?) = supportList(node) { pair ->
-        putGenerally(pair.first, pair.second?.let { i -> NBTList().apply { value?.let { set(i, it) } } } ?: value)
+        putGenerally(
+            pair.first, value = if (pair.second == null) value
+            else (getGenerally(pair.first) as? NBTList ?: NBTList()).apply { value?.let { set(pair.second!!, it) } }
+        )
     }
 
     fun putGenerally(node: String, value: NBTData?) {

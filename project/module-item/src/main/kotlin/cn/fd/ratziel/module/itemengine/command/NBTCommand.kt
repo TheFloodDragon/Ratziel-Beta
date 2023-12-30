@@ -64,11 +64,11 @@ object NBTCommand {
     @CommandBody
     val edit = subCommand {
         slot {
-            literal("node") {
-                literal("value") {
+            literal {
+                literal {
                     execute<ProxyCommandSender> { player, ctx, arg ->
                         println(ctx)
-                        println(ctx.args())
+                        println(ctx.args().toString())
                         println(arg)
                     }
                 }
