@@ -13,14 +13,7 @@ jobs:
         persist-credentials: false
     # 编译出静态页面
     - name: Install and Build
-      run: npm install && npm run build
-    # 塞进gh-pages分支(即部署到GitPage)
-    - name: Deploy
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        BRANCH: gh-pages
-        FOLDER: build
+      run: cd docs && npm install && npm run build
   # 自动生成PDF
   pdf:
     needs: [ gitpage ]
@@ -31,16 +24,9 @@ jobs:
       uses: actions/checkout@master
       with:
         persist-credentials: false
-    # 睡会儿, 等GitPage部署完成
-    - name: Sleep for 120 seconds
-      run: sleep 120s
-      shell: bash
     # 生成PDF
     - name: Build PDF
       run: sudo docker run --rm -v ${{ github.workspace }}/pdf:/app/pdf iseason/docusaurus-to-pdf -u https://theflooddragon.github.io/Ratziel-Wiki/intro --output pdf/Ratziel-Wiki.pdf
-    # 生成英文PDF
-#     - name: Build English PDF
-#       run: sudo docker run --rm -v ${{ github.workspace }}/pdf:/app/pdf iseason/docusaurus-to-pdf -u https://theflooddragon.github.io/Ratziel-Wiki/en/intro --output pdf/Ratziel-Wiki-English.pdf
     # 上传PDF
     - name: Capture Build Artifacts
       uses: actions/upload-artifact@v3
@@ -88,13 +74,3 @@ jobs:
         asset_path: Ratziel-Wiki.pdf
         asset_name: Ratziel-Wiki.pdf
         asset_content_type: application/zip
-    # 向release上传Ratziel-Wiki-English.pdf
-#     - name: Upload PDF file to Release
-#       uses: actions/upload-release-asset@v1
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#       with:
-#         upload_url: ${{ steps.create-new-release.outputs.upload_url }}
-#         asset_path: Ratziel-Wiki-English.pdf
-#         asset_name: Ratziel-Wiki-English.pdf
-#         asset_content_type: application/zip

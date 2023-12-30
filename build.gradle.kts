@@ -19,13 +19,8 @@ subprojects {
         maven("http://ptms.ink:8081/repository/releases") { isAllowInsecureProtocol = true }
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
-        // Aggregate Script
-        maven("https://maven.pkg.github.com/TheFloodDragon/Aggregate-Script") {
-            credentials {
-                username = githubUser
-                password = githubToken
-            }
-        }
+        // OSS
+        maven("https://s01.oss.sonatype.org/content/groups/public/")
         // PlaceholderAPI
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         // FoliaLib
