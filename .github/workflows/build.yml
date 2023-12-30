@@ -1,8 +1,15 @@
 name: Plugin Build
-on: [ push ]
+
+on:
+  push:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_REPO: ${{ github.repository }}
+      GITHUB_USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -23,10 +30,7 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
       - name: Build
-        env:
-          GITHUB_USERNAME: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew build -PgithubUser=$GITHUB_USERNAME -PgithubKey=$GITHUB_TOKEN
+        run: ./gradlew clean build
       - name: Capture Build Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -37,7 +41,7 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
-          prerelease: false
+          prerelease: true
           title: "自动构建最新版本"
           files: |
             outs/*.*

@@ -48,10 +48,29 @@ object NBTCommand {
         slot {
             execute<ProxyPlayer> { player, _, arg ->
                 getItemBySlot(arg, player.cast<Player>().inventory)?.let {
-                    RefItemStack.tagFromObc(it) // 获取物品标签
+                    RefItemStack(it).getNBT() // 获取物品标签
                 }?.also { nbt ->
                     // 构建消息组件并发送
                     nbtAsComponent(player, nbt, 0, arg).sendTo(player)
+                }
+            }
+        }
+    }
+
+    /**
+     * 编辑 NBT
+     * TODO 未完成
+     */
+    @CommandBody
+    val edit = subCommand {
+        slot {
+            literal("node") {
+                literal("value") {
+                    execute<ProxyCommandSender> { player, ctx, arg ->
+                        println(ctx)
+                        println(ctx.args())
+                        println(arg)
+                    }
                 }
             }
         }

@@ -30,22 +30,46 @@ open class NBTList(rawData: Any) : NBTData(
             data = if (isTiNBT()) TiNBTList(value.map { it.getAsTiNBT() }) else new(value.map { it.getAsNmsNBT() })
         }
 
+    /**
+     * 获取数据
+     */
     operator fun get(index: Int) = toNBTData(if (isTiNBT()) getTiList()[index] else getNmsList()[index])
 
+    /**
+     * 在索引处添加数据
+     */
     fun add(index: Int, data: NBTData) =
         if (isTiNBT()) getTiList().add(index, data.getAsTiNBT()) else getNmsList().add(index, data)
 
+    /**
+     * 在末尾添加数据
+     */
     fun add(data: NBTData) = if (isTiNBT()) getTiList().add(data.getAsTiNBT()) else getNmsList().add(data)
 
+    /**
+     * 删除数据
+     */
     fun remove(index: Int) = if (isTiNBT()) getTiList().removeAt(index) else getNmsList().removeAt(index)
 
+    /**
+     * 设置索引处的数据
+     */
     operator fun set(index: Int, data: NBTData) =
         if (isTiNBT()) getTiList().set(index, data.getAsTiNBT()) else getNmsList().set(index, data)
 
+    /**
+     * 清空列表
+     */
     fun clear() = if (isTiNBT()) getTiList().clear() else getNmsList().clear()
 
+    /**
+     * 获取 NMS 形式的列表
+     */
     fun getNmsList() = listField.get(getAsNmsNBT()) as ArrayList<Any?>
 
+    /**
+     * 获取 Ti 形式的数据
+     */
     fun getTiList() = getAsTiNBT() as MutableList<TiNBTData>
 
     // Kotlin 操作符
@@ -62,9 +86,6 @@ open class NBTList(rawData: Any) : NBTData(
         @JvmStatic
         override fun of(obj: Any) = NBTList(obj)
 
-        /**
-         * NBTTagList#constructor()
-         */
         @JvmStatic
         fun new() = clazz.invokeConstructor()
 
