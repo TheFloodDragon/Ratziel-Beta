@@ -24,14 +24,19 @@ class RefItemStack(protected var data: Any) {
     }
 
     /**
-     * 获取NMS形式
-     */
-    fun getAsNMS() = if (isOBC()) handleField.get(data) else data
-
-    /**
      * 获取物品NBT标签
      */
     fun getNBT() = nmsGetTagMethod.get(getAsNMS())?.let { NBTCompound(it) }
+
+    /**
+     * 设置物品NBT标签
+     */
+    fun setNBT(nbt: NBTCompound) = nmsGetTagMethod.set(getAsNMS(), nbt.getAsNmsNBT())
+
+    /**
+     * 获取NMS形式
+     */
+    fun getAsNMS() = if (isOBC()) handleField.get(data) else data
 
     /**
      * 数据类型判断方法

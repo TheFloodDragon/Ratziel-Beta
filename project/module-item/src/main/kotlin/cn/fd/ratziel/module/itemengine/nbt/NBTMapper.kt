@@ -3,6 +3,7 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
 import cn.fd.ratziel.core.serialization.adapt
+import cn.fd.ratziel.core.util.adapt
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -28,14 +29,11 @@ object NBTMapper : KSerializer<TiNBTTag> {
     override fun serialize(encoder: Encoder, value: TiNBTTag) =
         (encoder as JsonEncoder).encodeJsonElement(encoder.json.parseToJsonElement(value.toJson()))
 
-    /**
-     * 将 Json 反序列化成 TiNBTTag
-     */
     @JvmStatic
     fun mapFromJson(json: JsonElement, source: NBTTag = NBTTag()): NBTTag = deserialize(json, source) as NBTTag
 
     /**
-     * 将 Json 反序列化成 NBTData
+     * 将 [json] 反序列化成 [NBTData]
      */
     fun deserialize(json: JsonElement, source: NBTTag = NBTTag()): NBTData =
         when (json) {
@@ -54,17 +52,19 @@ object NBTMapper : KSerializer<TiNBTTag> {
 
     /**
      * 对基本类型的反序列处理
+     * 处理方式:
+     * 当末尾有 [SPECIAL_TYPE_SIGN] 时,使用 [taboolib.module.nms.ItemTagSerializer] 解析
+     * 反之则尝试适应性解析,再不济就直接转化了
      */
     fun deserializeBasic(value: Any): NBTData =
         toNBTData(
-            // 当末尾有 ';' 时,使用 Taboolib 的 ItemTagSerializer 解析
             if (value is String && value.endsWith(SPECIAL_TYPE_SIGN) && !value.endsWith('\\' + SPECIAL_TYPE_SIGN))
                 ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(value.dropLast(1)))
-            else value // 正常解析
+            else if (value is String) value.adapt() else value
         )
 
     /**
-     * 将 TiNBTData 序列化成 Json
+     * 将 [TiNBTData] 序列化成 [JsonElement]
      */
     fun serializeToJson(value: TiNBTData) = ItemTagSerializer.serializeData(value)
 

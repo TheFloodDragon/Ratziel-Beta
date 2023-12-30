@@ -45,3 +45,10 @@ fun String.replaceNonEscaped(
     }
     append(this@replaceNonEscaped.substring(lastIndex)) // 尾处理
 }
+
+/**
+ * 字符串自适应 - 尝试将字符串转化为数字
+ */
+fun String.adapt() = toBooleanStrictOrNull() ?: toBigDecimalOrNull()?.let {
+    if (it.scale() > 0) it.toString().toDoubleOrNull() else it.toString().toIntOrNull() ?: toLongOrNull()
+} ?: this

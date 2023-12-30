@@ -83,7 +83,8 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      */
     fun remove(node: String) = supportList(node) { pair ->
         if (pair.second == null) removeGenerally(pair.first)
-        else (getGenerally(pair.first) as? NBTList)?.remove(pair.second!!)
+        else (getGenerally(pair.first) as? NBTList)?.also { it.remove(pair.second!!) }
+            ?.let { putGenerally(pair.first, it) } // 我也不知道为啥要重新写入,但是不这样就会失效
     }
 
     fun removeGenerally(node: String) {

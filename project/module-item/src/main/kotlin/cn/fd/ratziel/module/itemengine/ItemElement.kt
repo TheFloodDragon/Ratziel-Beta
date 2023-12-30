@@ -12,9 +12,6 @@ import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSe
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
-import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
-import cn.fd.ratziel.module.itemengine.nbt.NBTList
-import cn.fd.ratziel.module.itemengine.nbt.NBTString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -70,17 +67,6 @@ object ItemElement : ElementHandler {
         println(testMeta)
 
         println("————————————————————————————————")
-
-        NBTCompound(NBTCompound.new()).apply {
-            putDeep("a.b.f", NBTList(listOf(1, 2, 3, 4, 5)))
-        }.let {
-            println(NBTList(listOf(1, 2, 3, 4, 5)).apply { remove(1) })
-            it.putDeep("a.b.f[1]", NBTString("nmsl"))
-            it.putDeep("a.b.f[2]", NBTString("cnm"))
-            println(it)
-            it.removeDeep("a.b.f[2]")
-            println(it)
-        }
 
     } catch (ex: Exception) {
         ex.printStackTrace()

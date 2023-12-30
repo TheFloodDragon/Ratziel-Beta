@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.itemengine.nbt.*
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound.Companion.DEEP_SEPARATION
 import cn.fd.ratziel.module.itemengine.util.mapping.RefItemStack
 import org.bukkit.entity.Player
-import org.bukkit.util.NumberConversions
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.CommandBody
@@ -184,12 +183,13 @@ object NBTCommand {
     }?.let { Components.parseSimple(it).build { colored() } } ?: Components.empty()
 
     /**
-     * 获取NBTData的字符串形式
+     * 获取 [NBTData] 的字符串形式
+     * 注: 除了 [String] 和 [Int], 其它转换成 [String] 都要去掉某位一位
      */
     fun asString(nbt: NBTData): String = nbt.toString().let { str ->
         when (nbt) {
             is NBTString -> nbt.content
-            is NBTByte -> NumberConversions.toByte(str).let {
+            is NBTByte -> str.dropLast(1).toByte().let {
                 when (it) {
                     NBTBoolean.byteTrue -> true.toString()
                     NBTBoolean.byteFalse -> false.toString()
@@ -197,12 +197,13 @@ object NBTCommand {
                 }
             }
 
-            is NBTInt -> NumberConversions.toInt(str).toString()
-            is NBTFloat -> NumberConversions.toFloat(str).toString()
-            is NBTDouble -> NumberConversions.toDouble(str).toString()
-            is NBTLong -> NumberConversions.toLong(str).toString()
-            is NBTShort -> NumberConversions.toShort(str).toString()
-            else -> str
+            is NBTInt -> str.toInt().toString()
+            is NBTFloat -> str.dropLast(1).toFloat().toString()
+            is NBTDouble -> str.dropLast(1).toDouble().toString()
+            is NBTLong -> str.dropLast(1).toLong().toString()
+            is NBTShort -> str.dropLast(1).toShort().toString()
+            // 懒得自己写了
+            else -> NBTMapper.serializeToString(nbt.getAsTiNBT())
         }
     }
 
