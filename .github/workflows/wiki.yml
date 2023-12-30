@@ -26,13 +26,13 @@ jobs:
         persist-credentials: false
     # 生成PDF
     - name: Build PDF
-      run: sudo docker run --rm -v ${{ github.workspace }}/pdf:/app/pdf iseason/docusaurus-to-pdf -u https://theflooddragon.github.io/Ratziel-Wiki/intro --output pdf/Ratziel-Wiki.pdf
+      run: cd docs && sudo docker run --rm -v ${{ github.workspace }}/docs/pdf:/app/pdf iseason/docusaurus-to-pdf -u https://theflooddragon.github.io/Ratziel-Wiki/intro --output docs/pdf/Ratziel-Wiki.pdf
     # 上传PDF
     - name: Capture Build Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Artifacts
-        path: pdf/
+        path: docs/pdf/
         if-no-files-found: error
   # Release
   release:
