@@ -18,10 +18,7 @@ import taboolib.common.platform.command.subCommand
 import taboolib.expansion.createHelper
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
-import taboolib.module.lang.TypeJson
-import taboolib.module.lang.TypeList
-import taboolib.module.lang.asLangText
-import taboolib.module.lang.getLocaleFile
+import taboolib.module.lang.*
 
 /**
  * NBTCommand
@@ -41,7 +38,8 @@ object NBTCommand {
     val main = mainCommand { createHelper() }
 
     /**
-     * 查看 NBT
+     * 命令 - 查看 NBT
+     * 用法: /nbt view <slot>
      */
     @CommandBody
     val view = subCommand {
@@ -57,19 +55,38 @@ object NBTCommand {
         }
     }
 
+    const val NBT_REMOVE_SIGN = "null"
+
     /**
-     * 编辑 NBT
-     * TODO 未完成
+     * 命令 - 编辑 NBT
+     * 用法: /nbt edit <slot> <node> <value>
+     * 注: 当 <value> 为 [NBT_REMOVE_SIGN] 时, 删除该节点下的NBT标签
      */
     @CommandBody
     val edit = subCommand {
         slot {
-            literal {
-                literal {
-                    execute<ProxyCommandSender> { player, ctx, arg ->
-                        println(ctx)
-                        println(ctx.args().toString())
-                        println(arg)
+            dynamic {
+                dynamic {
+                    execute<ProxyPlayer> { player, ctx, _ ->
+                        // 获取基本信息
+                        val rawNode = ctx.args()[2]
+                        val rawValue = ctx.args()[3]
+                        val item = getItemBySlot(ctx.args()[1], player.cast<Player>().inventory)
+                        // 获取物品标签并进行操作
+                        item?.let { RefItemStack(it).getNBT() }?.also {
+                            if (rawValue == NBT_REMOVE_SIGN) {
+                                it.removeDeep(rawNode)
+                                player.sendLang("NBTEdit-Remove", rawNode)
+                            } else {
+                                val value = NBTMapper.deserializeBasic(rawValue)
+                                it.putDeep(rawNode, value)
+                                player.sendLang(
+                                    "NBTEdit-Set",
+                                    rawNode, asString(value),
+                                    translateType(player, value).toLegacyText()
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -115,7 +132,7 @@ object NBTCommand {
                     if (!first) {
                         newLine(); repeat(level) { append(retractComponent) } // 缩进
                     }
-                    append(componentKey(sender, deep)) // 添加键
+                    append(componentKey(sender, deep, slot)) // 添加键
                     append(nbtAsComponent(sender, toNBTData(value), level + 1, slot, deep, isFirst = false))
                     first = false
                 }
@@ -124,7 +141,7 @@ object NBTCommand {
             基本类型处理:
             值 (类型)
              */
-            else -> append(componentValue(sender, nbt, slot, nodeDeep)).append(translateType(sender, nbt))
+            else -> append(componentValue(sender, nbt)).append(translateType(sender, nbt))
         }
     }
 
@@ -134,11 +151,14 @@ object NBTCommand {
     fun componentKey(
         sender: ProxyCommandSender,
         nodeDeep: String?,
+        slot: String,
         nodeShallow: String? = nodeDeep?.substringAfterLast(DEEP_SEPARATION),
-    ) = unsafeTypeJson(sender, "NBTFormat-Entry-Key").asComponent(sender, nodeShallow.toString(), nodeDeep.toString())
+    ) = unsafeTypeJson(sender, "NBTFormat-Entry-Key")
+        .asComponent(sender, nodeShallow.toString(), slot, nodeDeep.toString())
 
-    fun componentValue(sender: ProxyCommandSender, nbt: NBTData, slot: String, nodeDeep: String?) =
-        unsafeTypeJson(sender, "NBTFormat-Entry-Value").asComponent(sender, asString(nbt), slot, nodeDeep.toString())
+    fun componentValue(sender: ProxyCommandSender, nbt: NBTData) =
+        unsafeTypeJson(sender, "NBTFormat-Entry-Value")
+            .asComponent(sender, asString(nbt), NBTMapper.serializeToString(nbt.getAsTiNBT()))
 
     /**
      * 获取语言文件Json内容 (不安全)
@@ -162,7 +182,6 @@ object NBTCommand {
         NBTDataType.LONG_ARRAY -> sender.asLangText("NBTFormat-Type-LongArray")
         else -> null
     }?.let { Components.parseSimple(it).build { colored() } } ?: Components.empty()
-
 
     /**
      * 获取NBTData的字符串形式

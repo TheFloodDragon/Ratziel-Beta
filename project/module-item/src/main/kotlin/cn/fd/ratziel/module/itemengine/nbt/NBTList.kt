@@ -39,12 +39,12 @@ open class NBTList(rawData: Any) : NBTData(
      * 在索引处添加数据
      */
     fun add(index: Int, data: NBTData) =
-        if (isTiNBT()) getTiList().add(index, data.getAsTiNBT()) else getNmsList().add(index, data)
+        if (isTiNBT()) getTiList().add(index, data.getAsTiNBT()) else getNmsList().add(index, data.getAsNmsNBT())
 
     /**
      * 在末尾添加数据
      */
-    fun add(data: NBTData) = if (isTiNBT()) getTiList().add(data.getAsTiNBT()) else getNmsList().add(data)
+    fun add(data: NBTData) = if (isTiNBT()) getTiList().add(data.getAsTiNBT()) else getNmsList().add(data.getAsNmsNBT())
 
     /**
      * 删除数据
@@ -55,7 +55,7 @@ open class NBTList(rawData: Any) : NBTData(
      * 设置索引处的数据
      */
     operator fun set(index: Int, data: NBTData) =
-        if (isTiNBT()) getTiList().set(index, data.getAsTiNBT()) else getNmsList().set(index, data)
+        if (isTiNBT()) getTiList().set(index, data.getAsTiNBT()) else getNmsList().set(index, data.getAsNmsNBT())
 
     /**
      * 清空列表

@@ -1,16 +1,16 @@
 # NBT标签
-NBTFormat-Entry-Key: # 0-浅层节点 1-深层节点
+NBTFormat-Entry-Key: # 0-浅层节点 1-目标位置 2-深层节点
   type: json
   text: '&6{0}&7: '
   args:
-    - copy: '{1}'
-      hover: '点击复制'
-NBTFormat-Entry-Value: # 0-值 1-目标位置 2-深层节点
+    - suggest: '/nbt edit {1} {2} '
+      hover: '点击编辑'
+NBTFormat-Entry-Value: # 0-值 1-精确转换后的值
   type: json
   text: '&e{0}'
   args:
-    - suggest: '/nbt edit {1} {2} '
-      hover: '点击编辑'
+    - copy: '{1}'
+      hover: '点击复制'
 NBTFormat-Retract: '  '
 NBTFormat-Retract-List: '&f- '
 NBTFormat-List-Empty: '&f[ ]'
@@ -24,3 +24,5 @@ NBTFormat-Type-String: ' &8(&7String&8)'
 NBTFormat-Type-ByteArray: ' &8(&7ByteArray&8)'
 NBTFormat-Type-IntArray: ' &8(&7IntArray&8)'
 NBTFormat-Type-LongArray: ' &8(&7LongArray&8)'
+NBTEdit-Set: '&8[&6R&8] &7成功设置位于节点 &b{0} &7的NBT标签为: &d{1}&r{2}' # 0-节点 1-值 2-类型
+NBTEdit-Remove: '&8[&6R&8] &7成功删除位于节点 &b{0} &7的NBT标签' # 0-节点

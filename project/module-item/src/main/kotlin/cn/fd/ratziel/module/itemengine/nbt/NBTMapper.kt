@@ -35,7 +35,7 @@ object NBTMapper : KSerializer<TiNBTTag> {
     fun mapFromJson(json: JsonElement, source: NBTTag = NBTTag()): NBTTag = deserialize(json, source) as NBTTag
 
     /**
-     * 将 Json 反序列化成 TiNBTData
+     * 将 Json 反序列化成 NBTData
      */
     fun deserialize(json: JsonElement, source: NBTTag = NBTTag()): NBTData =
         when (json) {
@@ -56,10 +56,18 @@ object NBTMapper : KSerializer<TiNBTTag> {
      * 对基本类型的反序列处理
      */
     fun deserializeBasic(value: Any): NBTData =
-        // 当末尾有 ';' 时,使用 Taboolib 的 ItemTagSerializer 解析
-        if (value is String && value.endsWith(SPECIAL_TYPE_SIGN) && !value.endsWith('\\' + SPECIAL_TYPE_SIGN))
-            ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(value.dropLast(1)))
-                .let { NBTTag.of(it) }
-        else toNBTData(value) // 正常解析
+        toNBTData(
+            // 当末尾有 ';' 时,使用 Taboolib 的 ItemTagSerializer 解析
+            if (value is String && value.endsWith(SPECIAL_TYPE_SIGN) && !value.endsWith('\\' + SPECIAL_TYPE_SIGN))
+                ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(value.dropLast(1)))
+            else value // 正常解析
+        )
+
+    /**
+     * 将 TiNBTData 序列化成 Json
+     */
+    fun serializeToJson(value: TiNBTData) = ItemTagSerializer.serializeData(value)
+
+    fun serializeToString(value: TiNBTData) = serializeToJson(value).asString + SPECIAL_TYPE_SIGN
 
 }

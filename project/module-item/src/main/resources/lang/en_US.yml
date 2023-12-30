@@ -3,14 +3,14 @@ NBTFormat-Entry-Key:
   type: json
   text: '&6{0}&7: '
   args:
-    - copy: '{1}'
-      hover: 'Click to copy'
+    - suggest: '/nbt edit {1} {2} '
+      hover: 'Click to edit'
 NBTFormat-Entry-Value:
   type: json
   text: '&e{0}'
   args:
-    - suggest: '/nbt edit {1} {2} '
-      hover: 'Click to edit'
+    - copy: '{1}'
+      hover: 'Click to copy'
 NBTFormat-Retract: '  '
 NBTFormat-Retract-List: '&f- '
 NBTFormat-List-Empty: '&f[ ]'
@@ -24,3 +24,5 @@ NBTFormat-Type-String: ' &8(&7String&8)'
 NBTFormat-Type-ByteArray: ' &8(&7ByteArray&8)'
 NBTFormat-Type-IntArray: ' &8(&7IntArray&8)'
 NBTFormat-Type-LongArray: ' &8(&7LongArray&8)'
+NBTEdit-Set: '&8[&6R&8] &7Successfully Set NBT in node &b{0} &7to: &d{1}&r{2}' # 0-节点 1-值 2-类型
+NBTEdit-Remove: '&8[&6R&8] &7Successfully Remove NBT in node &b{0}' # 0-节点

@@ -72,13 +72,13 @@ object ItemElement : ElementHandler {
         println("————————————————————————————————")
 
         NBTCompound(NBTCompound.new()).apply {
-            putDeep("a.b.f", NBTList(listOf(1, 2, 3)))
+            putDeep("a.b.f", NBTList(listOf(1, 2, 3, 4, 5)))
         }.let {
+            println(NBTList(listOf(1, 2, 3, 4, 5)).apply { remove(1) })
+            it.putDeep("a.b.f[1]", NBTString("nmsl"))
+            it.putDeep("a.b.f[2]", NBTString("cnm"))
             println(it)
-            it.putDeep("a.b.f[1]",NBTString("nmsl"))
-            it.putDeep("a.b.f[2]",NBTString("cnm"))
-            println(it)
-            it.removeDeep("a.b.f[3]")
+            it.removeDeep("a.b.f[2]")
             println(it)
         }
 
