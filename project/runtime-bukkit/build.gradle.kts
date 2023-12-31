@@ -4,7 +4,8 @@ plugins {
 
 dependencies {
     compileCore(12002)
-    // PAPI
+    compileOnly("net.md-5:bungeecord-chat:1.17")
+    // PlaceholderAPI
     compileOnly("me.clip:placeholderapi:2.11.4")
     // Folia
     taboo("com.tcoded:FoliaLib:0.3.1")
