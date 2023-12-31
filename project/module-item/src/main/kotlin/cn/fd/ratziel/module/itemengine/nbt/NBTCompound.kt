@@ -6,7 +6,6 @@ import cn.fd.ratziel.core.function.MirrorClass
 import cn.fd.ratziel.core.function.getFieldUnsafe
 import cn.fd.ratziel.core.function.getMethodUnsafe
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
-import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
@@ -166,9 +165,12 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
     }
 
     /**
-     * 克隆数据 (既然名字一样那我就偷个懒)
+     * 克隆数据
      */
-    fun clone() = this.data.invokeMethod<Any>("clone").also { this.data = it!! }.let { NBTCompound(it!!) }
+    fun clone() = this.apply {
+        if (isTiNBT()) this.data = (this.data as TiNBTTag).clone()
+        else this.data = NMSMethods.cloneMethod.invoke(this.data)!!
+    }
 
     /**
      * 转换成 Map 形式 (全部以深层节点表示)
@@ -269,20 +271,27 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
 
     internal object NMSMethods {
 
+        // private final Map<String, NBTBase> x
+        // private final Map<String, NBTBase> map = Maps.newHashMap()
         val mapField by lazy {
             ReflexClass.of(clazz).structure.getFieldUnsafe(
                 name = if (MinecraftVersion.isUniversal) "x" else "map",
-                Map::class.java
+                type = Map::class.java
             )
         }
 
+        // public NBTBase c(String var0)
+        // public NBTBase get(String str)
         val getMethod by lazy {
             ReflexClass.of(clazz).structure.getMethodUnsafe(
                 name = if (MinecraftVersion.isUniversal) "c" else "get",
-                String::class.java
+                String::class.java,
+                returnType = classNBTBase
             )
         }
 
+        // public NBTBase a(String var0, NBTBase var1)
+        // public void set(String var1, NBTBase var2)
         val putMethod by lazy {
             ReflexClass.of(clazz).structure.getMethodUnsafe(
                 name = if (MinecraftVersion.isUniversal) "a" else "set",
@@ -290,10 +299,20 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
             )
         }
 
+        // public void r(String var0)
+        // public void remove(String var1)
         val removeMethod by lazy {
             ReflexClass.of(clazz).structure.getMethodUnsafe(
                 name = if (MinecraftVersion.isUniversal) "r" else "remove",
                 String::class.java
+            )
+        }
+
+        // public NBTTagCompound h()
+        // public NBTBase clone()
+        val cloneMethod by lazy {
+            ReflexClass.of(clazz).structure.getMethodUnsafe(
+                name = if (MinecraftVersion.isUniversal) "h" else "clone"
             )
         }
 

@@ -24,5 +24,6 @@ NBTFormat-Type-String: ' &8(&7String&8)'
 NBTFormat-Type-ByteArray: ' &8(&7ByteArray&8)'
 NBTFormat-Type-IntArray: ' &8(&7IntArray&8)'
 NBTFormat-Type-LongArray: ' &8(&7LongArray&8)'
-NBTEdit-Set: '&8[&6R&8] &7Successfully Set NBT in node &b{0} &7to: &d{1}&r{2}' # 0-节点 1-值 2-类型
-NBTEdit-Remove: '&8[&6R&8] &7Successfully Remove NBT in node &b{0}' # 0-节点
+NBTAction-Set: '&8[&6R&8] &7Successfully Set NBT in node &b{0} &7to: &d{1}&r{2}'
+NBTAction-Remove: '&8[&6R&8] &7Successfully Remove NBT in node &b{0}'
+NBTAction-EmptyTag: '&8[&6R&8] &cEmpty NBT Tag'

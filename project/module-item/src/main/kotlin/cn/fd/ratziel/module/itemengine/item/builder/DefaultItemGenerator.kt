@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.itemengine.item.builder
 import cn.fd.ratziel.module.itemengine.api.builder.ItemGenerator
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
-import cn.fd.ratziel.module.itemengine.util.mapping.RefItemMeta
+import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
 import cn.fd.ratziel.module.itemengine.util.transformTo
 import org.bukkit.inventory.meta.ItemMeta
 

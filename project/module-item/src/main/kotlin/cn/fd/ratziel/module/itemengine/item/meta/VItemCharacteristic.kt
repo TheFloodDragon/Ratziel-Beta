@@ -7,8 +7,8 @@ import cn.fd.ratziel.module.itemengine.api.part.meta.ItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTInt
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
-import cn.fd.ratziel.module.itemengine.util.mapping.ItemMapping
-import cn.fd.ratziel.module.itemengine.util.mapping.RefItemMeta
+import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
+import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
 import com.google.common.collect.LinkedHashMultimap
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -132,7 +132,8 @@ data class VItemCharacteristic(
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
             source.put(ItemMapping.CUSTOM_MODEL_DATA.get(), this.customModelData?.let { NBTInt(it) })
         // 物品隐藏标签
-        source.put(ItemMapping.HIDE_FLAG.get(),
+        source.put(
+            ItemMapping.HIDE_FLAG.get(),
             this.hideFlags?.let { HideFlagSerializer.translateFlags(it) }?.let { NBTInt(it) })
         // 属性修饰符
         source.merge(NBTTag.of(NBTTag.new().also { nmsTag ->

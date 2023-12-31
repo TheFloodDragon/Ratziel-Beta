@@ -54,7 +54,11 @@ open class NBTList(rawData: Any) : NBTData(
     /**
      * 设置索引处的数据
      */
-    operator fun set(index: Int, data: NBTData) =
+    operator fun set(index: Int, data: NBTData) = (if (isTiNBT()) getTiList() else getNmsList()).let {
+        if (index == it.size) add(data) else setGenerally(index, data)
+    }
+
+    fun setGenerally(index: Int, data: NBTData) =
         if (isTiNBT()) getTiList().set(index, data.getAsTiNBT()) else getNmsList().set(index, data.getAsNmsNBT())
 
     /**
@@ -95,10 +99,12 @@ open class NBTList(rawData: Any) : NBTData(
         @JvmStatic
         fun new(list: ArrayList<Any?>) = new().also { listField.set(it, list) }
 
+        // private final List<NBTBase> c
+        // private List<NBTBase> list = Lists.newArrayList();
         internal val listField by lazy {
             ReflexClass.of(clazz).structure.getFieldUnsafe(
                 name = if (MinecraftVersion.isUniversal) "c" else "list",
-                List::class.java
+                type = List::class.java
             )
         }
 

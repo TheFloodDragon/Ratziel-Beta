@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.itemengine.api.part.meta.ItemDisplay
 import cn.fd.ratziel.module.itemengine.nbt.NBTList
 import cn.fd.ratziel.module.itemengine.nbt.NBTString
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
-import cn.fd.ratziel.module.itemengine.util.mapping.ItemMapping
+import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
 import cn.fd.ratziel.module.itemengine.util.nmsComponent
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi

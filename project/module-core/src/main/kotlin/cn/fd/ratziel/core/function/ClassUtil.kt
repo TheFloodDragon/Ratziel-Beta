@@ -1,5 +1,7 @@
 package cn.fd.ratziel.core.function
 
+import taboolib.library.reflex.ClassField
+import taboolib.library.reflex.ClassMethod
 import taboolib.library.reflex.ClassStructure
 import taboolib.library.reflex.Reflection
 
@@ -30,7 +32,7 @@ fun ClassStructure.findMethod(
     returnType: Class<*>? = null,
     matchParameter: Boolean = true,
     vararg parameter: Class<*>,
-) = methods.firstOrNull {
+) = this.findMethod {
     // 匹配方法名
     (name == null || it.name == name) &&
             // 匹配返回值类型
@@ -40,6 +42,8 @@ fun ClassStructure.findMethod(
                 it.parameterTypes, parameter.toList().toTypedArray()
             ))
 } ?: throw NoSuchMethodException("${this.name}#$name(${parameter.joinToString(";") { it.name }}):$returnType")
+
+fun ClassStructure.findMethod(predicate: (ClassMethod) -> Boolean) = this.methods.firstOrNull(predicate)
 
 /**
  * 获取类中的字段 (不安全)
@@ -63,9 +67,11 @@ fun ClassStructure.getFieldUnsafe(
 fun ClassStructure.findField(
     name: String? = null,
     type: Class<*>? = null,
-) = fields.firstOrNull {
+) = findField {
     (name == null || it.name == name) && (type == null || it.fieldType == type)
 } ?: throw NoSuchFieldException("${this.name}#$name:$type")
+
+fun ClassStructure.findField(predicate: (ClassField) -> Boolean) = this.fields.firstOrNull(predicate)
 
 /**
  * 判断 [parent] 是否是当前类的 "父类"

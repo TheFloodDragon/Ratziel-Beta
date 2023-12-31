@@ -4,9 +4,9 @@ import cn.fd.ratziel.bukkit.command.getItemBySlot
 import cn.fd.ratziel.bukkit.command.slot
 import cn.fd.ratziel.common.util.asComponent
 import cn.fd.ratziel.common.util.getType
+import cn.fd.ratziel.module.itemengine.mapping.RefItemStack
 import cn.fd.ratziel.module.itemengine.nbt.*
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound.Companion.DEEP_SEPARATION
-import cn.fd.ratziel.module.itemengine.util.mapping.RefItemStack
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
@@ -49,7 +49,7 @@ object NBTCommand {
                 }?.also { nbt ->
                     // 构建消息组件并发送
                     nbtAsComponent(player, nbt, 0, arg).sendTo(player)
-                }
+                } ?: player.sendLang("NBTAction-EmptyTag")
             }
         }
     }
@@ -75,17 +75,17 @@ object NBTCommand {
                         item?.let { RefItemStack(it).getNBT() }?.also {
                             if (rawValue == NBT_REMOVE_SIGN) {
                                 it.removeDeep(rawNode)
-                                player.sendLang("NBTEdit-Remove", rawNode)
+                                player.sendLang("NBTAction-Remove", rawNode)
                             } else {
                                 val value = NBTMapper.deserializeBasic(rawValue)
                                 it.putDeep(rawNode, value)
                                 player.sendLang(
-                                    "NBTEdit-Set",
+                                    "NBTAction-Set",
                                     rawNode, asString(value),
                                     translateType(player, value).toLegacyText()
                                 )
                             }
-                        }
+                        } ?: player.sendLang("NBTAction-EmptyTag")
                     }
                 }
             }

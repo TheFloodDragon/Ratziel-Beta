@@ -1,10 +1,13 @@
-package cn.fd.ratziel.module.itemengine.util.mapping
+package cn.fd.ratziel.module.itemengine.mapping
 
 import cn.fd.ratziel.core.function.MirrorClass
 import cn.fd.ratziel.core.function.UnsupportedTypeException
 import cn.fd.ratziel.core.function.getFieldUnsafe
+import cn.fd.ratziel.core.function.getMethodUnsafe
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
+import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
+import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
@@ -26,17 +29,24 @@ class RefItemStack(protected var data: Any) {
     /**
      * 获取物品NBT标签
      */
-    fun getNBT() = nmsGetTagMethod.get(getAsNMS())?.let { NBTCompound(it) }
+    fun getNBT() = this.getAsNMS()?.let { nmsGetTagMethod.get(it) }?.let { NBTCompound(it) }
 
     /**
      * 设置物品NBT标签
      */
-    fun setNBT(nbt: NBTCompound) = nmsGetTagMethod.set(getAsNMS(), nbt.getAsNmsNBT())
+    fun setNBT(nbt: NBTCompound) = this.getAsNMS()?.let { nmsGetTagMethod.set(it, nbt.getAsNmsNBT()) }
+
+    /**
+     * 克隆数据
+     */
+    fun clone() = this.apply {
+        this.data = if (isOBC()) this.data.invokeMethod("clone")!! else nmsCloneMethod.invoke(this.data)!!
+    }
 
     /**
      * 获取NMS形式
      */
-    fun getAsNMS() = if (isOBC()) handleField.get(data) else data
+    fun getAsNMS() = if (isOBC()) data.getProperty("handle") else data
 
     /**
      * 数据类型判断方法
@@ -71,6 +81,8 @@ class RefItemStack(protected var data: Any) {
         // private ItemStack(NBTTagCompound nbt)
         fun newNMS(nbt: Any) = nmsClass.invokeConstructor(nbt)
 
+        // private NBTTagCompound v
+        // private NBTTagCompound tag
         internal val nmsGetTagMethod by lazy {
             ReflexClass.of(nmsClass).structure.getFieldUnsafe(
                 name = if (MinecraftVersion.isUniversal) "v" else "tag",
@@ -78,11 +90,13 @@ class RefItemStack(protected var data: Any) {
             )
         }
 
-        /**
-         * net.minecraft.world.item.ItemStack handle;
-         */
-        internal val handleField by lazy {
-            ReflexClass.of(clazz).structure.getFieldUnsafe(name = "handle", type = nmsClass)
+        // public ItemStack p()
+        // public ItemStack cloneItemStack()
+        internal val nmsCloneMethod by lazy {
+            ReflexClass.of(nmsClass).structure.getMethodUnsafe(
+                name = if (MinecraftVersion.isUniversal) "p" else "cloneItemStack",
+                returnType = nmsClass
+            )
         }
 
     }

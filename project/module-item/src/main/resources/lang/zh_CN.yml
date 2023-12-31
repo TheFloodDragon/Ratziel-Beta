@@ -24,5 +24,6 @@ NBTFormat-Type-String: ' &8(&7String&8)'
 NBTFormat-Type-ByteArray: ' &8(&7ByteArray&8)'
 NBTFormat-Type-IntArray: ' &8(&7IntArray&8)'
 NBTFormat-Type-LongArray: ' &8(&7LongArray&8)'
-NBTEdit-Set: '&8[&6R&8] &7成功设置位于节点 &b{0} &7的NBT标签为: &d{1}&r{2}' # 0-节点 1-值 2-类型
-NBTEdit-Remove: '&8[&6R&8] &7成功删除位于节点 &b{0} &7的NBT标签' # 0-节点
+NBTAction-Set: '&8[&6R&8] &7成功设置位于节点 &b{0} &7的NBT标签为: &d{1}&r{2}' # 0-节点 1-值 2-类型
+NBTAction-Remove: '&8[&6R&8] &7成功删除位于节点 &b{0} &7的NBT标签' # 0-节点
+NBTAction-EmptyTag: '&8[&6R&8] &c空标签'
