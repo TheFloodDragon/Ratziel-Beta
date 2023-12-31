@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-library`
@@ -35,7 +36,7 @@ subprojects {
         if (parent?.name == "project") {
             // Taboolib通用模块
             compileTabooCommon()
-            // MiniMessage - https://docs.adventure.kyori.net/minimessage/api.html
+            // Adventure API
             adventure()
             // Kotlin序列化工具
             serialization()
@@ -52,8 +53,8 @@ subprojects {
 
     java {
         withSourcesJar()
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     group = rootGroup
@@ -63,6 +64,10 @@ subprojects {
 
     tasks {
         withType<JavaCompile> { options.encoding = "UTF-8" } //UTF-8 编码
+        // Kotlin Jvm 设置
+        withType<KotlinCompile> {
+            kotlinOptions { jvmTarget = "1.8" }
+        }
         // ShadowJar
         withType<ShadowJar> {
             // Options

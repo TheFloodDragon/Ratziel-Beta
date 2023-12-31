@@ -3,19 +3,13 @@ plugins {
 }
 
 dependencies {
-    // 其它
     compileCore(12002)
-    compileOnly("net.md-5:bungeecord-chat:1.17")
+    // PAPI
     compileOnly("me.clip:placeholderapi:2.11.4")
     // Folia
-    compileOnly("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT")
     taboo("com.tcoded:FoliaLib:0.3.1")
     // Module - Kether
     installModule("module-kether")
-}
-
-tasks {
-    build { dependsOn(tabooRelocateJar) }
 }
 
 taboolib {
@@ -41,7 +35,7 @@ taboolib {
         }
 
         links {
-            name("homepage").url("https://github.com/TheFloodDragon/Ratziel-Beta/")
+            name("homepage").url("https://github.com/$githubRepo")
         }
 
         @Suppress("UNCHECKED_CAST") val nodes = bukkitNodes as HashMap<String, Any>

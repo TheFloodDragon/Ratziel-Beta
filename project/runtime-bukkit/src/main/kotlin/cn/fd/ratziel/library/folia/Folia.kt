@@ -10,21 +10,26 @@ import java.util.function.Consumer
 object Folia : ServerImplementation by scheduler {
 
     /**
-     * 传送实体
+     * 传送实体 TODO Fix this
      *
      * @param entity 需要传送的实体
-     * @param target 传送目的地
+     * @param location 传送目的地
      * @param cause 传送原因
      * @return 传送是否成功
      */
     @JvmStatic
+    @Deprecated("Unsafe", ReplaceWith(
+        "teleportAsync(entity as org.bukkit.entity.Player, location)",
+        "cn.fd.ratziel.library.folia.Folia.teleportAsync",)
+    )
     fun teleport(
         entity: Entity,
         location: Location,
         cause: PlayerTeleportEvent.TeleportCause = PlayerTeleportEvent.TeleportCause.PLUGIN,
-    ) = if (isFolia()) {
-        entity.teleportAsync(location, cause).isDone
-    } else entity.teleport(location, cause)
+    ) = teleportAsync(entity as org.bukkit.entity.Player,location)
+//        if (isFolia()) {
+//            entity.teleportAsync(location, cause).isDone
+//        } else entity.teleport(location, cause)
 
     @JvmStatic
     fun runTask(consumer: Consumer<WrappedTask>) = runNextTick(consumer).isDone

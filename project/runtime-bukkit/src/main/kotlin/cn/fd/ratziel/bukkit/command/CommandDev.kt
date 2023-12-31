@@ -20,7 +20,6 @@ import taboolib.expansion.createHelper
  */
 @CommandHeader(
     name = "r-dev",
-    aliases = ["rdev"],
     permission = "ratziel.command.dev",
     description = "开发命令"
 )

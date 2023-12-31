@@ -105,8 +105,6 @@ fun DependencyHandler.installTaboo(vararg module: String, version: String = tabo
     add(ACTION_INSTALL, "io.izzel.taboolib:$it:$version")
 }
 
-const val ByShadow = "shadow"
-
 private const val ACTION_COMPILE = "compileOnly"
 private const val ACTION_INSTALL = "api"
 private const val ACTION_SHADOW = "implementation"
