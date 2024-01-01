@@ -47,22 +47,6 @@ fun String.replaceNonEscaped(
 }
 
 /**
- * 字符串结尾为非转义字符
- * @see String.endsWith
- * @return (可能)去掉转义字符的字符串和布尔值结果
- */
-@JvmOverloads
-fun String.endsWithNonEscaped(
-    suffix: String,
-    ignoreCase: Boolean = false,
-    escapeChar: String = "\\",
-): Pair<String, Boolean> = if (this.endsWith(suffix, ignoreCase)) {
-    if (this.endsWith(escapeChar + suffix, ignoreCase))
-        this.dropLast(escapeChar.length + suffix.length).plus(suffix) to false
-    else this to true
-} else this to false
-
-/**
  * 字符串自适应 - 尝试将字符串转化为数字
  */
 fun String.adapt() = toBooleanStrictOrNull() ?: toBigDecimalOrNull()?.let {

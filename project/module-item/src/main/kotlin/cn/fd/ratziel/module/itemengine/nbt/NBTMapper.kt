@@ -59,10 +59,9 @@ object NBTMapper : KSerializer<TiNBTTag> {
      */
     fun deserializeBasic(value: Any): NBTData = toNBTData(
         if (value is String) {
-            val check = value.endsWithNonEscaped(SPECIAL_TYPE_SIGN)
-            if (check.second)
-                ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(check.first.dropLast(SPECIAL_TYPE_SIGN.length)))
-            else check.first.adapt()
+            if (value.endsWith(SPECIAL_TYPE_SIGN))
+                ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(value.dropLast(SPECIAL_TYPE_SIGN.length)))
+            else value.adapt()
         } else value
     )
 
