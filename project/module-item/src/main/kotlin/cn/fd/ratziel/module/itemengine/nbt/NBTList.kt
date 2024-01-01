@@ -54,8 +54,11 @@ open class NBTList(rawData: Any) : NBTData(
     /**
      * 设置索引处的数据
      */
-    operator fun set(index: Int, data: NBTData) = (if (isTiNBT()) getTiList() else getNmsList()).let {
-        if (index == it.size) add(data) else setGenerally(index, data)
+    operator fun set(index: Int, data: NBTData) = set(index, data, true)
+
+    fun set(index: Int, data: NBTData, create: Boolean) = (if (isTiNBT()) getTiList() else getNmsList()).let {
+        // 若索引等于列表长度(允许创建时), 将数据添加在末尾
+        if (index == it.size && create) add(data) else setGenerally(index, data)
     }
 
     fun setGenerally(index: Int, data: NBTData) =

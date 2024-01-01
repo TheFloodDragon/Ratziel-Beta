@@ -4,6 +4,7 @@ package cn.fd.ratziel.module.itemengine.nbt
 
 import cn.fd.ratziel.core.serialization.adapt
 import cn.fd.ratziel.core.util.adapt
+import cn.fd.ratziel.core.util.endsWithNonEscaped
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -56,12 +57,14 @@ object NBTMapper : KSerializer<TiNBTTag> {
      * 当末尾有 [SPECIAL_TYPE_SIGN] 时,使用 [taboolib.module.nms.ItemTagSerializer] 解析
      * 反之则尝试适应性解析,再不济就直接转化了
      */
-    fun deserializeBasic(value: Any): NBTData =
-        toNBTData(
-            if (value is String && value.endsWith(SPECIAL_TYPE_SIGN) && !value.endsWith('\\' + SPECIAL_TYPE_SIGN))
-                ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(value.dropLast(1)))
-            else if (value is String) value.adapt() else value
-        )
+    fun deserializeBasic(value: Any): NBTData = toNBTData(
+        if (value is String) {
+            val check = value.endsWithNonEscaped(SPECIAL_TYPE_SIGN)
+            if (check.second)
+                ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(check.first.dropLast(SPECIAL_TYPE_SIGN.length)))
+            else value.adapt()
+        } else value
+    )
 
     /**
      * 将 [TiNBTData] 序列化成 [JsonElement]

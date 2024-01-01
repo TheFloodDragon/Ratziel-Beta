@@ -54,12 +54,16 @@ object NBTCommand {
         }
     }
 
-    const val NBT_REMOVE_SIGN = "null"
+    const val NBT_REMOVE_SIGN = ":r"
+    const val NBT_COMPOUND_SIGN = ":c"
+    const val NBT_LIST_SIGN = ":l"
 
     /**
      * 命令 - 编辑 NBT
      * 用法: /nbt edit <slot> <node> <value>
      * 注: 当 <value> 为 [NBT_REMOVE_SIGN] 时, 删除该节点下的NBT标签
+     * [NBT_COMPOUND_SIGN] 对应空的 [NBTCompound]
+     * [NBT_LIST_SIGN] 对应空的 [NBTList]
      */
     @CommandBody
     val edit = subCommand {
@@ -73,11 +77,14 @@ object NBTCommand {
                         val item = getItemBySlot(ctx.args()[1], player.cast<Player>().inventory)
                         // 获取物品标签并进行操作
                         item?.let { RefItemStack(it).getNBT() }?.also {
-                            if (rawValue == NBT_REMOVE_SIGN) {
+                            if (rawValue.equals(NBT_REMOVE_SIGN, true)) {
                                 it.removeDeep(rawNode)
                                 player.sendLang("NBTAction-Remove", rawNode)
                             } else {
-                                val value = NBTMapper.deserializeBasic(rawValue)
+                                val value =
+                                    if (rawValue.equals(NBT_COMPOUND_SIGN, true)) NBTCompound()
+                                    else if (rawValue.equals(NBT_LIST_SIGN, true)) NBTList()
+                                    else NBTMapper.deserializeBasic(rawValue)
                                 it.putDeep(rawNode, value)
                                 player.sendLang(
                                     "NBTAction-Set",

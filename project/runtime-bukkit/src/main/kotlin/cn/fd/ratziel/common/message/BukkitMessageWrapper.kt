@@ -16,7 +16,7 @@ import taboolib.module.nms.MinecraftVersion
  */
 @Awake
 @PlatformSide([Platform.BUKKIT])
-class BukkitMessageWrapper : MessageWrapper {
+object BukkitMessageWrapper : MessageWrapper {
 
     private val isLowVersion = MinecraftVersion.isLower(MinecraftVersion.V1_16)
 
