@@ -4,7 +4,6 @@ package cn.fd.ratziel.module.itemengine.nbt
 
 import cn.fd.ratziel.core.serialization.adapt
 import cn.fd.ratziel.core.util.adapt
-import cn.fd.ratziel.core.util.endsWithNonEscaped
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
