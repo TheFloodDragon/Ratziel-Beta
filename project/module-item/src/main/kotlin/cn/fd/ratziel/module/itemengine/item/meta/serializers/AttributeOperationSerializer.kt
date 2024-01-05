@@ -1,10 +1,9 @@
 package cn.fd.ratziel.module.itemengine.item.meta.serializers
 
+import cn.fd.ratziel.core.serialization.primitiveDescriptor
 import cn.fd.ratziel.module.itemengine.util.MetaMather
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import org.bukkit.attribute.AttributeModifier
@@ -17,7 +16,7 @@ import org.bukkit.attribute.AttributeModifier
  */
 object AttributeOperationSerializer : KSerializer<AttributeModifier.Operation> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("item.AttributeOperation", PrimitiveKind.STRING)
+    override val descriptor = primitiveDescriptor(PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: AttributeModifier.Operation) {
         encoder.encodeString(value.name)

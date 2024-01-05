@@ -4,27 +4,21 @@ import taboolib.common.platform.function.getDataFolder
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
-import taboolib.module.lang.Language
 
 object Settings {
 
-    @Config("settings.yml")
-    lateinit var conf: Configuration
-        internal set
+    private const val FILE = "settings.yml"
 
-    @ConfigNode("Settings.language", "settings.yml")
-    var language: String = "zh_CN"
-        set(value) {
-            field = value.also { Language.default = value } // 刷新语言
-        }
+    @Config(FILE)
+    lateinit var conf: Configuration internal set
 
-    @ConfigNode("Workspaces.listen", "settings.yml")
+    @ConfigNode("Workspaces.listen", FILE)
     var listenFiles = true
 
-    @ConfigNode("Workspaces.paths", "settings.yml")
+    @ConfigNode("Workspaces.paths", FILE)
     var workspacePaths = listOf("${getDataFolder()}/workspace")
 
-    @ConfigNode("Workspaces.filter", "settings.yml")
+    @ConfigNode("Workspaces.filter", FILE)
     var fileFilter = "^(?![#!]).*\\.(?i)(yaml|yml|toml|tml|json|conf)\$"
 
 }

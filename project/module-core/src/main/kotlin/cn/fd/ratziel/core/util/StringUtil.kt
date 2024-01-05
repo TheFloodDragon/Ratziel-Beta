@@ -1,5 +1,13 @@
 package cn.fd.ratziel.core.util
 
+import java.util.function.Consumer
+
+/**
+ * 删除当前字符串的所有目标字符
+ * 其实就是将 [value] 替换成 ""
+ */
+fun String.removeAll(value: String, ignoreCase: Boolean = false) = this.replace(value, "", ignoreCase)
+
 /**
  * 获取当前字符串中目标字符的所有索引并执行相应的操作
  */
@@ -44,6 +52,25 @@ fun String.replaceNonEscaped(
         lastIndex = index + oldValue.length
     }
     append(this@replaceNonEscaped.substring(lastIndex)) // 尾处理
+}
+
+/**
+ * 判断当前字符串是否包含目标字符串, 若包含则执行 [consumer]
+ */
+fun String.runIfContainsNonEscaped(
+    other: String,
+    ignoreCase: Boolean = false,
+    escapeChar: String = "\\",
+    consumer: Consumer<String>,
+): Boolean {
+    val result =
+        // 若有转义字符, 先全部删除
+        if (this.contains(escapeChar + other, ignoreCase))
+            this.removeAll(escapeChar + other, ignoreCase).contains(other, ignoreCase)
+        else this.contains(other, ignoreCase)
+    // 若包含目标字符串, 则执行, 提供去掉转义字符的字符串
+    if (result) consumer.accept(this.replace(escapeChar + other, other))
+    return result
 }
 
 /**

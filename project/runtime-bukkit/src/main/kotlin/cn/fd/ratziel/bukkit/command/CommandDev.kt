@@ -1,6 +1,5 @@
 package cn.fd.ratziel.bukkit.command
 
-import cn.fd.ratziel.common.command.CommandElement
 import cn.fd.ratziel.common.function.executeAsync
 import cn.fd.ratziel.common.message.audienceSender
 import cn.fd.ratziel.common.message.sendMessage
@@ -21,7 +20,7 @@ import taboolib.expansion.createHelper
 @CommandHeader(
     name = "r-dev",
     permission = "ratziel.command.dev",
-    description = "开发命令"
+    description = "Develop Command"
 )
 object CommandDev {
 
@@ -45,13 +44,10 @@ object CommandDev {
     @CommandBody
     val testMessage = subCommand {
         dynamic {
-            execute<CommandSender> { sender, _, context ->
+            executeAsync<CommandSender> { sender, _, context ->
                 sender.audienceSender.sendMessage(context)
             }
         }
     }
-
-    @CommandBody
-    val element = CommandElement
 
 }

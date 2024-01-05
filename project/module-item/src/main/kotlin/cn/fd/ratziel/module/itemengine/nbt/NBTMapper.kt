@@ -21,8 +21,6 @@ import taboolib.module.nms.ItemTagSerializer
 @Serializer(TiNBTTag::class)
 object NBTMapper : KSerializer<TiNBTTag> {
 
-    const val SPECIAL_TYPE_SIGN = ";"
-
     override fun deserialize(decoder: Decoder): TiNBTTag =
         mapFromJson((decoder as JsonDecoder).decodeJsonElement()).getAsTiNBT()
 
@@ -50,19 +48,31 @@ object NBTMapper : KSerializer<TiNBTTag> {
     fun deserializePrimitive(json: JsonPrimitive): NBTData =
         deserializeBasic(if (json.isString) json.content else json.adapt())
 
+    const val SPECIAL_TYPE_SIGN = ":"
+    val NBT_COMPOUND_SIGNS = arrayOf(":c", ":compound", ":cpd")
+    val NBT_LIST_SIGNS = arrayOf(":l", ":list")
+
     /**
      * 对基本类型的反序列处理
      * 处理方式:
-     * 当末尾有 [SPECIAL_TYPE_SIGN] 时,使用 [taboolib.module.nms.ItemTagSerializer] 解析
-     * 反之则尝试适应性解析,再不济就直接转化了
+     * 1. [SPECIAL_TYPE_SIGN] 开头时,使用 [taboolib.module.nms.ItemTagSerializer] 解析
+     * 2. [NBT_COMPOUND_SIGNS] 代表空的 [NBTCompound]
+     * 3. [NBT_LIST_SIGNS] 代表空的 [NBTList]
+     * 4. 直接尝试适应性转化
      */
-    fun deserializeBasic(value: Any): NBTData = toNBTData(
+    fun deserializeBasic(value: Any): NBTData {
         if (value is String) {
-            if (value.endsWith(SPECIAL_TYPE_SIGN))
-                ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(value.dropLast(SPECIAL_TYPE_SIGN.length)))
-            else value.adapt()
-        } else value
-    )
+            val lowValue = value.lowercase() // 忽略大小写
+            return when {
+                NBT_COMPOUND_SIGNS.contains(lowValue) -> NBTCompound()
+                NBT_LIST_SIGNS.contains(lowValue) -> NBTList()
+                lowValue.startsWith(SPECIAL_TYPE_SIGN) -> NBTConverter.TiConverter.convert(
+                    ItemTagSerializer.deserializeData(com.google.gson.JsonPrimitive(value.drop(SPECIAL_TYPE_SIGN.length)))
+                )
+                else -> toNBTData(value.adapt())
+            }
+        } else return toNBTData(value)
+    }
 
     /**
      * 将 [TiNBTData] 序列化成 [JsonElement]

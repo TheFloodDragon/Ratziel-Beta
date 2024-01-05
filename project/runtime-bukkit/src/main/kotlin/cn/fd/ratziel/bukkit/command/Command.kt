@@ -1,6 +1,7 @@
 package cn.fd.ratziel.bukkit.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
+import cn.fd.ratziel.common.command.CommandElement
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.function.executeAsync
 import taboolib.common.platform.ProxyCommandSender
@@ -17,7 +18,7 @@ import kotlin.system.measureTimeMillis
     name = "ratziel",
     aliases = ["r", "rz", "f"],
     permission = "ratziel.command.main",
-    description = "插件主命令"
+    description = "Main Command"
 )
 object Command {
 
@@ -26,6 +27,9 @@ object Command {
 
     @CommandBody
     val dev = CommandDev
+
+    @CommandBody
+    val element = CommandElement
 
     @CommandBody
     val reload = subCommand {

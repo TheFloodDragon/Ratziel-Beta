@@ -20,7 +20,7 @@ open class NBTString(rawData: Any) : NBTData(
     /**
      * 字符串值
      */
-    val content: String
+    open val content: String
         get() = if (isTiNBT()) getAsTiNBT().asString() else getField.get(data) as String
 
     companion object : MirrorClass<NBTString>() {

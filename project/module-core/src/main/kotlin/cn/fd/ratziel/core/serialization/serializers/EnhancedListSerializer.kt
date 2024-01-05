@@ -1,8 +1,10 @@
 package cn.fd.ratziel.core.serialization.serializers
 
+import cn.fd.ratziel.core.util.runIfContainsNonEscaped
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.*
+import java.util.*
 
 /**
  * EnhancedListSerializer - 增强列表序列化器
@@ -20,19 +22,20 @@ class EnhancedListSerializer<T : Any>(serializer: KSerializer<T>) :
     /**
      * 构建增强列表
      */
-    fun enhanceBuild(element: JsonElement, list: MutableList<JsonElement> = mutableListOf()): MutableList<JsonElement> {
-        if (element is JsonArray) {
-            element.forEach {
-                enhanceBuild(it, list)
+    fun enhanceBuild(element: JsonElement, rawList: LinkedList<JsonElement> = LinkedList()): LinkedList<JsonElement> =
+        rawList.also { list ->
+            when {
+                element is JsonArray -> element.forEach { enhanceBuild(it, list) }
+                element is JsonPrimitive && element.jsonPrimitive.isString ->
+                    element.content.split(NEWLINE_SIGN).forEach {
+                        it.runIfContainsNonEscaped(REMOVE_LINE_SIGN) { s ->
+                            list.add(JsonPrimitive(s))
+                        }
+                    }
+
+                else -> list.add(element)
             }
-        } else if (element is JsonPrimitive && element.jsonPrimitive.isString) {
-            element.content.split(NEWLINE_SIGN)
-                .forEach {
-                    if (!it.contains(REMOVE_LINE_SIGN)) list.add(JsonPrimitive(it))
-                }
-        } else list.add(element)
-        return list
-    }
+        }
 
 }
 
@@ -40,4 +43,4 @@ class EnhancedListSerializer<T : Any>(serializer: KSerializer<T>) :
 const val NEWLINE_SIGN = '\n'
 
 // 删行符
-const val REMOVE_LINE_SIGN = "<{dl}>"
+const val REMOVE_LINE_SIGN = "{dl}"

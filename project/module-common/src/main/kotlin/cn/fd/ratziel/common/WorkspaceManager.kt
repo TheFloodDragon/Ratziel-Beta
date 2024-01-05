@@ -53,12 +53,15 @@ object WorkspaceManager {
      */
     fun getAllFiles(spaces: Iterable<Workspace> = workspaces) = spaces.flatMap { it.getFiles() }
 
+    // 默认资源路径
+    const val DEFAULT_PATH = "default"
+
     /**
      * 复制默认工作空间内文件到默认工作空间
      */
     fun releaseWorkspace(folder: File) {
         findInJar(getJarFile()) {
-            !it.isDirectory && it.name.startsWith("default/")
+            !it.isDirectory && it.name.startsWith("$DEFAULT_PATH/")
         }.forEach {
             newFile(File(folder, it.first.name.substringAfter('/'))).writeBytes(it.second.readBytes())
         }

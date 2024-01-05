@@ -24,7 +24,7 @@ open class NBTList(rawData: Any) : NBTData(
     NBTDataType.LIST
 ) {
 
-    var content: List<NBTData>
+    open var content: List<NBTData>
         get() = if (isTiNBT()) getTiList().map { toNBTData(it) } else getNmsList().mapNotNull { toNBTData(it) }
         set(value) {
             data = if (isTiNBT()) TiNBTList(value.map { it.getAsTiNBT() }) else new(value.map { it.getAsNmsNBT() })
@@ -33,55 +33,56 @@ open class NBTList(rawData: Any) : NBTData(
     /**
      * 获取数据
      */
-    operator fun get(index: Int) = toNBTData(if (isTiNBT()) getTiList()[index] else getNmsList()[index])
+    open operator fun get(index: Int) = toNBTData(if (isTiNBT()) getTiList()[index] else getNmsList()[index])
 
     /**
      * 在索引处添加数据
      */
-    fun add(index: Int, data: NBTData) =
+    open fun add(index: Int, data: NBTData) =
         if (isTiNBT()) getTiList().add(index, data.getAsTiNBT()) else getNmsList().add(index, data.getAsNmsNBT())
 
     /**
      * 在末尾添加数据
      */
-    fun add(data: NBTData) = if (isTiNBT()) getTiList().add(data.getAsTiNBT()) else getNmsList().add(data.getAsNmsNBT())
+    open fun add(data: NBTData) =
+        if (isTiNBT()) getTiList().add(data.getAsTiNBT()) else getNmsList().add(data.getAsNmsNBT())
 
     /**
      * 删除数据
      */
-    fun remove(index: Int) = if (isTiNBT()) getTiList().removeAt(index) else getNmsList().removeAt(index)
+    open fun remove(index: Int) = if (isTiNBT()) getTiList().removeAt(index) else getNmsList().removeAt(index)
 
     /**
      * 设置索引处的数据
      */
-    operator fun set(index: Int, data: NBTData) = set(index, data, true)
+    open operator fun set(index: Int, data: NBTData) = set(index, data, true)
 
-    fun set(index: Int, data: NBTData, create: Boolean) = (if (isTiNBT()) getTiList() else getNmsList()).let {
+    open fun set(index: Int, data: NBTData, create: Boolean) = (if (isTiNBT()) getTiList() else getNmsList()).let {
         // 若索引等于列表长度(允许创建时), 将数据添加在末尾
         if (index == it.size && create) add(data) else setGenerally(index, data)
     }
 
-    fun setGenerally(index: Int, data: NBTData) =
+    open fun setGenerally(index: Int, data: NBTData) =
         if (isTiNBT()) getTiList().set(index, data.getAsTiNBT()) else getNmsList().set(index, data.getAsNmsNBT())
 
     /**
      * 清空列表
      */
-    fun clear() = if (isTiNBT()) getTiList().clear() else getNmsList().clear()
+    open fun clear() = if (isTiNBT()) getTiList().clear() else getNmsList().clear()
 
     /**
      * 获取 NMS 形式的列表
      */
-    fun getNmsList() = listField.get(getAsNmsNBT()) as ArrayList<Any?>
+    open fun getNmsList() = listField.get(getAsNmsNBT()) as ArrayList<Any?>
 
     /**
      * 获取 Ti 形式的数据
      */
-    fun getTiList() = getAsTiNBT() as MutableList<TiNBTData>
+    open fun getTiList() = getAsTiNBT() as MutableList<TiNBTData>
 
     // Kotlin 操作符
-    operator fun plus(data: NBTData) = add(data)
-    operator fun minus(index: Int) = remove(index)
+    open operator fun plus(data: NBTData) = add(data)
+    open operator fun minus(index: Int) = remove(index)
 
     constructor() : this(TiNBTList())
 

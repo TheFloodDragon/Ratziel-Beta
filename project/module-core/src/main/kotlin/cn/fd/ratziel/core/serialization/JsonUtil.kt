@@ -1,10 +1,13 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.core.serialization
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.json.*
 import java.util.function.Function
 
-@OptIn(ExperimentalSerializationApi::class)
 val baseJson by lazy {
     Json {
         // 宽松模式
@@ -19,6 +22,19 @@ val baseJson by lazy {
         decodeEnumsCaseInsensitive = true
     }
 }
+
+/**
+ * 简便方法, 默认 "serialName" 为 全类名
+ */
+@Suppress("UnusedReceiverParameter")
+inline fun <reified T> KSerializer<T>.primitiveDescriptor(kind: PrimitiveKind) =
+    PrimitiveSerialDescriptor(T::class.java.name, kind)
+
+@Suppress("UnusedReceiverParameter")
+inline fun <reified T> KSerializer<T>.buildClassDescriptor(
+    vararg typeParameters: SerialDescriptor,
+    noinline builderAction: ClassSerialDescriptorBuilder.() -> Unit = {},
+) = buildClassSerialDescriptor(T::class.java.name, *typeParameters, builderAction = builderAction)
 
 /**
  * 构造一个空Json如"{}"

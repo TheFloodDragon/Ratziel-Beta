@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.itemengine.command
 
 import cn.fd.ratziel.bukkit.command.getItemBySlot
 import cn.fd.ratziel.bukkit.command.slot
+import cn.fd.ratziel.common.function.executeAsync
 import cn.fd.ratziel.common.util.asComponent
 import cn.fd.ratziel.common.util.getType
 import cn.fd.ratziel.module.itemengine.mapping.RefItemStack
@@ -43,7 +44,7 @@ object NBTCommand {
     @CommandBody
     val view = subCommand {
         slot {
-            execute<ProxyPlayer> { player, _, arg ->
+            executeAsync<ProxyPlayer> { player, _, arg ->
                 getItemBySlot(arg, player.cast<Player>().inventory)?.let {
                     RefItemStack(it).getNBT() // 获取物品标签
                 }?.also { nbt ->
@@ -54,9 +55,7 @@ object NBTCommand {
         }
     }
 
-    const val NBT_REMOVE_SIGN = ":r"
-    const val NBT_COMPOUND_SIGN = ":c"
-    const val NBT_LIST_SIGN = ":l"
+    val NBT_REMOVE_SIGNS = arrayOf(":r", ":rm", ":remove")
 
     /**
      * 命令 - 编辑 NBT
@@ -70,21 +69,18 @@ object NBTCommand {
         slot {
             dynamic {
                 dynamic {
-                    execute<ProxyPlayer> { player, ctx, _ ->
+                    executeAsync<ProxyPlayer> { player, ctx, _ ->
                         // 获取基本信息
                         val rawNode = ctx.args()[2]
                         val rawValue = ctx.args()[3]
                         val item = getItemBySlot(ctx.args()[1], player.cast<Player>().inventory)
                         // 获取物品标签并进行操作
                         item?.let { RefItemStack(it).getNBT() }?.also {
-                            if (rawValue.equals(NBT_REMOVE_SIGN, true)) {
+                            if (NBT_REMOVE_SIGNS.contains(rawNode.lowercase())) {
                                 it.removeDeep(rawNode)
                                 player.sendLang("NBTAction-Remove", rawNode)
                             } else {
-                                val value =
-                                    if (rawValue.equals(NBT_COMPOUND_SIGN, true)) NBTCompound()
-                                    else if (rawValue.equals(NBT_LIST_SIGN, true)) NBTList()
-                                    else NBTMapper.deserializeBasic(rawValue)
+                                val value = NBTMapper.deserializeBasic(rawValue)
                                 it.putDeep(rawNode, value)
                                 player.sendLang(
                                     "NBTAction-Set",

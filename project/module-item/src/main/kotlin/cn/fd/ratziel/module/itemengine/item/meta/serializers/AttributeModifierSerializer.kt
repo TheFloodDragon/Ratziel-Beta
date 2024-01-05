@@ -2,10 +2,10 @@
 
 package cn.fd.ratziel.module.itemengine.item.meta.serializers
 
+import cn.fd.ratziel.core.serialization.buildClassDescriptor
 import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.json.JsonNames
@@ -21,7 +21,7 @@ import java.util.*
  */
 object AttributeModifierSerializer : KSerializer<AttributeModifier> {
 
-    override val descriptor = buildClassSerialDescriptor("item.AttributeModifier") {
+    override val descriptor = buildClassDescriptor {
         element("uuid", UUIDSerializer.descriptor, listOf(JsonNames("uid")), isOptional = true)
         element<String>("name")
         element<Double>("amount", listOf(JsonNames("amt")))

@@ -21,7 +21,7 @@ open class RefItemStack(rawData: Any) {
 
     protected open var data: Any =
         if (isOBC(rawData) || isNMS(rawData)) rawData // CraftItemStack or nms.ItemStack
-        else if (rawData is ItemStack) newObcBK(rawData) // interface bukkit.ItemStack
+        else if (rawData is ItemStack) newObc(rawData) // interface bukkit.ItemStack
         else throw UnsupportedTypeException(rawData) // Unsupported Type
 
     /**
@@ -87,12 +87,9 @@ open class RefItemStack(rawData: Any) {
         fun newObc() = obcClass.invokeConstructor()
 
         // private CraftItemStack(nms.ItemStack item)
-        @JvmStatic
-        fun newObc(nms: Any) = obcClass.invokeConstructor(nms)
-
         // private CraftItemStack(bukkit.ItemStack item)
         @JvmStatic
-        fun newObcBK(bukkit: ItemStack) = obcClass.invokeConstructor(bukkit)
+        fun newObc(item: Any) = obcClass.invokeConstructor(item)
 
         @JvmStatic
         fun newNms() = nmsClass.invokeConstructor()
