@@ -1,13 +1,13 @@
 # NBT Tags
 NBTFormat-Entry-Key:
   type: json
-  text: '&6{0}&7: '
+  text: '[&6{0}]&7: '
   args:
     - suggest: '/nbt edit {1} {2} '
       hover: 'Click to edit'
 NBTFormat-Entry-Value:
   type: json
-  text: '&e{0}'
+  text: '[&e{0}]'
   args:
     - copy: '{1}'
       hover: 'Click to copy'

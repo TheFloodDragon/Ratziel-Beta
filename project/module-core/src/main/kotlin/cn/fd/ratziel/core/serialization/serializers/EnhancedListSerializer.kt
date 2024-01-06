@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.serialization.serializers
 
-import cn.fd.ratziel.core.util.runIfContainsNonEscaped
+import cn.fd.ratziel.core.util.runContainsNonEscaped
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.*
@@ -28,7 +28,7 @@ class EnhancedListSerializer<T : Any>(serializer: KSerializer<T>) :
                 element is JsonArray -> element.forEach { enhanceBuild(it, list) }
                 element is JsonPrimitive && element.jsonPrimitive.isString ->
                     element.content.split(NEWLINE_SIGN).forEach {
-                        it.runIfContainsNonEscaped(REMOVE_LINE_SIGN) { s ->
+                        it.runContainsNonEscaped(REMOVE_LINE_SIGN, ifMode = false) { s ->
                             list.add(JsonPrimitive(s))
                         }
                     }
@@ -40,7 +40,7 @@ class EnhancedListSerializer<T : Any>(serializer: KSerializer<T>) :
 }
 
 // 换行符
-const val NEWLINE_SIGN = '\n'
+const val NEWLINE_SIGN = "\n"
 
 // 删行符
 const val REMOVE_LINE_SIGN = "{dl}"

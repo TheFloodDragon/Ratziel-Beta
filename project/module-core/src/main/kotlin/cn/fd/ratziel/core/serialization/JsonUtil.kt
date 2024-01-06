@@ -82,7 +82,3 @@ fun JsonPrimitive.isBoolean() = !this.isString && this.booleanOrNull != null
 fun JsonPrimitive.isDouble() = !this.isString && this.doubleOrNull != null
 
 fun JsonPrimitive.isFloat() = !this.isString && this.floatOrNull != null
-
-fun JsonPrimitive.adapt(): Any = if (isString || this is JsonNull) content else {
-    booleanOrNull ?: intOrNull ?: doubleOrNull ?: longOrNull ?: floatOrNull
-}!!

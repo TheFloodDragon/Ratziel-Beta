@@ -206,7 +206,7 @@ object NBTCommand {
             is NBTLong -> str.dropLast(1).toLong().toString()
             is NBTShort -> str.dropLast(1).toShort().toString()
             // 懒得自己写了
-            else -> NBTMapper.serializeToString(nbt.getAsTiNBT())
+            else -> NBTMapper.serializeToString(nbt)
         }
     }
 

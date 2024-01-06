@@ -1,13 +1,13 @@
 # NBT标签
 NBTFormat-Entry-Key: # 0-浅层节点 1-目标位置 2-深层节点
   type: json
-  text: '&6{0}&7: '
+  text: '[&6{0}]&7: '
   args:
     - suggest: '/nbt edit {1} {2} '
       hover: '点击编辑'
 NBTFormat-Entry-Value: # 0-值 1-精确转换后的值
   type: json
-  text: '&e{0}'
+  text: '[&e{0}]'
   args:
     - copy: '{1}'
       hover: '点击复制'
