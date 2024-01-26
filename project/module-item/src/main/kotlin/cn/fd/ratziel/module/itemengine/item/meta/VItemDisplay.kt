@@ -67,6 +67,6 @@ data class VItemDisplay(
 
     private fun componentToNBT(component: Component?): NBTString? = nmsComponent(component)?.let { NBTString(it) }
 
-    override fun getNode() = ItemMapping.DISPLAY.get()
+    override fun node() = ItemMapping.DISPLAY.get()
 
 }

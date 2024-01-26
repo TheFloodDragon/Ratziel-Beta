@@ -14,12 +14,9 @@ Item01:
       - HIDE_DESTROYS
     attributeModifiers: # 属性修饰符
       GENERIC_MAX_HEALTH:
-        - uid: 3c11403a-3a1a-386b-b72f-9b8826cb913e
-          name: minecraft:generic.max_health
+        - name: minecraft:generic.max_health
           operation: ADD_NUMBER
           amount: 10
           slot: FEET
     nbt:
-      display.Lore:
-        - '{"text": "NMSL"}'
-      display.Name: '{"text":"CNMSB"}'
+      Repair-Cost: 10

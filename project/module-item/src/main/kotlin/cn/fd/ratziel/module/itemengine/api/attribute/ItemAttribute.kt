@@ -13,18 +13,18 @@ interface ItemAttribute<T> : Attribute<T>, NBTTransformer {
     /**
      * 重新并只有 GET 方法, 使其不会被序列化
      */
-    override val node: String get() = getNode()
-    override val value: T get() = getInstance()
+    override val node: String get() = node()
+    override val value: T get() = instance()
 
     /**
      * 获取节点 (默认为顶级节点)
      */
-    fun getNode(): String = NBTTag.APEX_NODE_SIGN
+    fun node(): String = NBTTag.APEX_NODE_SIGN
 
     /**
      * 获取属性目标实例 (默认为继承类)
      */
     @Suppress("UNCHECKED_CAST")
-    fun getInstance(): T = this as T
+    fun instance(): T = this as T
 
 }

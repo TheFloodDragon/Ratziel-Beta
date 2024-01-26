@@ -90,6 +90,6 @@ open class ItemInfo(
 
     }
 
-    override fun getNode() = NODE_ITEM
+    override fun node() = NODE_ITEM
 
 }
