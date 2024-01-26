@@ -7,11 +7,13 @@ import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemGenerator
-import cn.fd.ratziel.module.itemengine.item.builder.ItemMetaSerializer
+import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
+import cn.fd.ratziel.module.itemengine.nbt.NBTMapper
+import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -32,6 +34,7 @@ object ItemElement : ElementHandler {
     val serializers by lazy {
         SerializersModule {
             // Common Serializers
+            contextual(NBTTag::class, NBTMapper)
             contextual(Component::class, ComponentSerializer)
             contextual(EnhancedListSerializer(ComponentSerializer))
             // Bukkit Serializers
@@ -50,10 +53,10 @@ object ItemElement : ElementHandler {
 
     override fun handle(element: Element) = try {
 
-        val serializer = ItemMetaSerializer(json)
+        val serializer = DefaultItemSerializer(json)
         val generator = DefaultItemGenerator()
 
-        val meta = serializer.deserialize(element.property)
+        val meta = serializer.deserializeFromJson(element.property)
 
         println(meta.display)
         println(meta.characteristic)

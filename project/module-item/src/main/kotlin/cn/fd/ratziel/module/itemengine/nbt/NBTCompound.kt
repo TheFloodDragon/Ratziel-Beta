@@ -5,7 +5,6 @@ package cn.fd.ratziel.module.itemengine.nbt
 import cn.fd.ratziel.core.function.MirrorClass
 import cn.fd.ratziel.core.function.getFieldUnsafe
 import cn.fd.ratziel.core.function.getMethodUnsafe
-import kotlinx.serialization.Serializable
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
@@ -23,7 +22,6 @@ typealias NBTTag = NBTCompound
  * @author TheFloodDragon
  * @since 2023/11/24 21:53
  */
-@Serializable(NBTMapper::class)
 open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
 
     constructor() : this(TiNBTTag())

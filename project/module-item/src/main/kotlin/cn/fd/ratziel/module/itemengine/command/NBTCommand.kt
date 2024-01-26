@@ -204,7 +204,7 @@ object NBTCommand {
             is NBTDouble -> str.dropLast(1).toDouble().toString()
             is NBTLong -> str.dropLast(1).toLong().toString()
             is NBTShort -> str.dropLast(1).toShort().toString()
-            // 通解awa
+            // 通解
             else -> NBTMapper.serializeToString(nbt).dropLast(1).drop(1)
         }
     }

@@ -29,7 +29,7 @@ data class VItemDisplay(
     @JsonNames("loc-name", "locName", "local-name", "localName")
     override var localizedName: @Contextual Component? = null,
     @JsonNames("lores")
-    override var lore: @Contextual List<Component>? = emptyList(),
+    override var lore: @Contextual List<Component>? = null,
 ) : ItemDisplay, ItemAttribute<VItemDisplay> {
 
     /**

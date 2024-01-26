@@ -31,7 +31,7 @@ interface ItemSerializer<T> {
     /**
      * 反序列化 ( 通过 [JsonElement] )
      */
-    fun deserialize(element: JsonElement): T
+    fun deserializeFromJson(element: JsonElement): T
 
     companion object {
 

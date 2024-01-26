@@ -19,8 +19,6 @@ class GsonMessageBuilder(val colorDown: Boolean = false) : MessageBuilder {
 
     override fun serialize(source: Component): String = serializer.serialize(source)
 
-    fun serializeToTree(source: Component) = serializer.serializeToTree(source)
-
     override fun deserialize(source: String): Component = serializer.deserialize(source)
 
 }

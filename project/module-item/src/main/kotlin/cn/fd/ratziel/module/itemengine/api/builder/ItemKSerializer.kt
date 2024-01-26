@@ -26,12 +26,12 @@ interface ItemKSerializer<T> : ItemSerializer<T>, KSerializer<T> {
     }
 
     /**
-     * 重写 [KSerializer] 的 [deserialize] 方法
+     * 重写 [KSerializer] 的 [deserializeFromJson] 方法
      * 注: 只支持Json格式的反序列化
      */
     override fun deserialize(decoder: Decoder): T {
         if (decoder is JsonDecoder)
-            return deserialize(decoder.decodeJsonElement())
+            return deserializeFromJson(decoder.decodeJsonElement())
         else throw UnsupportedTypeException(decoder)
     }
 

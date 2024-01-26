@@ -15,15 +15,16 @@ import cn.fd.ratziel.module.itemengine.nbt.NBTMapper
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.json.*
 import java.util.concurrent.CompletableFuture
 
 /**
- * ItemMetaSerializer
+ * DefaultItemSerializer
+ *
+ * @author TheFloodDragon
+ * @since 2024/1/26 18:05
  */
-@Serializer(VItemMeta::class)
-open class ItemMetaSerializer(
+open class DefaultItemSerializer(
     val defaultJson: Json,
 ) : ItemKSerializer<VItemMeta> {
 
@@ -35,7 +36,8 @@ open class ItemMetaSerializer(
         VItemDisplay.serializer(),
         VItemCharacteristic.serializer(),
         VItemDurability.serializer(),
-        NBTTagSerializer
+        VItemMeta.serializer(),
+        NBTSerializer
     )
 
     /**
@@ -48,7 +50,7 @@ open class ItemMetaSerializer(
         val display = futureAsync { json.decodeFromJsonElement(VItemDisplay.serializer(), element) }
         val characteristic = futureAsync { json.decodeFromJsonElement(VItemCharacteristic.serializer(), element) }
         val durability = futureAsync { json.decodeFromJsonElement(VItemDurability.serializer(), element) }
-        val nbt: CompletableFuture<NBTTag> = futureAsync { NBTTagSerializer.deserialize(element) }
+        val nbt: CompletableFuture<NBTTag> = futureAsync { NBTSerializer.deserializeFromJson(element) }
         return VItemMeta(display.get(), characteristic.get(), durability.get(), nbt.get())
     }
 
@@ -58,8 +60,29 @@ open class ItemMetaSerializer(
     fun serializeByJson(json: Json, value: VItemMeta) =
         json.encodeToJsonElement(VItemMeta.serializer(), value).let {
             // 开启结构化解析
-            it.jsonObject.edit { put(structuredNode, JsonPrimitive(true)) }
+            it.jsonObject.edit { put(NODE_STRUCTURED, JsonPrimitive(true)) }
         }
+
+    /**
+     * NBTSerializer - [NBTTag] 的物品序列化器
+     * 注意: 不要和 [NBTMapper] 搞混, 这个只是套了 [NBTMapper] 的方法, 方便用的
+     */
+    internal object NBTSerializer : ItemSerializer<NBTTag> {
+
+        override val usedNodes = arrayOf("nbt", "itemTag", "itemTags")
+
+        override fun serializeToJson(value: NBTTag): JsonElement = Json.decodeFromString(value.toString())
+
+        fun deserialize(element: JsonElement, source: NBTTag): NBTTag? =
+            (element.takeIf { element is JsonObject } as? JsonObject)?.let { o ->
+                o[usedNodes]?.let { NBTMapper.mapFromJson(it, source) }
+            }
+
+        override fun deserializeFromJson(element: JsonElement) = deserialize(element, NBTTag()) ?: NBTTag()
+
+    }
+
+    override val descriptor = VItemMeta.serializer().descriptor
 
     override var usedNodes = serializers.flatMap {
         ItemSerializer.getUsedNodes(it)
@@ -67,31 +90,13 @@ open class ItemMetaSerializer(
 
     override fun serializeToJson(value: VItemMeta) = serializeByJson(defaultJson, value)
 
-    override fun deserialize(element: JsonElement) = deserializeByJson(defaultJson, element)
+    override fun deserializeFromJson(element: JsonElement) = deserializeByJson(defaultJson, element)
 
     /**
      * 判断 "是否结构化解析"
      */
-    val structuredNode = "structured"
+    val NODE_STRUCTURED = "isStructured"
     fun checkIsStructured(element: JsonElement): Boolean =
-        kotlin.runCatching { element.jsonObject[structuredNode]!!.jsonPrimitive.boolean }.getOrElse { false }
-
-}
-
-/**
- * NBTTagSerializer
- */
-object NBTTagSerializer : ItemSerializer<NBTTag> {
-
-    override val usedNodes = arrayOf("nbt", "itemTag", "itemTags")
-
-    override fun serializeToJson(value: NBTTag): JsonElement = Json.decodeFromString(value.toString())
-
-    fun deserialize(element: JsonElement, source: NBTTag): NBTTag? =
-        (element.takeIf { element is JsonObject } as? JsonObject)?.let { o ->
-            o[usedNodes]?.let { NBTMapper.mapFromJson(it, source) }
-        }
-
-    override fun deserialize(element: JsonElement) = deserialize(element, NBTTag()) ?: NBTTag()
+        kotlin.runCatching { element.jsonObject[NODE_STRUCTURED]!!.jsonPrimitive.boolean }.getOrElse { false }
 
 }
