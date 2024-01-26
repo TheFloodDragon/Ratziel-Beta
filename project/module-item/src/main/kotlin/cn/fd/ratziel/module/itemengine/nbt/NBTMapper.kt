@@ -91,7 +91,7 @@ object NBTMapper : KSerializer<NBTTag> {
     const val PRIMITIVE_SHORT = "s"
     const val PRIMITIVE_FLOAT = "f"
     const val PRIMITIVE_DOUBLE = "d"
-    const val PRIMITIVE_STRING = "T"
+    const val PRIMITIVE_STRING = "t"
 
     /**
      * 精确反序列化基本类型 (除了[NBTCompound]和[NBTList]的[NBTData])
@@ -132,7 +132,7 @@ object NBTMapper : KSerializer<NBTTag> {
         is NBTFloat -> data.toString().toFloat().toString() + PRIMITIVE_FLOAT
         is NBTDouble -> data.toString().toDouble().toString() + PRIMITIVE_DOUBLE
         is NBTString -> data.content + PRIMITIVE_STRING
-        // Array (Translate to TiNBTData)
+        // Array TODO 脱离TiNBT
         is NBTIntArray -> data.getAsTiNBT().asIntArray()
             .joinToString(PRIMITIVE_ARRAY_SEPARATOR) { it.toString() } + PRIMITIVE_ARRAY_INT
 
