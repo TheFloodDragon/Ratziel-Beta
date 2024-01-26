@@ -1,11 +1,10 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package cn.fd.ratziel.module.itemengine.nbt
 
+import cn.fd.ratziel.core.function.UnsupportedTypeException
+import cn.fd.ratziel.core.serialization.primitiveDescriptor
 import cn.fd.ratziel.core.util.adapt
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
@@ -16,14 +15,21 @@ import kotlinx.serialization.json.*
  * @author TheFloodDragon
  * @since 2023/10/15 9:08
  */
-@Serializer(TiNBTTag::class)
-object NBTMapper : KSerializer<TiNBTTag> {
+object NBTMapper : KSerializer<NBTTag> {
 
-    override fun deserialize(decoder: Decoder): TiNBTTag =
-        mapFromJson((decoder as JsonDecoder).decodeJsonElement()).getAsTiNBT()
+    override val descriptor = primitiveDescriptor(PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: TiNBTTag) =
-        (encoder as JsonEncoder).encodeJsonElement(encoder.json.parseToJsonElement(value.toJson()))
+    override fun deserialize(decoder: Decoder): NBTTag {
+        if (decoder is JsonDecoder)
+            return mapFromJson(decoder.decodeJsonElement())
+        else throw UnsupportedTypeException(decoder)
+    }
+
+    override fun serialize(encoder: Encoder, value: NBTTag) {
+        if (encoder is JsonEncoder)
+            encoder.encodeJsonElement(Json.decodeFromString(value.toString()))
+        else throw UnsupportedTypeException(encoder)
+    }
 
     @JvmStatic
     fun mapFromJson(json: JsonElement, source: NBTTag = NBTTag()): NBTTag = deserialize(json, source) as NBTTag

@@ -23,6 +23,9 @@ val baseJson by lazy {
     }
 }
 
+@JvmName("getTentatively")
+operator fun JsonObject.get(keys: Array<String>) = keys.firstNotNullOfOrNull { this[it] }
+
 /**
  * 简便方法, 默认 "serialName" 为 全类名
  */
@@ -35,6 +38,18 @@ inline fun <reified T> KSerializer<T>.buildClassDescriptor(
     vararg typeParameters: SerialDescriptor,
     noinline builderAction: ClassSerialDescriptorBuilder.() -> Unit = {},
 ) = buildClassSerialDescriptor(T::class.java.name, *typeParameters, builderAction = builderAction)
+
+/**
+ * @return 所有元素注解的迭代器
+ */
+val SerialDescriptor.elementAnnotations: Iterable<List<Annotation>>
+    get() = Iterable {
+        object : Iterator<List<Annotation>> {
+            private var elementsLeft = elementsCount
+            override fun hasNext(): Boolean = elementsLeft > 0
+            override fun next() = getElementAnnotations(elementsCount - (elementsLeft--))
+        }
+    }
 
 /**
  * 构造一个空Json如"{}"

@@ -48,7 +48,7 @@ object NBTCommand {
                     RefItemStack(it).getNBT() // 获取物品标签
                 }?.also { nbt ->
                     // 构建消息组件并发送
-                    nbtbuildMessage(player, nbt, 0, arg).sendTo(player)
+                    nbtAsComponent(player, nbt, 0, arg).sendTo(player)
                 } ?: player.sendLang("NBTAction-EmptyTag")
             }
         }
@@ -94,7 +94,7 @@ object NBTCommand {
         }
     }
 
-    fun nbtbuildMessage(
+    fun nbtAsComponent(
         sender: ProxyCommandSender,
         nbt: NBTData,
         level: Int,
@@ -117,7 +117,7 @@ object NBTCommand {
                         val deep = nodeDeep + NBTTag.LIST_INDEX_START + index + NBTTag.LIST_INDEX_END
                         newLine(); repeat(level) { append(retractComponent) } // 缩进
                         append(sender.asLangText("NBTFormat-Retract-List")) // 列表前缀
-                        append(nbtbuildMessage(sender, it, level + 1, slot, deep))
+                        append(nbtAsComponent(sender, it, level + 1, slot, deep))
                     }
                 }
             }
@@ -134,7 +134,7 @@ object NBTCommand {
                         newLine(); repeat(level) { append(retractComponent) } // 缩进
                     }
                     append(componentKey(sender, deep, slot)) // 添加键
-                    append(nbtbuildMessage(sender, toNBTData(value), level + 1, slot, deep, isFirst = false))
+                    append(nbtAsComponent(sender, toNBTData(value), level + 1, slot, deep, isFirst = false))
                     first = false
                 }
             }
@@ -204,7 +204,7 @@ object NBTCommand {
             is NBTDouble -> str.dropLast(1).toDouble().toString()
             is NBTLong -> str.dropLast(1).toLong().toString()
             is NBTShort -> str.dropLast(1).toShort().toString()
-			// 通解awa
+            // 通解awa
             else -> NBTMapper.serializeToString(nbt).dropLast(1).drop(1)
         }
     }

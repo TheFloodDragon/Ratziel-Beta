@@ -7,7 +7,7 @@ import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemGenerator
-import cn.fd.ratziel.module.itemengine.item.builder.ItemMetadataSerializer
+import cn.fd.ratziel.module.itemengine.item.builder.ItemMetaSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
@@ -50,10 +50,10 @@ object ItemElement : ElementHandler {
 
     override fun handle(element: Element) = try {
 
-        val serializer = ItemMetadataSerializer()
+        val serializer = ItemMetaSerializer(json)
         val generator = DefaultItemGenerator()
 
-        val meta = serializer.serializeByJson(json, element.property)
+        val meta = serializer.deserialize(element.property)
 
         println(meta.display)
         println(meta.characteristic)
@@ -67,6 +67,8 @@ object ItemElement : ElementHandler {
         println(testMeta)
 
         println("————————————————————————————————")
+
+        println(serializer.usedNodes)
 
     } catch (ex: Exception) {
         ex.printStackTrace()
