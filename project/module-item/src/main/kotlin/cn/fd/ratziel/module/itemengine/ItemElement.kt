@@ -71,7 +71,7 @@ object ItemElement : ElementHandler {
 
         println("————————————————————————————————")
 
-        println(serializer.usedNodes)
+        println(serializer.usedNodes.toList().toString())
 
     } catch (ex: Exception) {
         ex.printStackTrace()

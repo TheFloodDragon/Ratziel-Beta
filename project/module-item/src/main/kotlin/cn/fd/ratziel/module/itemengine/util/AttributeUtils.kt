@@ -8,3 +8,5 @@ import cn.fd.ratziel.module.itemengine.nbt.NBTTag
  */
 fun <T> ItemAttribute<T>.transformTo(source: NBTTag) =
     this.also { source.editShallow(it.node) { tag -> this.transform(tag) } }
+
+fun <T> ItemAttribute<T>.detransformFrom(source: NBTTag) = (source[this.node] as? NBTTag)?.let { this.detransform(it) }

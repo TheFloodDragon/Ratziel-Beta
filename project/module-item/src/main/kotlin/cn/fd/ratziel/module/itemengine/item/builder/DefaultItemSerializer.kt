@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package cn.fd.ratziel.module.itemengine.item.builder
 
 import cn.fd.ratziel.core.function.futureAsync
@@ -13,7 +11,6 @@ import cn.fd.ratziel.module.itemengine.item.meta.VItemDurability
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.NBTMapper
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.*
 import java.util.concurrent.CompletableFuture
@@ -27,18 +24,6 @@ import java.util.concurrent.CompletableFuture
 open class DefaultItemSerializer(
     val defaultJson: Json,
 ) : ItemKSerializer<VItemMeta> {
-
-    /**
-     * 使用到的序列化器
-     * 包括 [KSerializer] 和 [ItemSerializer]
-     */
-    val serializers = arrayOf(
-        VItemDisplay.serializer(),
-        VItemCharacteristic.serializer(),
-        VItemDurability.serializer(),
-        VItemMeta.serializer(),
-        NBTSerializer
-    )
 
     /**
      * 通过Json反序列化
@@ -63,6 +48,26 @@ open class DefaultItemSerializer(
             it.jsonObject.edit { put(NODE_STRUCTURED, JsonPrimitive(true)) }
         }
 
+    companion object {
+
+        /**
+         * 使用到的序列化器
+         * 包括 [KSerializer] 和 [ItemSerializer]
+         */
+        val serializers = arrayOf(
+            VItemDisplay.serializer(),
+            VItemCharacteristic.serializer(),
+            VItemDurability.serializer(),
+            VItemMeta.serializer(),
+            NBTSerializer
+        )
+
+        val usedNodes = serializers.flatMap {
+            ItemSerializer.getUsedNodes(it)
+        }.toSet().toTypedArray()
+
+    }
+
     /**
      * NBTSerializer - [NBTTag] 的物品序列化器
      * 注意: 不要和 [NBTMapper] 搞混, 这个只是套了 [NBTMapper] 的方法, 方便用的
@@ -84,9 +89,7 @@ open class DefaultItemSerializer(
 
     override val descriptor = VItemMeta.serializer().descriptor
 
-    override var usedNodes = serializers.flatMap {
-        ItemSerializer.getUsedNodes(it)
-    }.toTypedArray()
+    override var usedNodes = Companion.usedNodes
 
     override fun serializeToJson(value: VItemMeta) = serializeByJson(defaultJson, value)
 

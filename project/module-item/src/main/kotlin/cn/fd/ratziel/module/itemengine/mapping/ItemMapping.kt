@@ -23,7 +23,10 @@ enum class ItemMapping(
     ENCHANTMENTS("ENCHANTMENTS", "Enchantments"),
     ATTRIBUTE_MODIFIERS("ATTRIBUTES", "AttributeModifiers"),
     CUSTOM_MODEL_DATA("CUSTOM_MODEL_DATA", "CustomModelData"),
-    HIDE_FLAG("HIDEFLAGS", "HideFlags");
+    HIDE_FLAG("HIDEFLAGS", "HideFlags"),
+    REPAIR_COST("REPAIR", "RepairCost"),
+    DAMAGE("DAMAGE", "Damage"),
+    UNBREAKABLE("UNBREAKABLE", "Unbreakable");
 
     override fun get() = value
 

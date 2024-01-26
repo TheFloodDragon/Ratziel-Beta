@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.itemengine.api
 
+import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.part.ItemInfo
-import cn.fd.ratziel.module.itemengine.api.part.meta.ItemMetadata
 import cn.fd.ratziel.module.itemengine.api.part.ItemPart
 
 /**
@@ -17,7 +17,7 @@ interface NeoItem : ItemPart {
     val info: ItemInfo
 
     /**
-     * 物品元数据
+     * 物品属性列表
      */
-    val meta: ItemMetadata
+    val attributes: List<ItemAttribute<*>>
 }

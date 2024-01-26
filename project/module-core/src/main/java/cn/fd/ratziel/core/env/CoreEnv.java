@@ -29,7 +29,7 @@ import static cn.fd.ratziel.core.env.CoreEnv.kotlin_version_escaped;
 )
 
 public class CoreEnv {
-    public static final String kotlin_version_escaped = "1922";
+    public static final String kotlin_version_escaped = "200Beta3";
     public static final String serialization_version = "1.6.2";
     public static final String coroutines_version = "1.7.3";
 }

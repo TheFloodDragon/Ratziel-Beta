@@ -5,10 +5,10 @@ package cn.fd.ratziel.module.itemengine.item.meta
 import cn.fd.ratziel.common.message.buildMessage
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemDisplay
+import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
 import cn.fd.ratziel.module.itemengine.nbt.NBTList
 import cn.fd.ratziel.module.itemengine.nbt.NBTString
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
-import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
 import cn.fd.ratziel.module.itemengine.util.nmsComponent
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -67,6 +67,6 @@ data class VItemDisplay(
 
     private fun componentToNBT(component: Component?): NBTString? = nmsComponent(component)?.let { NBTString(it) }
 
-    override fun node() = ItemMapping.DISPLAY.get()
+    override fun getNode() = ItemMapping.DISPLAY.get()
 
 }
