@@ -1,11 +1,11 @@
 package cn.fd.ratziel.core.env;
 
-import taboolib.common.Inject;
-import taboolib.common.env.RuntimeEnv;
+import taboolib.common.PrimitiveLoader;
+import taboolib.common.PrimitiveSettings;
 import taboolib.common.platform.Awake;
 
-import java.util.Collections;
-
+import static taboolib.common.PrimitiveLoader.defaultRelocateRule;
+import static taboolib.common.PrimitiveSettings.IS_ISOLATED_MODE;
 import static taboolib.common.PrimitiveSettings.TABOOLIB_VERSION;
 
 /**
@@ -16,11 +16,16 @@ import static taboolib.common.PrimitiveSettings.TABOOLIB_VERSION;
  */
 public class KetherEnv {
 
-    public static String RUNTIME_DEPENDENCY = "!io.github.altawk.asl:script-kether:" + TABOOLIB_VERSION;
+    public static String[] RUNTIME_DEPENDENCY = {
+            "io.github.altawk.asl", "script-kether", TABOOLIB_VERSION
+    };
 
     @Awake
     public static void init() throws Throwable {
-        RuntimeEnv.ENV.loadDependency(RUNTIME_DEPENDENCY, false, Collections.emptyList());
+        // Use Default Rule
+        String[][] rule = defaultRelocateRule();
+        // Load as Taboolib Module
+        PrimitiveLoader.load(PrimitiveSettings.REPO_CENTRAL, RUNTIME_DEPENDENCY[0], RUNTIME_DEPENDENCY[1], RUNTIME_DEPENDENCY[2], IS_ISOLATED_MODE, false, rule);
     }
 
 }

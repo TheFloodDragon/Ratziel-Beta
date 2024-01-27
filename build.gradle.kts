@@ -80,7 +80,8 @@ subprojects {
             relocate("org.tabooproject", "$rootGroup.library")
             // Kotlin
             relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude("kotlin.Metadata") }
-            relocate("kotlinx.", "kotlinx${kotlinVersion.escapedVersion}.")
+            relocate("kotlinx.coroutines.", "kotlinx.coroutines${coroutineVersion.escapedVersion}.")
+            relocate("kotlinx.serialization.", "kotlinx.serialization${serializationVersion.escapedVersion}.")
         }
     }
 
