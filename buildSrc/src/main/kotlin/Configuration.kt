@@ -8,7 +8,7 @@ const val coroutineVersion = "1.7.3"
 const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "2.0.0"
 
-val taboolibVersion = getLatestRelease("TabooLib", "taboolib").also { println("Using taboolib-version = $it") }
+val taboolibVersion = getLatestRelease("TabooLib", "taboolib", "6.1.0").also { println("Using taboolib-version = $it") }
 
 val isoInstantFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z")
 

@@ -16,8 +16,8 @@ public class CommonEnv {
     public static final String ADVENTURE_VERSION = "4.15.0";
 
     public static final String[] RUNTIME_DEPENDENCIES = {
-            "!net.kyori:adventure-api:" + ADVENTURE_VERSION,
-            "!net.kyori:adventure-text-minimessage:" + ADVENTURE_VERSION,
+            "!net.kyori:adventure-api:".substring(1) + ADVENTURE_VERSION,
+            "!net.kyori:adventure-text-minimessage:".substring(1) + ADVENTURE_VERSION,
     };
 
     @Awake
