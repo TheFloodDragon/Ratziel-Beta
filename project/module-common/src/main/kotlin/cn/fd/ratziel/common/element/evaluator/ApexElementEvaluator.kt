@@ -1,12 +1,10 @@
 package cn.fd.ratziel.common.element.evaluator
 
-import cn.fd.ratziel.common.event.ElementHandleEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.function.FutureFactory
-import cn.fd.ratziel.core.util.callThenRun
 import taboolib.common.platform.function.severe
 import kotlin.time.Duration
 
@@ -55,13 +53,11 @@ object ApexElementEvaluator {
     @JvmStatic
     fun handleElement(element: Element) =
         ElementRegistry.runWithHandlers(element.type) { (_, handler) ->
-            ElementHandleEvent(element, handler).callThenRun { // 事件包装
-                try {
-                    this.eval(handler, element) // 进行评估
-                } catch (e: Exception) {
-                    severe("Couldn't handle element $this by $handler")
-                    e.printStackTrace()
-                }
+            try {
+                this.eval(handler, element) // 进行评估
+            } catch (e: Exception) {
+                severe("Couldn't handle element $this by $handler")
+                e.printStackTrace()
             }
         }
 

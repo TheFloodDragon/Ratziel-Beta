@@ -14,7 +14,7 @@ val systemIP: String
     get() = URL("http://ipinfo.io/ip").readText()
 
 val String.escapedVersion
-    get() = this.replace(".", "").replace("_", "").replace("-", "")
+    get() = this.replace(Regex("[._-]"), "")
 
 fun Project.getProperty(vararg names: String): String? {
     names.forEach { name ->

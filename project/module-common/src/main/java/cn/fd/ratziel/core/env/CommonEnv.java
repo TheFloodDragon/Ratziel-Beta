@@ -1,5 +1,6 @@
 package cn.fd.ratziel.core.env;
 
+import taboolib.common.Inject;
 import taboolib.common.env.RuntimeDependency;
 
 /**
@@ -8,6 +9,7 @@ import taboolib.common.env.RuntimeDependency;
  * @author TheFloodDragon
  * @since 2023/5/21 11:06
  */
+@Inject
 @RuntimeDependency(
         value = "!net.kyori:adventure-api:" + CommonEnv.version,
         test = "net.kyori.adventure.Adventure"

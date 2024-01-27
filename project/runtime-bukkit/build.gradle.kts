@@ -1,3 +1,8 @@
+import io.izzel.taboolib.gradle.BUKKIT_ALL
+import io.izzel.taboolib.gradle.EXPANSION_PLAYER_FAKE_OP
+import io.izzel.taboolib.gradle.NMS_UTIL
+import io.izzel.taboolib.gradle.UNIVERSAL
+
 plugins {
     id("io.izzel.taboolib") version taboolibPluginVersion
 }
@@ -8,20 +13,30 @@ dependencies {
     compileOnly("net.md-5:bungeecord-chat:1.17")
     // PlaceholderAPI
     compileOnly("me.clip:placeholderapi:2.11.4")
-    // Folia
-    taboo("com.tcoded:FoliaLib:0.3.1")
     // Module - Kether
     installModule("module-kether")
 }
 
 taboolib {
-    version = taboolibVersion
-    // Taboolib 模块
-    taboolibModules.forEach { install(it) }
-    install("platform-bukkit")
-    install("module-nms")
-    install("module-nms-util")
-    install("expansion-player-fake-op")
+
+    // 版本参数设置
+    version {
+        taboolib = taboolibVersion
+        coroutines = coroutineVersion
+        // Skip then entrust to ShadowJar
+        skipTabooLibRelocate = true
+        skipKotlinRelocate = true
+    }
+
+    // 模块环境设置
+    env {
+        // Debug Mode
+        debug = true
+        // Module Dependencies
+        install(UNIVERSAL, BUKKIT_ALL, NMS_UTIL, EXPANSION_PLAYER_FAKE_OP)
+        // Incomplete Isolated
+        enableIsolatedClassloader = false
+    }
 
     description {
         name(rootName)
@@ -54,8 +69,4 @@ taboolib {
 
     }
 
-    relocate("com.tcoded.folialib.", "$rootGroup.library.folia.folialib_0_3_1.")
-
-    classifier = null
-    options("skip-minimize", "keep-kotlin-module", "skip-taboolib-relocate")
 }

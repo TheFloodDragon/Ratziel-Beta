@@ -76,9 +76,8 @@ subprojects {
             archiveVersion.set(rootVersion)
             destinationDirectory.set(file("$rootDir/outs"))
             // Exclude
-            exclude("META-INF/**", "taboolib/test/**")
+            exclude("taboolib/test/**")
             // Taboolib
-            relocate("tb.", "$rootGroup.taboolib.")
             relocate("taboolib", "$rootGroup.taboolib")
             relocate("org.tabooproject", "$rootGroup.library")
             // Kotlin

@@ -1,9 +1,7 @@
 package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
-import cn.fd.ratziel.common.event.WorkspaceInitializeEvent
 import cn.fd.ratziel.core.Workspace
-import cn.fd.ratziel.core.util.callThenRun
 import cn.fd.ratziel.core.util.findInJar
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getJarFile
@@ -23,13 +21,11 @@ object WorkspaceManager {
      * @param copyDefaults 是否复制默认文件
      */
     fun initializeWorkspace(folder: File, copyDefaults: Boolean = true) {
-        WorkspaceInitializeEvent(folder, copyDefaults).callThenRun {
-            // 复制默认文件
-            if (copyDefaults && !folder.exists()) // 文件夹未创建时
-                releaseWorkspace(folder)
-            else folder.mkdirs()
-            workspaces.add(Workspace(folder))
-        }
+        // 复制默认文件
+        if (copyDefaults && !folder.exists()) // 文件夹未创建时
+            releaseWorkspace(folder)
+        else folder.mkdirs()
+        workspaces.add(Workspace(folder))
     }
 
     fun initializeWorkspace(path: String, copyDefaults: Boolean = true) {

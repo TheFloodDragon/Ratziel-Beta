@@ -5,7 +5,6 @@ import cn.fd.ratziel.common.element.parser.DefaultElementParser.matchType
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.element.api.ElementParser
-import cn.fd.ratziel.core.util.callThenRun
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -35,13 +34,13 @@ class SpecificElementParser(val type: ElementType) : ElementParser {
         // 获取所有元素标识符
         jsonO.keys.forEach { id ->
             // 获取当前元素下的所有元素类型
-            jsonO[id]?.jsonObject?.let { types ->
+            jsonO[id]?.jsonObject?.also { types ->
                 types.keys.forEach { expression ->
                     // 构造元素对象
                     buildElement(
                         id, file, type,
                         property = types[expression]
-                    ).callThenRun { successes.add(it.element) }
+                    ).also { successes.add(it) }
                 }
             }
         }
