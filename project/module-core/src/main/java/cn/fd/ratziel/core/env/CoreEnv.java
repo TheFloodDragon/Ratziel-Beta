@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static taboolib.common.PrimitiveLoader.formatVersion;
+import static taboolib.common.PrimitiveSettings.formatVersion;
 import static taboolib.common.PrimitiveSettings.KOTLIN_VERSION;
 import static taboolib.common.env.RuntimeEnv.KOTLIN_ID;
 
