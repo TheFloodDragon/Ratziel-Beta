@@ -27,10 +27,10 @@ public class KetherEnv {
         Class<?> plc = Class.forName("taboolib.common.PrimitiveLoader", true, IsolatedClassLoader.INSTANCE);
         ReflexClass rc = ReflexClass.Companion.of(plc, true);
         // Use Default Rule
-        String[][] rule = (String[][]) rc.getMethod("defaultRelocateRule", true, true).invokeStatic();
+        String[][] rule = (String[][]) rc.getMethodByType("defaultRelocateRule", true, true).invokeStatic();
         // Get Method
         // public static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, String[][] relocate)
-        ClassMethod method = rc.getMethod("load", true, true, String.class, String.class, String.class, String.class, Boolean.class, boolean.class, String[][].class);
+        ClassMethod method = rc.getMethodByType("load", true, true, String.class, String.class, String.class, String.class, Boolean.class, boolean.class, String[][].class);
         // Load as Taboolib Module
         method.invokeStatic(PrimitiveSettings.REPO_CENTRAL, RUNTIME_DEPENDENCY[0], RUNTIME_DEPENDENCY[1], RUNTIME_DEPENDENCY[2], IS_ISOLATED_MODE, false, rule);
     }
