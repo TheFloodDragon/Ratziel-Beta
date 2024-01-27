@@ -1,8 +1,6 @@
 package cn.fd.ratziel.core.env;
 
-import taboolib.common.Inject;
 import taboolib.common.env.JarRelocation;
-import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
 import taboolib.common.platform.Awake;
 

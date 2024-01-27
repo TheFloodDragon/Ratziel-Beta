@@ -5,7 +5,7 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.function.futureRunAsync
-import taboolib.common.platform.function.postpone
+import taboolib.common.TabooLib.registerLifeCycleTask
 import java.util.concurrent.CompletableFuture
 import kotlin.time.Duration
 import kotlin.time.measureTime
@@ -36,7 +36,7 @@ object BasicElementEvaluator : ElementEvaluator {
         // 函数 (非立即执行) - 处理元素并完成评估任务
         val function = Runnable { measureTime { handler.handle(element) }.let { future.complete(it) } }
         // 推迟加载
-        postpone(config.lifeCycle) {
+        registerLifeCycleTask(config.lifeCycle, 10) {
             // 异步同步处理
             if (config.async) futureRunAsync(function)
             else function.run()

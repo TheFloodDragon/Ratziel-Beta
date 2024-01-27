@@ -9,8 +9,6 @@ plugins {
 
 dependencies {
     compileCore(12002)
-    compileOnly("com.google.code.gson:gson:2.8.9")
-    compileOnly("net.md-5:bungeecord-chat:1.17")
     // PlaceholderAPI
     compileOnly("me.clip:placeholderapi:2.11.4")
     // Module - Kether
@@ -24,9 +22,6 @@ taboolib {
     version {
         taboolib = taboolibVersion
         coroutines = coroutineVersion
-        // Skip then entrust to ShadowJar
-        skipTabooLibRelocate = true
-        skipKotlinRelocate = true
     }
 
     // 模块环境设置
@@ -58,8 +53,6 @@ taboolib {
 
         @Suppress("UNCHECKED_CAST") val nodes = bukkitNodes as HashMap<String, Any>
 
-        // Taboolib Version
-        nodes["taboolib-version"] = taboolibVersion
         // Build Info
         nodes["built-date"] = currentISODate
         nodes["built-by"] = systemUserName

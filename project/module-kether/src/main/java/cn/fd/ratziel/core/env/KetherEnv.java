@@ -1,4 +1,4 @@
-package java.cn.fd.ratziel.core.env;
+package cn.fd.ratziel.core.env;
 
 import taboolib.common.Inject;
 import taboolib.common.env.RuntimeEnv;
