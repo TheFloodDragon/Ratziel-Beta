@@ -75,8 +75,6 @@ subprojects {
             archiveClassifier.set("")
             archiveVersion.set(rootVersion)
             destinationDirectory.set(file("$rootDir/outs"))
-            // Exclude
-            exclude("taboolib/test/**")
             // Taboolib
             relocate("taboolib", "$rootGroup.taboolib")
             relocate("org.tabooproject", "$rootGroup.library")

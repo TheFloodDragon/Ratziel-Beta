@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.itemengine.command
 
-import cn.fd.ratziel.bukkit.command.getItemBySlot
-import cn.fd.ratziel.bukkit.command.slot
 import cn.fd.ratziel.common.function.executeAsync
 import cn.fd.ratziel.common.util.getType
 import cn.fd.ratziel.module.itemengine.mapping.RefItemStack
@@ -59,9 +57,7 @@ object NBTCommand {
     /**
      * 命令 - 编辑 NBT
      * 用法: /nbt edit <slot> <node> <value>
-     * 注: 当 <value> 为 [NBT_REMOVE_SIGN] 时, 删除该节点下的NBT标签
-     * [NBT_COMPOUND_SIGN] 对应空的 [NBTCompound]
-     * [NBT_LIST_SIGN] 对应空的 [NBTList]
+     * 注: 当 <value> 为 [NBT_REMOVE_SIGNS] 时, 删除该节点下的NBT标签
      */
     @CommandBody
     val edit = subCommand {

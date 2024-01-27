@@ -1,6 +1,6 @@
 @file:Suppress("SpellCheckingInspection")
 
-package cn.fd.ratziel.bukkit.command
+package cn.fd.ratziel.module.itemengine.command
 
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory

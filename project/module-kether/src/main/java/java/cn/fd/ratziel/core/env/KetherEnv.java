@@ -14,7 +14,6 @@ import static taboolib.common.PrimitiveSettings.TABOOLIB_VERSION;
  * @author TheFloodDragon
  * @since 2024/1/27 9:58
  */
-@Inject
 public class KetherEnv {
 
     public static String RUNTIME_DEPENDENCY = "!io.github.altawk.asl:script-kether:" + TABOOLIB_VERSION;

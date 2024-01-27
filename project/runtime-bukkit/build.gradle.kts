@@ -15,6 +15,7 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.4")
     // Module - Kether
     installModule("module-kether")
+    compileOnly("io.github.altawk.asl:script-kether:$taboolibVersion")
 }
 
 taboolib {
@@ -59,8 +60,6 @@ taboolib {
 
         // Taboolib Version
         nodes["taboolib-version"] = taboolibVersion
-        // Folia Support
-        nodes["folia-supported"] = true
         // Build Info
         nodes["built-date"] = currentISODate
         nodes["built-by"] = systemUserName

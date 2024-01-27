@@ -17,7 +17,6 @@ import static taboolib.common.PrimitiveSettings.KOTLIN_VERSION;
  * @author TheFloodDragon
  * @since 2023/8/23 16:20
  */
-@Inject
 public class CoreEnv {
 
     public static final String KOTLIN_SERIALIZATION_VERSION = "1.6.2";

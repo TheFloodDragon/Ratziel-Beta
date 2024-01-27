@@ -6,6 +6,7 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.kether.KetherCompiler
 import cn.fd.ratziel.kether.KetherHandler
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 
 /**
