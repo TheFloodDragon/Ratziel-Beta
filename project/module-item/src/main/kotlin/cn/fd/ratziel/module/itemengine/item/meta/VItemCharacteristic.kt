@@ -3,12 +3,13 @@
 package cn.fd.ratziel.module.itemengine.item.meta
 
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
+import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
-import cn.fd.ratziel.module.itemengine.nbt.NBTInt
-import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
 import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
+import cn.fd.ratziel.module.itemengine.nbt.NBTInt
+import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import com.google.common.collect.LinkedHashMultimap
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -127,36 +128,42 @@ data class VItemCharacteristic(
         attributeModifiers?.get(attribute)?.remove(modifier)
     }
 
-    override fun transform(source: NBTTag): NBTTag {
-        // 自定义模型数据 (1.14+)
-        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
-            source.put(ItemMapping.CUSTOM_MODEL_DATA.get(), this.customModelData?.let { NBTInt(it) })
-        // 物品隐藏标签
-        source.put(
-            ItemMapping.HIDE_FLAG.get(),
-            this.hideFlags?.let { HideFlagSerializer.translateFlags(it) }?.let { NBTInt(it) })
-        // 属性修饰符
-        source.merge(NBTTag.of(NBTTag.new().also { nmsTag ->
-            // 创建修饰符表
-            val modifierMap = LinkedHashMultimap.create<Attribute, AttributeModifier>().also { map ->
-                this.attributeModifiers?.forEach { map.putAll(it.key, it.value) }
-            }
-            // 应用到属性修饰符中
-            RefItemMeta.applyModifiers(nmsTag, modifierMap)
-        }))
-        return source
-    }
+    override val transformer get() = Companion
 
-    override fun detransform(input: NBTTag) {
-        // 自定义模型数据 (1.14+) - Int
-        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
-            this.customModelData = (input[ItemMapping.CUSTOM_MODEL_DATA.get()] as? NBTInt)?.content
-        // 物品隐藏标签 - Int
-        this.hideFlags = (input[ItemMapping.HIDE_FLAG.get()] as? NBTInt)?.content
-            ?.let { HideFlagSerializer.getFlagFromBit(it) }?.toMutableSet()
-        // 属性修饰符 - Compound
-        val modifierMap = RefItemMeta.buildModifiers(input.getAsNmsNBT()) // 构造属性修饰符表
-        modifierMap.asMap().forEach { this.addAttributeModifiers(it.key, *it.value.toTypedArray()) }
+    companion object : NBTTransformer<VItemCharacteristic> {
+
+        override fun transform(target: VItemCharacteristic, from: NBTTag): NBTTag = target.run {
+            // 自定义模型数据 (1.14+)
+            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
+                from.put(ItemMapping.CUSTOM_MODEL_DATA.get(), customModelData?.let { NBTInt(it) })
+            // 物品隐藏标签
+            from.put(
+                ItemMapping.HIDE_FLAG.get(),
+                hideFlags?.let { HideFlagSerializer.translateFlags(it) }?.let { NBTInt(it) })
+            // 属性修饰符
+            from.merge(NBTTag.of(NBTTag.new().also { nmsTag ->
+                // 创建修饰符表
+                val modifierMap = LinkedHashMultimap.create<Attribute, AttributeModifier>().also { map ->
+                    attributeModifiers?.forEach { map.putAll(it.key, it.value) }
+                }
+                // 应用到属性修饰符中
+                RefItemMeta.applyModifiers(nmsTag, modifierMap)
+            }))
+            return from
+        }
+
+        override fun detransform(target: VItemCharacteristic, from: NBTTag) = target.run {
+            // 自定义模型数据 (1.14+) - Int
+            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
+                customModelData = (from[ItemMapping.CUSTOM_MODEL_DATA.get()] as? NBTInt)?.content
+            // 物品隐藏标签 - Int
+            hideFlags = (from[ItemMapping.HIDE_FLAG.get()] as? NBTInt)?.content
+                ?.let { HideFlagSerializer.getFlagFromBit(it) }?.toMutableSet()
+            // 属性修饰符 - Compound
+            val modifierMap = RefItemMeta.buildModifiers(from.getAsNmsNBT()) // 构造属性修饰符表
+            modifierMap.asMap().forEach { addAttributeModifiers(it.key, *it.value.toTypedArray()) }
+        }
+
     }
 
     /**

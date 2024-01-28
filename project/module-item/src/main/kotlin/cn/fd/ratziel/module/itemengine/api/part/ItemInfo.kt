@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.itemengine.api.part
 
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
+import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
+import cn.fd.ratziel.module.itemengine.nbt.NBTData
 import cn.fd.ratziel.module.itemengine.nbt.NBTString
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 
@@ -12,10 +14,12 @@ import cn.fd.ratziel.module.itemengine.nbt.NBTTag
  */
 open class ItemInfo(
     /**
-     * 物品数据
+     * 物品特殊数据
      */
     val data: ItemData,
 ) : ItemAttribute<ItemInfo> {
+
+    constructor(data: NBTData) : this(ItemData(data))
 
     init {
         try {
@@ -50,13 +54,7 @@ open class ItemInfo(
      */
     internal fun getInfo() = data[NODE_INFO] as NBTTag
 
-    override fun transform(source: NBTTag) = source.merge(data)
-
-    override fun detransform(input: NBTTag) {
-        data.merge(input)
-    }
-
-    companion object {
+    companion object : NBTTransformer<ItemInfo> {
 
         /**
          * 所有特殊数据存储的顶级节点
@@ -88,8 +86,14 @@ open class ItemInfo(
          */
         fun dropInfo(target: ItemData) = target.apply { remove(NODE_INFO) }
 
+        override fun transform(target: ItemInfo, from: NBTTag): NBTTag = target.run { from.merge(data) }
+
+        override fun detransform(target: ItemInfo, from: NBTTag): Unit = target.run { data.merge(from) }
+
     }
 
-    override fun node() = NODE_ITEM
+    override val transformer get() = Companion
+
+    override val node get() = NODE_ITEM
 
 }

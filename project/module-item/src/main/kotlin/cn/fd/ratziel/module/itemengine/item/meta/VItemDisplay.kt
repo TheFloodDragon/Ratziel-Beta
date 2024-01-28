@@ -4,6 +4,7 @@ package cn.fd.ratziel.module.itemengine.item.meta
 
 import cn.fd.ratziel.common.message.buildMessage
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
+import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemDisplay
 import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
 import cn.fd.ratziel.module.itemengine.nbt.NBTList
@@ -53,20 +54,28 @@ data class VItemDisplay(
         localizedName = buildMessage(origin)
     }
 
-    override fun transform(source: NBTTag) = source.putAll(
-        ItemMapping.DISPLAY_NAME.get() to this.componentToNBT(name),
-        ItemMapping.DISPLAY_LORE.get() to this.lore?.map { componentToNBT(it) }?.let { NBTList(it) },
-        ItemMapping.DISPLAY_LOCAL_NAME.get() to this.componentToNBT(localizedName)
-    )
+    override val transformer get() = Companion
 
-    override fun detransform(input: NBTTag) {
-        setName((input[ItemMapping.DISPLAY_NAME.get()] as? NBTString)?.content)
-        setLore((input[ItemMapping.DISPLAY_LORE.get()] as? NBTList)?.content?.mapNotNull { (it as? NBTString)?.content })
-        setLocalizedName((input[ItemMapping.DISPLAY_LOCAL_NAME.get()] as? NBTString)?.content)
+    companion object : NBTTransformer<VItemDisplay> {
+        override fun transform(target: VItemDisplay, from: NBTTag): NBTTag = target.run {
+            from.putAll(
+                ItemMapping.DISPLAY_NAME.get() to componentToNBT(name),
+                ItemMapping.DISPLAY_LORE.get() to lore?.map { componentToNBT(it) }?.let { NBTList(it) },
+                ItemMapping.DISPLAY_LOCAL_NAME.get() to componentToNBT(localizedName)
+            )
+        }
+
+        override fun detransform(target: VItemDisplay, from: NBTTag) = target.run {
+            setName((from[ItemMapping.DISPLAY_NAME.get()] as? NBTString)?.content)
+            setLore((from[ItemMapping.DISPLAY_LORE.get()] as? NBTList)?.content?.mapNotNull { (it as? NBTString)?.content })
+            setLocalizedName((from[ItemMapping.DISPLAY_LOCAL_NAME.get()] as? NBTString)?.content)
+        }
+
+        private fun componentToNBT(component: Component?): NBTString? =
+            nmsComponent(component)?.let { NBTString(it) }
+
     }
 
-    private fun componentToNBT(component: Component?): NBTString? = nmsComponent(component)?.let { NBTString(it) }
-
-    override fun node() = ItemMapping.DISPLAY.get()
+    override val node get() = ItemMapping.DISPLAY.get()
 
 }

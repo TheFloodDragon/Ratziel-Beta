@@ -6,17 +6,16 @@ package cn.fd.ratziel.module.itemengine.api.attribute
  * @author TheFloodDragon
  * @since 2023/12/8 21:27
  */
-@Suppress("SpellCheckingInspection")
-interface AttributeTransformer<T> {
+interface AttributeTransformer<T, K> {
 
     /**
      * 正向转换 - 输出型转换
      */
-    fun transform(): T
+    fun transform(target: T): K
 
     /**
      * 反向转换 - 应用型转换
      */
-    fun detransform(input: T)
+    fun detransform(target: T, from: K)
 
 }

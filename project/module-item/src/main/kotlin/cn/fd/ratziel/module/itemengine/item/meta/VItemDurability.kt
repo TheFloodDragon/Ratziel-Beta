@@ -3,6 +3,7 @@
 package cn.fd.ratziel.module.itemengine.item.meta
 
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
+import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemDurability
 import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
 import cn.fd.ratziel.module.itemengine.nbt.NBTBoolean
@@ -41,18 +42,26 @@ data class VItemDurability(
             value?.let { currentDurability = maxDurability?.minus(it) }
         }
 
-    // TODO 需要特殊处理
-    override fun transform(source: NBTTag) = source.putAll(
-        ItemMapping.DAMAGE.get() to damage?.let { NBTInt(it) },
-        ItemMapping.UNBREAKABLE.get() to unbreakable?.let { NBTBoolean(it) },
-        ItemMapping.REPAIR_COST.get() to repairCost?.let { NBTInt(it) }
-    )
+    override val transformer get() = Companion
 
-    override fun detransform(input: NBTTag) {
-        input[ItemMapping.DAMAGE.get()]?.let { damage = (it as? NBTInt)?.content }
-        // TODO Finish this
-        input[ItemMapping.UNBREAKABLE.get()]?.let { unbreakable = (it as? NBTByte)?.toString().toBoolean() }
-        input[ItemMapping.REPAIR_COST.get()]?.let { repairCost = (it as? NBTInt)?.content }
+    companion object : NBTTransformer<VItemDurability> {
+
+        // TODO 需要特殊处理
+        override fun transform(target: VItemDurability, from: NBTTag) = target.run {
+            from.putAll(
+                ItemMapping.DAMAGE.get() to damage?.let { NBTInt(it) },
+                ItemMapping.UNBREAKABLE.get() to unbreakable?.let { NBTBoolean(it) },
+                ItemMapping.REPAIR_COST.get() to repairCost?.let { NBTInt(it) }
+            )
+        }
+
+        override fun detransform(target: VItemDurability, from: NBTTag): Unit = target.run {
+            from[ItemMapping.DAMAGE.get()]?.let { damage = (it as? NBTInt)?.content }
+            // TODO Finish this
+            from[ItemMapping.UNBREAKABLE.get()]?.let { unbreakable = (it as? NBTByte)?.toString().toBoolean() }
+            from[ItemMapping.REPAIR_COST.get()]?.let { repairCost = (it as? NBTInt)?.content }
+        }
+
     }
 
 }

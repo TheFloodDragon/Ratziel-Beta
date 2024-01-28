@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.itemengine.item
 
 import cn.fd.ratziel.module.itemengine.api.NeoItem
-import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
-import cn.fd.ratziel.module.itemengine.api.part.ItemInfo
+import cn.fd.ratziel.module.itemengine.api.part.ItemData
+import cn.fd.ratziel.module.itemengine.api.part.ItemMaterial
 
 /**
  * RatzielItem - Ratziel 物品
@@ -12,11 +12,11 @@ import cn.fd.ratziel.module.itemengine.api.part.ItemInfo
  */
 data class RatzielItem(
     /**
-     * 物品信息
+     * 物品材质
      */
-    override val info: ItemInfo,
+    override val material: ItemMaterial,
     /**
-     * 物品属性列表
+     * 物品数据
      */
-    override val attributes: List<ItemAttribute<*>>,
+    override val data: ItemData,
 ) : NeoItem

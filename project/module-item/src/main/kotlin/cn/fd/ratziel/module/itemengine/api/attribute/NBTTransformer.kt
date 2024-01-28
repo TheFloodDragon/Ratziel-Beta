@@ -8,10 +8,10 @@ import cn.fd.ratziel.module.itemengine.nbt.NBTTag
  * @author TheFloodDragon
  * @since 2023/12/8 21:42
  */
-interface NBTTransformer : AttributeTransformer<NBTTag> {
+interface NBTTransformer<T> : AttributeTransformer<T, NBTTag> {
 
-    fun transform(source: NBTTag): NBTTag
+    fun transform(target: T, from: NBTTag): NBTTag
 
-    override fun transform(): NBTTag = transform(NBTTag())
+    override fun transform(target: T): NBTTag = transform(target, NBTTag())
 
 }

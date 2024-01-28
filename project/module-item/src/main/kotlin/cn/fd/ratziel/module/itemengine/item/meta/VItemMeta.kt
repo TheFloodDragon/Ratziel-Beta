@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.itemengine.item.meta
 
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
+import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemMetadata
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
@@ -23,16 +24,24 @@ data class VItemMeta(
     override var nbt: @Contextual NBTTag = NBTTag(),
 ) : ItemMetadata, ItemAttribute<VItemMeta> {
 
-    override fun detransform(input: NBTTag) {
-        display.detransformFrom(input)
-        characteristic.detransformFrom(input)
-        nbt.merge(input.clone().apply { DefaultItemSerializer.usedNodes.forEach { remove(it) } })
-    }
+    override val transformer get() = Companion
 
-    override fun transform(source: NBTTag) = source.also { tag ->
-        display.transformTo(tag)
-        characteristic.transformTo(tag)
-        tag.merge(nbt)
+    companion object : NBTTransformer<VItemMeta> {
+
+        override fun detransform(target: VItemMeta, from: NBTTag): Unit = target.run {
+            display.detransformFrom(from)
+            characteristic.detransformFrom(from)
+            nbt.merge(from.clone().apply { DefaultItemSerializer.usedNodes.forEach { remove(it) } })
+        }
+
+        override fun transform(target: VItemMeta, from: NBTTag): NBTTag = target.run {
+            from.also { tag ->
+                display.transformTo(tag)
+                characteristic.transformTo(tag)
+                tag.merge(nbt)
+            }
+        }
+
     }
 
 }
