@@ -1,6 +1,6 @@
 # Ratziel
 
-![](https://img.shields.io/github/languages/code-size/Altawk/Aggregate-Script)
+![](https://img.shields.io/github/languages/code-size/TheFloodDragon/Ratziel-Beta)
 
 基于Taboolib开发的一个多功能插件。
 
