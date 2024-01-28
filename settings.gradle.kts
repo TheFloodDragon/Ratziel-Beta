@@ -1,10 +1,10 @@
 rootProject.name = "Ratziel"
 
-apply("project")
-apply("plugin")
-apply("script")
+applyAll("project")
+applyAll("plugin")
+applyAll("script")
 
-fun apply(name: String) {
+fun applyAll(name: String) {
     File(rootDir, name).listFiles()?.filter { it.isDirectory }?.forEach {
         include("$name:${it.name}")
     }

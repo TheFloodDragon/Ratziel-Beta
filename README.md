@@ -1,12 +1,16 @@
 # Ratziel
 
+![](https://img.shields.io/github/languages/code-size/Altawk/Aggregate-Script)
+
 基于Taboolib开发的一个多功能插件。
+
+---
 
 ## 功能
 
-+ NBT查看和编辑
++ 物品引擎
 
-***
+---
 
 ## 版本
 
@@ -36,7 +40,7 @@
 
 - [ ] 第一个发布版，也就是本储存库删除时
 
-***
+---
 
 ## 构建
 
@@ -52,7 +56,7 @@
 
 构建工件在 `./outs` 文件夹中
 
-***
+---
 
 ## 鸣谢
 
@@ -62,4 +66,4 @@
     - Lanscarlos - [Vulpecula](https://github.com/Lanscarlos/Vulpecula/)
     - Neige - [NeigeItems](https://github.com/ankhorg/NeigeItems-Kotlin/)
 
-***
+---
