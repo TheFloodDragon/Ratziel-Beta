@@ -4,9 +4,14 @@ import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 
 /**
- * 将一个物品属性转换成NBT标签并应用到源标签上
+ * 将NBT标签应用到物品属性上
+ * @param from 来自于的NBT的标签
  */
-fun <T> ItemAttribute<T>.transformTo(source: NBTTag) =
-    this.also { source.editShallow(it.node) { tag -> this.transform(tag) } }
+fun <T> ItemAttribute<T>.applyFrom(from: NBTTag) =
+    this.apply { from.editShallow(node) { tag -> this.transformer.transform(value,tag) } }
 
-fun <T> ItemAttribute<T>.detransformFrom(source: NBTTag) = (source[this.node] as? NBTTag)?.let { this.detransform(it) }
+/**
+ * 将物品属性应用于NBT标签上
+ * @param to 应用到的NBT标签
+ */
+fun <T> ItemAttribute<T>.applyTo(to: NBTTag) = (to[this.node] as? NBTTag)?.let { this.transformer.detransform(value,it) }

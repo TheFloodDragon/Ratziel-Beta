@@ -2,9 +2,9 @@ package cn.fd.ratziel.module.itemengine.item.builder
 
 import cn.fd.ratziel.module.itemengine.api.builder.ItemGenerator
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
-import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
-import cn.fd.ratziel.module.itemengine.util.transformTo
+import cn.fd.ratziel.module.itemengine.nbt.NBTTag
+import cn.fd.ratziel.module.itemengine.util.applyFrom
 import org.bukkit.inventory.meta.ItemMeta
 
 /**
@@ -17,8 +17,8 @@ class DefaultItemGenerator : ItemGenerator {
 
     fun build(vm: VItemMeta): ItemMeta = NBTTag().also { tag ->
         // 基础信息构建
-        vm.display.transformTo(tag)
-        vm.characteristic.transformTo(tag)
+        vm.display.applyFrom(tag)
+        vm.characteristic.applyFrom(tag)
         tag.merge(vm.nbt)
     }.let { RefItemMeta.new(it.getAsNmsNBT()) as ItemMeta }
 

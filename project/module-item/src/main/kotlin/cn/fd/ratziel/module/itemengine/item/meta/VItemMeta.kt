@@ -5,8 +5,8 @@ import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemMetadata
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
-import cn.fd.ratziel.module.itemengine.util.detransformFrom
-import cn.fd.ratziel.module.itemengine.util.transformTo
+import cn.fd.ratziel.module.itemengine.util.applyFrom
+import cn.fd.ratziel.module.itemengine.util.applyTo
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
@@ -29,15 +29,15 @@ data class VItemMeta(
     companion object : NBTTransformer<VItemMeta> {
 
         override fun detransform(target: VItemMeta, from: NBTTag): Unit = target.run {
-            display.detransformFrom(from)
-            characteristic.detransformFrom(from)
+            display.applyTo(from)
+            characteristic.applyTo(from)
             nbt.merge(from.clone().apply { DefaultItemSerializer.usedNodes.forEach { remove(it) } })
         }
 
-        override fun transform(target: VItemMeta, from: NBTTag): NBTTag = target.run {
-            from.also { tag ->
-                display.transformTo(tag)
-                characteristic.transformTo(tag)
+        override fun transform(target: VItemMeta, source: NBTTag): NBTTag = target.run {
+            source.also { tag ->
+                display.applyFrom(tag)
+                characteristic.applyFrom(tag)
                 tag.merge(nbt)
             }
         }

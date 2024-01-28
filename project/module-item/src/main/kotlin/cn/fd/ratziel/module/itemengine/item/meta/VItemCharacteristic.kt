@@ -132,16 +132,16 @@ data class VItemCharacteristic(
 
     companion object : NBTTransformer<VItemCharacteristic> {
 
-        override fun transform(target: VItemCharacteristic, from: NBTTag): NBTTag = target.run {
+        override fun transform(target: VItemCharacteristic, source: NBTTag): NBTTag = target.run {
             // 自定义模型数据 (1.14+)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
-                from.put(ItemMapping.CUSTOM_MODEL_DATA.get(), customModelData?.let { NBTInt(it) })
+                source.put(ItemMapping.CUSTOM_MODEL_DATA.get(), customModelData?.let { NBTInt(it) })
             // 物品隐藏标签
-            from.put(
+            source.put(
                 ItemMapping.HIDE_FLAG.get(),
                 hideFlags?.let { HideFlagSerializer.translateFlags(it) }?.let { NBTInt(it) })
             // 属性修饰符
-            from.merge(NBTTag.of(NBTTag.new().also { nmsTag ->
+            source.merge(NBTTag.of(NBTTag.new().also { nmsTag ->
                 // 创建修饰符表
                 val modifierMap = LinkedHashMultimap.create<Attribute, AttributeModifier>().also { map ->
                     attributeModifiers?.forEach { map.putAll(it.key, it.value) }
@@ -149,7 +149,7 @@ data class VItemCharacteristic(
                 // 应用到属性修饰符中
                 RefItemMeta.applyModifiers(nmsTag, modifierMap)
             }))
-            return from
+            return source
         }
 
         override fun detransform(target: VItemCharacteristic, from: NBTTag) = target.run {

@@ -10,8 +10,16 @@ import cn.fd.ratziel.module.itemengine.nbt.NBTTag
  */
 interface NBTTransformer<T> : AttributeTransformer<T, NBTTag> {
 
-    fun transform(target: T, from: NBTTag): NBTTag
+    /**
+     * 正向转化 - 输出型转化
+     * @param source 源标签
+     */
+    fun transform(target: T, source: NBTTag): NBTTag
 
+    /**
+     * 正向转化 - 输出型转化
+     * 重写并调用 [transform] 方法, 默认使用空的NBT标签作为源标签
+     */
     override fun transform(target: T): NBTTag = transform(target, NBTTag())
 
 }

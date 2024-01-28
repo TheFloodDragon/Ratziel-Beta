@@ -57,8 +57,9 @@ data class VItemDisplay(
     override val transformer get() = Companion
 
     companion object : NBTTransformer<VItemDisplay> {
-        override fun transform(target: VItemDisplay, from: NBTTag): NBTTag = target.run {
-            from.putAll(
+
+        override fun transform(target: VItemDisplay, source: NBTTag): NBTTag = target.run {
+            source.putAll(
                 ItemMapping.DISPLAY_NAME.get() to componentToNBT(name),
                 ItemMapping.DISPLAY_LORE.get() to lore?.map { componentToNBT(it) }?.let { NBTList(it) },
                 ItemMapping.DISPLAY_LOCAL_NAME.get() to componentToNBT(localizedName)

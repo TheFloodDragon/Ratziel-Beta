@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.itemengine.api.attribute
 
 /**
- * AttributeTransformer - 属性转换器
+ * AttributeTransformer - 属性转化器
  *
  * @author TheFloodDragon
  * @since 2023/12/8 21:27
@@ -9,12 +9,12 @@ package cn.fd.ratziel.module.itemengine.api.attribute
 interface AttributeTransformer<T, K> {
 
     /**
-     * 正向转换 - 输出型转换
+     * 正向转化 - 输出型转化
      */
     fun transform(target: T): K
 
     /**
-     * 反向转换 - 应用型转换
+     * 反向转化 - 应用型转化
      */
     fun detransform(target: T, from: K)
 

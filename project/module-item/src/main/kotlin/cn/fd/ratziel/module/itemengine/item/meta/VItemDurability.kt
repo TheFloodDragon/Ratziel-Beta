@@ -47,8 +47,8 @@ data class VItemDurability(
     companion object : NBTTransformer<VItemDurability> {
 
         // TODO 需要特殊处理
-        override fun transform(target: VItemDurability, from: NBTTag) = target.run {
-            from.putAll(
+        override fun transform(target: VItemDurability, source: NBTTag) = target.run {
+            source.putAll(
                 ItemMapping.DAMAGE.get() to damage?.let { NBTInt(it) },
                 ItemMapping.UNBREAKABLE.get() to unbreakable?.let { NBTBoolean(it) },
                 ItemMapping.REPAIR_COST.get() to repairCost?.let { NBTInt(it) }

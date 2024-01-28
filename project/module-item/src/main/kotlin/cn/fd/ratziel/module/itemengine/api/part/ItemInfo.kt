@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.itemengine.api.part
 
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
+import cn.fd.ratziel.module.itemengine.api.exception.NonSpecialItemException
 import cn.fd.ratziel.module.itemengine.nbt.NBTData
 import cn.fd.ratziel.module.itemengine.nbt.NBTString
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
@@ -25,7 +26,7 @@ open class ItemInfo(
         try {
             id // 获取标识符以校验数据
         } catch (_: Exception) {
-            throw error("Unsupported Data \"$data\"!")
+            throw NonSpecialItemException(data)
         }
     }
 
@@ -86,7 +87,7 @@ open class ItemInfo(
          */
         fun dropInfo(target: ItemData) = target.apply { remove(NODE_INFO) }
 
-        override fun transform(target: ItemInfo, from: NBTTag): NBTTag = target.run { from.merge(data) }
+        override fun transform(target: ItemInfo, source: NBTTag): NBTTag = target.run { source.merge(data) }
 
         override fun detransform(target: ItemInfo, from: NBTTag): Unit = target.run { data.merge(from) }
 
