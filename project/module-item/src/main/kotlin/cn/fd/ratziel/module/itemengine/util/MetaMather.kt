@@ -1,10 +1,10 @@
 package cn.fd.ratziel.module.itemengine.util
 
+import cn.fd.ratziel.module.itemengine.api.part.ItemMaterial
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemFlag
 import taboolib.common.util.Strings
 import taboolib.library.xseries.XEnchantment
-import taboolib.library.xseries.XMaterial
 import taboolib.module.nms.BukkitAttribute
 import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrElse
@@ -53,10 +53,9 @@ object MetaMather {
             AttributeModifier.Operation.valueOf(source)
         } catch (_: IllegalArgumentException) {
             null
+        } ?: AttributeModifier.Operation.entries.maxBy {
+            Strings.similarDegree(it.name, source)
         }
-            ?: AttributeModifier.Operation.entries.maxBy {
-                Strings.similarDegree(it.name, source)
-            }
 
     /**
      * 匹配物品(隐藏)标签
@@ -67,18 +66,14 @@ object MetaMather {
             ItemFlag.valueOf(source)
         } catch (_: IllegalArgumentException) {
             null
+        } ?: ItemFlag.entries.maxBy {
+            Strings.similarDegree(it.name, source)
         }
-            ?: ItemFlag.entries.maxBy {
-                Strings.similarDegree(it.name, source)
-            }
 
     /**
-     * 匹配物品材质
+     * 匹配物品材料
      */
     @JvmStatic
-    fun matchMaterial(source: String) =
-        XMaterial.matchXMaterial(source).getOrElse {
-            XMaterial.entries.maxBy { Strings.similarDegree(it.name, source) }
-        }
+    fun matchMaterial(source: String) = ItemMaterial.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value
 
 }

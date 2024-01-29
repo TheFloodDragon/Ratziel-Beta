@@ -16,7 +16,7 @@ import java.util.function.Consumer
  */
 data class RatzielItem(
     /**
-     * 物品材质
+     * 物品材料
      */
     override val material: ItemMaterial,
     /**

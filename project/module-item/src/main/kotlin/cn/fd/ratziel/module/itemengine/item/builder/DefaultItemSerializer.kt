@@ -1,18 +1,27 @@
 package cn.fd.ratziel.module.itemengine.item.builder
 
+import cn.fd.ratziel.common.message.builder.ComponentSerializer
 import cn.fd.ratziel.core.function.futureAsync
 import cn.fd.ratziel.core.serialization.edit
 import cn.fd.ratziel.core.serialization.get
+import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.itemengine.api.builder.ItemKSerializer
 import cn.fd.ratziel.module.itemengine.api.builder.ItemSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.VItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.VItemDisplay
 import cn.fd.ratziel.module.itemengine.item.meta.VItemDurability
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
+import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
+import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
+import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTMapper
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.*
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
+import net.kyori.adventure.text.Component
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -54,17 +63,35 @@ open class DefaultItemSerializer(
          * 使用到的序列化器
          * 包括 [KSerializer] 和 [ItemSerializer]
          */
-        val serializers = arrayOf(
-            VItemDisplay.serializer(),
-            VItemCharacteristic.serializer(),
-            VItemDurability.serializer(),
-            VItemMeta.serializer(),
-            NBTSerializer
-        )
+        val serializers by lazy {
+            arrayOf(
+                VItemDisplay.serializer(),
+                VItemCharacteristic.serializer(),
+                VItemDurability.serializer(),
+                VItemMeta.serializer(),
+                NBTSerializer
+            )
+        }
 
-        val usedNodes = serializers.flatMap {
-            ItemSerializer.getUsedNodes(it)
-        }.toSet().toTypedArray()
+        val defaultSerializersModule by lazy {
+            SerializersModule {
+                // Common Serializers
+                contextual(NBTTag::class, NBTMapper)
+                contextual(Component::class, ComponentSerializer)
+                contextual(EnhancedListSerializer(ComponentSerializer))
+                // Bukkit Serializers
+                contextual(org.bukkit.enchantments.Enchantment::class, EnchantmentSerializer)
+                contextual(org.bukkit.inventory.ItemFlag::class, HideFlagSerializer)
+                contextual(org.bukkit.attribute.Attribute::class, AttributeSerializer)
+                contextual(org.bukkit.attribute.AttributeModifier::class, AttributeModifierSerializer)
+            }
+        }
+
+        val usedNodes by lazy {
+            serializers.flatMap {
+                ItemSerializer.getUsedNodes(it)
+            }.toSet().toTypedArray()
+        }
 
     }
 

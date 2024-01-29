@@ -26,7 +26,7 @@ open class ItemInfo(
         try {
             id // 获取标识符以校验数据
         } catch (_: Exception) {
-            throw NonSpecialItemException(data)
+            throw NonSpecialItemException(data.toString())
         }
     }
 

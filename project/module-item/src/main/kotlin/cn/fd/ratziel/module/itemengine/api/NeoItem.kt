@@ -14,7 +14,7 @@ import cn.fd.ratziel.module.itemengine.api.part.ItemPart
 interface NeoItem : ItemPart {
 
     /**
-     * 物品材质
+     * 物品材料
      */
     val material: ItemMaterial
 
