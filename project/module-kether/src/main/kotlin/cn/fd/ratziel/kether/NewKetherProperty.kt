@@ -8,6 +8,7 @@ import kotlin.reflect.KClass
  * @author TheFloodDragon
  * @since 2023/9/8 22:30
  */
+@Deprecated("Need a new design")
 annotation class NewKetherProperty(
     /**
      * 属性标识符

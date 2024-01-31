@@ -30,7 +30,7 @@ public class KetherEnv {
         String[][] rule = (String[][]) rc.getMethod("rule", false, false).invokeStatic();
         // Get Method
         // public static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, String[][] relocate)
-        ClassMethod method = rc.getStructure().getMethodByType("load", String.class, String.class, String.class, String.class, Boolean.class, boolean.class, String[][].class);
+        ClassMethod method = rc.getStructure().getMethodByType("load", String.class, String.class, String.class, String.class, Boolean.class, Boolean.class, String[][].class);
         // Load as Taboolib Module
         method.invokeStatic(PrimitiveSettings.REPO_CENTRAL, RUNTIME_DEPENDENCY[0], RUNTIME_DEPENDENCY[1], RUNTIME_DEPENDENCY[2], IS_ISOLATED_MODE, false, rule);
     }

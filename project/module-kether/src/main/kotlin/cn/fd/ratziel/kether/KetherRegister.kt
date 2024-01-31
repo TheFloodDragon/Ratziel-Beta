@@ -13,6 +13,7 @@ import java.util.function.Supplier
  * @since 2023/7/29 12:16
  */
 @Awake
+@Deprecated("Need a new design")
 class KetherRegister : ClassVisitor(0) {
 
     override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {

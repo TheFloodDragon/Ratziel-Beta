@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture
  * @author TheFloodDragon
  * @since 2023/8/9 20:57
  */
+@Deprecated("Need a new design")
 object KetherHandler {
 
     private fun defaultOptions(sender: CommandSender?, vars: Map<String, Any?>) = ScriptOptions.builder()

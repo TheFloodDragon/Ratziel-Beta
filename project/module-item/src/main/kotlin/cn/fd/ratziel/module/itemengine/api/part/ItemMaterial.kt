@@ -9,7 +9,7 @@ import org.bukkit.Material as BukkitMaterial
 /**
  * ItemMaterial - 物品材料
  *
- * 由于不可抗力的影响, 仅支持 [BukkitMaterial], 即仅支持原版物品
+ * 由于不可抗力的影响(我不会), 仅支持 [BukkitMaterial], 即仅支持原版物品
  *
  * @author TheFloodDragon
  * @since 2024/1/28 12:49
@@ -59,8 +59,7 @@ data class ItemMaterial(
     /**
      * [XMaterial] 形式 (若获取不到则抛出异常)
      */
-    val xseriesForm: XMaterial
-        get() = runCatching { XMaterial.matchXMaterial(name).get() }.getOrNull() ?: throw UnknownMaterialException(name)
+    val xseriesForm: XMaterial get() = XMaterial.matchXMaterial(bukkitForm)
 
     companion object {
 
