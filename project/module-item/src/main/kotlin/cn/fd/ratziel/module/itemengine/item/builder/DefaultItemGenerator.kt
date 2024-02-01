@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.itemengine.item.builder
 
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.itemengine.api.builder.ItemGenerator
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
@@ -13,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta
  * @author TheFloodDragon
  * @since 2023/10/28 13:56
  */
-class DefaultItemGenerator : ItemGenerator {
+open class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
 
     fun build(vm: VItemMeta): ItemMeta = NBTTag().also { tag ->
         // 基础信息构建

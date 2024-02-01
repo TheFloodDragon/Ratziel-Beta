@@ -5,6 +5,8 @@ import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.element.evaluator.ApexElementEvaluator
 import cn.fd.ratziel.common.element.evaluator.ApexElementEvaluator.handle
 import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.element.ExtElementHandler
+import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.function.FutureFactory
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -39,6 +41,9 @@ object WorkspaceLoader {
      * 加载工作空间中的元素
      */
     fun load(sender: ProxyCommandSender) = measureTime {
+        // 开启所有扩展处理器的 [onStart]
+        ElementRegistry.getHandlers().forEach { if (it is ExtElementHandler) it.onStart() }
+        // 创建异步工厂
         FutureFactory<List<Element>>().also { loading ->
             /**
              * 加载元素文件
@@ -54,6 +59,8 @@ object WorkspaceLoader {
                     }
                 }
         }.wait() // 等待所有加载任务完成
+        // 开启所有扩展处理器的 [onFinish]
+        ElementRegistry.getHandlers().forEach { if (it is ExtElementHandler) it.onFinish() }
     }.let { time ->
         ApexElementEvaluator.evalTasks.whenFinished { durations ->
             durations.forEach { time.plus(it) } // 合并时间

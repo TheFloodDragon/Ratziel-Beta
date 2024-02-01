@@ -13,9 +13,7 @@ import java.util.Collections;
  */
 public class BukkitEnv {
 
-    public static final String ADVENTURE_PLATFORM_VERSION = "4.3.2";
-
-    public static final String RUNTIME_DEPENDENCY = "!net.kyori:adventure-platform-bukkit:".substring(1) + ADVENTURE_PLATFORM_VERSION;
+    public static final String RUNTIME_DEPENDENCY = "!net.kyori:adventure-platform-bukkit:".substring(1) + CommonEnv.ADVENTURE_PLATFORM_VERSION;
 
     @Awake
     public static void init() throws Throwable {

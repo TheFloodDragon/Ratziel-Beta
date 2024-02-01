@@ -76,11 +76,16 @@ object ElementRegistry {
     }
 
     /**
+     * 获取处理器组
+     */
+    @JvmStatic
+    fun getHandlerGroup(etype: ElementType): ElementHandlerGroup? = registry[etype]
+
+    /**
      * 获取处理器表
      */
     @JvmStatic
-    fun getHandlerMap(etype: ElementType) =
-        getHandlerGroup(etype)?.handlerMap
+    fun getHandlerMap(etype: ElementType) = getHandlerGroup(etype)?.handlerMap
 
     /**
      * 根据优先级提供处理器以供操作
@@ -106,11 +111,8 @@ object ElementRegistry {
     fun getHandlers(etype: ElementType): List<ElementHandler> =
         getHandlerMap(etype)?.flatMap { it.value } ?: emptyList()
 
-    /**
-     * 获取处理器组
-     */
     @JvmStatic
-    fun getHandlerGroup(etype: ElementType): ElementHandlerGroup? = registry[etype]
+    fun getHandlers(): List<ElementHandler> = registry.values.flatMap { it.handlerMap.values.flatten() }
 
     /**
      * 获取元素类型

@@ -2,8 +2,9 @@ package cn.fd.ratziel.module.itemengine
 
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.api.ElementHandler
+import cn.fd.ratziel.core.element.ExtElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
+import cn.fd.ratziel.module.itemengine.item.ItemManager
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemSerializer
 import kotlinx.serialization.json.Json
@@ -15,10 +16,10 @@ import kotlinx.serialization.json.Json
  * @since 2023/10/14 18:55
  */
 @NewElement(
-    "meta",
+    name = "meta",
     space = "test"
 )
-object ItemElement : ElementHandler {
+object ItemElement : ExtElementHandler {
 
     val json by lazy {
         Json(baseJson) {
@@ -29,7 +30,7 @@ object ItemElement : ElementHandler {
     override fun handle(element: Element) = try {
 
         val serializer = DefaultItemSerializer(json)
-        val generator = DefaultItemGenerator()
+        val generator = DefaultItemGenerator(element)
 
         val meta = serializer.deserializeFromJson(element.property)
 
@@ -48,8 +49,15 @@ object ItemElement : ElementHandler {
 
         println(serializer.usedNodes.toList().toString())
 
+        // 注册物品
+        ItemManager.registry[element.name] = generator
     } catch (ex: Exception) {
         ex.printStackTrace()
+    }
+
+    override fun onStart() {
+        // 清除注册的物品
+        ItemManager.registry.clear()
     }
 
 }

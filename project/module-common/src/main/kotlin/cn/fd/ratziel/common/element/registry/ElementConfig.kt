@@ -3,7 +3,7 @@ package cn.fd.ratziel.common.element.registry
 import taboolib.common.LifeCycle
 
 /**
- * 元素配置
+ * 元素处理配置
  *
  * @author TheFloodDragon
  * @since 2023/10/4 13:23
@@ -12,11 +12,11 @@ import taboolib.common.LifeCycle
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ElementConfig(
     /**
-     * 在指定生命周期时元素处理
+     * 指定生命周期时处理
      */
     val lifeCycle: LifeCycle = LifeCycle.LOAD,
     /**
-     * 是否异步处理
+     * 异步处理
      */
     val async: Boolean = true,
 )
