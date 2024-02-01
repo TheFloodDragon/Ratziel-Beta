@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkRatziel_Wiki=self.webpackChunkRatziel_Wiki||[]).push([[704],{5745:e=>{e.exports=JSON.parse('{"name":"docusaurus-plugin-content-pages","id":"default"}')}}]);
