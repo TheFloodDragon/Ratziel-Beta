@@ -1,5 +1,12 @@
+# Default
 .gradle
 .idea
 .kotlin
 build
+# Output
 outs
+# Wiki
+node_modules
+package-lock.json
+.docusaurus
+.cache-loader

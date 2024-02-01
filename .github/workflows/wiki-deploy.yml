@@ -1,0 +1,33 @@
+name: Wiki Deploy
+
+# 触发条件
+on:
+  # 手动触发
+  workflow_dispatch:
+  # 推送到指定分支
+  push:
+    # 只在下列路径变更时触发
+    paths:
+      - 'wiki/docs/**'
+      - 'wiki/package.json'
+
+# 设置权限
+permissions:
+  contents: write
+
+# 任务
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 拉取代码
+      - name: Checkout
+        uses: actions/checkout@v3
+      # 安装 Npm 并构建
+      - name: Install and Build
+        run: cd wiki && npm install && npm run build
+      # 部署
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: wiki/build
