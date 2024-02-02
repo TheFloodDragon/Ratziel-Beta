@@ -10,11 +10,12 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
 
   customFields: {
-    name: 'Ratziel',
+	titlePrefix: '首页',
     start: '快速开始 🥵',
   },
 
-  title: '主页 | Ratziel',
+  title: 'Ratziel',
+  titleDelimiter: '|',
   tagline: '插件文档',
   favicon: 'img/favicon.ico',
 
