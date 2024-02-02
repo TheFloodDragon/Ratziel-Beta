@@ -82,7 +82,7 @@ const config = {
             position: 'right',
           },
           {
-			src: 'img/github.svg'
+            src: 'img/github.svg',
             href: 'https://github.com/TheFloodDragon/Ratziel-Beta',
             position: 'right',
           },
