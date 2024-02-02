@@ -12,10 +12,10 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <Heading as="h1" className="hero__title">{siteConfig.name}</Heading>
-        <p className="hero__subtitle">{siteConfig.description}</p>
+        <Heading as="h1" className="hero__title">{siteConfig.customFields.name}</Heading>
+        <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/docs/about">{siteConfig.start}</Link>
+          <Link className="button button--secondary button--lg" to="/docs/about">{siteConfig.customFields.start}</Link>
         </div>
       </div>
     </header>
@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <Layout
       title={siteConfig.title}
-      description={siteConfig.description}>
+      description={siteConfig.tagline}>
       <HomepageHeader />
       <main>
         <HomepageFeatures />
