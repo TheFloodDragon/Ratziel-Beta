@@ -9,10 +9,10 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 
-  name: 'Ratziel'
+  name: 'Ratziel',
   title: '主页 | Ratziel',
-  description: '插件文档'
-  start: '快速开始 🥵'
+  description: '插件文档',
+  start: '快速开始 🥵',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
