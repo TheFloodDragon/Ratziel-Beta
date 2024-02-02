@@ -10,7 +10,7 @@ on:
 # 任务
 jobs:
   build:
-    # 当提交信息没有 [skip] 和 [文档] 时
+    # 检查提交信息
     if: !contains(github.event.head_commit.message, '[skip]') && !contains(github.event.head_commit.message, '[文档]')
     runs-on: ubuntu-latest
     # 环境变量
