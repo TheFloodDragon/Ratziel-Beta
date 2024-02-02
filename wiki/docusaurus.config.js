@@ -67,7 +67,6 @@ const config = {
       navbar: {
         title: 'Ratziel',
         logo: {
-          alt: 'Logo',
           src: 'img/logo.svg',
         },
         items: [
@@ -83,9 +82,9 @@ const config = {
             position: 'right',
           },
           {
+			src: 'img/github.svg'
             href: 'https://github.com/TheFloodDragon/Ratziel-Beta',
             position: 'right',
-            label: 'GitHub',
           },
           {
             type: 'localeDropdown',
