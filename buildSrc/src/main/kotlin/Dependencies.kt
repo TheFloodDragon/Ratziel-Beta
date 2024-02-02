@@ -5,7 +5,6 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.project
 
 fun PluginAware.applyPlugins() {
-    apply(plugin = "maven-publish")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
@@ -14,6 +13,22 @@ fun PluginAware.applyPlugins() {
 fun Project.buildDirClean() {
     @Suppress("DEPRECATION") gradle.buildFinished { buildDir.deleteRecursively() }
 }
+
+/**
+ * 跳过重定向的Kotlin类
+ */
+val skipRelocateKotlinClasses = setOf(
+    "kotlin.annotation.Repeatable",
+    "kotlin.annotation.Retention",
+    "kotlin.annotation.Target",
+    "kotlin.jvm.JvmField",
+    "kotlin.jvm.JvmInline",
+    "kotlin.jvm.JvmStatic",
+    "kotlin.jvm.PurelyImplements",
+    "kotlin.Metadata",
+    "kotlin.Deprecated",
+    "kotlin.ReplaceWith",
+)
 
 /**
  * Kotlin序列化工具

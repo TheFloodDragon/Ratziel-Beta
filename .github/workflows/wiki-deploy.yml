@@ -4,7 +4,7 @@ name: Wiki Deploy
 on:
   # 手动触发
   workflow_dispatch:
-  # 推送到指定分支
+  # 推送时触发
   push:
     # 只在下列路径变更时触发
     paths:

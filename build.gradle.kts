@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-library`
-    `maven-publish`
     id("org.jetbrains.kotlin.jvm") version kotlinVersion apply false
     id("com.github.johnrengelman.shadow") version shadowJarVersion apply false
     id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion apply false
@@ -79,16 +78,9 @@ subprojects {
             relocate("taboolib", "$rootGroup.taboolib")
             relocate("org.tabooproject", "$rootGroup.library")
             // Kotlin
-            relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude("kotlin.Metadata") }
+            relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
             relocate("kotlinx.coroutines.", "kotlinx.coroutines${coroutineVersion.escapedVersion}.")
             relocate("kotlinx.serialization.", "kotlinx.serialization${serializationVersion.escapedVersion}.")
-        }
-    }
-
-    // 发布
-    publishing {
-        publications {
-            register<MavenPublication>("maven") { from(components["java"]) }
         }
     }
 
