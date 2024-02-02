@@ -73,7 +73,7 @@ const config = {
         items: [
           {
             type: 'doc',
-            sidebarId: 'about',
+            docId: 'about',
             position: 'left',
             label: '文档',
           },
