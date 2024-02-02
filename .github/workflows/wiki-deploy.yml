@@ -8,8 +8,7 @@ on:
   push:
     # 只在下列路径变更时触发
     paths:
-      - 'wiki/docs/**'
-      - 'wiki/package.json'
+      - 'wiki/**'
 
 # 设置权限
 permissions:

@@ -8,8 +8,11 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Ratziel Wiki',
-  tagline: '插件文档',
+
+  name: 'Ratziel'
+  title: '主页 | Ratziel',
+  description: '插件文档'
+  start: '快速开始 🥵'
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -66,27 +69,47 @@ const config = {
         },
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
+            type: 'doc',
+            sidebarId: 'about',
             position: 'left',
-            label: 'Tutorial',
+            label: '文档',
           },
           {
             href: 'https://github.com/TheFloodDragon/Ratziel-Beta',
+            position: 'right',
             label: 'GitHub',
+          },
+          {
+            type: 'localeDropdown',
             position: 'right',
           },
         ],
       },
+      // 底部信息
       footer: {
         style: 'dark',
+        // 底部版权信息
         copyright: `Copyright © ${new Date().getFullYear()} <b>TheFloodDragon</b>, All Rights Reserved.`,
       },
+      // 深浅主题
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
     }),
+    themes: [
+      [
+        require.resolve("@easyops-cn/docusaurus-search-local"),
+        {
+          hashed: true,
+          language: ["en", "zh"],
+          highlightSearchTermsOnTargetPage: true,
+          explicitSearchResultPath: true,
+          indexBlog: false,
+          docsRouteBasePath: "/"
+        },
+      ],
+    ],
 };
 
 export default config;
