@@ -77,6 +77,11 @@ const config = {
             position: 'left',
             label: '文档',
           },
+          // 搜索框
+          {
+            type: 'search',
+            position: 'right',
+          },
           {
             href: 'https://github.com/TheFloodDragon/Ratziel-Beta',
             position: 'right',
