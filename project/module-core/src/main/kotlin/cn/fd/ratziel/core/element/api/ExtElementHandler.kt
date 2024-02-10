@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.element
+package cn.fd.ratziel.core.element.api
 
 import cn.fd.ratziel.core.element.api.ElementHandler
 
