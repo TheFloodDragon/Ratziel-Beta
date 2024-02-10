@@ -2,8 +2,8 @@ package cn.fd.ratziel.module.itemengine.item.builder
 
 import cn.fd.ratziel.common.message.builder.ComponentSerializer
 import cn.fd.ratziel.core.function.futureAsync
-import cn.fd.ratziel.core.serialization.edit
-import cn.fd.ratziel.core.serialization.get
+import cn.fd.ratziel.core.serialization.JsonHandler
+import cn.fd.ratziel.core.serialization.getTentatively
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.itemengine.api.builder.ItemKSerializer
 import cn.fd.ratziel.module.itemengine.api.builder.ItemSerializer
@@ -54,7 +54,7 @@ open class DefaultItemSerializer(
     fun serializeByJson(json: Json, value: VItemMeta) =
         json.encodeToJsonElement(VItemMeta.serializer(), value).let {
             // 开启结构化解析
-            it.jsonObject.edit { put(NODE_STRUCTURED, JsonPrimitive(true)) }
+            JsonHandler.edit(it.jsonObject) { put(NODE_STRUCTURED, JsonPrimitive(true)) }
         }
 
     companion object {
@@ -107,7 +107,7 @@ open class DefaultItemSerializer(
 
         fun deserialize(element: JsonElement, source: NBTTag): NBTTag? =
             (element.takeIf { element is JsonObject } as? JsonObject)?.let { o ->
-                o[usedNodes]?.let { NBTMapper.mapFromJson(it, source) }
+                o.getTentatively(*usedNodes)?.let { NBTMapper.mapFromJson(it, source) }
             }
 
         override fun deserializeFromJson(element: JsonElement) = deserialize(element, NBTTag()) ?: NBTTag()

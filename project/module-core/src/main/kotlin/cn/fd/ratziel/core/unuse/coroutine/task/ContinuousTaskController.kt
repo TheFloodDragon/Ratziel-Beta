@@ -1,6 +1,6 @@
-package cn.fd.ratziel.core.coroutine.task
+package cn.fd.ratziel.core.unuse.coroutine.task
 
-import cn.fd.ratziel.core.task.TaskLifeCycle
+import cn.fd.ratziel.core.unuse.task.TaskLifeCycle
 import cn.fd.ratziel.core.util.randomUUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function

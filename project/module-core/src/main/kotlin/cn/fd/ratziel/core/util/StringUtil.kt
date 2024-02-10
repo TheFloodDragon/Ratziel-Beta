@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.util
 
-import java.util.function.Consumer
+const val ESCAPE_CHAR = "\\"
 
 /**
  * 删除当前字符串的所有目标字符
@@ -17,7 +17,7 @@ fun String.indexOfNonEscaped(
     target: String,
     startIndex: Int = 0,
     ignoreCase: Boolean = false,
-    escapeChar: String = "\\",
+    escapeChar: String = ESCAPE_CHAR,
 ) = this.indexOf(target, startIndex, ignoreCase).takeUnless { this.substring(0, it).endsWith(escapeChar, ignoreCase) }
 
 /**
@@ -28,7 +28,7 @@ fun String.allIndexOfNonEscaped(
     target: String,
     startIndex: Int = 0,
     ignoreCase: Boolean = false,
-    escapeChar: String = "\\",
+    escapeChar: String = ESCAPE_CHAR,
     action: (Int) -> Unit,
 ) {
     var index = indexOfNonEscaped(target, startIndex, ignoreCase, escapeChar)
@@ -42,7 +42,7 @@ fun String.allIndexOfNonEscaped(
     target: String,
     startIndex: Int = 0,
     ignoreCase: Boolean = false,
-    escapeChar: String = "\\",
+    escapeChar: String = ESCAPE_CHAR,
 ) = buildList { allIndexOfNonEscaped(target, startIndex, ignoreCase, escapeChar) { add(it) } }.toTypedArray()
 
 
@@ -73,8 +73,8 @@ fun String.replaceNonEscaped(
     oldValue: String,
     newValue: String,
     ignoreCase: Boolean = false,
-    escapeChar: String = "\\",
     startIndex: Int = 0,
+    escapeChar: String = ESCAPE_CHAR,
 ): String = buildString {
     // 索引记录
     var lastIndex = 0
@@ -93,26 +93,17 @@ fun String.replaceNonEscaped(
 }
 
 /**
- * 判断当前字符串是否包含目标字符串, 若包含则执行 [consumer]
- * @param ifMode 若为 false, 则在不包含时执行 ; 若为 true, 则在包含时执行
+ * 分割非转义字符
+ * @see String.split
  */
 @JvmOverloads
-fun String.runContainsNonEscaped(
-    other: String,
+fun String.splitNonEscaped(
+    vararg delimiters: String,
     ignoreCase: Boolean = false,
-    escapeChar: String = "\\",
-    ifMode: Boolean = true,
-    consumer: Consumer<String>,
-): Boolean {
-    val result =
-        // 若有转义字符, 先全部删除
-        if (this.contains(escapeChar + other, ignoreCase))
-            this.removeAll(escapeChar + other, ignoreCase).contains(other, ignoreCase)
-        else this.contains(other, ignoreCase)
-    // 若包含目标字符串, 则执行, 提供去掉转义字符的字符串
-    if ((ifMode && result) || (!ifMode && !result)) consumer.accept(this.replace(escapeChar + other, other))
-    return result
-}
+    limit: Int = 0,
+    escapeChar: String = ESCAPE_CHAR,
+): List<String> = this.split(*delimiters, ignoreCase = ignoreCase, limit = limit)
+    .map { s -> s.takeUnless { it.endsWith(escapeChar) } ?: s.dropLast(escapeChar.length) }
 
 /**
  * 字符串自适应 - 尝试将字符串转化为数字

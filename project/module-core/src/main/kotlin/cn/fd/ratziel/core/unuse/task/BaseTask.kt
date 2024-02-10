@@ -1,6 +1,6 @@
-package cn.fd.ratziel.core.task
+package cn.fd.ratziel.core.unuse.task
 
-import cn.fd.ratziel.core.task.api.Task
+import cn.fd.ratziel.core.unuse.task.api.Task
 
 /**
  * BaseTask - 基础任务

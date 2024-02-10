@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.function
+package cn.fd.ratziel.core.exception
 
 import java.lang.reflect.Type
 

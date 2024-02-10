@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.itemengine.mapping
 
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.core.function.*
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
 import org.bukkit.inventory.ItemStack

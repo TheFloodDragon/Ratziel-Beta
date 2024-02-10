@@ -1,6 +1,8 @@
 package cn.fd.ratziel.core.serialization.serializers
 
-import cn.fd.ratziel.core.util.runContainsNonEscaped
+import cn.fd.ratziel.core.util.ESCAPE_CHAR
+import cn.fd.ratziel.core.util.removeAll
+import cn.fd.ratziel.core.util.splitNonEscaped
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.*
@@ -14,8 +16,15 @@ import java.util.*
  * @author TheFloodDragon
  * @since 2023/10/5 14:45
  */
-class EnhancedListSerializer<T : Any>(serializer: KSerializer<T>) :
-    JsonTransformingSerializer<List<T>>(ListSerializer(serializer)) {
+class EnhancedListSerializer<T : Any>(
+    serializer: KSerializer<T>,
+    // 换行符
+    val newLineSign: Array<String> = DEFAULT_NEWLINE_SIGN,
+    // 删行符
+    val removeLineSign: Array<String> = DEFAULT_REMOVE_LINE_SIGN,
+    // 忽略大小写
+    val ignoreCase: Boolean = true,
+) : JsonTransformingSerializer<List<T>>(ListSerializer(serializer)) {
 
     override fun transformDeserialize(element: JsonElement): JsonElement = JsonArray(enhanceBuild(element))
 
@@ -27,20 +36,23 @@ class EnhancedListSerializer<T : Any>(serializer: KSerializer<T>) :
             when {
                 element is JsonArray -> element.forEach { enhanceBuild(it, list) }
                 element is JsonPrimitive && element.jsonPrimitive.isString ->
-                    element.content.split(NEWLINE_SIGN).forEach {
-                        it.runContainsNonEscaped(REMOVE_LINE_SIGN, ifMode = false) { s ->
-                            list.add(JsonPrimitive(s))
+                    element.content.splitNonEscaped(*newLineSign, ignoreCase = this.ignoreCase).forEach {
+                        for (rls in removeLineSign) {
+                            // 若 (去掉 "\{rl}" 的字符) 不包含删行符
+                            if (!it.removeAll(ESCAPE_CHAR + rls, ignoreCase).contains(rls, ignoreCase)) {
+                                // 去除转义: 替换 "\{rl}" 为 "{rl}"
+                                list.add(JsonPrimitive(it.replace(ESCAPE_CHAR + rls, rls)))
+                            }
                         }
                     }
-
                 else -> list.add(element)
             }
         }
 
 }
 
-// 换行符
-const val NEWLINE_SIGN = "\n"
+// 默认换行符
+val DEFAULT_NEWLINE_SIGN = arrayOf("\n", "{nl}")
 
-// 删行符
-const val REMOVE_LINE_SIGN = "{dl}"
+// 默认删行符
+val DEFAULT_REMOVE_LINE_SIGN = arrayOf("{rl}", "{dl}")

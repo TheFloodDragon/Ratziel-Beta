@@ -6,7 +6,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.json.*
-import java.util.function.Function
 
 val baseJson by lazy {
     Json {
@@ -23,8 +22,7 @@ val baseJson by lazy {
     }
 }
 
-@JvmName("getTentatively")
-operator fun JsonObject.get(keys: Array<String>) = keys.firstNotNullOfOrNull { this[it] }
+fun JsonObject.getTentatively(vararg keys: String): JsonElement? = keys.firstNotNullOfOrNull { this[it] }
 
 /**
  * 简便方法, 默认 "serialName" 为 全类名
@@ -60,30 +58,6 @@ fun emptyJson() = JsonObject(emptyMap())
  * 简单的Json检查
  */
 fun String.isJson(): Boolean = startsWith('{') && endsWith('}')
-
-/**
- * 编辑Json对象
- * @return 编辑后的Json对象
- */
-fun JsonObject.edit(action: HashMap<String, JsonElement>.() -> Unit) = JsonObject(LinkedHashMap(this).apply(action))
-
-/**
- * 对一个Json的所有Primitive值进行处理
- * @param element 原始 Json 元素
- * @param handle 处理方法
- * @return 最终处理结果
- */
-fun handlePrimitives(element: JsonElement, handle: Function<JsonPrimitive, JsonElement>): JsonElement =
-    when (element) {
-        is JsonPrimitive -> handle.apply(element)
-        is JsonArray -> buildJsonArray { element.jsonArray.forEach { add(handlePrimitives(it, handle)) } }
-        is JsonObject -> buildJsonObject {
-            element.jsonObject.forEach { key, value ->
-                put(key, handlePrimitives(value, handle))
-            }
-        }
-    }
-
 
 /**
  * JsonPrimitive类型的判断

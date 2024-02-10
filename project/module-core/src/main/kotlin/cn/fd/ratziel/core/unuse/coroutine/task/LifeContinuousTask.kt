@@ -1,7 +1,7 @@
-package cn.fd.ratziel.core.coroutine.task
+package cn.fd.ratziel.core.unuse.coroutine.task
 
-import cn.fd.ratziel.core.coroutine.ProxyCoroutineScopeIO
-import cn.fd.ratziel.core.task.TaskLifeCycle
+import cn.fd.ratziel.core.unuse.coroutine.ProxyCoroutineScopeIO
+import cn.fd.ratziel.core.unuse.task.TaskLifeCycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.Continuation

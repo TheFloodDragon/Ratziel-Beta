@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.coroutine
+package cn.fd.ratziel.core.unuse.coroutine
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope

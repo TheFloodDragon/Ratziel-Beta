@@ -1,8 +1,8 @@
-package cn.fd.ratziel.core.coroutine.task
+package cn.fd.ratziel.core.unuse.coroutine.task
 
-import cn.fd.ratziel.core.task.BaseTask
-import cn.fd.ratziel.core.task.exception.TaskForceFinishedException
-import cn.fd.ratziel.core.task.TaskLifeCycle
+import cn.fd.ratziel.core.unuse.task.BaseTask
+import cn.fd.ratziel.core.unuse.task.exception.TaskForceFinishedException
+import cn.fd.ratziel.core.unuse.task.TaskLifeCycle
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException

@@ -1,6 +1,6 @@
-package cn.fd.ratziel.core.task.exception
+package cn.fd.ratziel.core.unuse.task.exception
 
-import cn.fd.ratziel.core.task.api.Task
+import cn.fd.ratziel.core.unuse.task.api.Task
 
 /**
  * TaskForceFinishedException

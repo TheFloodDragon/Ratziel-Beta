@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.api.builder
 
-import cn.fd.ratziel.core.function.UnsupportedTypeException
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.core.serialization.elementAnnotations
 import cn.fd.ratziel.core.util.forEachDually
 import kotlinx.serialization.ExperimentalSerializationApi
