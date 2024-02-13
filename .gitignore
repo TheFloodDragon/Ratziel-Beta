@@ -8,5 +8,3 @@ outs
 # Wiki
 node_modules
 package-lock.json
-.docusaurus
-.cache-loader

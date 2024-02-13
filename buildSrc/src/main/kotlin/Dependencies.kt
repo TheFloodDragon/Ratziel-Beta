@@ -18,7 +18,6 @@ fun Project.buildDirClean() {
  * 跳过重定向的Kotlin类
  */
 val skipRelocateKotlinClasses = setOf(
-    "kotlin.annotation.Repeatable",
     "kotlin/annotation/Repeatable",
     "kotlin/annotation/Retention",
     "kotlin/annotation/Target",

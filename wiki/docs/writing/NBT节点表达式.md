@@ -34,7 +34,7 @@ NBT表达式分为两种:
 
 节点名末尾以 `[数字]` 的形式，其中数字代表的是该列表中的元素索引。
 
-若有一个名为 `AWA` 的列表 `[ "a", "b", "c" ]` 
+若有一个名为 `AWA` 的列表 `[ "a", "b", "c" ]`
 
 则 `AWA[0]` 表示列表中的第一个元素 `a` (*没错，索引是从0开始的*)
 
@@ -56,7 +56,8 @@ Vacation:
 
 再看 `Duration` 其实是个列表，第一个元素是 `"5 ~ 7"`，它的索引位置是 0 ，引用它，就需要这样的表达式 `Vacation.Duration[0]`
 
-而 `Duration` 的第二个元素是复合的，要引用它的 `from` 或 `to` ，我们需要使用 `Vacation.Duration[1].from` 或者 `Vacation.Duration[1].to`
+而 `Duration` 的第二个元素是复合的，要引用它的 `from` 或 `to` ，我们需要使用 `Vacation.Duration[1].from`
+或者 `Vacation.Duration[1].to`
 
 我们可以分别得到 `"2024/1/5"` 和 `"2024/1/7"`
 
@@ -92,17 +93,17 @@ NBTIntArray - `1,2,3,4,5ia`
 
 **允许以下类型的值**
 
-| 类型 | 代号 | 描述 |
-| :----: | :----: | :----: |
-| NBTCompound | c , cpd, compound | 复合类型 |
-| NBTList | l, list | 列表类型 |
-| NBTIntArray | ia | 集合类型 |
-| NBTByteArray | ba | 集合类型 |
-| NBTLongArray | la | 集合类型 |
-| NBTString | t | 字符串 |
-| NBTInt | i | 整形 |
-| NBTDouble | d | Double |
-| NBTByte | b | Byte |
-| NBTLong | l | Long |
-| NBTFloat | f | Float |
-| NBTShort | s | Short |
+|      类型      |        代号         |   描述   |
+|:------------:|:-----------------:|:------:|
+| NBTCompound  | c , cpd, compound |  复合类型  |
+|   NBTList    |      l, list      |  列表类型  |
+| NBTIntArray  |        ia         |  集合类型  |
+| NBTByteArray |        ba         |  集合类型  |
+| NBTLongArray |        la         |  集合类型  |
+|  NBTString   |         t         |  字符串   |
+|    NBTInt    |         i         |   整形   |
+|  NBTDouble   |         d         | Double |
+|   NBTByte    |         b         |  Byte  |
+|   NBTLong    |         l         |  Long  |
+|   NBTFloat   |         f         | Float  |
+|   NBTShort   |         s         | Short  |

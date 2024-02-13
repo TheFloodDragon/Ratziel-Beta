@@ -1,7 +1,10 @@
 package cn.fd.ratziel.module.itemengine.mapping
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.core.function.*
+import cn.fd.ratziel.core.function.MirrorClass
+import cn.fd.ratziel.core.function.getFieldUnsafe
+import cn.fd.ratziel.core.function.getMethodUnsafe
+import cn.fd.ratziel.core.function.isAssignableTo
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
 import org.bukkit.inventory.ItemStack
 import taboolib.library.reflex.Reflex.Companion.getProperty
@@ -68,10 +71,8 @@ open class RefItemStack(rawData: Any) {
          * obc.ItemStack
          *   org.bukkit.craftbukkit.$VERSION.inventory.CraftItemStack
          */
-        override val clazz by lazy { obcClass("inventory.CraftItemStack") }
-
         @JvmStatic
-        val obcClass get() = clazz
+        val obcClass by lazy { obcClass("inventory.CraftItemStack") }
 
         /**
          * nms.ItemStack
@@ -80,9 +81,6 @@ open class RefItemStack(rawData: Any) {
          */
         @JvmStatic
         val nmsClass by lazy { nmsClass("ItemStack") }
-
-        @JvmStatic
-        override fun of(obj: Any) = RefItemStack(obj)
 
         @JvmStatic
         fun newObc() = obcClass.invokeConstructor()
@@ -116,6 +114,12 @@ open class RefItemStack(rawData: Any) {
                 returnType = nmsClass
             )
         }
+
+        @JvmStatic
+        override val clazz by lazy { obcClass }
+
+        @JvmStatic
+        override fun of(obj: Any) = RefItemStack(obj)
 
     }
 

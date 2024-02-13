@@ -1,6 +1,5 @@
 package cn.fd.ratziel.common.config
 
-import taboolib.common.Inject
 import taboolib.common.platform.function.getDataFolder
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode

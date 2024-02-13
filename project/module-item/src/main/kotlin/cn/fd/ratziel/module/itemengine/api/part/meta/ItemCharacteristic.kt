@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemFlag
  * @author TheFloodDragon
  * @since 2023/10/14 18:21
  */
-interface ItemCharacteristic: ItemPart {
+interface ItemCharacteristic : ItemPart {
 
     /**
      * 物品自定义模型数据 (1.14+)

@@ -1,7 +1,5 @@
 package cn.fd.ratziel.core.element.api
 
-import cn.fd.ratziel.core.element.api.ElementHandler
-
 /**
  * ExtElementHandler - 扩展元素处理器
  *

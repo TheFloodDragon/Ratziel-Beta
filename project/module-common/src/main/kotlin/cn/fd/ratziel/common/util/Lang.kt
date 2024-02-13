@@ -1,9 +1,6 @@
-@file:Suppress("SpellCheckingInspection")
-
 package cn.fd.ratziel.common.util
 
 import taboolib.module.lang.LanguageFile
-import taboolib.module.lang.TypeJson
 import taboolib.module.lang.Type as LangType
 
 /**

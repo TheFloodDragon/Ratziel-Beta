@@ -8,10 +8,11 @@ import cn.fd.ratziel.module.itemengine.nbt.NBTTag
  * @param from 来自于的NBT的标签
  */
 fun <T> ItemAttribute<T>.applyFrom(from: NBTTag) =
-    this.apply { from.editShallow(node) { tag -> this.transformer.transform(value,tag) } }
+    this.apply { from.editShallow(node) { tag -> this.transformer.transform(value, tag) } }
 
 /**
  * 将物品属性应用于NBT标签上
  * @param to 应用到的NBT标签
  */
-fun <T> ItemAttribute<T>.applyTo(to: NBTTag) = (to[this.node] as? NBTTag)?.let { this.transformer.detransform(value,it) }
+fun <T> ItemAttribute<T>.applyTo(to: NBTTag) =
+    (to[this.node] as? NBTTag)?.let { this.transformer.detransform(value, it) }
