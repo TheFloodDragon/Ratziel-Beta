@@ -19,15 +19,16 @@ fun Project.buildDirClean() {
  */
 val skipRelocateKotlinClasses = setOf(
     "kotlin.annotation.Repeatable",
-    "kotlin.annotation.Retention",
-    "kotlin.annotation.Target",
-    "kotlin.jvm.JvmField",
-    "kotlin.jvm.JvmInline",
-    "kotlin.jvm.JvmStatic",
-    "kotlin.jvm.PurelyImplements",
-    "kotlin.Metadata",
-    "kotlin.Deprecated",
-    "kotlin.ReplaceWith",
+    "kotlin/annotation/Repeatable",
+    "kotlin/annotation/Retention",
+    "kotlin/annotation/Target",
+    "kotlin/jvm/JvmField",
+    "kotlin/jvm/JvmInline",
+    "kotlin/jvm/JvmStatic",
+    "kotlin/jvm/PurelyImplements",
+    "kotlin/Metadata",
+    "kotlin/Deprecated",
+    "kotlin/ReplaceWith",
 )
 
 /**
