@@ -1,6 +1,8 @@
 import org.gradle.api.Project
 import java.net.URL
 
+val isoInstantFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z")
+
 val currentISODate: String
     get() = isoInstantFormat.format(System.currentTimeMillis())
 

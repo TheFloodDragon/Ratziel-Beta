@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.itemengine.command
 
 import cn.fd.ratziel.common.function.executeAsync
-import cn.fd.ratziel.common.util.getType
 import cn.fd.ratziel.module.itemengine.mapping.RefItemStack
 import cn.fd.ratziel.module.itemengine.nbt.*
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound.Companion.DEEP_SEPARATION
@@ -150,18 +149,19 @@ object NBTCommand {
         nodeDeep: String?,
         slot: String,
         nodeShallow: String? = nodeDeep?.substringAfterLast(DEEP_SEPARATION),
-    ) = unsafeTypeJson(sender, "NBTFormat-Entry-Key")
+    ) = getTypeJson(sender, "NBTFormat-Entry-Key")
         .buildMessage(sender, nodeShallow.toString(), slot, nodeDeep.toString())
 
     fun componentValue(sender: ProxyCommandSender, nbt: NBTData) =
-        unsafeTypeJson(sender, "NBTFormat-Entry-Value")
+        getTypeJson(sender, "NBTFormat-Entry-Value")
             .buildMessage(sender, asString(nbt), NBTMapper.serializeToString(nbt))
 
     /**
-     * 获取语言文件Json内容 (不安全)
+     * 获取语言文件Json内容
      */
-    fun unsafeTypeJson(sender: ProxyCommandSender, node: String) =
-        sender.getLocaleFile()?.getType(node).let { if (it is TypeList) it.list.first() else it } as TypeJson
+    fun getTypeJson(sender: ProxyCommandSender, node: String): TypeJson =
+        sender.getLocaleFile()?.nodes?.get(node)?.let { if (it is TypeList) it.list.first() else it } as? TypeJson
+            ?: TypeJson().apply { text = listOf("{$node}") }
 
     /**
      * 快捷匹配类型组件

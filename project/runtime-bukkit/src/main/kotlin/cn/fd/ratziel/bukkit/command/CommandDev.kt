@@ -3,7 +3,6 @@ package cn.fd.ratziel.bukkit.command
 import cn.fd.ratziel.common.function.executeAsync
 import cn.fd.ratziel.common.message.audienceSender
 import cn.fd.ratziel.common.message.sendMessage
-import cn.fd.ratziel.kether.KetherHandler
 import org.bukkit.command.CommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -27,19 +26,19 @@ object CommandDev {
     @CommandBody
     val main = mainCommand { createHelper() }
 
-    /**
-     * 运行Kether
-     */
-    @CommandBody
-    val runKether = subCommand {
-        dynamic {
-            executeAsync<CommandSender> { sender, _, context ->
-                KetherHandler.invoke(context, sender, mapOf()).thenApply {
-                    sender.sendMessage("§7Result: $it")
-                }
-            }
-        }
-    }
+//    /**
+//     * 运行Kether
+//     */
+//    @CommandBody
+//    val runKether = subCommand {
+//        dynamic {
+//            executeAsync<CommandSender> { sender, _, context ->
+//                KetherHandler.invoke(context, sender, mapOf()).thenApply {
+//                    sender.sendMessage("§7Result: $it")
+//                }
+//            }
+//        }
+//    }
 
     @CommandBody
     val testMessage = subCommand {

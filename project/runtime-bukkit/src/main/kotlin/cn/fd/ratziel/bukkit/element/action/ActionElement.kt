@@ -4,8 +4,6 @@ import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.kether.KetherCompiler
-import cn.fd.ratziel.kether.KetherHandler
 import taboolib.common.LifeCycle
 
 /**
@@ -23,9 +21,10 @@ object ActionElement : ElementHandler {
 
     override fun handle(element: Element) {
         element.property.let { json ->
-            KetherCompiler.buildSection(json).toString().let {
-                KetherHandler.invoke(it, null, emptyMap()).thenApply { result -> println(result) }
-            }
+            error("该功能已禁用")
+//            KetherCompiler.buildSection(json).toString().let {
+//                KetherHandler.invoke(it, null, emptyMap()).thenApply { result -> println(result) }
+//            }
         }
     }
 
