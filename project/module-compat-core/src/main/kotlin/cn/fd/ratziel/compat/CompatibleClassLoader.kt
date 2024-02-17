@@ -18,13 +18,22 @@ class CompatibleClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoa
 
     constructor(clazz: Class<*>) : this(arrayOf<URL>(clazz.protectionDomain.codeSource.location), clazz.getClassLoader())
 
-    val hookedLoaderMap: NavigableMap<Byte, MutableList<ClassLoader>> = Collections.synchronizedNavigableMap(TreeMap())
+    /**
+     * key - 优先级
+     * value - 同一优先级下的 [ClassLoaderProvider]
+     */
+    val providers: NavigableMap<Byte, MutableList<ClassLoaderProvider>> = Collections.synchronizedNavigableMap(TreeMap())
+
+    /**
+     * 添加 [ClassLoaderProvider]
+     * @param provider 类加载器提供者 [ClassLoaderProvider]
+     * @param priority [provider] 的优先级
+     */
+    fun addProvider(provider: ClassLoaderProvider, priority: Byte = 0) = providers.computeIfAbsent(priority) { mutableListOf() }.add(provider)
 
     override fun loadClass(name: String) = loadClass(name, false)
 
-    override fun loadClass(name: String?, resolve: Boolean) = loadClass(name, resolve, null)
-
-    fun loadClass(name: String?, resolve: Boolean, precedence: ClassLoader?): Class<*> = synchronized(getClassLoadingLock(name)) {
+    public override fun loadClass(name: String, resolve: Boolean): Class<*> = synchronized(getClassLoadingLock(name)) {
         // 自身寻找加载过的类
         var c = findLoadedClass(name)
         // 未被加载过
@@ -33,16 +42,15 @@ class CompatibleClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoa
             c = kotlin.runCatching { findClass(name) }.getOrNull()
             // 若自身无法加载该类, 则进行进一步推断
             if (c == null) {
-                // 尝试让父类加载器和优先者先进行加载
+                // 尝试让父类加载器进行加载
                 c = parent.loadClassOrNull(name)
-                    ?: precedence?.loadClassOrNull(name)
                 // 不能被加载时继续下一步。。。
                 if (c == null) {
-                    // 反则不能被优先者加载的
-                    hookedLoaderMap.forEach { entry ->
+                    // 优先级遍历 [providers]
+                    providers.forEach { entry ->
                         for (loader in entry.value) {
-                            // 交给挂钩的 ClassLoader 加载
-                            c = loader.loadClassOrNull(name)
+                            // 由[ClassLoaderProvider], 提供全限类定名([name])以使它动态智能分配 [ClassLoader]
+                            c = loader.apply(name).loadClassOrNull(name)
                             // 直到类能被加载为止
                             if (c != null) break
                         }

@@ -43,7 +43,8 @@ object HookManager {
     /**
      * 获取链接类 (通过 [CompatibleClassLoader.instance] )
      */
-    fun findLinked(className: String, resolve: Boolean, precedence: ClassLoader?) = CompatibleClassLoader.instance.loadClass(className, resolve, precedence)
+    @Deprecated("precedence 暂未使用")
+    fun findLinked(className: String, resolve: Boolean, precedence: ClassLoader?) = CompatibleClassLoader.instance.loadClass(className, resolve)
 
     /**
      * 通过反射对有注解 [HookInject] 的方法进行调用

@@ -4,6 +4,7 @@ package cn.fd.ratziel.compat.hook.impl.trchat
 
 import cn.fd.ratziel.compat.hook.HookManager
 import cn.fd.ratziel.compat.hook.LinkedPluginHook
+import cn.fd.ratziel.compat.util.isoInstance
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -29,7 +30,7 @@ object TrChatHook : LinkedPluginHook {
     override val hookMap by lazy {
         HookManager.hookMapOf(
             0 to BASE_PATH + "TrChatListener",
-            precedence = plugin!!.javaClass.classLoader.loadClass(ISO_PATH).classLoader,
+            precedence = isoInstance(ISO_PATH, plugin!!::class.java.classLoader),
         )
     }
 

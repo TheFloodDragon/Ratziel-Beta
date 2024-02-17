@@ -31,6 +31,7 @@ object TrChatListener {
      */
     @HookInject
     fun register() {
+        println("[R] TrChat | Test Hook")
         Bukkit.getPluginManager().registerEvents(impl, TrChatHook.plugin!!)
     }
 
