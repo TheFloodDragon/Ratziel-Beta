@@ -3,6 +3,7 @@ dependencies {
     shadowModule("runtime-bukkit")
     // Compat
     shadowModule("module-compat-core")
+    shadowModule("module-compat-bukkit")
     // Extension - Item
     shadowModule("module-item")
 }

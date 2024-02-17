@@ -1,10 +1,10 @@
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.2.5.8"
+const val rootVersion = "A.0.2.5.9"
 
 const val kotlinVersion = "2.0.0-Beta3"
-const val serializationVersion = "1.6.2"
-const val coroutineVersion = "1.7.3"
+const val serializationVersion = "1.6.3"
+const val coroutineVersion = "1.8.0"
 const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "2.0.6"
 

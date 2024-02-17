@@ -1,19 +1,20 @@
 package cn.fd.ratziel.compat
 
+import taboolib.common.classloader.IsolatedClassLoader
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.*
 
 
 /**
- * HookClassLoader
+ * CompatibleClassLoader
  *
  * @author TheFloodDragon
  * @since 2024/2/15 15:25
  */
-class HookClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoader(urls, parent) {
+class CompatibleClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoader(urls, parent) {
 
-    constructor() : this(HookClassLoader::class.java)
+    constructor() : this(CompatibleClassLoader::class.java)
 
     constructor(clazz: Class<*>) : this(arrayOf<URL>(clazz.protectionDomain.codeSource.location), clazz.getClassLoader())
 
@@ -56,5 +57,15 @@ class HookClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoader(ur
 
     fun ClassLoader.loadClassOrNull(name: String?): Class<*>? =
         kotlin.runCatching { loadClass(name) }.getOrNull()
+
+    companion object {
+
+        /**
+         * 默认实例
+         * [parent] 为 [IsolatedClassLoader]
+         */
+        val instance by lazy { CompatibleClassLoader(IsolatedClassLoader::class.java) }
+
+    }
 
 }

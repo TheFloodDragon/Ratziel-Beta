@@ -1,3 +1,1 @@
-dependencies {
-    compileCore(12004)
-}
+dependencies {}

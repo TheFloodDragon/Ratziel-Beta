@@ -19,7 +19,7 @@ import static taboolib.common.env.RuntimeEnv.KOTLIN_ID;
  */
 public class CoreEnv {
 
-    public static final String KOTLIN_SERIALIZATION_VERSION = "1.6.2";
+    public static final String KOTLIN_SERIALIZATION_VERSION = "1.6.3";
 
     public static final String KOTLIN_SERIALIZATION_ID = "!kotlinx.serialization".substring(1);
 
