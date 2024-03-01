@@ -1,7 +1,4 @@
-import io.izzel.taboolib.gradle.BUKKIT_ALL
-import io.izzel.taboolib.gradle.EXPANSION_PLAYER_FAKE_OP
-import io.izzel.taboolib.gradle.NMS_UTIL
-import io.izzel.taboolib.gradle.UNIVERSAL
+import io.izzel.taboolib.gradle.*
 
 plugins {
     id("io.izzel.taboolib") version taboolibPluginVersion
@@ -11,9 +8,6 @@ dependencies {
     compileCore(12002)
     // PlaceholderAPI
     compileOnly("me.clip:placeholderapi:2.11.4")
-    // Module - Kether
-    installModule("module-kether")
-    compileOnly("io.github.altawk.asl:script-kether:$taboolibVersion")
 }
 
 taboolib {
@@ -29,7 +23,7 @@ taboolib {
         // Debug Mode
         debug = true
         // Module Dependencies
-        install(UNIVERSAL, BUKKIT_ALL, NMS_UTIL, EXPANSION_PLAYER_FAKE_OP)
+        install(UNIVERSAL, BUKKIT_ALL, KETHER, NMS_UTIL, EXPANSION_PLAYER_FAKE_OP)
         // Incomplete Isolated
         enableIsolatedClassloader = false
     }
@@ -51,7 +45,8 @@ taboolib {
             name("homepage").url("https://github.com/$githubRepo")
         }
 
-        @Suppress("UNCHECKED_CAST") val nodes = bukkitNodes as HashMap<String, Any>
+        @Suppress("UNCHECKED_CAST")
+        val nodes = bukkitNodes as HashMap<String, Any>
 
         // Build Info
         nodes["built-date"] = currentISODate

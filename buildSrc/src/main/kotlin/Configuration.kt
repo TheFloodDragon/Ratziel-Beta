@@ -1,12 +1,12 @@
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.2.5.10"
+const val rootVersion = "A.0.2.6.0"
 
-const val kotlinVersion = "2.0.0-Beta3"
+const val kotlinVersion = "2.0.0-Beta4"
 const val serializationVersion = "1.6.3"
 const val coroutineVersion = "1.8.0"
 const val shadowJarVersion = "8.1.1"
-const val taboolibPluginVersion = "2.0.6"
+const val taboolibPluginVersion = "2.0.9"
 
 val taboolibVersion = getLatestRelease("TabooLib", "taboolib", "6.1.0").also { println("Using taboolib-version = $it") }
 

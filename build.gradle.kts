@@ -1,11 +1,10 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     `java-library`
-    id("org.jetbrains.kotlin.jvm") version kotlinVersion apply false
-    id("com.github.johnrengelman.shadow") version shadowJarVersion apply false
-    id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion apply false
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.serialization") version kotlinVersion
+    id("com.github.johnrengelman.shadow") version shadowJarVersion
 }
 
 subprojects {
@@ -23,8 +22,6 @@ subprojects {
         maven("https://s01.oss.sonatype.org/content/groups/public/")
         // PlaceholderAPI
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-        // FoliaLib
-        maven("https://nexuslite.gcnt.net/repos/other/")
     }
 
     dependencies {
@@ -50,39 +47,39 @@ subprojects {
 
     }
 
+    // Java 构建设置
     java {
         withSourcesJar()
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    // Kotlin 构建设置
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_1_8
+        }
+    }
+
+    // ShadowJar 基础配置
+    tasks.shadowJar {
+        // Options
+        archiveAppendix.set("")
+        archiveClassifier.set("")
+        archiveVersion.set(rootVersion)
+        destinationDirectory.set(file("$rootDir/outs"))
+        // Taboolib
+        relocate("taboolib", "$rootGroup.taboolib")
+        // Kotlin
+        relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
+        relocate("kotlinx.coroutines.", "kotlinx.coroutines${coroutineVersion.escapedVersion}.")
+        relocate("kotlinx.serialization.", "kotlinx.serialization${serializationVersion.escapedVersion}.")
+    }
+
     group = rootGroup
     version = rootVersion
 
     buildDirClean()
-
-    tasks {
-        withType<JavaCompile> { options.encoding = "UTF-8" } //UTF-8 编码
-        // Kotlin Jvm 设置
-        withType<KotlinCompile> {
-            kotlinOptions { jvmTarget = "1.8" }
-        }
-        // ShadowJar
-        withType<ShadowJar> {
-            // Options
-            archiveAppendix.set("")
-            archiveClassifier.set("")
-            archiveVersion.set(rootVersion)
-            destinationDirectory.set(file("$rootDir/outs"))
-            // Taboolib
-            relocate("taboolib", "$rootGroup.taboolib")
-            relocate("org.tabooproject", "$rootGroup.library")
-            // Kotlin
-            relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
-            relocate("kotlinx.coroutines.", "kotlinx.coroutines${coroutineVersion.escapedVersion}.")
-            relocate("kotlinx.serialization.", "kotlinx.serialization${serializationVersion.escapedVersion}.")
-        }
-    }
 
 }
 
