@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
-import cn.fd.ratziel.core.function.MirrorClass
 import taboolib.module.nms.nmsClass
 
 /**
@@ -14,13 +13,13 @@ open class NBTShort(rawData: Any) : NBTData(
     NBTDataType.SHORT
 ) {
 
-    companion object : MirrorClass<NBTShort>() {
+    companion object {
 
         @JvmStatic
-        override val clazz: Class<out Any> by lazy { nmsClass("NBTTagShort") }
+        val clazz: Class<out Any> by lazy { nmsClass("NBTTagShort") }
 
         @JvmStatic
-        override fun of(obj: Any) = NBTShort(obj)
+        fun of(obj: Any) = NBTShort(obj)
 
     }
 

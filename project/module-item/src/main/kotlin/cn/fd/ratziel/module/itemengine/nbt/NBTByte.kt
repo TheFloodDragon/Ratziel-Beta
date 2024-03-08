@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
-import cn.fd.ratziel.core.function.MirrorClass
 import taboolib.module.nms.nmsClass
 
 /**
@@ -14,13 +13,13 @@ open class NBTByte(rawData: Any) : NBTData(
     NBTDataType.BYTE
 ) {
 
-    companion object : MirrorClass<NBTByte>() {
+    companion object {
 
         @JvmStatic
-        override val clazz: Class<out Any> by lazy { nmsClass("NBTTagByte") }
+        val clazz by lazy { nmsClass("NBTTagByte") }
 
         @JvmStatic
-        override fun of(obj: Any) = NBTByte(obj)
+        fun of(obj: Any) = NBTByte(obj)
 
     }
 

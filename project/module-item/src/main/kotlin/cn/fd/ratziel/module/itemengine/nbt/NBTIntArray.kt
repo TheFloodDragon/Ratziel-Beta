@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
-import cn.fd.ratziel.core.function.MirrorClass
 import taboolib.module.nms.nmsClass
 
 /**
@@ -14,13 +13,13 @@ open class NBTIntArray(rawData: Any) : NBTData(
     NBTDataType.INT_ARRAY
 ) {
 
-    companion object : MirrorClass<NBTIntArray>() {
+    companion object {
 
         @JvmStatic
-        override val clazz: Class<out Any> by lazy { nmsClass("NBTTagIntArray") }
+        val clazz by lazy { nmsClass("NBTTagIntArray") }
 
         @JvmStatic
-        override fun of(obj: Any) = NBTIntArray(obj)
+        fun of(obj: Any) = NBTIntArray(obj)
 
     }
 

@@ -8,6 +8,9 @@ package cn.fd.ratziel.compat.hook
  */
 interface LinkedPluginHook : PluginHook {
 
+    @Deprecated("SB东西")
     val hookMap: HookMap
+
+    val hookedClasses: Array<Class<*>>
 
 }

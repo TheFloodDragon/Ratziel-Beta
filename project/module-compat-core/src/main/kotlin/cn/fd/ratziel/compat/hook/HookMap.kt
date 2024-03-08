@@ -8,6 +8,7 @@ package cn.fd.ratziel.compat.hook
  * @author TheFloodDragon
  * @since 2024/2/17 12:10
  */
+@Deprecated("纯傻逼")
 class HookMap(baseMap: Map<Int, Class<*>>) : HashMap<Int,Class<*>>(baseMap) {
 
     constructor() : this(emptyMap())

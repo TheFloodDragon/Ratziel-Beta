@@ -189,8 +189,8 @@ object NBTCommand {
             is NBTString -> nbt.content
             is NBTByte -> str.dropLast(1).toByte().let {
                 when (it) {
-                    NBTBoolean.byteTrue -> true.toString()
-                    NBTBoolean.byteFalse -> false.toString()
+                    NBTBoolean.BYTE_TRUE -> true.toString()
+                    NBTBoolean.BYTE_FALSE -> false.toString()
                     else -> it.toString()
                 }
             }

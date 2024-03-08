@@ -1,5 +1,3 @@
-@file:Suppress("SpellCheckingInspection")
-
 package cn.fd.ratziel.compat.hook.impl.trchat
 
 import cn.fd.ratziel.compat.hook.HookManager
@@ -7,6 +5,7 @@ import cn.fd.ratziel.compat.hook.LinkedPluginHook
 import cn.fd.ratziel.compat.util.isoInstance
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
+import taboolib.common.io.runningClassMapInJar
 import taboolib.common.platform.Awake
 
 /**
@@ -27,6 +26,12 @@ object TrChatHook : LinkedPluginHook {
 
     const val BASE_PATH = "cn.fd.ratziel.compat.hook.impl.trchat."
 
+    val condition = java.util.function.Function<String, Boolean> {
+        it.startsWith(this::class.java.`package`.name) && !it.equals(this::class.qualifiedName)
+    }
+
+    override val hookedClasses = runningClassMapInJar.mapNotNull { e -> e.value.takeIf { condition.apply(e.key) } }.toTypedArray()
+
     override val hookMap by lazy {
         HookManager.hookMapOf(
             0 to BASE_PATH + "TrChatListener",
@@ -35,9 +40,6 @@ object TrChatHook : LinkedPluginHook {
     }
 
     @Awake(LifeCycle.ENABLE)
-    fun hook() {
-        hookMap.values.forEach { HookManager.hookWithAnno(it, LifeCycle.ENABLE) }
-        HookManager.register(this)
-    }
+    private fun register() = HookManager.register(this)
 
 }

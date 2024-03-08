@@ -2,7 +2,6 @@
 
 package cn.fd.ratziel.module.itemengine.nbt
 
-import cn.fd.ratziel.core.function.MirrorClass
 import cn.fd.ratziel.core.function.getFieldUnsafe
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.ReflexClass
@@ -86,13 +85,13 @@ open class NBTList(rawData: Any) : NBTData(
 
     constructor() : this(TiNBTList())
 
-    companion object : MirrorClass<NBTList>() {
+    companion object {
 
         @JvmStatic
-        override val clazz: Class<out Any> by lazy { nmsClass("NBTTagList") }
+        val clazz by lazy { nmsClass("NBTTagList") }
 
         @JvmStatic
-        override fun of(obj: Any) = NBTList(obj)
+        fun of(obj: Any) = NBTList(obj)
 
         @JvmStatic
         fun new() = clazz.invokeConstructor()

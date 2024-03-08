@@ -6,12 +6,11 @@ package cn.fd.ratziel.module.itemengine.nbt
  * @author TheFloodDragon
  * @since 2023/11/24 22:27
  */
-
-open class NBTBoolean(val value: Boolean) : NBTByte(if (value) byteTrue else byteFalse) {
+open class NBTBoolean(val value: Boolean) : NBTByte(if (value) BYTE_TRUE else BYTE_FALSE) {
 
     companion object {
-        const val byteFalse: Byte = 0
-        const val byteTrue: Byte = 1
+        const val BYTE_FALSE: Byte = 0
+        const val BYTE_TRUE: Byte = 1
     }
 
 }

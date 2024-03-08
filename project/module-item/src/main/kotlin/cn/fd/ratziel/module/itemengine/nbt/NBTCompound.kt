@@ -2,7 +2,6 @@
 
 package cn.fd.ratziel.module.itemengine.nbt
 
-import cn.fd.ratziel.core.function.MirrorClass
 import cn.fd.ratziel.core.function.getFieldUnsafe
 import cn.fd.ratziel.core.function.getMethodUnsafe
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
@@ -212,13 +211,13 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTDataType.COMPOUND) {
      */
     override fun getAsTiNBT() = super.getAsTiNBT() as TiNBTTag
 
-    companion object : MirrorClass<NBTCompound>() {
+    companion object {
 
         @JvmStatic
-        override val clazz: Class<out Any> by lazy { nmsClass("NBTTagCompound") }
+        val clazz by lazy { nmsClass("NBTTagCompound") }
 
         @JvmStatic
-        override fun of(obj: Any) = NBTCompound(obj)
+        fun of(obj: Any) = NBTCompound(obj)
 
         /**
          * NBTTagCompound#constructor()

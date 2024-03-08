@@ -19,9 +19,7 @@ import taboolib.module.nms.obcClass
 object RefItemMeta {
 
     @JvmStatic
-    val clazz by lazy {
-        obcClass("inventory.CraftMetaItem")
-    }
+    val clazz by lazy { obcClass("inventory.CraftMetaItem") }
 
     /**
      * CraftMetaItem#constructor(NBTTagCompound)
@@ -55,7 +53,7 @@ object RefItemMeta {
     fun applyEnchantments(nbtTag: Any, enchantments: Map<Enchantment, Int>) =
         clazz.invokeMethod<Void>(
             "applyEnchantments", enchantments, nbtTag,
-            ItemMapping.ENCHANTMENTS.key.obcData, isStatic = true
+            ItemMapping.ENCHANTMENTS.obcKey.obcData, isStatic = true
         )
 
 
@@ -67,7 +65,7 @@ object RefItemMeta {
     fun applyModifiers(nbtTag: Any, modifiers: Multimap<Attribute, AttributeModifier>) =
         clazz.invokeMethod<Void>(
             "applyModifiers", modifiers, nbtTag,
-            ItemMapping.ATTRIBUTE_MODIFIERS.key.obcData, isStatic = true
+            ItemMapping.ATTRIBUTE_MODIFIERS.obcKey.obcData, isStatic = true
         )
 
     /**
@@ -78,7 +76,7 @@ object RefItemMeta {
     fun buildModifiers(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
         clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
             "buildModifiers", nbtTag,
-            ItemMapping.ATTRIBUTE_MODIFIERS.key.obcData, isStatic = true
+            ItemMapping.ATTRIBUTE_MODIFIERS.obcKey.obcData, isStatic = true
         )!!
 
     /**
@@ -89,21 +87,19 @@ object RefItemMeta {
     fun buildEnchantments(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
         clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
             "buildEnchantments", nbtTag,
-            ItemMapping.ENCHANTMENTS.key.obcData, isStatic = true
+            ItemMapping.ENCHANTMENTS.obcKey.obcData, isStatic = true
         )!!
 
     /**
      * CraftMetaItem中的ItemMetaKey
      */
-    class RefItemMetaKey(val fieldName: String) {
+    internal class RefItemMetaKey(val fieldName: String) {
 
-        val obcData by lazy { clazz.getProperty<Any?>(fieldName, isStatic = true) }
+        val obcData = clazz.getProperty<Any?>(fieldName, isStatic = true)
 
-        val NMS_NAME
-            get() = obcData?.getProperty<String>("NBT")
+        val NMS_NAME = obcData?.getProperty<String>("NBT")
 
-        val BUKKIT_NAME
-            get() = obcData?.getProperty<String>("Bukkit")
+        val BUKKIT_NAME = obcData?.getProperty<String>("Bukkit")
 
     }
 

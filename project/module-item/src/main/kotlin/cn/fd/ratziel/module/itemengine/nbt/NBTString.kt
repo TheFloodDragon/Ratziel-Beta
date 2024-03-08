@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.itemengine.nbt
 
-import cn.fd.ratziel.core.function.MirrorClass
 import cn.fd.ratziel.core.function.getFieldUnsafe
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
@@ -23,13 +22,13 @@ open class NBTString(rawData: Any) : NBTData(
     open val content: String
         get() = if (isTiNBT()) getAsTiNBT().asString() else getField.get(data) as String
 
-    companion object : MirrorClass<NBTString>() {
+    companion object {
 
         @JvmStatic
-        override val clazz: Class<out Any> by lazy { nmsClass("NBTTagString") }
+        val clazz: Class<out Any> by lazy { nmsClass("NBTTagString") }
 
         @JvmStatic
-        override fun of(obj: Any) = NBTString(obj)
+        fun of(obj: Any) = NBTString(obj)
 
         internal val getField by lazy {
             ReflexClass.of(clazz).structure.getFieldUnsafe(

@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.itemengine.mapping
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.core.function.MirrorClass
 import cn.fd.ratziel.core.function.getFieldUnsafe
 import cn.fd.ratziel.core.function.getMethodUnsafe
 import cn.fd.ratziel.core.function.isAssignableTo
@@ -65,7 +64,7 @@ open class RefItemStack(rawData: Any) {
     protected fun isOBC(target: Any) = target::class.java.isAssignableTo(obcClass)
     protected fun isNMS(target: Any) = target::class.java.isAssignableTo(nmsClass)
 
-    companion object : MirrorClass<RefItemStack>() {
+    companion object {
 
         /**
          * obc.ItemStack
@@ -114,12 +113,6 @@ open class RefItemStack(rawData: Any) {
                 returnType = nmsClass
             )
         }
-
-        @JvmStatic
-        override val clazz by lazy { obcClass }
-
-        @JvmStatic
-        override fun of(obj: Any) = RefItemStack(obj)
 
     }
 
