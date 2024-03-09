@@ -1,6 +1,5 @@
 package cn.fd.ratziel.compat
 
-import taboolib.common.classloader.IsolatedClassLoader
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.*
@@ -31,6 +30,11 @@ class CompatibleClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoa
      */
     fun addProvider(provider: ClassLoaderProvider, priority: Byte = 0) = providers.computeIfAbsent(priority) { mutableListOf() }.add(provider)
 
+    /**
+     * 删除 [ClassLoaderProvider]
+     */
+    fun removeProvider(provider: ClassLoaderProvider) = providers.values.forEach { it.remove(provider) }
+
     override fun loadClass(name: String) = loadClass(name, false)
 
     public override fun loadClass(name: String, resolve: Boolean): Class<*> = synchronized(getClassLoadingLock(name)) {
@@ -50,7 +54,7 @@ class CompatibleClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoa
                     providers.forEach { entry ->
                         for (loader in entry.value) {
                             // 由[ClassLoaderProvider], 提供全限类定名([name])以使它动态智能分配 [ClassLoader]
-                            c = loader.apply(name).loadClassOrNull(name)
+                            c = loader.apply(name)?.loadClassOrNull(name)
                             // 直到类能被加载为止
                             if (c != null) break
                         }
@@ -65,15 +69,5 @@ class CompatibleClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoa
 
     fun ClassLoader.loadClassOrNull(name: String?): Class<*>? =
         kotlin.runCatching { loadClass(name) }.getOrNull()
-
-    companion object {
-
-        /**
-         * 默认实例
-         * [parent] 为 [IsolatedClassLoader]
-         */
-        val instance by lazy { CompatibleClassLoader(IsolatedClassLoader::class.java) }
-
-    }
 
 }

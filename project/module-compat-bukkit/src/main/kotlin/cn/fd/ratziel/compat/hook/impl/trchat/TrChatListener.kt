@@ -2,6 +2,7 @@ package cn.fd.ratziel.compat.hook.impl.trchat
 
 import cn.fd.ratziel.compat.hook.HookInject
 import me.arasple.mc.trchat.api.event.TrChatEvent
+import me.arasple.mc.trchat.taboolib.common.PrimitiveIO
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -32,6 +33,7 @@ object TrChatListener {
     @HookInject
     fun register() {
         println("[R] TrChat | Test Hook")
+        println(PrimitiveIO.getRunningFileName())
         Bukkit.getPluginManager().registerEvents(impl, TrChatHook.plugin!!)
     }
 

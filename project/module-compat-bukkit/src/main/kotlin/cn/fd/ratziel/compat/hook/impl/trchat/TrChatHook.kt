@@ -1,11 +1,11 @@
 package cn.fd.ratziel.compat.hook.impl.trchat
 
+import cn.fd.ratziel.compat.ClassLoaderProvider
+import cn.fd.ratziel.compat.hook.HookInject
 import cn.fd.ratziel.compat.hook.HookManager
-import cn.fd.ratziel.compat.hook.LinkedPluginHook
-import cn.fd.ratziel.compat.util.isoInstance
+import cn.fd.ratziel.compat.hook.ManagedPluginHook
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
-import taboolib.common.io.runningClassMapInJar
 import taboolib.common.platform.Awake
 
 /**
@@ -14,32 +14,26 @@ import taboolib.common.platform.Awake
  * @author TheFloodDragon
  * @since 2024/2/17 11:28
  */
-object TrChatHook : LinkedPluginHook {
+@HookInject
+object TrChatHook : ManagedPluginHook {
 
     override val pluginName = "TrChat"
 
-    override fun isHooked() = plugin != null
+    override fun isHookable() = plugin != null
 
     val plugin get() = Bukkit.getPluginManager().getPlugin(pluginName)
 
-    const val ISO_PATH = "me.arasple.mc.trchat.taboolib.common.classloader.IsolatedClassLoader"
+    override val managedClasses = HookManager.buildHookClasses(this::class.java)
 
-    const val BASE_PATH = "cn.fd.ratziel.compat.hook.impl.trchat."
-
-    val condition = java.util.function.Function<String, Boolean> {
-        it.startsWith(this::class.java.`package`.name) && !it.equals(this::class.qualifiedName)
+    @Suppress("SpellCheckingInspection")
+    override val bindProvider = ClassLoaderProvider { name ->
+        if (name.startsWith("me.arasple.mc.trchat"))
+            me.arasple.mc.trchat.taboolib.common.classloader.IsolatedClassLoader.INSTANCE
+        else null
     }
 
-    override val hookedClasses = runningClassMapInJar.mapNotNull { e -> e.value.takeIf { condition.apply(e.key) } }.toTypedArray()
-
-    override val hookMap by lazy {
-        HookManager.hookMapOf(
-            0 to BASE_PATH + "TrChatListener",
-            precedence = isoInstance(ISO_PATH, plugin!!::class.java.classLoader),
-        )
-    }
-
+    @Deprecated("测试代码")
     @Awake(LifeCycle.ENABLE)
-    private fun register() = HookManager.register(this)
+    fun test() = println(managedClasses)
 
 }

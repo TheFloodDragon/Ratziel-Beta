@@ -1,0 +1,24 @@
+package cn.fd.ratziel.compat.hook
+
+import cn.fd.ratziel.compat.ClassLoaderProvider
+
+/**
+ * ManagedPluginHook
+ *
+ * @author TheFloodDragon
+ * @since 2024/2/17 11:31
+ */
+interface ManagedPluginHook : PluginHook {
+
+    /**
+     * 托管的类列表
+     * 托管的类将由 CompatibleClassLoader 加载并运行
+     */
+    val managedClasses: Array<Class<*>>
+
+    /**
+     * 绑定的 [ClassLoaderProvider]
+     */
+    val bindProvider : ClassLoaderProvider?
+
+}

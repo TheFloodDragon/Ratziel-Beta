@@ -9,8 +9,8 @@ import java.util.function.Function
  * @since 2024/2/17 13:07
  */
 class ClassLoaderProvider(
-    val function: Function<String, ClassLoader>
-) : Function<String, ClassLoader> {
+    val function: Function<String, ClassLoader?>
+) : Function<String, ClassLoader?> {
 
     override fun apply(t: String) = function.apply(t)
 
