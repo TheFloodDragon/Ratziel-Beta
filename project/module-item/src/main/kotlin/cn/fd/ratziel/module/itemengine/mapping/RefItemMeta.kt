@@ -95,11 +95,11 @@ object RefItemMeta {
      */
     internal class RefItemMetaKey(val fieldName: String) {
 
-        val obcData = clazz.getProperty<Any?>(fieldName, isStatic = true)
+        val obcData by lazy { clazz.getProperty<Any?>(fieldName, isStatic = true) }
 
-        val NMS_NAME = obcData?.getProperty<String>("NBT")
+        val NMS_NAME by lazy { obcData?.getProperty<String>("NBT") }
 
-        val BUKKIT_NAME = obcData?.getProperty<String>("Bukkit")
+        val BUKKIT_NAME by lazy { obcData?.getProperty<String>("BUKKIT") }
 
     }
 

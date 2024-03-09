@@ -4,12 +4,14 @@ import cn.fd.ratziel.compat.CompatibleClassLoader
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.classloader.IsolatedClassLoader
-import taboolib.common.io.getInstance
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.console
+import taboolib.library.reflex.Reflex.Companion.unsafeInstance
+import taboolib.library.reflex.ReflexClass
 import taboolib.module.lang.sendLang
 import java.io.File
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.net.JarURLConnection
 import java.net.URISyntaxException
 import java.util.*
@@ -30,10 +32,9 @@ object HookManager {
     val registry: HashMap<String, PluginHook> = hashMapOf()
 
     /**
-     * CompatibleClassLoader实例
-     * [parent] 为当前插件的 [IsolatedClassLoader]
+     * 默认CompatibleClassLoader实例
      */
-    val hookClassLoader = CompatibleClassLoader(IsolatedClassLoader::class.java)
+    val hookClassLoader = CompatibleClassLoader(this::class.java, IsolatedClassLoader.INSTANCE.parent)
 
     /**
      * 注册钩子
@@ -57,20 +58,58 @@ object HookManager {
         if (hook is ManagedPluginHook) hook.bindProvider?.let { hookClassLoader.removeProvider(it) }
     }
 
+    fun <T : ManagedPluginHook> buildHookClasses(hookClass: Class<T>) =
+        classNamesInJar.mapNotNull { name ->
+            name.takeIf { it.startsWith(hookClass.`package`.name) && !it.startsWith(hookClass.name) }
+        }.toTypedArray()
+
     /**
      * 通过 [HookInject] 对类进行依赖注入
      */
     fun inject(clazz: Class<*>, action: BiConsumer<HookInject, Method>) =
-        clazz::class.java.methods.forEach {
-            action.accept(it.getAnnotation(HookInject::class.java), it)
+        clazz.methods.forEach {
+            if (it.isAnnotationPresent(HookInject::class.java))
+                action.accept(it.getAnnotation(HookInject::class.java), it)
         }
 
-
-    fun <T : ManagedPluginHook> buildHookClasses(hookClass: Class<T>) =
-        classNamesInJar.mapNotNull { name ->
-            hookClassLoader.loadClass(name, false)
-                .takeIf { it.name.startsWith(hookClass.`package`.name) && !it.name.startsWith(hookClass.name) }
-        }.toTypedArray()
+    @Awake(LifeCycle.LOAD)
+    fun hookInject() {
+        // 在 LOAD, ENABLE, ACTIVE, DISABLE 时分别注入
+        for (lifeCycle in arrayOf(LifeCycle.LOAD, LifeCycle.ENABLE, LifeCycle.ACTIVE, LifeCycle.DISABLE)) {
+            TabooLib.registerLifeCycleTask(lifeCycle, 10) {
+                // 获取已注册的 ManagedPluginHook
+                registry.values.forEach {
+                    if (it is ManagedPluginHook) {
+                        // 对 managedClasses 分别执行注入
+                        it.managedClasses.forEach { className ->
+                            // 加载受托管的类(强制自加载)
+                            val clazz = hookClassLoader.loadClass(className, resolve = false, forceSelfLoad = true)
+                            inject(clazz) { anno, method ->
+                                // 生命周期不匹配时返回
+                                if (anno.lifeCycle != lifeCycle) return@inject
+                                // 尝试执行, 错误时输出信息并取消注册
+                                try {
+                                    val instance =
+                                        if (Modifier.isStatic(method.modifiers)) null
+                                        else ReflexClass.of(clazz).getField("INSTANCE", findToParent = false, remap = false).get()
+                                            ?: kotlin.runCatching { clazz.getConstructor().newInstance() }.getOrNull()
+                                            ?: clazz.unsafeInstance()
+                                    method.invoke(instance)
+                                } catch (ex: Exception) {
+                                    unregister(it) // 取消注册
+                                    console().sendLang("Plugin-Compat-Failed", it.pluginName)
+                                    ex.printStackTrace()
+                                }
+                            }
+                        }
+                    }
+                    // ACTIVE 时输出成功信息
+                    if (lifeCycle == LifeCycle.ACTIVE)
+                        console().sendLang("Plugin-Compat-Hooked", it.pluginName)
+                }
+            }
+        }
+    }
 
     /**
      * 当前插件Jar文件内所有的类名
@@ -95,39 +134,6 @@ object HookManager {
             }
         }
         return@lazy classNames
-    }
-
-    @Awake(LifeCycle.LOAD)
-    fun hookInject() {
-        // 在 LOAD, ENABLE, ACTIVE, DISABLE 时分别注入
-        for (lifeCycle in arrayOf(LifeCycle.LOAD, LifeCycle.ENABLE, LifeCycle.ACTIVE, LifeCycle.DISABLE)) {
-            TabooLib.registerLifeCycleTask(lifeCycle, 10) {
-                // 获取已注册的 ManagedPluginHook
-                registry.values.forEach {
-                    if (it is ManagedPluginHook) {
-                        // 对 managedClasses 分别执行注入
-                        it.managedClasses.forEach { clazz ->
-                            inject(clazz) { anno, method ->
-                                // 生命周期不匹配时返回
-                                if (anno.lifeCycle != lifeCycle) return@inject
-                                // 尝试执行, 错误时输出信息并取消注册
-                                try {
-                                    method.invoke(clazz.getInstance())
-                                } catch (ex: Exception) {
-                                    unregister(it) // 取消注册
-                                    console().sendLang("Plugin-Compat-Failed", it.pluginName)
-                                    ex.printStackTrace()
-                                }
-                            }
-                        }
-                    }
-                    // ACTIVE 时输出成功信息
-                    if (lifeCycle == LifeCycle.ACTIVE) {
-                        console().sendLang("Plugin-Compat-Hooked", it.pluginName)
-                    }
-                }
-            }
-        }
     }
 
 }

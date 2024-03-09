@@ -5,6 +5,9 @@ import taboolib.library.reflex.ClassMethod
 import taboolib.library.reflex.ClassStructure
 import taboolib.library.reflex.Reflection
 
+fun ClassLoader.loadClassOrNull(name: String?): Class<*>? =
+    kotlin.runCatching { loadClass(name) }.getOrNull()
+
 /**
  * 获取类中的方法 (不安全)
  * 注意: 请务必确认类中的同类型参数是唯一的,否则会出现其他方法的错误调用!

@@ -11,14 +11,14 @@ import cn.fd.ratziel.compat.ClassLoaderProvider
 interface ManagedPluginHook : PluginHook {
 
     /**
-     * 托管的类列表
-     * 托管的类将由 CompatibleClassLoader 加载并运行
+     * 受托管的类集合
+     * 受托管的类将由 CompatibleClassLoader 加载并运行
      */
-    val managedClasses: Array<Class<*>>
+    val managedClasses: Array<String>
 
     /**
      * 绑定的 [ClassLoaderProvider]
      */
-    val bindProvider : ClassLoaderProvider?
+    val bindProvider: ClassLoaderProvider?
 
 }

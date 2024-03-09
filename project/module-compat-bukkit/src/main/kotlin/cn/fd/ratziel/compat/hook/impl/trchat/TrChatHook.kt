@@ -5,8 +5,6 @@ import cn.fd.ratziel.compat.hook.HookInject
 import cn.fd.ratziel.compat.hook.HookManager
 import cn.fd.ratziel.compat.hook.ManagedPluginHook
 import org.bukkit.Bukkit
-import taboolib.common.LifeCycle
-import taboolib.common.platform.Awake
 
 /**
  * TrChatHook
@@ -23,8 +21,6 @@ object TrChatHook : ManagedPluginHook {
 
     val plugin get() = Bukkit.getPluginManager().getPlugin(pluginName)
 
-    override val managedClasses = HookManager.buildHookClasses(this::class.java)
-
     @Suppress("SpellCheckingInspection")
     override val bindProvider = ClassLoaderProvider { name ->
         if (name.startsWith("me.arasple.mc.trchat"))
@@ -32,8 +28,6 @@ object TrChatHook : ManagedPluginHook {
         else null
     }
 
-    @Deprecated("测试代码")
-    @Awake(LifeCycle.ENABLE)
-    fun test() = println(managedClasses)
+    override val managedClasses = HookManager.buildHookClasses(this::class.java)
 
 }

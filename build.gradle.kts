@@ -79,8 +79,6 @@ subprojects {
     group = rootGroup
     version = rootVersion
 
-    buildDirClean()
-
 }
 
 buildDirClean()
