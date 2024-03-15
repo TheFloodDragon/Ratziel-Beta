@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.itemengine.util
 
-import cn.fd.ratziel.module.itemengine.api.part.ItemMaterial
+import cn.fd.ratziel.module.item.impl.part.ItemMaterial
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemFlag
 import taboolib.common.util.Strings

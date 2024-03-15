@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.itemengine.item
 import cn.fd.ratziel.module.itemengine.api.NeoItem
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.part.ItemData
-import cn.fd.ratziel.module.itemengine.api.part.ItemMaterial
+import cn.fd.ratziel.module.item.impl.part.ItemMaterial
 import cn.fd.ratziel.module.itemengine.util.applyFrom
 import cn.fd.ratziel.module.itemengine.util.applyTo
 import java.util.function.Consumer

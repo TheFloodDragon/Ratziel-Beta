@@ -5,7 +5,7 @@ package cn.fd.ratziel.module.itemengine.item.meta
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemDurability
-import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
+import cn.fd.ratziel.module.item.reflex.ItemMapping
 import cn.fd.ratziel.module.itemengine.nbt.NBTBoolean
 import cn.fd.ratziel.module.itemengine.nbt.NBTByte
 import cn.fd.ratziel.module.itemengine.nbt.NBTInt

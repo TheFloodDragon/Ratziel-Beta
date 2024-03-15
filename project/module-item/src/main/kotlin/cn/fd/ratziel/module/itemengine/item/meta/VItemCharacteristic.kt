@@ -6,8 +6,8 @@ import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
-import cn.fd.ratziel.module.itemengine.mapping.ItemMapping
-import cn.fd.ratziel.module.itemengine.mapping.RefItemMeta
+import cn.fd.ratziel.module.item.reflex.ItemMapping
+import cn.fd.ratziel.module.item.reflex.RefItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.NBTInt
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import com.google.common.collect.LinkedHashMultimap

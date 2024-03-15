@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.itemengine.api
 
 import cn.fd.ratziel.module.itemengine.api.part.ItemData
 import cn.fd.ratziel.module.itemengine.api.part.ItemInfo
-import cn.fd.ratziel.module.itemengine.api.part.ItemMaterial
+import cn.fd.ratziel.module.item.impl.part.ItemMaterial
 import cn.fd.ratziel.module.itemengine.api.part.ItemPart
 
 /**
