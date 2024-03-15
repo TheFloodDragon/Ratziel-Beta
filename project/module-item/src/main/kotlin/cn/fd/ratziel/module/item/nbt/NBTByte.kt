@@ -14,6 +14,8 @@ class NBTByte(rawData: Any) : NBTData(rawData, NBTType.BYTE) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtByte.sourceField.get(data) as Byte
+
     companion object {
 
         const val BYTE_FALSE: Byte = 0

@@ -14,6 +14,8 @@ class NBTIntArray(rawData: Any) : NBTData(rawData, NBTType.INT_ARRAY) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtIntArray.sourceField.get(data) as IntArray
+
     companion object {
 
         fun new(value: IntArray) = NMSUtil.NtIntArray.constructor.instance(value)!!

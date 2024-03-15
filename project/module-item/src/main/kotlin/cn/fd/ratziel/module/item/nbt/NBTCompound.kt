@@ -9,6 +9,7 @@ import java.util.function.Function
  * @author TheFloodDragon
  * @since 2024/3/15 19:28
  */
+@Suppress("UNCHECKED_CAST")
 class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
 
     constructor() : this(new())
@@ -17,8 +18,9 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
-    @Suppress("UNCHECKED_CAST")
     internal val sourceMap get() = NMSUtil.NtCompound.sourceField.get(data) as HashMap<String, Any>
+
+    val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTConverter.convert(it.value)) } }
 
     /**
      * 获取数据

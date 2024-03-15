@@ -14,6 +14,8 @@ class NBTDouble(rawData: Any) : NBTData(rawData, NBTType.DOUBLE) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtDouble.sourceField.get(data) as Double
+
     companion object {
 
         fun new(value: Double) = NMSUtil.NtDouble.constructor.instance(value)!!

@@ -14,6 +14,8 @@ class NBTByteArray(rawData: Any) : NBTData(rawData, NBTType.BYTE_ARRAY) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtByteArray.sourceField.get(data) as ByteArray
+
     companion object {
 
         fun new(value: ByteArray) = NMSUtil.NtByteArray.constructor.instance(value)!!

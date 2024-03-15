@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.itemengine.command
 
 import cn.fd.ratziel.common.function.executeAsync
+import cn.fd.ratziel.module.item.command.getItemBySlot
+import cn.fd.ratziel.module.item.command.slot
 import cn.fd.ratziel.module.item.reflex.RefItemStack
 import cn.fd.ratziel.module.itemengine.nbt.*
 import cn.fd.ratziel.module.itemengine.nbt.NBTCompound.Companion.DEEP_SEPARATION

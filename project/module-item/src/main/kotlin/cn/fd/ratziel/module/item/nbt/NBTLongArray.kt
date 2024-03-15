@@ -14,6 +14,8 @@ class NBTLongArray(rawData: Any) : NBTData(rawData, NBTType.LONG_ARRAY) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtLongArray.sourceField.get(data) as LongArray
+
     companion object {
 
         fun new(value: LongArray) = NMSUtil.NtLongArray.constructor.instance(value)!!

@@ -14,6 +14,8 @@ class NBTFloat(rawData: Any) : NBTData(rawData, NBTType.FLOAT) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtFloat.sourceField.get(data) as Float
+
     companion object {
 
         fun new(value: Float) = NMSUtil.NtFloat.constructor.instance(value)!!

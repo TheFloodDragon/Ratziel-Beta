@@ -14,6 +14,8 @@ class NBTLong(rawData: Any) : NBTData(rawData, NBTType.LONG) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtLong.sourceField.get(data) as Long
+
     companion object {
 
         fun new(value: Long) = NMSUtil.NtLong.constructor.instance(value)!!

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.itemengine.util
+package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.impl.part.ItemMaterial
 import org.bukkit.attribute.AttributeModifier

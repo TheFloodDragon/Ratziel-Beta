@@ -1,7 +1,7 @@
-package cn.fd.ratziel.module.itemengine.item.meta.serializers
+package cn.fd.ratziel.module.item.impl.part.serializers
 
 import cn.fd.ratziel.core.serialization.primitiveDescriptor
-import cn.fd.ratziel.module.itemengine.util.MetaMather
+import cn.fd.ratziel.module.item.util.MetaMather
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.encoding.Decoder
@@ -37,7 +37,7 @@ object HideFlagSerializer : KSerializer<ItemFlag> {
     fun getFlagFromBit(bitFlag: Int): Set<ItemFlag> =
         EnumSet.noneOf(ItemFlag::class.java).also { currentFlags ->
             ItemFlag.entries.forEach {
-                if (this.hasFlag(bitFlag, it)) {
+                if (hasFlag(bitFlag, it)) {
                     currentFlags.add(it)
                 }
             }

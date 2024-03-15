@@ -14,6 +14,8 @@ class NBTInt(rawData: Any) : NBTData(rawData, NBTType.INT) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtInt.sourceField.get(data) as Int
+
     companion object {
 
         fun new(value: Int) = NMSUtil.NtInt.constructor.instance(value)!!

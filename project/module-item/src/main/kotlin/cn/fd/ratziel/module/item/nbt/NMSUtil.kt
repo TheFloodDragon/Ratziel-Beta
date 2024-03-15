@@ -172,9 +172,9 @@ internal sealed class NMSUtil {
 
     data object NtIntArray : NMSUtil() {
         /**
-         * net.minecraft.nbt.NBTTagInt
+         * net.minecraft.nbt.NBTTagIntArray
          */
-        override val nmsClass by lazy { nmsClass("NBTTagInt") }
+        override val nmsClass by lazy { nmsClass("NBTTagIntArray") }
 
         /**
          * public NBTTagIntArray(int[] var0)

@@ -14,6 +14,8 @@ class NBTShort(rawData: Any) : NBTData(rawData, NBTType.SHORT) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtShort.sourceField.get(data) as Short
+
     companion object {
 
         fun new(value: Short) = NMSUtil.NtString.constructor.instance(value)!!

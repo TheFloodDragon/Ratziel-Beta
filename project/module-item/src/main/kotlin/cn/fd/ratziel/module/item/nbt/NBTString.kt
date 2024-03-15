@@ -14,6 +14,8 @@ class NBTString(rawData: Any) : NBTData(rawData, NBTType.STRING) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
+    val content get() = NMSUtil.NtString.sourceField.get(data) as String
+
     companion object {
 
         fun new(value: String) = NMSUtil.NtString.constructor.instance(value)!!

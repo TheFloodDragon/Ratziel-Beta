@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package cn.fd.ratziel.module.itemengine.item.meta.serializers
+package cn.fd.ratziel.module.item.impl.part.serializers
 
 import cn.fd.ratziel.core.serialization.buildClassDescriptor
 import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer

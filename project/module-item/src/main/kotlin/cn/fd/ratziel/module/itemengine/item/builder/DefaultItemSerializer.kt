@@ -11,10 +11,10 @@ import cn.fd.ratziel.module.itemengine.item.meta.VItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.VItemDisplay
 import cn.fd.ratziel.module.itemengine.item.meta.VItemDurability
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
-import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeModifierSerializer
-import cn.fd.ratziel.module.itemengine.item.meta.serializers.AttributeSerializer
-import cn.fd.ratziel.module.itemengine.item.meta.serializers.EnchantmentSerializer
-import cn.fd.ratziel.module.itemengine.item.meta.serializers.HideFlagSerializer
+import cn.fd.ratziel.module.item.impl.part.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.module.item.impl.part.serializers.AttributeSerializer
+import cn.fd.ratziel.module.item.impl.part.serializers.EnchantmentSerializer
+import cn.fd.ratziel.module.item.impl.part.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTMapper
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import kotlinx.serialization.KSerializer

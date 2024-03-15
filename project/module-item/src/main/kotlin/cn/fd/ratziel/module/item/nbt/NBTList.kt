@@ -8,6 +8,7 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
  * @author TheFloodDragon
  * @since 2024/3/15 20:31
  */
+@Suppress("UNCHECKED_CAST")
 class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
 
     constructor() : this(new())
@@ -15,6 +16,10 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
     init {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
+
+    internal val sourceList get() = NMSUtil.NtList.sourceField.get(data) as List<Any>
+
+    val content: List<NBTData> get() = sourceList.map { NBTConverter.convert(it) }
 
     companion object {
 
