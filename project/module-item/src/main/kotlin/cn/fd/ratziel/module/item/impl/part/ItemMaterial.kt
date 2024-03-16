@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.part
 
-import cn.fd.ratziel.module.itemengine.api.exception.UnknownMaterialException
+import cn.fd.ratziel.module.item.exception.UnknownMaterialException
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.xseries.XMaterial
 import java.util.concurrent.ConcurrentHashMap

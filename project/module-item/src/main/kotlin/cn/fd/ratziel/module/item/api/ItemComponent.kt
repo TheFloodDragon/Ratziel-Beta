@@ -21,5 +21,4 @@ interface ItemComponent<T, D : NBTData> {
      */
     fun getTransformer(): DataTransformer<T, D>
 
-    //TODO ItemComponent AnyThing else
 }

@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.part
 
 import cn.fd.ratziel.common.message.MessageComponent
-import cn.fd.ratziel.core.serialization.Opt
+import cn.fd.ratziel.common.message.buildMessage
 import cn.fd.ratziel.module.item.api.NodeDistributor
 import cn.fd.ratziel.module.item.api.common.DataCTransformer
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
@@ -16,21 +16,21 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class VItemDisplay(
-    override val name: Opt<MessageComponent> = Opt.empty(),
-    override val localizedName: Opt<MessageComponent> = Opt.empty(),
-    override val lore: Opt<List<MessageComponent>> = Opt.empty(),
+    override var name: MessageComponent? = null,
+    override var localizedName: MessageComponent? = null,
+    override var lore: List<MessageComponent>? = null,
 ) : ItemDisplay {
 
     override fun setName(name: String) {
-        TODO("Not yet implemented")
+        this.name = buildMessage(name)
     }
 
     override fun setLore(lore: Iterable<String>) {
-        TODO("Not yet implemented")
+        this.lore = lore.map { buildMessage(it) }
     }
 
     override fun setLocalizedName(localizedName: String) {
-        TODO("Not yet implemented")
+        this.localizedName = buildMessage(localizedName)
     }
 
     override fun getNodeDistributor(): NodeDistributor {

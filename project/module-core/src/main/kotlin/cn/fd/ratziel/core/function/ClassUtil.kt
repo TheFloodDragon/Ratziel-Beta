@@ -6,7 +6,7 @@ import taboolib.library.reflex.ClassStructure
 import taboolib.library.reflex.Reflection
 
 fun ClassLoader.loadClassOrNull(name: String?): Class<*>? =
-    kotlin.runCatching { loadClass(name) }.getOrNull()
+    try { loadClass(name) } catch (ex: Exception) { null }
 
 /**
  * 获取类中的方法 (不安全)

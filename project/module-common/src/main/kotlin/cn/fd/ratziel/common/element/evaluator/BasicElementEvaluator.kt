@@ -34,7 +34,15 @@ object BasicElementEvaluator : ElementEvaluator {
         // 创建评估任务并提交
         val future = CompletableFuture<Duration>().also { ApexElementEvaluator.evalTasks += it }
         // 函数 (非立即执行) - 处理元素并完成评估任务
-        val function = Runnable { measureTime { handler.handle(element) }.let { future.complete(it) } }
+        val function = Runnable {
+            measureTime {
+                try {
+                    handler.handle(element)
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
+                }
+            }.let { future.complete(it) }
+        }
         // 推迟加载
         registerLifeCycleTask(config.lifeCycle, 10) {
             // 异步同步处理

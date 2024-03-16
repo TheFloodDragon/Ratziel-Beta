@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl
 
-import cn.fd.ratziel.module.itemengine.api.builder.ItemGenerator
+import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import java.util.concurrent.ConcurrentHashMap
 
 /**

@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.api.part
 
 import cn.fd.ratziel.common.message.MessageComponent
-import cn.fd.ratziel.core.serialization.Opt
 import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 
@@ -16,17 +15,17 @@ interface ItemDisplay : ItemComponent<ItemDisplay, NBTCompound> {
     /**
      * 物品名称
      */
-    val name: Opt<MessageComponent>
+    var name: MessageComponent?
 
     /**
      * 物品本地化名称
      */
-    val localizedName: Opt<MessageComponent>
+    var localizedName: MessageComponent?
 
     /**
      * 物品描述
      */
-    val lore: Opt<List<MessageComponent>>
+    var lore: List<MessageComponent>?
 
     /**
      * 设置名称

@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.itemengine.item.builder
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.module.itemengine.api.builder.ItemGenerator
-import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
+import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.reflex.RefItemMeta
+import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import cn.fd.ratziel.module.itemengine.util.applyFrom
 import org.bukkit.inventory.meta.ItemMeta

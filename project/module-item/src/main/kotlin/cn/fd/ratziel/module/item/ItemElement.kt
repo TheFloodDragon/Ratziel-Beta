@@ -29,7 +29,7 @@ object ItemElement : ExtElementHandler {
         }
     }
 
-    override fun handle(element: Element) = try {
+    override fun handle(element: Element) {
 
         val serializer = DefaultItemSerializer(json)
         val generator = DefaultItemGenerator(element)
@@ -55,8 +55,6 @@ object ItemElement : ExtElementHandler {
 
         // 注册物品
         ItemManager.registry[element.name] = generator
-    } catch (ex: Exception) {
-        ex.printStackTrace()
     }
 
     override fun onStart() {

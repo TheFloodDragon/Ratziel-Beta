@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.itemengine.api.part
 
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
-import cn.fd.ratziel.module.itemengine.api.exception.NonSpecialItemException
+import cn.fd.ratziel.module.item.exception.NonSpecialItemException
 import cn.fd.ratziel.module.itemengine.nbt.NBTData
 import cn.fd.ratziel.module.itemengine.nbt.NBTString
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
