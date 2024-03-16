@@ -1,20 +1,20 @@
 package cn.fd.ratziel.module.itemengine.item.builder
 
-import cn.fd.ratziel.common.message.builder.ComponentSerializer
+import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.core.function.futureAsync
 import cn.fd.ratziel.core.serialization.JsonHandler
 import cn.fd.ratziel.core.serialization.getTentatively
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
+import cn.fd.ratziel.module.item.impl.part.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.module.item.impl.part.serializers.AttributeSerializer
+import cn.fd.ratziel.module.item.impl.part.serializers.EnchantmentSerializer
+import cn.fd.ratziel.module.item.impl.part.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.itemengine.api.builder.ItemKSerializer
 import cn.fd.ratziel.module.itemengine.api.builder.ItemSerializer
 import cn.fd.ratziel.module.itemengine.item.meta.VItemCharacteristic
 import cn.fd.ratziel.module.itemengine.item.meta.VItemDisplay
 import cn.fd.ratziel.module.itemengine.item.meta.VItemDurability
 import cn.fd.ratziel.module.itemengine.item.meta.VItemMeta
-import cn.fd.ratziel.module.item.impl.part.serializers.AttributeModifierSerializer
-import cn.fd.ratziel.module.item.impl.part.serializers.AttributeSerializer
-import cn.fd.ratziel.module.item.impl.part.serializers.EnchantmentSerializer
-import cn.fd.ratziel.module.item.impl.part.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTMapper
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import kotlinx.serialization.KSerializer
@@ -77,8 +77,8 @@ open class DefaultItemSerializer(
             SerializersModule {
                 // Common Serializers
                 contextual(NBTTag::class, NBTMapper)
-                contextual(Component::class, ComponentSerializer)
-                contextual(EnhancedListSerializer(ComponentSerializer))
+                contextual(Component::class, MessageComponentSerializer)
+                contextual(EnhancedListSerializer(MessageComponentSerializer))
                 // Bukkit Serializers
                 contextual(org.bukkit.enchantments.Enchantment::class, EnchantmentSerializer)
                 contextual(org.bukkit.inventory.ItemFlag::class, HideFlagSerializer)

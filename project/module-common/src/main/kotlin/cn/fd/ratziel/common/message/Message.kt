@@ -1,9 +1,11 @@
 package cn.fd.ratziel.common.message
 
+import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_END
 import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_START
 import cn.fd.ratziel.core.serialization.isJson
 import cn.fd.ratziel.core.util.replaceNonEscaped
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.AMPERSAND_CHAR
@@ -11,6 +13,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.SECT
 import taboolib.common.platform.PlatformFactory
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
+
+typealias MessageComponent = @Serializable(MessageComponentSerializer::class) Component
 
 /**
  * Json - 组件 互转

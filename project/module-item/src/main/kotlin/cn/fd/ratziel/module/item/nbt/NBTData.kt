@@ -10,11 +10,11 @@ abstract class NBTData(
     /**
      * NBT原始数据 (NMS)
      */
-    protected var data: Any,
+    @JvmField protected var data: Any,
     /**
      * NBT数据类型
      */
-    val type: NBTType
+    @JvmField val type: NBTType
 ) {
 
     /**

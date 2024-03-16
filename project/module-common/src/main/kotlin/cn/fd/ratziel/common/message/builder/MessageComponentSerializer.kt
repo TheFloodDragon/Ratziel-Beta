@@ -10,12 +10,12 @@ import kotlinx.serialization.encoding.Encoder
 import net.kyori.adventure.text.Component
 
 /**
- * ComponentSerializer - 组件序列化器
+ * MessageComponentSerializer - 消息组件序列化器
  *
  * @author TheFloodDragon
  * @since 2023/10/5 11:42
  */
-object ComponentSerializer : KSerializer<Component> {
+object MessageComponentSerializer : KSerializer<Component> {
 
     override val descriptor = primitiveDescriptor(PrimitiveKind.STRING)
 
