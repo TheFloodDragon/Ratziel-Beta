@@ -4,11 +4,12 @@ import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ExtElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
+import cn.fd.ratziel.core.serialization.baseSerializers
 import cn.fd.ratziel.module.item.impl.ItemManager
-import cn.fd.ratziel.module.item.impl.part.VItemDisplay
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.plus
 
 /**
  * ItemElement
@@ -24,7 +25,7 @@ object ItemElement : ExtElementHandler {
 
     val json by lazy {
         Json(baseJson) {
-            serializersModule = DefaultItemSerializer.defaultSerializersModule
+            serializersModule = baseSerializers.plus(DefaultItemSerializer.defaultSerializersModule)
         }
     }
 
@@ -51,9 +52,6 @@ object ItemElement : ExtElementHandler {
         println(serializer.usedNodes.toList().toString())
 
         println("————————————————————————————————")
-        println(json.decodeFromJsonElement(VItemDisplay.serializer(),Json.parseToJsonElement("""
-        {"name":"操你妈","lore":["你妈死了"]}
-    """.trimIndent())))
 
         // 注册物品
         ItemManager.registry[element.name] = generator

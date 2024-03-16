@@ -55,10 +55,20 @@ object NBTConverter {
             is IntArray -> NBTIntArray(NBTIntArray.new(target))
             is ByteArray -> NBTByteArray(NBTByteArray.new(target))
             is LongArray -> NBTLongArray(NBTLongArray.new(target))
-            // TODO Map and List
-//            is Array<*>, is Iterable<*> -> NBTList(target)
+            is Iterable<*> -> convertList(target)
+            is Array<*> -> convertList(listOf(target))
+            is Map<*, *> -> convertMap(target)
             else -> null
         }
+
+        fun convertList(source: Iterable<*>): NBTList = ArrayList<Any>().apply {
+            source.forEach { add(NBTConverter.convert(it!!).getData()) }
+        }.let { NBTList(NBTList.new(it)) }
+
+        fun convertMap(source: Map<*, *>): NBTCompound = HashMap<String, Any>().apply {
+            source.forEach { put(it.key.toString(), NBTConverter.convert(it.value!!).getData()) }
+        }.let { NBTCompound(NBTCompound.new(it)) }
+
     }
 
 }
