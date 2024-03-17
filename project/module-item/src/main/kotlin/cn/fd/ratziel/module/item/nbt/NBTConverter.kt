@@ -22,6 +22,7 @@ object NBTConverter {
     fun isNmsNBT(target: Any) = NMSUtil.NtBase.nmsClass.isAssignableFrom(target::class.java)
 
     object NmsConverter {
+
         fun convert(target: Any) = target::class.java.let { c ->
             when {
                 NMSUtil.NtCompound.nmsClass.isAssignableFrom(c) -> NBTCompound(target)
@@ -39,9 +40,11 @@ object NBTConverter {
                 else -> null
             }
         }
+
     }
 
     object BasicConverter {
+
         fun convert(target: Any): NBTData? = when (target) {
             // 基本类型转换
             is String -> NBTString(NBTString.new(target))

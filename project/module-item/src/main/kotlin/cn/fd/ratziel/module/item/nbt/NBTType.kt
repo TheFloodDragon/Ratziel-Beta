@@ -8,20 +8,20 @@ package cn.fd.ratziel.module.item.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 18:59
  */
-enum class NBTType(@JvmField val id: Byte) {
+enum class NBTType(val id: Byte, val alias: Array<String> = emptyArray()) {
 
     END(0),
-    BYTE(1),
-    SHORT(2),
-    INT(3),
-    LONG(4),
-    FLOAT(5),
-    DOUBLE(6),
-    BYTE_ARRAY(7),
-    STRING(8),
-    LIST(9),
-    COMPOUND(10),
-    INT_ARRAY(11),
-    LONG_ARRAY(12);
+    BYTE(1, arrayOf("b")),
+    SHORT(2, arrayOf("s")),
+    INT(3, arrayOf("i")),
+    LONG(4, arrayOf("l")),
+    FLOAT(5, arrayOf("f")),
+    DOUBLE(6, arrayOf("d")),
+    BYTE_ARRAY(7, arrayOf("b")),
+    STRING(8, arrayOf("t")),
+    LIST(9, arrayOf("a", "list")),
+    COMPOUND(10, arrayOf("c", "cpd", "tag", "compound")),
+    INT_ARRAY(11, arrayOf("i")),
+    LONG_ARRAY(12, arrayOf("l"));
 
 }
