@@ -1,10 +1,12 @@
 package cn.fd.ratziel.module.item.nbt
 
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.core.serialization.primitiveDescriptor
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.*
 
 /**
  * NBTSerializer
@@ -12,17 +14,13 @@ import kotlinx.serialization.encoding.Encoder
  * @author TheFloodDragon
  * @since 2024/3/15 21:40
  */
-object NBTSerializer : KSerializer<NBTCompound> {
+object NBTSerializer : KSerializer<NBTData> {
 
     override val descriptor = primitiveDescriptor(PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): NBTCompound {
-        TODO("Not yet implemented")
-    }
+    override fun deserialize(decoder: Decoder): NBTData = Mapper.deserializeFromString(decoder.decodeString())
 
-    override fun serialize(encoder: Encoder, value: NBTCompound) {
-        TODO("Not yet implemented")
-    }
+    override fun serialize(encoder: Encoder, value: NBTData) = encoder.encodeString(Mapper.serializeToString(value))
 
     object Mapper {
 
@@ -31,48 +29,77 @@ object NBTSerializer : KSerializer<NBTCompound> {
          */
         const val EXACT_TYPE_CHAR = ";"
 
-        const val QUOTATION = "\""
-
         const val ELEMENT_SEPARATOR = ","
 
         /**
-         * IntArray Example:
-         *   1,2,3,4;i
+         * 将 [JsonElement] 反序列化成 [NBTData]
          */
+        fun deserializeFromJson(json: JsonElement, source: NBTCompound = NBTCompound()): NBTData =
+            when (json) {
+                is JsonPrimitive -> deserializeFromString(json.content)
+                is JsonArray -> NBTConverter.BasicConverter.convertList(json.map { deserializeFromJson(it, NBTCompound()) })
+                is JsonObject -> source.also { tag ->
+                    json.forEach {
+                        val newSource = tag.getDeep(it.key) as? NBTCompound ?: NBTCompound()
+                        tag.putDeep(it.key, deserializeFromJson(it.value, newSource))
+                    }
+                }
+            }
 
         /**
-         * Simple List Example:
-         *   [1,2b,3,abc,awa];list
+         * 将 [NBTData] 序列化成 [JsonElement]
          */
-        const val LIST_START = "["
-        const val LIST_END = "]"
+        fun serializeToJson(target: NBTData): JsonElement =
+            // 特殊类型序列化
+            when (target) {
+                is NBTCompound -> serializeToJsonObject(target)
+                is NBTList -> serializeToJsonArray(target)
+                else -> null
+            } ?: JsonPrimitive(serializeToString(target)) // 基础类型序列化
 
         /**
-         * Simple Compound Example:
-         *   {key1=123,"key2"="cm=\"",key3=11b};cpd
+         * 序列化精确类型
          */
-        const val COMPOUND_START = "{"
-        const val COMPOUND_SET = "="
-        const val COMPOUND_END = "}"
+        fun serializeToString(target: NBTData): String = when (target) {
+            // Basic
+            is NBTByte -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.BYTE.signName
+            is NBTShort -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.SHORT.signName
+            is NBTInt -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.INT.signName
+            is NBTLong -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.LONG.signName
+            is NBTFloat -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.FLOAT.signName
+            is NBTDouble -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.DOUBLE.signName
+            is NBTString -> target.content + EXACT_TYPE_CHAR + NBTType.STRING.signName
+            // Array
+            is NBTIntArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.INT_ARRAY.signName
+            is NBTByteArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.BYTE_ARRAY.signName
+            is NBTLongArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.LONG_ARRAY.signName
+            // Special Type
+            is NBTCompound -> serializeToJsonObject(target).toString() + EXACT_TYPE_CHAR + NBTType.COMPOUND.signName
+            is NBTList -> serializeToJsonArray(target).toString() + EXACT_TYPE_CHAR + NBTType.LIST.signName
+            else -> throw UnsupportedTypeException(target.type)
+        }
+
+        fun serializeToJsonObject(target: NBTCompound) = buildJsonObject { target.content.forEach { put(it.key, serializeToJson(it.value)) } }
+
+        fun serializeToJsonArray(target: NBTList) = buildJsonArray { target.content.forEach { add(serializeToJson(it)) } }
 
         /**
          * 反序列化精确类型
          */
-        fun deserializePrimitive(target: String): NBTData {
-            val typeStr = target.substringAfterLast(EXACT_TYPE_CHAR).lowercase()
+        fun deserializeFromString(target: String): NBTData {
+            val typeStr = target.substringAfterLast(EXACT_TYPE_CHAR)
             val dataStr = target.substringBeforeLast(EXACT_TYPE_CHAR)
             // 匹配类型
             val type = NBTType.entries.find {
-                it.alias.contains(typeStr) && it.name.lowercase() == typeStr
+                it.alias.contains(typeStr) && it.signName == typeStr
             }
             // 无法找到时默认返回 NBTString 类型
             if (type == null) return NBTString(NBTString.new(target))
 
             return convertBasicString(dataStr, type)
                 ?: convertArrayString(dataStr, type)
-                ?: convertListString(dataStr, type)
-                ?: convertMapString(dataStr, type)
-                ?: throw UnsupportedOperationException("Unsupported NBT Type: $type")
+                ?: convertSpecialString(dataStr, type)
+                ?: throw UnsupportedTypeException(type)
         }
 
         private fun convertBasicString(str: String, type: NBTType) = when (type) {
@@ -95,48 +122,8 @@ object NBTSerializer : KSerializer<NBTCompound> {
                 }
             }
 
-        private fun convertListString(str: String, type: NBTType): NBTList? =
-            str.takeIf { type == NBTType.LIST }
-                ?.let { s -> parseList(s).map { deserializePrimitive(it) } }
-                ?.let { NBTConverter.BasicConverter.convertList(it) }
-
-        private fun convertMapString(str: String, type: NBTType): NBTCompound? =
-            TODO("不会")
-
-        private fun parseList(source: String) = buildList {
-            val buffer = StringBuilder()
-            var isInQuotes = false
-            val str = source.substring(source.indexOf(LIST_START), source.lastIndexOf(LIST_END))
-            var index = 0
-            while (index < str.length) {
-                if (str.startsWith(QUOTATION, index)) {
-                    index += QUOTATION.length  // 跳过这个标记
-                    isInQuotes = !isInQuotes  // 切换引号内外状态
-                    if (!isInQuotes) {
-                        this.add(buffer.toString())
-                        buffer.clear()
-                    }
-                } else {
-                    if (isInQuotes || !str.startsWith(ELEMENT_SEPARATOR, index)) {
-                        buffer.append(str[index])
-                        index++  // 移动到下一个字符
-                    } else {
-                        index += ELEMENT_SEPARATOR.length  // 跳过逗号标记
-                        if (buffer.isNotEmpty()) {
-                            this.add(buffer.toString())
-                            buffer.clear()
-                        }
-                    }
-                }
-            }
-            // 添加最后一个元素
-            if (buffer.isNotEmpty()) this.add(buffer.toString())
-        }
-
-        fun parseMap(source: String): Map<String, String> {
-            TODO("不会")
-        }
-
+        private fun convertSpecialString(str: String, type: NBTType) =
+            if (type == NBTType.COMPOUND || type == NBTType.LIST) deserializeFromJson(Json.parseToJsonElement(str)) else null
 
     }
 
