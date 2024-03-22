@@ -6,7 +6,7 @@ const val kotlinVersion = "2.0.0-Beta4"
 const val serializationVersion = "1.6.3"
 const val coroutineVersion = "1.8.0"
 const val shadowJarVersion = "8.1.1"
-const val taboolibPluginVersion = "2.0.10"
+const val taboolibPluginVersion = "2.0.11"
 
 val taboolibVersion = getLatestRelease("TabooLib", "taboolib", "6.1.0-dev").also { println("Using taboolib-version = $it") }
 

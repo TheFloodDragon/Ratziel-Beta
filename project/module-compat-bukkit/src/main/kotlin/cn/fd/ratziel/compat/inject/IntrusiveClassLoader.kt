@@ -18,7 +18,9 @@ class IntrusiveClassLoader(parent: ClassLoader) : ClassLoader(parent) {
         var find = parent.loadClassOrNull(name)
         // 隔离类加载器加载 (不检查其父级)
         if (find == null) find = try {
-            IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false)
+            if (name?.startsWith("cn.fd.ratziel") == true)
+                IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false)
+            else null
         } catch (_: ClassNotFoundException) {
             null
         }

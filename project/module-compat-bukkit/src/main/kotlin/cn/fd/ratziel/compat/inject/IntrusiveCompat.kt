@@ -2,8 +2,7 @@ package cn.fd.ratziel.compat.inject
 
 import taboolib.common.PrimitiveLoader
 import taboolib.common.classloader.IsolatedClassLoader
-import taboolib.common.platform.Awake
-import taboolib.library.reflex.ReflexClass
+import taboolib.library.reflex.UnsafeAccess
 
 /**
  * IntrusiveCompat
@@ -13,15 +12,18 @@ import taboolib.library.reflex.ReflexClass
  */
 object IntrusiveCompat {
 
-    private val pluginClassLoader = IsolatedClassLoader.INSTANCE.parent
+    private val pluginClassLoader get() = IsolatedClassLoader.INSTANCE.parent
 
     private val globalClassLoader = pluginClassLoader.parent
 
-    private val parentField by lazy { ReflexClass.of(pluginClassLoader::class.java, false).getField("parent", remap = false) }
+    private val setter = UnsafeAccess.lookup.findSetter(ClassLoader::class.java, "parent", ClassLoader::class.java)
 
-    @Awake
+//    @Awake
     fun inject() {
-        parentField.set(parentField, IntrusiveClassLoader(globalClassLoader))
+        println(pluginClassLoader.parent)
+        setter.bindTo(pluginClassLoader).invokeWithArguments(IntrusiveClassLoader(globalClassLoader))
+        println(pluginClassLoader.parent)
+        // Test
         println(PrimitiveLoader.TABOOLIB_GROUP)
     }
 
