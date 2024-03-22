@@ -15,7 +15,7 @@ subprojects {
         // 中央库
         mavenCentral()
         // 坏黑私人库
-        maven("http://ptms.ink:8081/repository/releases") { isAllowInsecureProtocol = true }
+        maven("http://sacredcraft.cn:8081/repository/releases") { isAllowInsecureProtocol = true }
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
         // OSS
