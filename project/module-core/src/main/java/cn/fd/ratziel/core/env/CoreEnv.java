@@ -10,12 +10,12 @@ import taboolib.common.env.RuntimeDependency;
  * @since 2023/8/23 16:20
  */
 @RuntimeDependency(
-        value = "!org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3",
-        transitive = false
+        value = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3",
+        relocate = {"!kotlinx.serialization.", "kotlinx.serialization."}
 )
 @RuntimeDependency(
-        value = "!org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3",
-        transitive = false
+        value = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3",
+        relocate = {"!kotlinx.serialization.", "kotlinx.serialization."}
 )
 public class CoreEnv {
 }

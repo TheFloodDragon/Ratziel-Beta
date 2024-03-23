@@ -50,13 +50,8 @@ subprojects {
         options.encoding = "UTF-8"
     }
 
-    tasks.withType<Javadoc> {
-        options.encoding = "UTF-8"
-    }
-
     // Java 构建设置
     java {
-        withJavadocJar()
         withSourcesJar()
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -79,9 +74,9 @@ subprojects {
         // Taboolib
         relocate("taboolib", "$rootGroup.taboolib")
         // Kotlin
-//        relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
-//        relocate("kotlinx.coroutines.", "kotlinx${kotlinVersion.escapedVersion}.coroutines${coroutineVersion.escapedVersion}.")
-//        relocate("kotlinx.serialization.", "kotlinx${kotlinVersion.escapedVersion}.serialization${serializationVersion.escapedVersion}.")
+        relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
+        relocate("kotlinx.coroutines.", "kotlinx${kotlinVersion.escapedVersion}.coroutines${coroutineVersion.escapedVersion}.")
+        relocate("kotlinx.serialization.", "kotlinx${kotlinVersion.escapedVersion}.serialization${serializationVersion.escapedVersion}.")
     }
 
     group = rootGroup

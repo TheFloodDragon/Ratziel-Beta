@@ -1,12 +1,10 @@
 package cn.fd.ratziel.compat.inject;
 
-import sun.misc.Unsafe;
 import taboolib.common.PrimitiveLoader;
 import taboolib.common.classloader.IsolatedClassLoader;
+import taboolib.library.reflex.UnsafeAccess;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
 
 /**
  * IntrusiveCompat
@@ -26,21 +24,8 @@ public class IntrusiveCompat {
     private static final MethodHandle SETTER;
 
     static {
-        MethodHandles.Lookup lookup;
         try {
-            Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
-            theUnsafe.setAccessible(true);
-            Unsafe unsafe = (Unsafe) theUnsafe.get(null);
-            unsafe.ensureClassInitialized(MethodHandles.Lookup.class);
-            Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            Object lookupBase = unsafe.staticFieldBase(lookupField);
-            Long lookupOffset = unsafe.staticFieldOffset(lookupField);
-            lookup = (MethodHandles.Lookup) unsafe.getObject(lookupBase, lookupOffset);
-        } catch (Throwable ex) {
-            throw new IllegalStateException("Unsafe not found");
-        }
-        try {
-            SETTER = lookup.findSetter(ClassLoader.class, "parent", ClassLoader.class);
+            SETTER = UnsafeAccess.INSTANCE.getLookup().findSetter(ClassLoader.class, "parent", ClassLoader.class);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

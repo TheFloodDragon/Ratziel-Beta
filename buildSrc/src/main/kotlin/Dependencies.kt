@@ -96,6 +96,10 @@ fun DependencyHandler.shadowModule(name: String, configuration: String? = null) 
     add(ACTION_SHADOW, project(":project:$name", configuration))
 }
 
+fun DependencyHandler.tabooModule(name: String, configuration: String? = null) {
+    add("taboo", project(":project:$name", configuration))
+}
+
 /**
  * 依赖所有项目
  */
