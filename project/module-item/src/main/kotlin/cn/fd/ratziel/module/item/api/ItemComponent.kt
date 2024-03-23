@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.module.item.api.common.DataTransformer
 import cn.fd.ratziel.module.item.nbt.NBTData
 
 /**
@@ -12,13 +11,8 @@ import cn.fd.ratziel.module.item.nbt.NBTData
 interface ItemComponent<T, D : NBTData> {
 
     /**
-     * 获取节点分配器
+     * 获取NBT数据转换器
      */
-    fun getNodeDistributor(): NodeDistributor
-
-    /**
-     * 获取数据转换器
-     */
-    fun getTransformer(): DataTransformer<T, D>
+    fun transformer(): DataTransformer<T, D>
 
 }

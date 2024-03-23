@@ -1,25 +1,15 @@
 package cn.fd.ratziel.module.item.api.common
 
-import cn.fd.ratziel.module.item.api.Transformer
+import cn.fd.ratziel.module.item.api.DataTransformer
 import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.nbt.NBTData
 
 /**
- * DataTransformer - 物品数据转换器
+ * DataSimpleTransformer
  *
  * @author TheFloodDragon
- * @since 2024/3/16 10:48
+ * @since 2024/3/23 13:13
  */
-interface DataTransformer<T, D : NBTData> : Transformer<T, D>
-
-/**
- * DataCTransformer
- * 使用 [NBTCompound] 作为输出类型
- *
- * @author TheFloodDragon
- * @since 2024/3/16 10:50
- */
-interface DataCTransformer<T> : DataTransformer<T, NBTCompound> {
+interface DataSimpleTransformer<T> : DataTransformer<T, NBTCompound> {
 
     /**
      * 正向转化 - 输出型转化

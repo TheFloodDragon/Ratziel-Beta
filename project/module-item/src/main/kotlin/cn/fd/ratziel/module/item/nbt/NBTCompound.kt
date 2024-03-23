@@ -89,11 +89,6 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
         const val DEEP_SEPARATION = "."
 
         /**
-         * 顶级节点符号
-         */
-        const val APEX_NODE_SIGN = "!"
-
-        /**
          * 列表索引标识符
          */
         const val LIST_INDEX_START = "["
@@ -101,34 +96,38 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
         const val LIST_INDEX_END = "]"
 
         /**
-         * 深度获取 TODO Finish This
+         * 深度获取
          */
         fun getDeep(data: NBTCompound, node: String): NBTData? = data.run {
-            if (node == APEX_NODE_SIGN) this
-            else getDeepWith(this, node, false) { it[node.substringAfterLast(DEEP_SEPARATION)] }
+            getDeepWith(this, node, false) { c ->
+                supportList(node.substringAfterLast(DEEP_SEPARATION)) { pair ->
+                    c[pair.first].let { pair.second?.let { i -> (it as NBTList)[i] } ?: it }
+                }
+            }
         }
 
         /**
          * 深度写入
          */
         fun putDeep(data: NBTCompound, node: String, value: NBTData) = data.apply {
-            if (node == APEX_NODE_SIGN) return@apply
-            else getDeepWith(this, node, true) {
+            getDeepWith(this, node, true) { c ->
                 supportList(node.substringAfterLast(DEEP_SEPARATION)) { pair ->
-                    it.put(
-                        pair.first, value = if (pair.second == null) value
-                        else (it[pair.first] as? NBTList ?: NBTList()).apply { setCreatable(pair.second!!, value) }
-                    )
+                    c[pair.first] = if (pair.second == null) value else (c[pair.first] as? NBTList ?: NBTList()).apply { setCreatable(pair.second!!, value) }
                 }
             }
         }
 
         /**
-         * 深度删除 TODO Finish This
+         * 深度删除
          */
         fun removeDeep(data: NBTCompound, node: String) = data.apply {
-            if (node == APEX_NODE_SIGN) return@apply
-            else getDeepWith(this, node, false) { it.remove(node.substringAfterLast(DEEP_SEPARATION)) }
+            getDeepWith(this, node, false) { c ->
+                supportList(node.substringAfterLast(DEEP_SEPARATION)) { pair ->
+                    if (pair.second == null) c.remove(pair.first)
+//                    else (c[pair.first] as? NBTList)?.clone()?.also { it.remove(pair.second!!) }?.let { c.put(pair.first, it) }
+                    else (c[pair.first] as? NBTList)?.also { it.remove(pair.second!!) }
+                }
+            }
         }
 
         /**

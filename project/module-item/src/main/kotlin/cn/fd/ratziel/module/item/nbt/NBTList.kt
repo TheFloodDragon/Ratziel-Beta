@@ -63,6 +63,13 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
 
     fun setCreatable(index: Int, value: NBTData) = if (index == sourceList.size) add(value) else set(index, value)
 
+    /**
+     * 克隆数据
+     */
+    fun clone() = this.apply {
+        data = NMSUtil.NtList.methodClone.invoke(data)!!
+    }
+
     companion object {
 
         fun new() = new(ArrayList())

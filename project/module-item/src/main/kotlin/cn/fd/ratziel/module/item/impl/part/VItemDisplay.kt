@@ -2,11 +2,13 @@ package cn.fd.ratziel.module.item.impl.part
 
 import cn.fd.ratziel.common.message.MessageComponent
 import cn.fd.ratziel.common.message.buildMessage
-import cn.fd.ratziel.module.item.api.NodeDistributor
-import cn.fd.ratziel.module.item.api.common.DataCTransformer
+import cn.fd.ratziel.module.item.api.common.DataSimpleTransformer
+import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.module.item.reflex.ItemMapping
 import kotlinx.serialization.Serializable
+import taboolib.module.nms.MinecraftVersion
 
 /**
  * VItemDisplay
@@ -33,22 +35,34 @@ data class VItemDisplay(
         this.localizedName = buildMessage(localizedName)
     }
 
-    override fun getNodeDistributor(): NodeDistributor {
-        TODO("Not yet implemented")
+    override fun transformer() = if (MinecraftVersion.isLower(12005)) TransformerLow else TransformerHigh
+
+    object TransformerLow : DataSimpleTransformer<ItemDisplay> {
+
+        override val node = OccupyNode(ItemMapping.DISPLAY.mapping, OccupyNode.APEX_NODE)
+
+        override fun transform(target: ItemDisplay, source: NBTCompound) = source.apply {
+            TODO("Not yet implemented")
+        }
+
+        override fun detransform(input: ItemDisplay, from: NBTCompound) = input.run {
+            TODO("Not yet implemented")
+        }
+
     }
 
-    override fun getTransformer() = DisplayTransformer
+    object TransformerHigh : DataSimpleTransformer<ItemDisplay> {
 
-}
+        override val node = OccupyNode.APEX_NODE
 
-object DisplayTransformer : DataCTransformer<ItemDisplay> {
+        override fun transform(target: ItemDisplay, source: NBTCompound) = source.apply {
+            TODO("Not yet implemented")
+        }
 
-    override fun transform(target: ItemDisplay, source: NBTCompound) = source.apply {
-        TODO("Not yet implemented")
-    }
+        override fun detransform(input: ItemDisplay, from: NBTCompound) = input.run {
+            TODO("Not yet implemented")
+        }
 
-    override fun detransform(input: ItemDisplay, from: NBTCompound) = input.run {
-        TODO("Not yet implemented")
     }
 
 }

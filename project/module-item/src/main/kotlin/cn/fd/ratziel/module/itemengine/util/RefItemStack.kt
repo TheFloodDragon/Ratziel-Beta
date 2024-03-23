@@ -1,7 +1,10 @@
-package cn.fd.ratziel.module.item.reflex
+package cn.fd.ratziel.module.itemengine.util
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.core.function.getFieldUnsafe
+import cn.fd.ratziel.core.function.getMethodUnsafe
+import cn.fd.ratziel.core.function.isAssignableTo
+import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
 import org.bukkit.inventory.ItemStack
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
@@ -15,46 +18,51 @@ import taboolib.module.nms.obcClass
  * RefItemStack
  *
  * @author TheFloodDragon
- * @since 2024/3/23 12:50
+ * @since 2023/10/28 16:18
  */
-class RefItemStack(rawData: Any) {
+open class RefItemStack(rawData: Any) {
+
+    protected open var data: Any =
+        if (isOBC(rawData) || isNMS(rawData)) rawData // CraftItemStack or nms.ItemStack
+        else if (rawData is ItemStack) newObc(rawData) // interface bukkit.ItemStack
+        else throw UnsupportedTypeException(rawData) // Unsupported Type
 
     /**
-     * ItemStack源类型
+     * 获取物品NBT标签
      */
-    private var source: Any = when {
-        isObcClass(rawData) || isNmsClass(rawData) -> rawData // CraftItemStack or nms.ItemStack
-        rawData is ItemStack -> newObc(rawData) // interface bukkit.ItemStack
-        else -> throw UnsupportedTypeException(rawData) // Unsupported Type
-    }
+    open fun getNBT() = this.getAsNMS()?.let { nmsTagField.get(it) }?.let { NBTCompound(it) }
 
     /**
-     * 获取物品NBT数据
+     * 设置物品NBT标签
      */
-    fun getData() = this.getAsNms()?.let { nmsTagField.get(it) }?.let { NBTCompound(it) }
-
-    /**
-     * 获取物品NBT数据
-     */
-    fun setData(nbt: NBTCompound) = this.getAsNms()?.let { nmsTagField.set(it, nbt.getData()) }
+    open fun setNBT(nbt: NBTCompound) = this.getAsNMS()?.let { nmsTagField.set(it, nbt.getAsNmsNBT()) }
 
     /**
      * 克隆数据
      */
-    fun clone() = this.apply {
-        this.source = if (isObcClass(source)) source.invokeMethod("clone")!! else nmsCloneMethod.invoke(source)!!
+    open fun clone() = this.apply {
+        this.data = if (isOBC()) this.data.invokeMethod("clone")!! else nmsCloneMethod.invoke(this.data)!!
     }
 
     /**
-     * 获取NMS形式实例
+     * 获取NMS形式
      * CraftItemStack: nms.ItemStack handle
      */
-    fun getAsNms() = if (isObcClass(source)) source.getProperty("handle") else source
+    open fun getAsNMS() = if (isOBC()) data.getProperty("handle") else data
 
     /**
-     * 获取OBC形式实例
+     * 获取OBC形式
      */
-    fun getAsObc() = if (isNmsClass(source)) newObc(source).also { source = it } else source
+    open fun getAsOBC() = if (isNMS()) newObc(data) else data
+
+    /**
+     * 数据类型判断方法
+     */
+    open fun isOBC() = isOBC(data)
+    open fun isNMS() = isNMS(data)
+
+    protected fun isOBC(target: Any) = target::class.java.isAssignableTo(obcClass)
+    protected fun isNMS(target: Any) = target::class.java.isAssignableTo(nmsClass)
 
     companion object {
 
@@ -91,22 +99,20 @@ class RefItemStack(rawData: Any) {
         // private NBTTagCompound v
         // private NBTTagCompound tag
         internal val nmsTagField by lazy {
-            ReflexClass.of(nmsClass).structure.getField(
-                if (MinecraftVersion.isUniversal) "v" else "tag"
+            ReflexClass.of(nmsClass).structure.getFieldUnsafe(
+                name = if (MinecraftVersion.isUniversal) "v" else "tag",
+                type = NBTCompound.clazz
             )
         }
 
         // public nms.ItemStack p()
         // public nms.ItemStack cloneItemStack()
         internal val nmsCloneMethod by lazy {
-            ReflexClass.of(nmsClass).structure.getMethod(
-                if (MinecraftVersion.isUniversal) "p" else "cloneItemStack"
+            ReflexClass.of(nmsClass).structure.getMethodUnsafe(
+                name = if (MinecraftVersion.isUniversal) "p" else "cloneItemStack",
+                returnType = nmsClass
             )
         }
-
-        fun isObcClass(target: Any) = obcClass.isAssignableFrom(target::class.java)
-
-        fun isNmsClass(target: Any) = nmsClass.isAssignableFrom(target::class.java)
 
     }
 

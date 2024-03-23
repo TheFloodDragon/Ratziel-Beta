@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.nbt
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.core.serialization.primitiveDescriptor
+import cn.fd.ratziel.core.util.adapt
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.encoding.Decoder
@@ -93,14 +94,16 @@ object NBTSerializer : KSerializer<NBTData> {
             val type = NBTType.entries.find {
                 it.alias.contains(typeStr) && it.signName == typeStr
             }
-            // 无法找到时默认返回 NBTString 类型
-            if (type == null) return NBTString(NBTString.new(target))
+            // 无法找到时返回自适应后的
+            if (type == null) return adaptString(target)
 
             return convertBasicString(dataStr, type)
                 ?: convertArrayString(dataStr, type)
                 ?: convertSpecialString(dataStr, type)
                 ?: throw UnsupportedTypeException(type)
         }
+
+        private fun adaptString(str: String) = NBTConverter.BasicConverter.convert(str.adapt())!!
 
         private fun convertBasicString(str: String, type: NBTType) = when (type) {
             NBTType.BYTE -> NBTByte(NBTByte.new(str.toByte()))

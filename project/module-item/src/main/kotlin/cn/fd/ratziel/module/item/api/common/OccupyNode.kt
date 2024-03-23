@@ -11,4 +11,15 @@ import cn.fd.ratziel.module.item.api.NodeDistributor
 data class OccupyNode(
     override val name: String,
     override val parent: NodeDistributor?
-) : NodeDistributor
+) : NodeDistributor {
+
+    companion object {
+
+        /**
+         * 一些默认节点
+         */
+        val APEX_NODE = OccupyNode("!", null)
+
+    }
+
+}

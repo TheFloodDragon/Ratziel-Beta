@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.reflex
 
-import java.util.function.Supplier
-
 /**
  * ItemMapping - 物品NBT标签映射表
  * 方法一: 反射获取 CraftMetaItem 内ItemMetaKey类型的静态字段
@@ -12,7 +10,7 @@ import java.util.function.Supplier
 @Suppress("SpellCheckingInspection")
 enum class ItemMapping(
     private val method0: String
-) : Supplier<String> {
+) {
 
     DISPLAY("DISPLAY"),
     DISPLAY_NAME("NAME"),
@@ -30,10 +28,11 @@ enum class ItemMapping(
         RefItemMeta.RefItemMetaKey(method0)
     }
 
-    val value by lazy {
+    /**
+     * 映射后的名字
+     */
+    val mapping by lazy {
         obcKey.NMS_NAME ?: error("Unknown fieldName \"${obcKey.fieldName}\" in CraftMetaItem")
     }
-
-    override fun get() = value
 
 }
