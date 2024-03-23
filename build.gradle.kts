@@ -39,7 +39,8 @@ subprojects {
             // Kotlin协程工具
             coroutine()
             // 基本依赖
-            arrayOf("module-core", "module-common").forEach { if (name != it) compileModule(it) }
+            if(name != "module-core") compileModule("module-core")
+            if(name != "module-core" && name != "module-common") compileModule("module-common")
         }
 
     }

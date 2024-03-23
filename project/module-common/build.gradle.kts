@@ -1,1 +1,1 @@
-dependencies { compileModule("module-core") }
+dependencies {}
