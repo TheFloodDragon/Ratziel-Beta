@@ -49,17 +49,17 @@ data class VItemDurability(
         // TODO 需要特殊处理
         override fun transform(target: VItemDurability, source: NBTTag) = target.run {
             source.putAll(
-                ItemMapping.DAMAGE.get() to damage?.let { NBTInt(it) },
-                ItemMapping.UNBREAKABLE.get() to unbreakable?.let { NBTBoolean(it) },
-                ItemMapping.REPAIR_COST.get() to repairCost?.let { NBTInt(it) }
+                ItemMapping.DAMAGE.mapping to damage?.let { NBTInt(it) },
+                ItemMapping.UNBREAKABLE.mapping to unbreakable?.let { NBTBoolean(it) },
+                ItemMapping.REPAIR_COST.mapping to repairCost?.let { NBTInt(it) }
             )
         }
 
         override fun detransform(target: VItemDurability, from: NBTTag): Unit = target.run {
-            from[ItemMapping.DAMAGE.get()]?.let { damage = (it as? NBTInt)?.content }
+            from[ItemMapping.DAMAGE.mapping]?.let { damage = (it as? NBTInt)?.content }
             // TODO Finish this
-            from[ItemMapping.UNBREAKABLE.get()]?.let { unbreakable = (it as? NBTByte)?.toString().toBoolean() }
-            from[ItemMapping.REPAIR_COST.get()]?.let { repairCost = (it as? NBTInt)?.content }
+            from[ItemMapping.UNBREAKABLE.mapping]?.let { unbreakable = (it as? NBTByte)?.toString().toBoolean() }
+            from[ItemMapping.REPAIR_COST.mapping]?.let { repairCost = (it as? NBTInt)?.content }
         }
 
     }

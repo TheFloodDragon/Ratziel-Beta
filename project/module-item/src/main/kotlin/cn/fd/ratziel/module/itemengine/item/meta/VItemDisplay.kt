@@ -60,16 +60,16 @@ data class VItemDisplay(
 
         override fun transform(target: VItemDisplay, source: NBTTag): NBTTag = target.run {
             source.putAll(
-                ItemMapping.DISPLAY_NAME.get() to componentToNBT(name),
-                ItemMapping.DISPLAY_LORE.get() to lore?.map { componentToNBT(it) }?.let { NBTList(it) },
-                ItemMapping.DISPLAY_LOCAL_NAME.get() to componentToNBT(localizedName)
+                ItemMapping.DISPLAY_NAME.mapping to componentToNBT(name),
+                ItemMapping.DISPLAY_LORE.mapping to lore?.map { componentToNBT(it) }?.let { NBTList(it) },
+                ItemMapping.DISPLAY_LOCAL_NAME.mapping to componentToNBT(localizedName)
             )
         }
 
         override fun detransform(target: VItemDisplay, from: NBTTag) = target.run {
-            setName((from[ItemMapping.DISPLAY_NAME.get()] as? NBTString)?.content)
-            setLore((from[ItemMapping.DISPLAY_LORE.get()] as? NBTList)?.content?.mapNotNull { (it as? NBTString)?.content })
-            setLocalizedName((from[ItemMapping.DISPLAY_LOCAL_NAME.get()] as? NBTString)?.content)
+            setName((from[ItemMapping.DISPLAY_NAME.mapping] as? NBTString)?.content)
+            setLore((from[ItemMapping.DISPLAY_LORE.mapping] as? NBTList)?.content?.mapNotNull { (it as? NBTString)?.content })
+            setLocalizedName((from[ItemMapping.DISPLAY_LOCAL_NAME.mapping] as? NBTString)?.content)
         }
 
         private fun componentToNBT(component: Component?): NBTString? =
@@ -77,6 +77,6 @@ data class VItemDisplay(
 
     }
 
-    override val node get() = ItemMapping.DISPLAY.get()
+    override val node get() = ItemMapping.DISPLAY.mapping
 
 }

@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.reflex.ItemMapping
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 import taboolib.module.nms.MinecraftVersion
 
 /**
@@ -18,8 +19,11 @@ import taboolib.module.nms.MinecraftVersion
  */
 @Serializable
 data class VItemDisplay(
+    @JsonNames("name", "display-name", "displayName")
     override var name: MessageComponent? = null,
+    @JsonNames("loc-name", "locName", "local-name", "localName")
     override var localizedName: MessageComponent? = null,
+    @JsonNames("lores")
     override var lore: List<MessageComponent>? = null,
 ) : ItemDisplay {
 

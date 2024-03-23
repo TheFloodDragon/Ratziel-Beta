@@ -135,10 +135,10 @@ data class VItemCharacteristic(
         override fun transform(target: VItemCharacteristic, source: NBTTag): NBTTag = target.run {
             // 自定义模型数据 (1.14+)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
-                source.put(ItemMapping.CUSTOM_MODEL_DATA.get(), customModelData?.let { NBTInt(it) })
+                source.put(ItemMapping.CUSTOM_MODEL_DATA.mapping, customModelData?.let { NBTInt(it) })
             // 物品隐藏标签
             source.put(
-                ItemMapping.HIDE_FLAG.get(),
+                ItemMapping.HIDE_FLAG.mapping,
                 hideFlags?.let { HideFlagSerializer.translateFlags(it) }?.let { NBTInt(it) })
             // 属性修饰符
             source.merge(NBTTag.of(NBTTag.new().also { nmsTag ->
@@ -155,9 +155,9 @@ data class VItemCharacteristic(
         override fun detransform(target: VItemCharacteristic, from: NBTTag) = target.run {
             // 自定义模型数据 (1.14+) - Int
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14))
-                customModelData = (from[ItemMapping.CUSTOM_MODEL_DATA.get()] as? NBTInt)?.content
+                customModelData = (from[ItemMapping.CUSTOM_MODEL_DATA.mapping] as? NBTInt)?.content
             // 物品隐藏标签 - Int
-            hideFlags = (from[ItemMapping.HIDE_FLAG.get()] as? NBTInt)?.content
+            hideFlags = (from[ItemMapping.HIDE_FLAG.mapping] as? NBTInt)?.content
                 ?.let { HideFlagSerializer.getFlagFromBit(it) }?.toMutableSet()
             // 属性修饰符 - Compound
             val modifierMap = RefItemMeta.buildModifiers(from.getAsNmsNBT()) // 构造属性修饰符表
