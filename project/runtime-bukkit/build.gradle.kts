@@ -16,6 +16,7 @@ taboolib {
     version {
         taboolib = taboolibVersion
         coroutines = coroutineVersion
+        skipKotlinRelocate = true
     }
 
     // 模块环境设置
@@ -24,8 +25,8 @@ taboolib {
         debug = true
         // Module Dependencies
         install(UNIVERSAL, BUKKIT_ALL, KETHER, NMS_UTIL, EXPANSION_PLAYER_FAKE_OP)
-        // Incomplete Isolated
-        enableIsolatedClassloader = false
+        // Complete Isolated
+        enableIsolatedClassloader = true
     }
 
     description {

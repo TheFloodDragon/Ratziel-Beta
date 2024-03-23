@@ -1,6 +1,6 @@
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.2.7.0-SNAPSHOT"
+const val rootVersion = "A.0.2.7.0"
 
 const val kotlinVersion = "2.0.0-Beta4"
 const val serializationVersion = "1.6.3"
@@ -11,9 +11,9 @@ const val taboolibPluginVersion = "2.0.11"
 val taboolibVersion = getLatestRelease("TabooLib", "taboolib", "6.1.0-dev").also { println("Using taboolib-version = $it") }
 
 val adventureModules = setOf(
-    "net.kyori:adventure-api:4.15.0",
+    "net.kyori:adventure-api:4.16.0",
     "net.kyori:adventure-platform-bukkit:4.3.2",
-    "net.kyori:adventure-text-minimessage:4.15.0"
+    "net.kyori:adventure-text-minimessage:4.16.0"
 )
 
 /**

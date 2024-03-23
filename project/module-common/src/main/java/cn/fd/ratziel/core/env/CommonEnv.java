@@ -8,12 +8,7 @@ import taboolib.common.env.RuntimeDependency;
  * @author TheFloodDragon
  * @since 2023/5/21 11:06
  */
-@RuntimeDependency("!net.kyori:adventure-api:" + CommonEnv.ADVENTURE_VERSION)
-@RuntimeDependency("!net.kyori:adventure-text-minimessage:" + CommonEnv.ADVENTURE_VERSION)
+@RuntimeDependency("!net.kyori:adventure-api:4.16.0")
+@RuntimeDependency("!net.kyori:adventure-text-minimessage:4.16.0")
 public class CommonEnv {
-
-    public static final String ADVENTURE_VERSION = "4.15.0";
-
-    public static final String ADVENTURE_PLATFORM_VERSION = "4.3.2";
-
 }
