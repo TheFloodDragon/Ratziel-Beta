@@ -1,5 +1,6 @@
 package cn.fd.ratziel.core.env;
 
+import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
 import taboolib.common.platform.Awake;
 
@@ -11,13 +12,6 @@ import java.util.Collections;
  * @author TheFloodDragon
  * @since 2023/5/21 10:58
  */
+@RuntimeDependency("!net.kyori:adventure-platform-bukkit:" + CommonEnv.ADVENTURE_PLATFORM_VERSION)
 public class BukkitEnv {
-
-    public static final String RUNTIME_DEPENDENCY = "!net.kyori:adventure-platform-bukkit:".substring(1) + CommonEnv.ADVENTURE_PLATFORM_VERSION;
-
-    @Awake
-    public static void init() throws Throwable {
-        RuntimeEnv.ENV.loadDependency(RUNTIME_DEPENDENCY, true, Collections.emptyList());
-    }
-
 }
