@@ -9,7 +9,7 @@ dependencies {
 }
 
 runtime.tasks.jar {
-    dependsOn(allModules.filter { it.name != runtime.name }.map { it.tasks.jar.name })
+    dependsOn(allModules.filter { it.name != runtime.name }.map { it.tasks.jar })
 }
 
 tasks.shadowJar {
