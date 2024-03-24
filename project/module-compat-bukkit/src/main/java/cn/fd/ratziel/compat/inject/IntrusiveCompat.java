@@ -1,6 +1,6 @@
 package cn.fd.ratziel.compat.inject;
 
-import taboolib.common.PrimitiveLoader;
+import taboolib.common.PrimitiveSettings;
 import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.library.reflex.UnsafeAccess;
 
@@ -14,12 +14,12 @@ import java.lang.invoke.MethodHandle;
  */
 public class IntrusiveCompat {
 
-    IntrusiveCompat() {
+    private IntrusiveCompat() {
     }
 
-    public static final ClassLoader PLUGIN_CLASS_LOADER = IsolatedClassLoader.INSTANCE.getParent();
+    public static ClassLoader PLUGIN_CLASS_LOADER = IsolatedClassLoader.INSTANCE.getParent();
 
-    public static final ClassLoader GLOBAL_CLASS_LOADER = PLUGIN_CLASS_LOADER.getParent();
+    public static ClassLoader GLOBAL_CLASS_LOADER = PLUGIN_CLASS_LOADER.getParent();
 
     private static final MethodHandle SETTER;
 
@@ -32,11 +32,7 @@ public class IntrusiveCompat {
     }
 
     private static void inject() throws Throwable {
-        System.out.println(PLUGIN_CLASS_LOADER.getParent());
-        SETTER.bindTo(PLUGIN_CLASS_LOADER).invokeWithArguments(new IntrusiveClassLoader(GLOBAL_CLASS_LOADER));
-        System.out.println(PLUGIN_CLASS_LOADER.getParent());
-        // Test
-        System.out.println(PrimitiveLoader.TABOOLIB_GROUP);
+        if (PrimitiveSettings.IS_ISOLATED_MODE) SETTER.bindTo(PLUGIN_CLASS_LOADER).invokeWithArguments(new IntrusiveClassLoader(GLOBAL_CLASS_LOADER));
     }
 
 }

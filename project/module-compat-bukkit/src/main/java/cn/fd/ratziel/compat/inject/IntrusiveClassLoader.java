@@ -24,7 +24,7 @@ public class IntrusiveClassLoader extends ClassLoader {
         // 优先父级加载
         Class<?> find = loadClassOrNull(getParent(), name);
         // 隔离类加载器加载 (不检查其父级)
-        if (find == null && name.startsWith("cn.fd.ratziel")) try {
+        if (find == null) try {
             find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
         } catch (ClassNotFoundException ignored) {
         }

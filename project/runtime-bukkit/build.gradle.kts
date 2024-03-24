@@ -5,10 +5,11 @@ plugins {
 }
 
 dependencies {
-    // 必备模块
-    tabooModule("module-core")
-    tabooModule("module-common")
-    compileCore(12002)
+    // Compat
+    tabooModule("module-compat-core")
+    tabooModule("module-compat-bukkit")
+    // Core
+    compileCore(12004)
     // PlaceholderAPI
     compileOnly("me.clip:placeholderapi:2.11.4")
 }
@@ -19,6 +20,7 @@ taboolib {
     version {
         taboolib = taboolibVersion
         coroutines = coroutineVersion
+        skipKotlinRelocate = true
     }
 
     // 模块环境设置
@@ -27,8 +29,7 @@ taboolib {
         debug = true
         // Module Dependencies
         install(UNIVERSAL, BUKKIT_ALL, KETHER, NMS_UTIL, EXPANSION_PLAYER_FAKE_OP)
-        // Relocate (暂时先这样)
-        relocate("kotlinx.serialization.", "kotlinx${kotlinVersion.escapedVersion}.serialization${serializationVersion.escapedVersion}.")
+        enableIsolatedClassloader = true
     }
 
     description {

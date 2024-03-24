@@ -9,13 +9,7 @@ import taboolib.common.env.RuntimeDependency;
  * @author TheFloodDragon
  * @since 2023/8/23 16:20
  */
-@RuntimeDependency(
-        value = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3",
-        relocate = {"!kotlinx.serialization.", "kotlinx.serialization."}
-)
-@RuntimeDependency(
-        value = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3",
-        relocate = {"!kotlinx.serialization.", "kotlinx.serialization."}
-)
+@RuntimeDependency("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3")
+@RuntimeDependency("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3")
 public class CoreEnv {
 }

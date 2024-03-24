@@ -45,16 +45,16 @@ subprojects {
 
     }
 
-    // 编码设置
-    tasks.withType<JavaCompile> {
-        options.encoding = "UTF-8"
-    }
-
     // Java 构建设置
     java {
         withSourcesJar()
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    // 编码设置
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
     }
 
     // Kotlin 构建设置
@@ -74,9 +74,9 @@ subprojects {
         // Taboolib
         relocate("taboolib", "$rootGroup.taboolib")
         // Kotlin
-        relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
-        relocate("kotlinx.coroutines.", "kotlinx${kotlinVersion.escapedVersion}.coroutines${coroutineVersion.escapedVersion}.")
-        relocate("kotlinx.serialization.", "kotlinx${kotlinVersion.escapedVersion}.serialization${serializationVersion.escapedVersion}.")
+//        relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
+//        relocate("kotlinx.coroutines.", "kotlinx${kotlinVersion.escapedVersion}.coroutines${coroutineVersion.escapedVersion}.")
+//        relocate("kotlinx.serialization.", "kotlinx${kotlinVersion.escapedVersion}.serialization${serializationVersion.escapedVersion}.")
     }
 
     group = rootGroup

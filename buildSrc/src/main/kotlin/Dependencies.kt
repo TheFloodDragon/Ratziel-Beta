@@ -1,13 +1,15 @@
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.api.internal.tasks.JvmConstants
 import org.gradle.api.plugins.PluginAware
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.project
 
 fun PluginAware.applyPlugins() {
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+    apply(plugin = "com.github.johnrengelman.shadow")
 }
 
 fun Project.buildDirClean() {
@@ -84,20 +86,20 @@ fun DependencyHandler.compileTabooCommon() {
  * 依赖项目
  * @param name 项目名称
  */
-fun DependencyHandler.compileModule(name: String, configuration: String? = null) {
-    add(ACTION_COMPILE, project(":project:$name", configuration))
+fun DependencyHandler.compileModule(name: String) {
+    add(ACTION_COMPILE, project(":project:$name"))
 }
 
-fun DependencyHandler.installModule(name: String, configuration: String? = null) {
-    add(ACTION_INSTALL, project(":project:$name", configuration))
+fun DependencyHandler.installModule(name: String) {
+    add(ACTION_INSTALL, project(":project:$name"))
 }
 
-fun DependencyHandler.shadowModule(name: String, configuration: String? = null) {
-    add(ACTION_SHADOW, project(":project:$name", configuration))
+fun DependencyHandler.shadowModule(name: String) {
+    add(ACTION_SHADOW, project(":project:$name"))
 }
 
-fun DependencyHandler.tabooModule(name: String, configuration: String? = null) {
-    add("taboo", project(":project:$name", configuration))
+fun DependencyHandler.tabooModule(name: String) {
+    add("taboo", project(":project:$name", "shadow"))
 }
 
 /**
@@ -124,6 +126,6 @@ fun DependencyHandler.installTaboo(vararg module: String, version: String = tabo
     add(ACTION_INSTALL, "io.izzel.taboolib:$it:$version")
 }
 
-private const val ACTION_COMPILE = "compileOnly"
-private const val ACTION_INSTALL = "api"
-private const val ACTION_SHADOW = "implementation"
+private const val ACTION_COMPILE = JvmConstants.COMPILE_ONLY_CONFIGURATION_NAME
+private const val ACTION_INSTALL = JvmConstants.API_CONFIGURATION_NAME
+private const val ACTION_SHADOW = JvmConstants.IMPLEMENTATION_CONFIGURATION_NAME
