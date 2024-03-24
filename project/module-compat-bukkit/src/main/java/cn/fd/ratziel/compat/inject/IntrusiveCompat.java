@@ -32,8 +32,7 @@ public class IntrusiveCompat {
     }
 
     private static void inject() throws Throwable {
-        // TODO AWA
-        if (PrimitiveSettings.IS_ISOLATED_MODE || PrimitiveSettings.IS_DEBUG_MODE) SETTER.bindTo(PLUGIN_CLASS_LOADER).invokeWithArguments(new IntrusiveClassLoader(GLOBAL_CLASS_LOADER));
+        if (PrimitiveSettings.IS_ISOLATED_MODE) SETTER.bindTo(PLUGIN_CLASS_LOADER).invokeWithArguments(new IntrusiveClassLoader(GLOBAL_CLASS_LOADER));
     }
 
 }
