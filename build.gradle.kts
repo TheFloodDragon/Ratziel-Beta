@@ -70,7 +70,6 @@ subprojects {
         archiveAppendix.set("")
         archiveClassifier.set("")
         archiveVersion.set(rootVersion)
-        destinationDirectory.set(file("$rootDir/outs"))
         // Taboolib
         relocate("taboolib", "$rootGroup.taboolib")
         // Kotlin

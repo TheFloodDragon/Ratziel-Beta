@@ -42,7 +42,6 @@ public class IsolatedClassLoader extends URLClassLoader {
             injectMethod.setAccessible(true);
             injectConstructor.setAccessible(true);
             injectMethod.invoke(injectConstructor.newInstance());
-            System.out.println(PrimitiveLoader.TABOOLIB_GROUP);
             // ::End::
         } catch (Exception e) {
             throw new RuntimeException(e);
