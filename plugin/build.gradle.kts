@@ -8,10 +8,7 @@ subprojects {
 
     tasks {
         build { dependsOn(shadowJar) }
-        shadowJar {
-            destinationDirectory.set(file("$rootDir/outs"))
-            combineFiles.forEach { append(it) }
-        }
+        shadowJar { combineFiles.forEach { append(it) } }
     }
 
 }

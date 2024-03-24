@@ -11,7 +11,6 @@ subprojects {
             dependsOn(shadowJar)
         }
         shadowJar {
-            destinationDirectory.set(file("$rootDir/outs"))
             archiveFileName.set("Script-${project.name.capitalized()}-${project.version}.jar") //输出名称
         }
     }
