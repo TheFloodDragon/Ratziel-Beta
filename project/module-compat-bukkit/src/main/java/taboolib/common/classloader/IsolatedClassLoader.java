@@ -1,7 +1,5 @@
 package taboolib.common.classloader;
 
-import taboolib.common.PrimitiveLoader;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -32,7 +30,7 @@ public class IsolatedClassLoader extends URLClassLoader {
         INSTANCE = new IsolatedClassLoader(clazz);
         // 加载启动类
         try {
-            Class<?> delegateClass = Class.forName("taboolib.common.PrimitiveLoader", true, INSTANCE);
+            Class<?> delegateClass = Class.forName("cn.fd.ratziel.taboolib.common.PrimitiveLoader", true, INSTANCE);
             Object delegateObject = delegateClass.getConstructor().newInstance();
             delegateClass.getMethod("init").invoke(delegateObject);
             // ::Start:: 注入
@@ -59,24 +57,24 @@ public class IsolatedClassLoader extends URLClassLoader {
         // 默认排除类
         excludedPackages.add("java.");
         // JavaPlugin 直接访问
-        excludedClasses.add("taboolib.common.classloader.IsolatedClassLoader");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.classloader.IsolatedClassLoader");
 
         // 储存数据
-        excludedClasses.add("taboolib.common.TabooLib");
-        excludedClasses.add("taboolib.common.ClassAppender");
-        excludedClasses.add("taboolib.common.ClassAppender$Callback");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.TabooLib");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.ClassAppender");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.ClassAppender$Callback");
 
         // 其他插件访问
-        excludedClasses.add("taboolib.common.OpenAPI");
-        excludedClasses.add("taboolib.common.platform.Plugin");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.OpenAPI");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.platform.Plugin");
 
         // 交叉访问
-        excludedClasses.add("taboolib.common.LifeCycle");
-        excludedClasses.add("taboolib.common.LifeCycleTask");
-        excludedClasses.add("taboolib.common.PrimitiveIO");
-        excludedClasses.add("taboolib.common.PrimitiveSettings");
-        excludedClasses.add("taboolib.common.platform.Platform");
-        excludedClasses.add("taboolib.common.platform.PlatformSide");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.LifeCycle");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.LifeCycleTask");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.PrimitiveIO");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.PrimitiveSettings");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.platform.Platform");
+        excludedClasses.add("cn.fd.ratziel.taboolib.common.platform.PlatformSide");
 
         // Load excluded classes and packages by SPI
         ServiceLoader<IsolatedClassLoaderConfig> serviceLoader = ServiceLoader.load(IsolatedClassLoaderConfig.class, parent);

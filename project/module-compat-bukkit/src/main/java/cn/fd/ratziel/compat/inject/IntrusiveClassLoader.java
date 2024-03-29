@@ -1,5 +1,6 @@
 package cn.fd.ratziel.compat.inject;
 
+import taboolib.common.PrimitiveSettings;
 import taboolib.common.classloader.IsolatedClassLoader;
 
 /**
@@ -25,7 +26,9 @@ public class IntrusiveClassLoader extends ClassLoader {
         Class<?> find = loadClassOrNull(getParent(), name);
         // 隔离类加载器加载 (不检查其父级)
         if (find == null) try {
-            find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
+            if (PrimitiveSettings.IS_ISOLATED_MODE && name.startsWith("cn.fd.ratziel"))
+                find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
+            System.out.println(name);
         } catch (ClassNotFoundException ignored) {
         }
         // 检查结果
