@@ -9,13 +9,6 @@ subprojects {
     // Apply Taboolib Plugin
     apply(plugin = "io.izzel.taboolib")
 
-    // Common Dependencies
-    dependencies {
-        // 通用模块
-        shadowModule("module-core")
-        shadowModule("module-common")
-    }
-
     // Taboolib Settings
     taboolib {
 

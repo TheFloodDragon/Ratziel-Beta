@@ -1,9 +1,9 @@
 package cn.fd.ratziel.compat.hook
 
 import cn.fd.ratziel.compat.CompatibleClassLoader
+import taboolib.common.ClassAppender
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
-import taboolib.common.classloader.IsolatedClassLoader
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.console
 import taboolib.library.reflex.Reflex.Companion.unsafeInstance
@@ -34,7 +34,7 @@ object HookManager {
     /**
      * 默认CompatibleClassLoader实例
      */
-    val hookClassLoader = CompatibleClassLoader(this::class.java, IsolatedClassLoader.INSTANCE)
+    val hookClassLoader = CompatibleClassLoader(this::class.java, ClassAppender.getClassLoader())
 
     /**
      * 注册钩子

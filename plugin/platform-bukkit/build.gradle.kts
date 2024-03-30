@@ -4,11 +4,15 @@ import io.izzel.taboolib.gradle.KETHER
 import io.izzel.taboolib.gradle.NMS_UTIL
 
 dependencies {
+    // Core / Common
+    shadowModule("module-core")
+    shadowModule("module-common")
     // Platform - Bukkit
     shadowModule("runtime-bukkit")
     // Compat
+    tabooModule("module-compat-inject")
     shadowModule("module-compat-core")
-    tabooModule("module-compat-bukkit")
+    shadowModule("module-compat-bukkit")
     // Extension - Item
     shadowModule("module-item")
 }

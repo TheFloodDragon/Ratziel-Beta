@@ -8,10 +8,13 @@ import taboolib.common.classloader.IsolatedClassLoader;
  * @author TheFloodDragon
  * @since 2024/3/23 22:10
  */
-public class IntrusiveClassLoader extends ClassLoader {
+public final class IntrusiveClassLoader extends ClassLoader {
 
-    IntrusiveClassLoader(ClassLoader parent) {
+    private final String ACCESS_GROUP_NAME;
+
+    IntrusiveClassLoader(ClassLoader parent, String groupName) {
         super(parent);
+        this.ACCESS_GROUP_NAME = groupName;
     }
 
     @Override
@@ -26,7 +29,8 @@ public class IntrusiveClassLoader extends ClassLoader {
             Class<?> find = loadClassOrNull(getParent(), name);
             // 隔离类加载器加载 (不检查其父级)
             if (find == null) try {
-                if (name.startsWith("cn.fd.ratziel")) {
+                // 检查可访问性
+                if (name.startsWith(ACCESS_GROUP_NAME)) {
                     find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
                 }
             } catch (ClassNotFoundException ignored) {
