@@ -67,12 +67,12 @@ subprojects {
     }
 
     tasks {
-        build { dependsOn(shadowJar) }
         shadowJar {
             dependsOn(taboolibMainTask)
             from(taboolibMainTask.get().inJar)
             combineFiles.forEach { append(it) }
         }
+        build { dependsOn(shadowJar) }
     }
 
 }

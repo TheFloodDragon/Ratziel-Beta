@@ -34,7 +34,7 @@ object HookManager {
     /**
      * 默认CompatibleClassLoader实例
      */
-    val hookClassLoader = CompatibleClassLoader(this::class.java, IsolatedClassLoader.INSTANCE.parent)
+    val hookClassLoader = CompatibleClassLoader(this::class.java, IsolatedClassLoader.INSTANCE)
 
     /**
      * 注册钩子

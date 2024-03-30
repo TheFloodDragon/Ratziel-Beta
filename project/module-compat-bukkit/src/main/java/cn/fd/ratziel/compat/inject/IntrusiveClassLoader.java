@@ -1,6 +1,5 @@
 package cn.fd.ratziel.compat.inject;
 
-import taboolib.common.PrimitiveSettings;
 import taboolib.common.classloader.IsolatedClassLoader;
 
 /**
@@ -22,19 +21,21 @@ public class IntrusiveClassLoader extends ClassLoader {
 
     @Override
     public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        // 优先父级加载
-        Class<?> find = loadClassOrNull(getParent(), name);
-        // 隔离类加载器加载 (不检查其父级)
-        if (find == null) try {
-            if (PrimitiveSettings.IS_ISOLATED_MODE && name.startsWith("cn.fd.ratziel"))
-                find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
-            System.out.println(name);
-        } catch (ClassNotFoundException ignored) {
+        synchronized (getClassLoadingLock(name)) {
+            // 优先父级加载
+            Class<?> find = loadClassOrNull(getParent(), name);
+            // 隔离类加载器加载 (不检查其父级)
+            if (find == null) try {
+                if (name.startsWith("cn.fd.ratziel")) {
+                    find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
+                }
+            } catch (ClassNotFoundException ignored) {
+            }
+            // 检查结果
+            if (find == null) throw new ClassNotFoundException();
+            // 返回值
+            return find;
         }
-        // 检查结果
-        if (find == null) throw new ClassNotFoundException();
-        // 返回值
-        return find;
     }
 
     public static Class<?> loadClassOrNull(ClassLoader loader, String name) {

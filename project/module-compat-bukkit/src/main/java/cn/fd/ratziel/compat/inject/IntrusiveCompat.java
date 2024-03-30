@@ -1,5 +1,6 @@
 package cn.fd.ratziel.compat.inject;
 
+import taboolib.common.PrimitiveSettings;
 import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.library.reflex.UnsafeAccess;
 
@@ -31,7 +32,9 @@ public class IntrusiveCompat {
     }
 
     private static void inject() throws Throwable {
-        SETTER.bindTo(PLUGIN_CLASS_LOADER).invokeWithArguments(new IntrusiveClassLoader(GLOBAL_CLASS_LOADER));
+        // 隔离模式下注入类加载器
+        if (PrimitiveSettings.IS_ISOLATED_MODE)
+            SETTER.bindTo(PLUGIN_CLASS_LOADER).invokeWithArguments(new IntrusiveClassLoader(GLOBAL_CLASS_LOADER));
     }
 
 }

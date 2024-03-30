@@ -1,7 +1,3 @@
-plugins {
-    id("io.izzel.taboolib") version taboolibPluginVersion
-}
-
 dependencies {
     // Core
     compileCore(12004)
