@@ -37,6 +37,8 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
 
     operator fun set(node: String, value: NBTData?) = value?.let { put(node, it) }
 
+    fun putAll(vararg entries: Pair<String, NBTData?>) = this.apply { entries.forEach { it.second?.let { value -> put(it.first, value) } } }
+
     fun computeIfAbsent(node: String, function: Function<String, NBTData>) = sourceMap.computeIfAbsent(node, function)
 
     /**

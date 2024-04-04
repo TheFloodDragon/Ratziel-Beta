@@ -64,12 +64,12 @@ object NBTConverter {
             else -> null
         }
 
-        fun convertList(source: Iterable<*>): NBTList = ArrayList<Any>().apply {
-            source.forEach { add(NBTConverter.convert(it!!).getData()) }
+        fun convertList(target: Iterable<*>): NBTList = ArrayList<Any>().apply {
+            target.forEach { unsure -> unsure?.let { add(NBTConverter.convert(it).getData()) } }
         }.let { NBTList(NBTList.new(it)) }
 
-        fun convertMap(source: Map<*, *>): NBTCompound = HashMap<String, Any>().apply {
-            source.forEach { put(it.key.toString(), NBTConverter.convert(it.value!!).getData()) }
+        fun convertMap(target: Map<*, *>): NBTCompound = HashMap<String, Any>().apply {
+            target.forEach { (node, unsure) -> unsure?.let { put(node.toString(), NBTConverter.convert(it).getData()) } }
         }.let { NBTCompound(NBTCompound.new(it)) }
 
     }

@@ -1,25 +1,7 @@
-import org.gradle.api.Project
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-
-val Project.githubRepo
-    get() = try {
-        this.getProperty("githubRepo") ?: System.getenv("GITHUB_REPO")
-    } catch (ex: NullPointerException) {
-        null
-    } ?: "TheFloodDragon/Ratziel-Beta"
-
-val Project.githubToken: String
-    get() = (this.getProperty("githubKey", "githubToken") ?: System.getenv("GITHUB_TOKEN")).toString()
-
-val Project.githubUser
-    get() = (this.getProperty("githubUsername", "githubUser") ?: System.getenv("GITHUB_USERNAME")).toString()
-
-val Project.githubOwner get() = this.githubRepo.split('/')[0]
-
-val Project.githubRepoName get() = this.githubRepo.split('/')[1]
 
 fun getLatestRelease(repoOwner: String, repoName: String, overwrite: String? = null, fallback: String? = null): String =
     overwrite ?: try {

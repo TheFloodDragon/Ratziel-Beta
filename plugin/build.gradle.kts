@@ -39,7 +39,7 @@ subprojects {
             }
 
             links {
-                name("homepage").url("https://github.com/$githubRepo")
+                name("homepage").url("https://github.com/TheFloodDragon/Ratziel-Beta")
             }
 
             // Nodes

@@ -18,7 +18,12 @@ fun <T> CommandComponent.executeAsync(
     val locker = locks.computeIfAbsent(function.hashCode()) { ReentrantLock(true) }
     futureRunAsync {
         locker.lock() // 上锁
-        function.invoke(sender, context, argument)
+        // 执行方法 (自动捕获异常)
+        try {
+            function.invoke(sender, context, argument)
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
+        }
         locker.unlock()// 解锁
     }
 }

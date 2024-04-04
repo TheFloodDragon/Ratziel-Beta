@@ -21,6 +21,6 @@ interface DataSimpleTransformer<T> : DataTransformer<T, NBTCompound> {
      * 正向转化 - 输出型转化
      * 重写并调用 [transform] 方法, 默认使用空的 [NBTCompound] 作为源数据
      */
-    override fun transform(input: T): NBTCompound = transform(input, NBTCompound())
+    override fun transform(target: T): NBTCompound = transform(target, NBTCompound())
 
 }

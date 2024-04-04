@@ -14,8 +14,13 @@ abstract class NBTData(
     /**
      * NBT数据类型
      */
-    @JvmField val type: NBTType
+    val type: NBTType
 ) {
+
+    init {
+        // 自动转换
+        if (!NMSUtil.NtBase.nmsClass.isAssignableFrom(data::class.java)) data = NBTConverter.convert(data)
+    }
 
     /**
      * 获取原始数据

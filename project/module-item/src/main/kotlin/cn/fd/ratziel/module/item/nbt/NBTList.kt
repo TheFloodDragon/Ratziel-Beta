@@ -61,8 +61,6 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
      */
     fun set(index: Int, value: NBTData) = sourceList.set(index, value.getData())
 
-    fun setCreatable(index: Int, value: NBTData) = if (index == sourceList.size) add(value) else set(index, value)
-
     /**
      * 克隆数据
      */

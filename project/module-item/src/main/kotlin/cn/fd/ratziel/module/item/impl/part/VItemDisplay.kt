@@ -1,14 +1,22 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.module.item.impl.part
 
+import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
 import cn.fd.ratziel.common.message.buildMessage
+import cn.fd.ratziel.common.message.toJsonString
 import cn.fd.ratziel.module.item.api.common.DataSimpleTransformer
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.module.item.nbt.NBTList
+import cn.fd.ratziel.module.item.nbt.NBTString
 import cn.fd.ratziel.module.item.reflex.ItemMapping
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
+import net.kyori.adventure.text.Component
 import taboolib.module.nms.MinecraftVersion
 
 /**
@@ -45,13 +53,29 @@ data class VItemDisplay(
 
         override val node = OccupyNode(ItemMapping.DISPLAY.mapping, OccupyNode.APEX_NODE)
 
-        override fun transform(target: ItemDisplay, source: NBTCompound) = source.apply {
-            TODO("Not yet implemented")
+        override fun transform(target: ItemDisplay, source: NBTCompound) = source.putAll(
+            ItemMapping.DISPLAY_NAME.mapping to componentToData(target.name),
+            ItemMapping.DISPLAY_LORE.mapping to target.lore?.map { componentToData(it)!!.getData() }?.let { NBTList(NBTList.new(ArrayList(it))) },
+            ItemMapping.DISPLAY_LOCAL_NAME.mapping to componentToData(target.localizedName)
+        )
+
+        override fun detransform(target: ItemDisplay, from: NBTCompound): Unit = target.run {
+            (from[ItemMapping.DISPLAY_NAME.mapping] as? NBTString)?.let { setName(it.content) }
+            (from[ItemMapping.DISPLAY_LORE.mapping] as? NBTList)?.let { setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content }) }
+            (from[ItemMapping.DISPLAY_LOCAL_NAME.mapping] as? NBTString)?.let { setLocalizedName(it.content) }
         }
 
-        override fun detransform(input: ItemDisplay, from: NBTCompound) = input.run {
-            TODO("Not yet implemented")
-        }
+        internal fun componentToData(component: Component?): NBTString? = component?.let { NBTString(NBTString.new(transformComponent(it))) }
+
+        /**
+         * Type:
+         *   1.13+ > Json Format
+         *   1.13- > Original Format (§)
+         */
+        fun transformComponent(component: Component): String =
+            if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
+                Message.wrapper.legacyBuilder.serialize(component)
+            } else component.toJsonString()
 
     }
 
@@ -63,7 +87,7 @@ data class VItemDisplay(
             TODO("Not yet implemented")
         }
 
-        override fun detransform(input: ItemDisplay, from: NBTCompound) = input.run {
+        override fun detransform(target: ItemDisplay, from: NBTCompound) = target.run {
             TODO("Not yet implemented")
         }
 

@@ -6,3 +6,5 @@ package cn.fd.ratziel.module.item.nbt
 fun NBTCompound.getDeep(node: String) = NBTCompound.DeepVisitor.getDeep(this, node)
 fun NBTCompound.putDeep(node: String, value: NBTData) = NBTCompound.DeepVisitor.putDeep(this, node, value)
 fun NBTCompound.removeDeep(node: String) = NBTCompound.DeepVisitor.removeDeep(this, node)
+
+fun NBTList.setCreatable(index: Int, value: NBTData) = if (index == sourceList.size) add(value) else set(index, value)

@@ -6,5 +6,6 @@ build
 # Output
 outs
 # Wiki
+.docusaurus
 node_modules
 package-lock.json

@@ -18,20 +18,17 @@ import taboolib.module.nms.obcClass
  */
 object RefItemMeta {
 
-    @JvmStatic
     val clazz by lazy { obcClass("inventory.CraftMetaItem") }
 
     /**
      * CraftMetaItem#constructor(NBTTagCompound)
      * @return CraftMetaItem
      */
-    @JvmStatic
     fun new(value: Any) = clazz.invokeConstructor(value)
 
     /**
      * 创建空对象
      */
-    @JvmStatic
     fun new() = new(NBTCompound.new())
 
     /**
@@ -49,7 +46,6 @@ object RefItemMeta {
      * Enchantments to NmsTag
      * CraftMetaItem#applyEnchantments(Map<Enchantment,Int>,NBTTagCompound,ItemMetaKey);Static
      */
-    @JvmStatic
     fun applyEnchantments(nbtTag: Any, enchantments: Map<Enchantment, Int>) =
         clazz.invokeMethod<Void>(
             "applyEnchantments", enchantments, nbtTag,
@@ -61,7 +57,6 @@ object RefItemMeta {
      * AttributeModifiers to NmsTag
      * CraftMetaItem#applyModifiers(MultiMap<Attribute,AttributeModifier>,NBTTagCompound,ItemMetaKey);Static
      */
-    @JvmStatic
     fun applyModifiers(nbtTag: Any, modifiers: Multimap<Attribute, AttributeModifier>) =
         clazz.invokeMethod<Void>(
             "applyModifiers", modifiers, nbtTag,
@@ -72,7 +67,6 @@ object RefItemMeta {
      * NmsTag to AttributeModifiers
      * CraftMetaItem#buildModifiers(NBTTagCompound,ItemMetaKey):MultiMap<Attribute,AttributeModifier>;Static
      */
-    @JvmStatic
     fun buildModifiers(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
         clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
             "buildModifiers", nbtTag,
@@ -83,7 +77,6 @@ object RefItemMeta {
      * NmsTag to Enchantments
      * CraftMetaItem#buildEnchantments(NBTTagCompound,ItemMetaKey):Map<Enchantment,Integer>;Static
      */
-    @JvmStatic
     fun buildEnchantments(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
         clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
             "buildEnchantments", nbtTag,
