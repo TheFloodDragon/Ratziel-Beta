@@ -75,7 +75,10 @@ class DefaultItemSerializer(
          * 占据的节点
          */
         val occupiedNodes by lazy {
-            VItemMeta.serializer().descriptor.usedNodes.toTypedArray()
+            arrayOf(
+                VItemMeta.serializer().descriptor.usedNodes,
+                VItemDisplay.serializer().descriptor.usedNodes
+            ).flatMap { it }.toTypedArray()
         }
 
         /**
