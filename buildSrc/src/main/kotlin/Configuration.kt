@@ -12,9 +12,9 @@ val taboolibVersion = "6.1.1-beta24"
 
 val adventureModules = setOf(
     "net.kyori:adventure-api:4.16.0",
-    "net.kyori:text-serializer-gson:4.16.0",
+    "net.kyori:adventure-text-serializer-gson:4.16.0",
     "net.kyori:adventure-text-minimessage:4.16.0",
-    "net.kyori:text-serializer-legacy:4.16.0",
+    "net.kyori:adventure-text-serializer-legacy:4.16.0",
     "net.kyori:adventure-platform-bukkit:4.3.2",
 )
 

@@ -13,7 +13,7 @@ import taboolib.common.env.RuntimeDependency;
         test = "!net.kyori.adventure.text.Component"
 )
 @RuntimeDependency(
-        value = "!net.kyori:text-serializer-gson:4.16.0",
+        value = "!net.kyori:adventure-text-serializer-gson:4.16.0",
         test = "!net.kyori.adventure.text.serializer.gson.GsonComponentSerializer"
 )
 @RuntimeDependency(
@@ -21,7 +21,7 @@ import taboolib.common.env.RuntimeDependency;
         test = "!net.kyori.adventure.text.minimessage.MiniMessage"
 )
 @RuntimeDependency(
-        value = "!net.kyori:text-serializer-legacy:4.16.0",
+        value = "!net.kyori:adventure-text-serializer-legacy:4.16.0",
         test = "!net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer"
 )
 public class CommonEnv {
