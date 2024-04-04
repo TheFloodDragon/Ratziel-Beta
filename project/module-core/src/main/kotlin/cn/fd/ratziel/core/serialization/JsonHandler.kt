@@ -16,8 +16,7 @@ object JsonHandler {
      * 编辑 [JsonObject]
      */
     @JvmStatic
-    fun edit(json: JsonObject, action: HashMap<String, JsonElement>.() -> Unit) =
-        JsonObject(LinkedHashMap(json).apply(action))
+    fun edit(json: JsonObject, action: HashMap<String, JsonElement>.() -> Unit): JsonObject = JsonObject(LinkedHashMap(json).apply(action))
 
     /**
      * 从给定 [JsonElement] 中寻找 [JsonPrimitive]

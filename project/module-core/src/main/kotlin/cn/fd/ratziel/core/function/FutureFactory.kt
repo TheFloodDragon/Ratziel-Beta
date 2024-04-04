@@ -15,6 +15,8 @@ fun futureRunAsync(function: Runnable) = CompletableFuture.runAsync(function)!!
 fun futureRunAsync(executor: Executor, function: Runnable): CompletableFuture<Void> =
     CompletableFuture.runAsync(function, executor)
 
+fun <T> CompletableFuture<T?>.throwable() = this@throwable.exceptionally { it.printStackTrace();null }
+
 /**
  * 简化多异步任务的过程
  */

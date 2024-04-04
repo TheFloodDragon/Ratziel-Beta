@@ -15,6 +15,9 @@ interface ItemGenerator {
      */
     val origin: Element
 
-    //TODO 其他杂七杂八的
+    /**
+     * 物品生成流
+     */
+    val streams: Array<ItemStream>
 
 }

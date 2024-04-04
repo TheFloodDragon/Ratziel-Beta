@@ -1,6 +1,7 @@
 package cn.fd.ratziel.common.function
 
 import cn.fd.ratziel.core.function.futureRunAsync
+import cn.fd.ratziel.core.function.throwable
 import taboolib.common.platform.command.CommandContext
 import taboolib.common.platform.command.component.CommandComponent
 import java.util.concurrent.ConcurrentHashMap
@@ -18,14 +19,10 @@ fun <T> CommandComponent.executeAsync(
     val locker = locks.computeIfAbsent(function.hashCode()) { ReentrantLock(true) }
     futureRunAsync {
         locker.lock() // 上锁
-        // 执行方法 (自动捕获异常)
-        try {
-            function.invoke(sender, context, argument)
-        } catch (ex: Throwable) {
-            ex.printStackTrace()
-        }
+        // 执行方法
+        function.invoke(sender, context, argument)
         locker.unlock()// 解锁
-    }
+    }.throwable()
 }
 
 inline fun <reified T> CommandComponent.executeAsync(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Unit) {

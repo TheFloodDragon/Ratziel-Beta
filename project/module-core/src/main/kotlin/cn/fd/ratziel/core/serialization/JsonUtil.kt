@@ -19,6 +19,8 @@ val baseJson by lazy {
         prettyPrint = true
         // 枚举类不区分大小写
         decodeEnumsCaseInsensitive = true
+        // 默认序列化模组
+        serializersModule = baseSerializers
     }
 }
 

@@ -4,12 +4,12 @@ import cn.fd.ratziel.module.item.api.DataTransformer
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 
 /**
- * DataSimpleTransformer
+ * SimpleDataTransformer
  *
  * @author TheFloodDragon
  * @since 2024/3/23 13:13
  */
-interface DataSimpleTransformer<T> : DataTransformer<T, NBTCompound> {
+interface SimpleDataTransformer<T> : DataTransformer<T, NBTCompound> {
 
     /**
      * 正向转化 - 输出型转化

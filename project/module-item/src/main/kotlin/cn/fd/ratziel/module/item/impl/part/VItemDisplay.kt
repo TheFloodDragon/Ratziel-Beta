@@ -6,8 +6,8 @@ import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
 import cn.fd.ratziel.common.message.buildMessage
 import cn.fd.ratziel.common.message.toJsonString
-import cn.fd.ratziel.module.item.api.common.DataSimpleTransformer
 import cn.fd.ratziel.module.item.api.common.OccupyNode
+import cn.fd.ratziel.module.item.api.common.SimpleDataTransformer
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTList
@@ -49,7 +49,7 @@ data class VItemDisplay(
 
     override fun transformer() = if (MinecraftVersion.isLower(12005)) TransformerLow else TransformerHigh
 
-    object TransformerLow : DataSimpleTransformer<ItemDisplay> {
+    object TransformerLow : SimpleDataTransformer<ItemDisplay> {
 
         override val node = OccupyNode(ItemMapping.DISPLAY.mapping, OccupyNode.APEX_NODE)
 
@@ -79,7 +79,7 @@ data class VItemDisplay(
 
     }
 
-    object TransformerHigh : DataSimpleTransformer<ItemDisplay> {
+    object TransformerHigh : SimpleDataTransformer<ItemDisplay> {
 
         override val node = OccupyNode.APEX_NODE
 

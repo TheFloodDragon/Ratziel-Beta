@@ -1,10 +1,10 @@
 package cn.fd.ratziel.module.item.nbt
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.core.serialization.primitiveDescriptor
 import cn.fd.ratziel.core.util.adapt
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
@@ -17,7 +17,7 @@ import kotlinx.serialization.json.*
  */
 object NBTSerializer : KSerializer<NBTData> {
 
-    override val descriptor = primitiveDescriptor(PrimitiveKind.STRING)
+    override val descriptor = PrimitiveSerialDescriptor("item.nbt", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): NBTData = Mapper.deserializeFromString(decoder.decodeString())
 
