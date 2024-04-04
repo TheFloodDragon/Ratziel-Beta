@@ -1,6 +1,8 @@
 package cn.fd.ratziel.core.env;
 
 import taboolib.common.env.RuntimeDependency;
+import taboolib.common.platform.Platform;
+import taboolib.common.platform.PlatformSide;
 
 /**
  * BukkitEnv
@@ -8,6 +10,26 @@ import taboolib.common.env.RuntimeDependency;
  * @author TheFloodDragon
  * @since 2023/5/21 10:58
  */
-@RuntimeDependency(value = "!net.kyori:adventure-platform-bukkit:4.3.2", test = "!net.kyori.adventure.platform.bukkit.BukkitAudience")
+@PlatformSide(Platform.BUKKIT)
+@RuntimeDependency(
+        value = "!net.kyori:adventure-platform-bukkit:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+        test = "!net.kyori.adventure.platform.bukkit.BukkitAudience",
+        transitive = false
+)
+@RuntimeDependency(
+        value = "!net.kyori:adventure-text-serializer-bungeecord:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+        test = "!net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer",
+        transitive = false
+)
+@RuntimeDependency(
+        value = "!net.kyori:adventure-text-serializer-bungeecord:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+        test = "!net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer",
+        transitive = false
+)
+@RuntimeDependency(
+        value = "!net.kyori:adventure-nbt:" + CommonEnv.ADVENTURE_VERSION,
+        test = "!net.kyori.adventure.nbt.BinaryTag",
+        transitive = false
+)
 public class BukkitEnv {
 }

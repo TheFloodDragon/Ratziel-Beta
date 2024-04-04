@@ -17,22 +17,6 @@ fun Project.buildDirClean() {
 }
 
 /**
- * 跳过重定向的Kotlin类
- */
-val skipRelocateKotlinClasses = setOf(
-    "kotlin/annotation/Repeatable",
-    "kotlin/annotation/Retention",
-    "kotlin/annotation/Target",
-    "kotlin/jvm/JvmField",
-    "kotlin/jvm/JvmInline",
-    "kotlin/jvm/JvmStatic",
-    "kotlin/jvm/PurelyImplements",
-    "kotlin/Metadata",
-    "kotlin/Deprecated",
-    "kotlin/ReplaceWith",
-)
-
-/**
  * Kotlin序列化工具
  */
 fun DependencyHandler.serialization() {
