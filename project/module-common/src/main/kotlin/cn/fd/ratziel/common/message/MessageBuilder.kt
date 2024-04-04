@@ -1,4 +1,4 @@
-package cn.fd.ratziel.common.message.builder
+package cn.fd.ratziel.common.message
 
 import net.kyori.adventure.text.Component
 

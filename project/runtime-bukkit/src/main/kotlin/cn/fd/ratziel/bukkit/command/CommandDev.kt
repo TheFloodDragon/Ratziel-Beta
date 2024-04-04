@@ -1,6 +1,6 @@
 package cn.fd.ratziel.bukkit.command
 
-import cn.fd.ratziel.common.function.executeAsync
+import cn.fd.ratziel.common.command.executeAsync
 import cn.fd.ratziel.common.message.audienceSender
 import cn.fd.ratziel.common.message.sendMessage
 import org.bukkit.command.CommandSender

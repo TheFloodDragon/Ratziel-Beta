@@ -36,15 +36,17 @@ val ProxyCommandSender.castAudience
  * 方法扩展
  */
 fun Audience.sendActionBar(message: String) {
-    this.sendActionBar(buildMessage(message))
+    this.sendActionBar(Message.buildMessage(message))
 }
 
 fun Audience.sendMessage(message: String) {
-    this.sendMessage(buildMessage(message))
+    this.sendMessage(Message.buildMessage(message))
 }
 
 fun Audience.sendTitle(title: String?, subtitle: String?, fadeIn: Duration, stay: Duration, fadeOut: Duration) {
-    this.showTitle(Title.title(buildMessage(title), buildMessage(subtitle), Title.Times.times(fadeIn, stay, fadeOut)))
+    this.showTitle(Title.title(
+        Message.buildMessage(title),
+        Message.buildMessage(subtitle), Title.Times.times(fadeIn, stay, fadeOut)))
 }
 
 fun Audience.sendTitle(title: String?, subtitle: String?, fadeIn: Int, stay: Int, fadeOut: Int) {

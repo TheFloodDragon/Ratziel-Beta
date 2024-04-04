@@ -1,5 +1,6 @@
 package cn.fd.ratziel.common.message.builder
 
+import cn.fd.ratziel.common.message.MessageBuilder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 

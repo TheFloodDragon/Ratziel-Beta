@@ -5,7 +5,6 @@ import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.function.FutureFactory
-import taboolib.common.platform.function.severe
 import kotlin.time.Duration
 
 /**
@@ -48,19 +47,9 @@ object ApexElementEvaluator {
     fun removeMember(evaluator: ElementEvaluator) = evaluators.remove(evaluator)
 
     /**
-     * 处理一个元素
+     * 处理元素
      */
     @JvmStatic
-    fun handleElement(element: Element) =
-        ElementRegistry.runWithHandlers(element.type) { (_, handler) ->
-            try {
-                this.eval(handler, element) // 进行评估
-            } catch (e: Exception) {
-                severe("Couldn't handle element $this by $handler")
-                e.printStackTrace()
-            }
-        }
-
-    fun Element.handle() = handleElement(this)
+    fun handleElement(element: Element) = ElementRegistry.runWithHandlers(element.type) { (_, handler) -> this.eval(handler, element) }
 
 }

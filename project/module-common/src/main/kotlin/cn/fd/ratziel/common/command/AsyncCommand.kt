@@ -1,4 +1,4 @@
-package cn.fd.ratziel.common.function
+package cn.fd.ratziel.common.command
 
 import cn.fd.ratziel.core.function.futureRunAsync
 import cn.fd.ratziel.core.function.throwable
@@ -19,8 +19,7 @@ fun <T> CommandComponent.executeAsync(
     val locker = locks.computeIfAbsent(function.hashCode()) { ReentrantLock(true) }
     futureRunAsync {
         locker.lock() // 上锁
-        // 执行方法
-        function.invoke(sender, context, argument)
+        function.invoke(sender, context, argument) // 执行方法
         locker.unlock()// 解锁
     }.throwable()
 }

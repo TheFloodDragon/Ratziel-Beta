@@ -18,7 +18,7 @@ import taboolib.module.nms.MinecraftVersion
 @PlatformSide(Platform.BUKKIT)
 object BukkitMessageWrapper : MessageWrapper {
 
-    private val isLowVersion = MinecraftVersion.isLower(MinecraftVersion.V1_16)
+    private val isLowVersion get() = MinecraftVersion.isLower(MinecraftVersion.V1_16)
 
     override val gsonBuilder by lazy {
         GsonMessageBuilder(colorDown = isLowVersion)

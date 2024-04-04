@@ -4,8 +4,6 @@ package cn.fd.ratziel.module.item.impl.part
 
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
-import cn.fd.ratziel.common.message.buildMessage
-import cn.fd.ratziel.common.message.toJsonString
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.common.SimpleDataTransformer
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
@@ -36,15 +34,15 @@ data class VItemDisplay(
 ) : ItemDisplay {
 
     override fun setName(name: String) {
-        this.name = buildMessage(name)
+        this.name = Message.buildMessage(name)
     }
 
     override fun setLore(lore: Iterable<String>) {
-        this.lore = lore.map { buildMessage(it) }
+        this.lore = lore.map { Message.buildMessage(it) }
     }
 
     override fun setLocalizedName(localizedName: String) {
-        this.localizedName = buildMessage(localizedName)
+        this.localizedName = Message.buildMessage(localizedName)
     }
 
     override fun transformer() = if (MinecraftVersion.isLower(12005)) TransformerLow else TransformerHigh
@@ -75,7 +73,7 @@ data class VItemDisplay(
         fun transformComponent(component: Component): String =
             if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
                 Message.wrapper.legacyBuilder.serialize(component)
-            } else component.toJsonString()
+            } else Message.transformToJson(component)
 
     }
 

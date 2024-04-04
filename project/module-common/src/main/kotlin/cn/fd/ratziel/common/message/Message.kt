@@ -17,32 +17,47 @@ import taboolib.module.chat.Components
 typealias MessageComponent = @Serializable(MessageComponentSerializer::class) Component
 
 /**
- * Json - 组件 互转
+ * Message
+ *
+ * @author TheFloodDragon
+ * @since 2024/4/4 21:23
  */
-fun Component.toJsonString(): String = Message.wrapper.gsonBuilder.serialize(this)
-
-fun componentFromJson(json: String): Component = Message.wrapper.gsonBuilder.deserialize(json)
-
-/**
- * 基本消息构建
- */
-fun buildMessage(source: String?, vararg tagResolver: TagResolver): Component = Message.build(source, *tagResolver)
-
 object Message {
+
+    /**
+     * [MessageWrapper] 服务对象
+     */
+    @JvmStatic
+    val wrapper by lazy { PlatformFactory.getService<MessageWrapper>() }
+
+    /**
+     * 将 Json字符串 转换成 [MessageComponent]
+     */
+    fun transformToJson(component: Component): String = wrapper.gsonBuilder.serialize(component)
+
+    /**
+     * 将 [MessageComponent] 转换成 Json字符串
+     */
+    fun transformFromJson(json: String): Component = wrapper.gsonBuilder.deserialize(json)
+
+    /**
+     * 将 '&' 转换成 '§'
+     */
+    fun translateAmpersandColor(target: String) = target.replace(AMPERSAND_CHAR, SECTION_CHAR)
+
+    /**
+     * 将 '§' 转换成 '&'
+     */
+    fun translateLegacyColor(target: String) = target.replace(SECTION_CHAR, AMPERSAND_CHAR)
+
     /**
      * 基本消息构建
      */
     @JvmStatic
-    fun build(source: String?, vararg tagResolver: TagResolver): Component = source?.let {
-        if (it.isJson()) componentFromJson(it)
+    fun buildMessage(source: String?, vararg tagResolver: TagResolver): Component = source?.let {
+        if (it.isJson()) transformFromJson(it)
         else parseAdventure(it, *tagResolver)
     } ?: Component.empty()
-
-    /**
-     * MessageWrapper 对象
-     */
-    @JvmStatic
-    val wrapper by lazy { PlatformFactory.getService<MessageWrapper>() }
 
     /**
      * Taboolib消息解析
@@ -70,13 +85,3 @@ object Message {
     const val MARKED_TAG_END = "{marked:end}"
 
 }
-
-/**
- * 将 '&' 转换成 '§'
- */
-fun translateAmpersandColor(target: String) = target.replace(AMPERSAND_CHAR, SECTION_CHAR)
-
-/**
- * 将 '§' 转换成 '&'
- */
-fun translateLegacyColor(target: String) = target.replace(SECTION_CHAR, AMPERSAND_CHAR)

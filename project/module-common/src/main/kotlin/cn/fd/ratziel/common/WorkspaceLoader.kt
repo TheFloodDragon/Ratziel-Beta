@@ -3,10 +3,8 @@ package cn.fd.ratziel.common
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.element.evaluator.ApexElementEvaluator
-import cn.fd.ratziel.common.element.evaluator.ApexElementEvaluator.handle
+import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.api.ExtElementHandler
-import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.function.FutureFactory
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -41,8 +39,7 @@ object WorkspaceLoader {
      * 加载工作空间中的元素
      */
     fun load(sender: ProxyCommandSender) = measureTime {
-        // 开启所有扩展处理器的 [onStart]
-        ElementRegistry.getHandlers().forEach { if (it is ExtElementHandler) it.onStart() }
+        WorkspaceLoadEvent.Start().call()
         // 创建异步工厂
         FutureFactory<List<Element>>().also { loading ->
             /**
@@ -54,13 +51,12 @@ object WorkspaceLoader {
                     loading.newAsync {
                         DefaultElementLoader.load(file).onEach {
                             elements += it  // 插入缓存
-                            it.handle() // 预处理元素
+                            ApexElementEvaluator.handleElement(it) // 处理元素
                         }
                     }
                 }
         }.wait() // 等待所有加载任务完成
-        // 开启所有扩展处理器的 [onFinish]
-        ElementRegistry.getHandlers().forEach { if (it is ExtElementHandler) it.onFinish() }
+        WorkspaceLoadEvent.End().call()
     }.let { time ->
         ApexElementEvaluator.evalTasks.whenFinished { durations ->
             durations.forEach { time.plus(it) } // 合并时间

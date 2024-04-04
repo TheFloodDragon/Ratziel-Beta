@@ -1,11 +1,13 @@
 package cn.fd.ratziel.common.element.evaluator
 
 import cn.fd.ratziel.common.element.registry.ElementConfig
+import cn.fd.ratziel.common.event.ElementHandleEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.function.futureRunAsync
 import taboolib.common.TabooLib.registerLifeCycleTask
+import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
 import kotlin.time.Duration
 import kotlin.time.measureTime
@@ -19,6 +21,8 @@ import kotlin.time.measureTime
 object BasicElementEvaluator : ElementEvaluator {
 
     override fun eval(handler: ElementHandler, element: Element) {
+        // 触发事件
+        if (ElementHandleEvent(element, handler).also { it.call() }.isCancelled) return
         // 分析注解
         val handlerClass = handler::class.java
         val annoClass = ElementConfig::class.java
@@ -38,7 +42,8 @@ object BasicElementEvaluator : ElementEvaluator {
             measureTime {
                 try {
                     handler.handle(element)
-                } catch (ex: Throwable) {
+                } catch (ex: Exception) {
+                    severe("Couldn't handle element $element by $handler")
                     ex.printStackTrace()
                 }
             }.let { future.complete(it) }

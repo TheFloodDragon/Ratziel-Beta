@@ -1,12 +1,14 @@
 package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.common.element.registry.NewElement
+import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.api.ExtElementHandler
+import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.module.item.impl.ItemManager
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
 import kotlinx.serialization.json.Json
+import taboolib.common.platform.event.SubscribeEvent
 
 /**
  * ItemElement
@@ -18,7 +20,7 @@ import kotlinx.serialization.json.Json
     name = "meta",
     space = "test"
 )
-object ItemElement : ExtElementHandler {
+object ItemElement : ElementHandler {
 
     val json by lazy {
         Json(baseJson) {
@@ -53,7 +55,8 @@ object ItemElement : ExtElementHandler {
 //        ItemManager.registry[element.name] = generator
     }
 
-    override fun onStart() {
+    @SubscribeEvent
+    fun onLoadStart(event: WorkspaceLoadEvent) {
         // 清除注册的物品
         ItemManager.registry.clear()
     }

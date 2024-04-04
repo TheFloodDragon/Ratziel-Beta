@@ -2,6 +2,7 @@
 
 package cn.fd.ratziel.common.message.builder
 
+import cn.fd.ratziel.common.message.MessageBuilder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.internal.parser.TokenParser

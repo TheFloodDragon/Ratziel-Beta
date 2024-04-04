@@ -2,15 +2,14 @@
 
 package cn.fd.ratziel.module.itemengine.item.meta
 
-import cn.fd.ratziel.common.message.buildMessage
+import cn.fd.ratziel.common.message.Message
+import cn.fd.ratziel.module.item.reflex.ItemMapping
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemDisplay
-import cn.fd.ratziel.module.item.reflex.ItemMapping
 import cn.fd.ratziel.module.itemengine.nbt.NBTList
 import cn.fd.ratziel.module.itemengine.nbt.NBTString
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
-import cn.fd.ratziel.module.itemengine.util.nmsComponent
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -37,21 +36,21 @@ data class VItemDisplay(
      * 设置显示名称
      */
     fun setName(origin: String?) {
-        name = buildMessage(origin)
+        name = Message.buildMessage(origin)
     }
 
     /**
      * 设置描述
      */
     fun setLore(components: Iterable<String?>?) {
-        lore = components?.map { buildMessage(it) }
+        lore = components?.map { Message.buildMessage(it) }
     }
 
     /**
      * 设置本地化名称
      */
     fun setLocalizedName(origin: String?) {
-        localizedName = buildMessage(origin)
+        localizedName = Message.buildMessage(origin)
     }
 
     override val transformer get() = Companion
@@ -73,7 +72,7 @@ data class VItemDisplay(
         }
 
         private fun componentToNBT(component: Component?): NBTString? =
-            nmsComponent(component)?.let { NBTString(it) }
+            component?.let { cn.fd.ratziel.module.item.impl.part.VItemDisplay.TransformerLow.transformComponent(it).let { NBTString(it) } }
 
     }
 

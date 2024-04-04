@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.command
 
-import cn.fd.ratziel.common.function.executeAsync
+import cn.fd.ratziel.common.command.executeAsync
 import cn.fd.ratziel.module.item.nbt.*
 import cn.fd.ratziel.module.item.nbt.NBTCompound.DeepVisitor
 import cn.fd.ratziel.module.item.reflex.RefItemStack

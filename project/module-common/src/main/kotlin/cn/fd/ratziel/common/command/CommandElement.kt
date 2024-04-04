@@ -1,7 +1,6 @@
 package cn.fd.ratziel.common.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
-import cn.fd.ratziel.common.function.executeAsync
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
@@ -39,7 +38,7 @@ object CommandElement {
                 sender.sendLang(
                     "Element-Info-Format",
                     it.type.toString(), // 类型
-                    it.path ?: "无", // 文件
+                    it.path ?: "None", // 文件
                     it.property.toString() // 属性
                 )
             }
@@ -69,6 +68,6 @@ object CommandElement {
     }
 
     private fun format(list: Iterable<String>?) =
-        list?.joinToString(separator = ", ")?.takeUnless { it.isEmpty() } ?: "无"
+        list?.joinToString(separator = ", ")?.takeUnless { it.isEmpty() } ?: "None"
 
 }

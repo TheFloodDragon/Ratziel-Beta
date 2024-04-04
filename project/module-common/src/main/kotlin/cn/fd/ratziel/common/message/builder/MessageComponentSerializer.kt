@@ -1,7 +1,6 @@
 package cn.fd.ratziel.common.message.builder
 
-import cn.fd.ratziel.common.message.buildMessage
-import cn.fd.ratziel.common.message.toJsonString
+import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.core.serialization.primitiveDescriptor
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -19,8 +18,8 @@ object MessageComponentSerializer : KSerializer<Component> {
 
     override val descriptor = primitiveDescriptor(PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): Component = buildMessage(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): Component = Message.buildMessage(decoder.decodeString())
 
-    override fun serialize(encoder: Encoder, value: Component) = encoder.encodeString(value.toJsonString())
+    override fun serialize(encoder: Encoder, value: Component) = encoder.encodeString(Message.transformToJson(value))
 
 }
