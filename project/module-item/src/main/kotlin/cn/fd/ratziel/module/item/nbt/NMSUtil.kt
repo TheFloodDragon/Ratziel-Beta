@@ -232,7 +232,7 @@ internal sealed class NMSUtil {
         /**
          * NBTTagShort(short var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(LongArray::class.java) }
+        override val constructor by lazy { reflexClass.structure.getConstructorByType(Short::class.java) }
 
         /**
          * private final short c

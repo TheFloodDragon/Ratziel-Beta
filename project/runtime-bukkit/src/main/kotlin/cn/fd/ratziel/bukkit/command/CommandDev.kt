@@ -26,6 +26,9 @@ object CommandDev {
     @CommandBody
     val main = mainCommand { createHelper() }
 
+    @CommandBody
+    val packet = CommandPacket
+
 //    /**
 //     * 运行Kether
 //     */

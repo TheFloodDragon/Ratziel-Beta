@@ -23,25 +23,18 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
      */
     internal val sourceList get() = NMSUtil.NtList.sourceField.get(data) as MutableList<Any>
 
-    val content: List<NBTData> get() = sourceList.map { NBTConverter.convert(it) }
+    val content: List<NBTData> get() = sourceList.map { NBTConverter.NmsConverter.convert(it)!! }
 
     /**
      * 获取数据
      */
-    operator fun get(index: Int): NBTData? = try {
-        NBTList(sourceList[index])
-    } catch (_: IndexOutOfBoundsException) {
-        null
-    }
+    operator fun get(index: Int): NBTData? = NBTConverter.NmsConverter.convert(sourceList[index])
+
 
     /**
      * 在索引处添加数据
      */
-    fun add(index: Int, value: NBTData) = try {
-        sourceList.add(index, value.getData())
-    } catch (_: IndexOutOfBoundsException) {
-        null
-    }
+    fun add(index: Int, value: NBTData) = sourceList.add(index, value.getData())
 
     /**
      * 在末尾添加数据
@@ -68,9 +61,7 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
     /**
      * 克隆数据
      */
-    fun clone() = this.apply {
-        data = NMSUtil.NtList.methodClone.invoke(data)!!
-    }
+    fun clone() = this.apply { data = NMSUtil.NtList.methodClone.invoke(data)!! }
 
     companion object {
 

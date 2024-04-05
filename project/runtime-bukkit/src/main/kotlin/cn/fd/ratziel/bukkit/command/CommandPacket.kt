@@ -7,8 +7,6 @@ import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.expansion.createHelper
-import taboolib.library.reflex.Reflex.Companion.getProperty
-import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.PacketSendEvent
 
@@ -24,45 +22,70 @@ import taboolib.module.nms.PacketSendEvent
 )
 object CommandPacket {
 
-    // 是否打印所有包类型
-    var isPrintAll = false
+    var listenSending = false
+
+    var listenReceiving = false
+
+    val filterNames = mutableListOf(
+        "ClientboundBundlePacket",
+        "PacketPlayOutUpdate",
+        "PacketPlayOutEntity",
+        "PacketPlayOutRelEntityMove",
+        "PacketPlayOutUpdateTime"
+    )
 
     @CommandBody
     val main = mainCommand { createHelper() }
 
     @CommandBody
-    val printAll = subCommand {
-        execute<ProxyCommandSender> { sender, _, _ ->
-            isPrintAll = !isPrintAll
-            sender.sendMessage(isPrintAll.toString())
+    val toggle = subCommand {
+        literal("sending") {
+            execute<ProxyCommandSender> { sender, _, _ ->
+                listenSending = !listenSending
+                sender.sendMessage("Packet sending listening status: $listenSending")
+            }
+        }
+        literal("receiving") {
+            execute<ProxyCommandSender> { sender, _, _ ->
+                listenReceiving = !listenReceiving
+                sender.sendMessage("Packet receiving listening status: $listenSending")
+            }
         }
     }
 
+    @CommandBody
+    val filter = subCommand {
+        literal("get") {
+            execute<ProxyCommandSender> { sender, _, _ -> sender.sendMessage("Filters: $filterNames") }
+        }
+        literal("add") {
+            dynamic { execute<ProxyCommandSender> { _, _, name -> filterNames + name } }
+        }
+        literal("remove") {
+            dynamic { execute<ProxyCommandSender> { _, _, name -> filterNames - name } }
+        }
+    }
 
     @SubscribeEvent
     fun onPacketSend(e: PacketSendEvent) {
-        val packet = e.packet
-        if (isPrintAll && !packet.name.contains("PacketPlayOutEntity")
-            && !packet.name.contains("PacketPlayOutRelEntityMove")) println(packet.source)
-
-        // Test PacketPlayOutSetSlot
-        if (packet.name == "PacketPlayOutSetSlot") {
-            val nmsPacket = packet.source
-            println(nmsPacket.getProperty<Int>("a"))
-            println(nmsPacket.getProperty<Int>("b"))
-            println(nmsPacket.getProperty<Int>("c"))
-            println(nmsPacket.getProperty<Int>("d"))
-            println(nmsPacket.getProperty<Int>("e"))
-            val nmsItemStack = nmsPacket.getProperty<Any?>("f")!!
-            println(nmsItemStack)
-            val nmsTags = nmsItemStack.invokeMethod<Any?>("v")
-            println(nmsTags)
-        }
+        if (!listenSending) return
+        filterNames.forEach { if (e.packet.fullyName.contains(it)) return }
+        printPacket(e.packet.source)
     }
 
     @SubscribeEvent
     fun onPacketReceive(e: PacketReceiveEvent) {
+        if (!listenReceiving) return
+        filterNames.forEach { if (e.packet.fullyName.contains(it)) return }
+        printPacket(e.packet.source)
     }
 
+    private fun printPacket(source: Any) {
+        println("Packet: $source")
+        source::class.java.declaredFields.forEach { field ->
+            val fieldValue = field.apply { isAccessible = true }.get(source)
+            println("      ${field.name}=$fieldValue")
+        }
+    }
 
 }

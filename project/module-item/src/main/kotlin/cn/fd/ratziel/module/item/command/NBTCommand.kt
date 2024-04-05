@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.command
 
-import cn.fd.ratziel.common.command.executeAsync
 import cn.fd.ratziel.module.item.nbt.*
 import cn.fd.ratziel.module.item.nbt.NBTCompound.DeepVisitor
 import cn.fd.ratziel.module.item.util.getDataBySlot
@@ -40,7 +39,7 @@ object NBTCommand {
     @CommandBody
     val view = subCommand {
         slot {
-            executeAsync<ProxyPlayer> { player, _, arg ->
+            execute<ProxyPlayer> { player, _, arg ->
                 player.cast<Player>().inventory.getDataBySlot(arg)?.also {
                     // 构建消息组件并发送
                     nbtAsComponent(player, it, 0, arg).sendTo(player)
@@ -58,7 +57,7 @@ object NBTCommand {
         slot {
             dynamic {
                 dynamic {
-                    executeAsync<ProxyPlayer> { player, ctx, _ ->
+                    execute<ProxyPlayer> { player, ctx, _ ->
                         // 获取基本信息
                         val node = ctx.args()[2]
                         val rawValue = ctx.args()[3]
@@ -85,7 +84,7 @@ object NBTCommand {
     val remove = subCommand {
         slot {
             dynamic {
-                executeAsync<ProxyPlayer> { player, ctx, _ ->
+                execute<ProxyPlayer> { player, ctx, _ ->
                     // 获取基本信息
                     val rawNode = ctx.args()[2]
                     player.cast<Player>().inventory.getDataBySlot(ctx.args()[1])?.also {

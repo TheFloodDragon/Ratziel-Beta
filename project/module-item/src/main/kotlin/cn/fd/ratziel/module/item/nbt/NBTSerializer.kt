@@ -109,6 +109,7 @@ object NBTSerializer : KSerializer<NBTData> {
         private fun convertBasicString(str: String, type: NBTType) = when (type) {
             NBTType.BYTE -> NBTByte(NBTByte.new(str.toByte()))
             NBTType.DOUBLE -> NBTDouble(NBTDouble.new(str.toDouble()))
+            NBTType.SHORT -> NBTShort(NBTShort.new(str.toShort()))
             NBTType.LONG -> NBTLong(NBTLong.new(str.toLong()))
             NBTType.FLOAT -> NBTFloat(NBTFloat.new(str.toFloat()))
             NBTType.INT -> NBTInt(NBTInt.new(str.toInt()))

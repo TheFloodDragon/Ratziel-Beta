@@ -18,7 +18,7 @@ class NBTShort(rawData: Any) : NBTData(rawData, NBTType.SHORT) {
 
     companion object {
 
-        fun new(value: Short) = NMSUtil.NtString.constructor.instance(value)!!
+        fun new(value: Short) = NMSUtil.NtShort.constructor.instance(value)!!
 
         fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtShort.isNmsClass(clazz)
 

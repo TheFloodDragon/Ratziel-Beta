@@ -24,13 +24,13 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
      */
     internal val sourceMap get() = NMSUtil.NtCompound.sourceField.get(data) as MutableMap<String, Any>
 
-    val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTConverter.convert(it.value)) } }
+    val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTConverter.NmsConverter.convert(it.value)!!) } }
 
     /**
      * 获取数据
      * @param node 节点
      */
-    operator fun get(node: String): NBTData? = sourceMap[node]?.let { NBTCompound(it) }
+    operator fun get(node: String): NBTData? = sourceMap[node]?.let { NBTConverter.NmsConverter.convert(it) }
 
     /**
      * 写入数据
@@ -53,9 +53,7 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
     /**
      * 克隆数据
      */
-    fun clone() = this.apply {
-        data = NMSUtil.NtCompound.methodClone.invoke(data)!!
-    }
+    fun clone() = this.apply { data = NMSUtil.NtCompound.methodClone.invoke(data)!! }
 
     /**
      * 合并目标数据
@@ -121,7 +119,7 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
             getDeepWith(this, node, true) { cpd ->
                 supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
                     if (index == null) cpd[nodeName] = value
-                    else (cpd[nodeName] as? NBTList)?.apply { setCreatable(index, value) }
+                    else ((cpd[nodeName] ?: NBTList().also { cpd[nodeName] = it }) as? NBTList)?.apply { setCreatable(index, value) }
                 }
             }
         }
@@ -133,7 +131,6 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
             getDeepWith(this, node, false) { cpd ->
                 supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
                     if (index == null) cpd.remove(nodeName)
-//                    else (c[pair.first] as? NBTList)?.clone()?.also { it.remove(pair.second!!) }?.let { c.put(pair.first, it) }
                     else (cpd[nodeName] as? NBTList)?.apply { removeAt(index) }
                 }
             }
