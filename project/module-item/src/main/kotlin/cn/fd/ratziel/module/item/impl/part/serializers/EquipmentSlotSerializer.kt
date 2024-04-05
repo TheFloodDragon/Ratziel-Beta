@@ -20,6 +20,6 @@ object EquipmentSlotSerializer : KSerializer<EquipmentSlot> {
 
     override fun serialize(encoder: Encoder, value: EquipmentSlot) = encoder.encodeString(value.name)
 
-    override fun deserialize(decoder: Decoder) = MetaMather.matchEquipment(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): EquipmentSlot = MetaMather.matchEquipment(decoder.decodeString()).bukkit
 
 }

@@ -19,7 +19,7 @@ object HideFlagSerializer : KSerializer<ItemFlag> {
 
     override val descriptor = PrimitiveSerialDescriptor("bukkit.ItemFlag", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): ItemFlag = MetaMather.matchItemFlag(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): ItemFlag = MetaMather.matchHideFlag(decoder.decodeString())
 
     override fun serialize(encoder: Encoder, value: ItemFlag) = encoder.encodeString(value.name)
 

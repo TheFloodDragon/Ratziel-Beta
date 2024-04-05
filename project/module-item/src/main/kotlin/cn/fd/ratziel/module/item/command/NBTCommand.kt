@@ -3,9 +3,8 @@ package cn.fd.ratziel.module.item.command
 import cn.fd.ratziel.common.command.executeAsync
 import cn.fd.ratziel.module.item.nbt.*
 import cn.fd.ratziel.module.item.nbt.NBTCompound.DeepVisitor
-import cn.fd.ratziel.module.item.reflex.RefItemStack
+import cn.fd.ratziel.module.item.util.getDataBySlot
 import org.bukkit.entity.Player
-import org.bukkit.inventory.PlayerInventory
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.CommandBody
@@ -61,14 +60,14 @@ object NBTCommand {
                 dynamic {
                     executeAsync<ProxyPlayer> { player, ctx, _ ->
                         // 获取基本信息
-                        val rawNode = ctx.args()[2]
+                        val node = ctx.args()[2]
                         val rawValue = ctx.args()[3]
                         player.cast<Player>().inventory.getDataBySlot(ctx.args()[1])?.also {
                             val value = NBTSerializer.Mapper.deserializeFromString(rawValue)
-                            it.putDeep(rawNode, value)
+                            it.putDeep(node, value)
                             player.sendLang(
                                 "NBTAction-Set",
-                                rawNode, asString(value),
+                                node, asString(value),
                                 translateType(player, value).toLegacyText()
                             )
                         } ?: player.sendLang("NBTAction-EmptyTag")
@@ -151,11 +150,6 @@ object NBTCommand {
     }
 
     /**
-     * 获取数据
-     */
-    private fun PlayerInventory.getDataBySlot(slot: String): NBTCompound? = getItemBySlot(slot)?.let { RefItemStack(it).getData() }
-
-    /**
      * 转换成 Map 形式 (全部以浅层即一层节点表示)
      */
     private fun NBTCompound.toMapShallow(source: Map<String, Any>? = this.sourceMap): Map<String, NBTData> = buildMap {
@@ -188,18 +182,20 @@ object NBTCommand {
      * 快捷匹配类型组件
      */
     private fun translateType(sender: ProxyCommandSender, nbt: NBTData): ComponentText = when (nbt.type) {
-        NBTType.STRING -> sender.asLangText("NBTFormat-Type-String")
-        NBTType.BYTE -> sender.asLangText("NBTFormat-Type-Byte")
-        NBTType.SHORT -> sender.asLangText("NBTFormat-Type-Short")
-        NBTType.INT -> sender.asLangText("NBTFormat-Type-Int")
-        NBTType.LONG -> sender.asLangText("NBTFormat-Type-Long")
-        NBTType.FLOAT -> sender.asLangText("NBTFormat-Type-Float")
-        NBTType.DOUBLE -> sender.asLangText("NBTFormat-Type-Double")
-        NBTType.BYTE_ARRAY -> sender.asLangText("NBTFormat-Type-ByteArray")
-        NBTType.INT_ARRAY -> sender.asLangText("NBTFormat-Type-IntArray")
-        NBTType.LONG_ARRAY -> sender.asLangText("NBTFormat-Type-LongArray")
+        NBTType.STRING -> "NBTFormat-Type-String"
+        NBTType.BYTE -> "NBTFormat-Type-Byte"
+        NBTType.SHORT -> "NBTFormat-Type-Short"
+        NBTType.INT -> "NBTFormat-Type-Int"
+        NBTType.LONG -> "NBTFormat-Type-Long"
+        NBTType.FLOAT -> "NBTFormat-Type-Float"
+        NBTType.DOUBLE -> "NBTFormat-Type-Double"
+        NBTType.BYTE_ARRAY -> "NBTFormat-Type-ByteArray"
+        NBTType.INT_ARRAY -> "NBTFormat-Type-IntArray"
+        NBTType.LONG_ARRAY -> "NBTFormat-Type-LongArray"
+        NBTType.LIST -> "NBTFormat-Type-List"
+        NBTType.COMPOUND -> "NBTFormat-Type-Compound"
         else -> null
-    }?.let { Components.parseSimple(it).build { colored() } } ?: Components.empty()
+    }?.let { Components.parseSimple(sender.asLangText(it)).build { colored() } } ?: Components.empty()
 
     /**
      * 获取 [NBTData] 的字符串形式
@@ -215,7 +211,7 @@ object NBTCommand {
         is NBTByteArray -> nbt.content.toString()
         is NBTIntArray -> nbt.content.toString()
         is NBTLongArray -> nbt.content.toString()
-        else -> "{UNSURE}"
+        else -> NBTSerializer.Mapper.serializeToString(nbt).substringBeforeLast(NBTSerializer.Mapper.EXACT_TYPE_CHAR)
     }
 
 }

@@ -2,8 +2,6 @@
 
 package cn.fd.ratziel.module.item.command
 
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.PlayerInventory
 import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.component.CommandComponentDynamic
 import taboolib.common.platform.command.suggest
@@ -39,11 +37,6 @@ fun CommandComponentDynamic.suggestSlots(suggest: List<String> = emptyList()): C
         add("boots")
     }
 }
-
-/**
- * 根据栏位字符串获取玩家物品
- */
-fun PlayerInventory.getItemBySlot(slot: String): ItemStack? = inferEquipmentSlot(slot)?.let { getItem(it.bukkit) } ?: getItem(slot.toInt())
 
 fun inferEquipmentSlot(slot: String) = when (slot) {
     "main-hand", "main", "hand" -> BukkitEquipment.HAND

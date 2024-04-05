@@ -143,17 +143,18 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
          * 针对"深度方法"的重复代码做出的优化
          */
         fun getDeepWith(data: NBTCompound, node: String, create: Boolean, action: (NBTCompound) -> Any?): NBTData? = data.apply {
+            if (!node.contains(DEEP_SEPARATION)) return action(data) as? NBTData
             // 分割节点 (丢弃最后一层)
             val keys = node.split(DEEP_SEPARATION).dropLast(1)
             // 找到的标签
             var find: NBTCompound = this
             // 遍历各级节点
             for (element in keys) {
-                var next = find[element] // 下一级节点
+                var next = find.getDeep(element) // 下一级节点
                 if (next == null) {
                     if (create) {
                         next = NBTCompound(new())
-                        find[element] = next
+                        find.putDeep(element, next)
                     } else return null
                 }
                 // 如果下一级节点还是复合标签,则代表可以继续获取

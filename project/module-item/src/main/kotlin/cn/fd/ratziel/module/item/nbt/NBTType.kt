@@ -19,8 +19,8 @@ enum class NBTType(val id: Byte, val alias: Array<String> = emptyArray()) {
     DOUBLE(6, arrayOf("d")),
     BYTE_ARRAY(7, arrayOf("byteArray", "ba")),
     STRING(8, arrayOf("t", "str")),
-    LIST(9, arrayOf("a", "list", "array")),
-    COMPOUND(10, arrayOf("c", "cpd", "tag", "compound")),
+    LIST(9, arrayOf("a", "array")),
+    COMPOUND(10, arrayOf("c", "cpd", "tag")),
     INT_ARRAY(11, arrayOf("intArray", "ia")),
     LONG_ARRAY(12, arrayOf("longArray", "la"));
 
