@@ -90,6 +90,7 @@ object NBTSerializer : KSerializer<NBTData> {
         fun deserializeFromString(target: String): NBTData {
             val typeStr = target.substringAfterLast(EXACT_TYPE_CHAR)
             val dataStr = target.substringBeforeLast(EXACT_TYPE_CHAR)
+            println("$typeStr    $dataStr")
             // 匹配类型
             val type = NBTType.entries.find {
                 it.alias.contains(typeStr) && it.signName == typeStr

@@ -89,6 +89,7 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
      * 深度获取NBT数据
      */
     object DeepVisitor {
+
         /**
          * 深度操作分层符
          */
@@ -105,9 +106,10 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
          * 深度获取
          */
         fun getDeep(data: NBTCompound, node: String): NBTData? = data.run {
-            getDeepWith(this, node, false) { c ->
-                supportList(node.substringAfterLast(DEEP_SEPARATION)) { pair ->
-                    c[pair.first].let { pair.second?.let { i -> (it as NBTList)[i] } ?: it }
+            getDeepWith(this, node, false) { cpd ->
+                supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
+                    if (index == null) cpd[nodeName]
+                    else (cpd[nodeName] as? NBTList)?.let { it[index] }
                 }
             }
         }
@@ -116,9 +118,10 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
          * 深度写入
          */
         fun putDeep(data: NBTCompound, node: String, value: NBTData) = data.apply {
-            getDeepWith(this, node, true) { c ->
-                supportList(node.substringAfterLast(DEEP_SEPARATION)) { pair ->
-                    c[pair.first] = if (pair.second == null) value else (c[pair.first] as? NBTList ?: NBTList()).apply { setCreatable(pair.second!!, value) }
+            getDeepWith(this, node, true) { cpd ->
+                supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
+                    if (index == null) cpd[nodeName] = value
+                    else (cpd[nodeName] as? NBTList)?.apply { setCreatable(index, value) }
                 }
             }
         }
@@ -127,11 +130,11 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
          * 深度删除
          */
         fun removeDeep(data: NBTCompound, node: String) = data.apply {
-            getDeepWith(this, node, false) { c ->
-                supportList(node.substringAfterLast(DEEP_SEPARATION)) { pair ->
-                    if (pair.second == null) c.remove(pair.first)
+            getDeepWith(this, node, false) { cpd ->
+                supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
+                    if (index == null) cpd.remove(nodeName)
 //                    else (c[pair.first] as? NBTList)?.clone()?.also { it.remove(pair.second!!) }?.let { c.put(pair.first, it) }
-                    else (c[pair.first] as? NBTList)?.also { it.remove(pair.second!!) }
+                    else (cpd[nodeName] as? NBTList)?.apply { removeAt(index) }
                 }
             }
         }
@@ -163,14 +166,11 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
          * 分割节点以获取索引值
          */
         private fun splitListOrNull(node: String): Pair<String, Int?> {
-            val nodeName = node.substringBeforeLast(LIST_INDEX_START)
-            val index = node.takeIf { it.endsWith(LIST_INDEX_END) }?.run {
-                substring(
-                    lastIndexOf(LIST_INDEX_START) + LIST_INDEX_START.length,
-                    lastIndexOf(LIST_INDEX_END)
-                ).toInt()
-            }
-            return nodeName to index
+            if (node.contains(LIST_INDEX_START) && node.contains(LIST_INDEX_END)) {
+                val nodeName = node.substringBeforeLast(LIST_INDEX_START)
+                val index = node.substring(node.lastIndexOf(LIST_INDEX_START) + LIST_INDEX_START.length, node.lastIndexOf(LIST_INDEX_END))
+                return nodeName to index.toInt()
+            } else return node to null
         }
 
         private fun <R> supportList(node: String, action: (Pair<String, Int?>) -> R) = splitListOrNull(node).let(action)

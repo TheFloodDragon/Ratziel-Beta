@@ -21,29 +21,31 @@ class RefItemStack(rawData: Any) {
     /**
      * ItemStack的NMS处理对象
      */
-    private var handle: Any = when {
+    private var handle: Any? = when {
         isNmsClass(rawData::class.java) -> rawData // nms.ItemStack
         isObcClass(rawData::class.java) -> getNmsFrom(rawData) // CraftItemStack
         BukkitItemStack::class.java.isAssignableFrom(rawData::class.java) -> newObc(rawData) // an impl of interface bukkit.ItemStack
         else -> throw UnsupportedTypeException(rawData) // Unsupported Type
     }
 
-    private val craftHandle: Any by lazy { newObc(handle) }
+    private val craftHandle: Any? by lazy { handle?.let { newObc(it) } }
 
     /**
      * 获取物品NBT数据
      */
-    fun getData(): NBTCompound? = nmsTagField.get(handle)?.let { NBTCompound(it) }
+    fun getData(): NBTCompound? = handle?.let { nmsTagField.get(it) }?.let { NBTCompound(it) }
 
     /**
      * 获取物品NBT数据
      */
-    fun setData(nbt: NBTCompound): Unit = nmsTagField.set(handle, nbt.getData())
+    fun setData(nbt: NBTCompound) {
+        if (handle != null) nmsTagField.set(handle, nbt.getData())
+    }
 
     /**
      * 克隆数据
      */
-    fun clone(): RefItemStack = this.apply { this.handle = nmsCloneMethod.invoke(handle)!! }
+    fun clone(): RefItemStack = this.apply { this.handle = handle?.let { nmsCloneMethod.invoke(it) } }
 
     /**
      * 获取NMS形式实例
@@ -85,7 +87,7 @@ class RefItemStack(rawData: Any) {
         /**
          * 从[obcClass]中获取[nmsClass]实例
          */
-        fun getNmsFrom(obcItem: Any) = obcHandleField.get(obcItem)!!
+        fun getNmsFrom(obcItem: Any) = obcHandleField.get(obcItem)
 
         /**
          * 检查类是否为[obcClass]

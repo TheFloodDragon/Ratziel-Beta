@@ -43,10 +43,7 @@ fun CommandComponentDynamic.suggestSlots(suggest: List<String> = emptyList()): C
 /**
  * 根据栏位字符串获取玩家物品
  */
-fun getItemBySlot(slot: String, inventory: PlayerInventory): ItemStack? =
-    runCatching { inferEquipmentSlot(slot) }.getOrNull()?.let {
-        inventory.getItem(it.bukkit)
-    } ?: inventory.getItem(slot.toInt())
+fun PlayerInventory.getItemBySlot(slot: String): ItemStack? = inferEquipmentSlot(slot)?.let { getItem(it.bukkit) } ?: getItem(slot.toInt())
 
 fun inferEquipmentSlot(slot: String) = when (slot) {
     "main-hand", "main", "hand" -> BukkitEquipment.HAND
@@ -55,5 +52,5 @@ fun inferEquipmentSlot(slot: String) = when (slot) {
     "chestplate", "chest" -> BukkitEquipment.CHEST
     "leggings", "legs" -> BukkitEquipment.LEGS
     "boots", "feet" -> BukkitEquipment.FEET
-    else -> error("Unkown Equipment Slot \"$slot\" !")
+    else -> null
 }

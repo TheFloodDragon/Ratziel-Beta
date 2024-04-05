@@ -17,12 +17,12 @@ enum class NBTType(val id: Byte, val alias: Array<String> = emptyArray()) {
     LONG(4, arrayOf("l")),
     FLOAT(5, arrayOf("f")),
     DOUBLE(6, arrayOf("d")),
-    BYTE_ARRAY(7, arrayOf("b")),
-    STRING(8, arrayOf("t")),
-    LIST(9, arrayOf("a", "list")),
+    BYTE_ARRAY(7, arrayOf("byteArray", "ba")),
+    STRING(8, arrayOf("t", "str")),
+    LIST(9, arrayOf("a", "list", "array")),
     COMPOUND(10, arrayOf("c", "cpd", "tag", "compound")),
-    INT_ARRAY(11, arrayOf("i")),
-    LONG_ARRAY(12, arrayOf("l"));
+    INT_ARRAY(11, arrayOf("intArray", "ia")),
+    LONG_ARRAY(12, arrayOf("longArray", "la"));
 
     val signName get() = name.lowercase()
 

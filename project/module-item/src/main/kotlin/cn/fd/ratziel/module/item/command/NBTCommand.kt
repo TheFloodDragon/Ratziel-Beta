@@ -5,6 +5,7 @@ import cn.fd.ratziel.module.item.nbt.*
 import cn.fd.ratziel.module.item.nbt.NBTCompound.DeepVisitor
 import cn.fd.ratziel.module.item.reflex.RefItemStack
 import org.bukkit.entity.Player
+import org.bukkit.inventory.PlayerInventory
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.CommandBody
@@ -41,22 +42,17 @@ object NBTCommand {
     val view = subCommand {
         slot {
             executeAsync<ProxyPlayer> { player, _, arg ->
-                getItemBySlot(arg, player.cast<Player>().inventory)?.let {
-                    RefItemStack(it).getData() // 获取物品标签
-                }?.also { nbt ->
+                player.cast<Player>().inventory.getDataBySlot(arg)?.also {
                     // 构建消息组件并发送
-                    nbtAsComponent(player, nbt, 0, arg).sendTo(player)
+                    nbtAsComponent(player, it, 0, arg).sendTo(player)
                 } ?: player.sendLang("NBTAction-EmptyTag")
             }
         }
     }
 
-    val NBT_REMOVE_SIGNS = arrayOf(":r", ":rm", ":remove")
-
     /**
      * 命令 - 编辑 NBT
      * 用法: /nbt edit <slot> <node> <value>
-     * 注: 当 <value> 为 [NBT_REMOVE_SIGNS] 时, 删除该节点下的NBT标签
      */
     @CommandBody
     val edit = subCommand {
@@ -67,23 +63,36 @@ object NBTCommand {
                         // 获取基本信息
                         val rawNode = ctx.args()[2]
                         val rawValue = ctx.args()[3]
-                        val item = getItemBySlot(ctx.args()[1], player.cast<Player>().inventory)
-                        // 获取物品标签并进行操作
-                        item?.let { RefItemStack(it).getData() }?.also {
-                            if (NBT_REMOVE_SIGNS.contains(rawNode.lowercase())) {
-                                it.removeDeep(rawNode)
-                                player.sendLang("NBTAction-Remove", rawNode)
-                            } else {
-                                val value = NBTSerializer.Mapper.deserializeFromString(rawValue)
-                                it.putDeep(rawNode, value)
-                                player.sendLang(
-                                    "NBTAction-Set",
-                                    rawNode, asString(value),
-                                    translateType(player, value).toLegacyText()
-                                )
-                            }
+                        player.cast<Player>().inventory.getDataBySlot(ctx.args()[1])?.also {
+                            val value = NBTSerializer.Mapper.deserializeFromString(rawValue)
+                            it.putDeep(rawNode, value)
+                            player.sendLang(
+                                "NBTAction-Set",
+                                rawNode, asString(value),
+                                translateType(player, value).toLegacyText()
+                            )
                         } ?: player.sendLang("NBTAction-EmptyTag")
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * 命令 - 删除 NBT
+     * 用法: /nbt remove <slot> <node>
+     */
+    @CommandBody
+    val remove = subCommand {
+        slot {
+            dynamic {
+                executeAsync<ProxyPlayer> { player, ctx, _ ->
+                    // 获取基本信息
+                    val rawNode = ctx.args()[2]
+                    player.cast<Player>().inventory.getDataBySlot(ctx.args()[1])?.also {
+                        it.removeDeep(rawNode)
+                        player.sendLang("NBTAction-Remove", rawNode)
+                    } ?: player.sendLang("NBTAction-EmptyTag")
                 }
             }
         }
@@ -142,16 +151,21 @@ object NBTCommand {
     }
 
     /**
+     * 获取数据
+     */
+    private fun PlayerInventory.getDataBySlot(slot: String): NBTCompound? = getItemBySlot(slot)?.let { RefItemStack(it).getData() }
+
+    /**
      * 转换成 Map 形式 (全部以浅层即一层节点表示)
      */
-    internal fun NBTCompound.toMapShallow(source: Map<String, Any>? = this.sourceMap): Map<String, NBTData> = buildMap {
+    private fun NBTCompound.toMapShallow(source: Map<String, Any>? = this.sourceMap): Map<String, NBTData> = buildMap {
         source?.forEach { shallow -> this[shallow.key] = NBTConverter.convert(shallow.value) }
     }
 
     /**
      * 快捷创建键或值组件
      */
-    fun componentKey(
+    private fun componentKey(
         sender: ProxyCommandSender,
         nodeDeep: String?,
         slot: String,
@@ -159,21 +173,21 @@ object NBTCommand {
     ) = getTypeJson(sender, "NBTFormat-Entry-Key")
         .buildMessage(sender, nodeShallow.toString(), slot, nodeDeep.toString())
 
-    fun componentValue(sender: ProxyCommandSender, nbt: NBTData) =
+    private fun componentValue(sender: ProxyCommandSender, nbt: NBTData) =
         getTypeJson(sender, "NBTFormat-Entry-Value")
             .buildMessage(sender, asString(nbt), NBTSerializer.Mapper.serializeToString(nbt))
 
     /**
      * 获取语言文件Json内容
      */
-    fun getTypeJson(sender: ProxyCommandSender, node: String): TypeJson =
+    private fun getTypeJson(sender: ProxyCommandSender, node: String): TypeJson =
         sender.getLocaleFile()?.nodes?.get(node)?.let { if (it is TypeList) it.list.first() else it } as? TypeJson
             ?: TypeJson().apply { text = listOf("{$node}") }
 
     /**
      * 快捷匹配类型组件
      */
-    fun translateType(sender: ProxyCommandSender, nbt: NBTData): ComponentText = when (nbt.type) {
+    private fun translateType(sender: ProxyCommandSender, nbt: NBTData): ComponentText = when (nbt.type) {
         NBTType.STRING -> sender.asLangText("NBTFormat-Type-String")
         NBTType.BYTE -> sender.asLangText("NBTFormat-Type-Byte")
         NBTType.SHORT -> sender.asLangText("NBTFormat-Type-Short")
@@ -189,28 +203,19 @@ object NBTCommand {
 
     /**
      * 获取 [NBTData] 的字符串形式
-     * 注: 除了 [String] 和 [Int], 其它转换成 [String] 都要去掉某位一位
      */
-    fun asString(nbt: NBTData): String = nbt.toString().let { str ->
-        when (nbt) {
-            is NBTString -> nbt.content
-            is NBTByte -> str.dropLast(1).toByte().let {
-                when (it) {
-                    NBTByte.BYTE_TRUE -> true.toString()
-                    NBTByte.BYTE_FALSE -> false.toString()
-                    else -> it.toString()
-                }
-            }
-
-            is NBTInt -> str.toInt().toString()
-            is NBTFloat -> str.dropLast(1).toFloat().toString()
-            is NBTDouble -> str.dropLast(1).toDouble().toString()
-            is NBTLong -> str.dropLast(1).toLong().toString()
-            is NBTShort -> str.dropLast(1).toShort().toString()
-            // 通解
-            else -> NBTSerializer.Mapper.serializeToString(nbt).dropLast(1).drop(1)
-        }
+    private fun asString(nbt: NBTData): String = when (nbt) {
+        is NBTString -> nbt.content
+        is NBTByte -> nbt.contentString
+        is NBTInt -> nbt.content.toString()
+        is NBTFloat -> nbt.content.toString()
+        is NBTDouble -> nbt.content.toString()
+        is NBTLong -> nbt.content.toString()
+        is NBTShort -> nbt.content.toString()
+        is NBTByteArray -> nbt.content.toString()
+        is NBTIntArray -> nbt.content.toString()
+        is NBTLongArray -> nbt.content.toString()
+        else -> "{UNSURE}"
     }
-
 
 }

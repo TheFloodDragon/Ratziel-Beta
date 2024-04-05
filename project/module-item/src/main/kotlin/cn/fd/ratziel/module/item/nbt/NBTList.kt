@@ -51,7 +51,7 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
     /**
      * 根据索引删除数据
      */
-    fun remove(index: Int) {
+    fun removeAt(index: Int) {
         sourceList.removeAt(index)
     }
 

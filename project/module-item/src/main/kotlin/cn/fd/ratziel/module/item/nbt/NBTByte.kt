@@ -16,6 +16,13 @@ class NBTByte(rawData: Any) : NBTData(rawData, NBTType.BYTE) {
 
     val content get() = NMSUtil.NtByte.sourceField.get(data) as Byte
 
+    val contentString
+        get() = content.let {
+            when (it) {
+                BYTE_TRUE -> true; BYTE_FALSE -> false; else -> it
+            }
+        }.toString()
+
     companion object {
 
         const val BYTE_FALSE: Byte = 0
