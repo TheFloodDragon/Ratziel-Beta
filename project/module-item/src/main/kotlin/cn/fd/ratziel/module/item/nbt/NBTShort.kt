@@ -20,7 +20,7 @@ class NBTShort(rawData: Any) : NBTData(rawData, NBTType.SHORT) {
 
         fun new(value: Short) = NMSUtil.NtString.constructor.instance(value)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtShort.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtShort.isNmsClass(clazz)
 
     }
 

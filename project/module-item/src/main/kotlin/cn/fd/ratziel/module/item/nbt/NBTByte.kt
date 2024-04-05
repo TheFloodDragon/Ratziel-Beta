@@ -25,7 +25,7 @@ class NBTByte(rawData: Any) : NBTData(rawData, NBTType.BYTE) {
 
         fun new(value: Byte) = NMSUtil.NtByte.constructor.instance(value)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtByte.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtByte.isNmsClass(clazz)
 
     }
 

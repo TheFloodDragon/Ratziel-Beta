@@ -22,6 +22,8 @@ internal sealed class NMSUtil {
 
     val reflexClass by lazy { ReflexClass.of(nmsClass, false) }
 
+    fun isNmsClass(clazz: Class<*>) = nmsClass.isAssignableFrom(clazz)
+
     data object NtCompound : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagCompound
@@ -55,7 +57,7 @@ internal sealed class NMSUtil {
          * NBTTagList(List<NBTBase> var0, byte var1)
          * public NBTTagList() { this(Lists.newArrayList(), (byte)0); }
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(List::class.java) }
+        override val constructor by lazy { reflexClass.structure.getConstructorByType(List::class.java, Byte::class.java) }
 
         /**
          *  private final List<NBTBase> c

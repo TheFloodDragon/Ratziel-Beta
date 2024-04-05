@@ -18,7 +18,11 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
-    internal val sourceMap get() = NMSUtil.NtCompound.sourceField.get(data) as HashMap<String, Any>
+    /**
+     * [java.util.Map] is the same as [MutableMap] in [kotlin.collections]
+     * Because [MutableMap] will be compiled to [java.util.Map]
+     */
+    internal val sourceMap get() = NMSUtil.NtCompound.sourceField.get(data) as MutableMap<String, Any>
 
     val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTConverter.convert(it.value)) } }
 
@@ -75,9 +79,9 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
 
         fun new() = new(HashMap())
 
-        fun new(map: HashMap<String, Any>) = NMSUtil.NtCompound.constructor.instance(map)!!
+        fun new(map: Map<String, Any>) = NMSUtil.NtCompound.constructor.instance(map)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtCompound.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtCompound.isNmsClass(clazz)
 
     }
 

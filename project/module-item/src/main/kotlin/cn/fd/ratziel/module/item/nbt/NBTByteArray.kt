@@ -20,7 +20,7 @@ class NBTByteArray(rawData: Any) : NBTData(rawData, NBTType.BYTE_ARRAY) {
 
         fun new(value: ByteArray) = NMSUtil.NtByteArray.constructor.instance(value)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtByteArray.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtByteArray.isNmsClass(clazz)
 
     }
 

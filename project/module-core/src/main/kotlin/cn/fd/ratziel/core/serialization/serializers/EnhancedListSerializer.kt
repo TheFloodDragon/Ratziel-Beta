@@ -16,15 +16,22 @@ import java.util.*
  * @author TheFloodDragon
  * @since 2023/10/5 14:45
  */
-class EnhancedListSerializer<T : Any>(
-    serializer: KSerializer<T>,
-    // 换行符
-    val newLineSign: Array<String> = DEFAULT_NEWLINE_SIGN,
-    // 删行符
-    val removeLineSign: Array<String> = DEFAULT_REMOVE_LINE_SIGN,
-    // 忽略大小写
-    val ignoreCase: Boolean = true,
-) : JsonTransformingSerializer<List<T>>(ListSerializer(serializer)) {
+class EnhancedListSerializer<T : Any>(serializer: KSerializer<T>) : JsonTransformingSerializer<List<T>>(ListSerializer(serializer)) {
+
+    /**
+     * 换行符
+     */
+    val newLineSign: Array<String> = DEFAULT_NEWLINE_SIGN
+
+    /**
+     *  删行符
+     */
+    val removeLineSign: Array<String> = DEFAULT_REMOVE_LINE_SIGN
+
+    /**
+     * 忽略大小写
+     */
+    val ignoreCase: Boolean = true
 
     override fun transformDeserialize(element: JsonElement): JsonElement = JsonArray(enhanceBuild(element))
 
@@ -61,7 +68,7 @@ class EnhancedListSerializer<T : Any>(
 
         // 默认换行符
         @JvmStatic
-        val DEFAULT_NEWLINE_SIGN = arrayOf("\n", "{nl}")
+        val DEFAULT_NEWLINE_SIGN = arrayOf("\\n", "{nl}")
 
         // 默认删行符
         @JvmStatic

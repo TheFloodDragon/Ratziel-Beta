@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.api.part
 
 import cn.fd.ratziel.common.message.MessageComponent
+import cn.fd.ratziel.core.serialization.EnhancedList
 import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 
@@ -25,7 +26,7 @@ interface ItemDisplay : ItemComponent<ItemDisplay, NBTCompound> {
     /**
      * 物品描述
      */
-    var lore: List<MessageComponent>?
+    var lore: EnhancedList<MessageComponent>?
 
     /**
      * 设置名称

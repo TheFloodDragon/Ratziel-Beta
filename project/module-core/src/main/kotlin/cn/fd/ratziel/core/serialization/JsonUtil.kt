@@ -3,8 +3,7 @@
 package cn.fd.ratziel.core.serialization
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.json.*
 
 val baseJson by lazy {
@@ -25,19 +24,6 @@ val baseJson by lazy {
 }
 
 fun JsonObject.getTentatively(vararg keys: String): JsonElement? = keys.firstNotNullOfOrNull { this[it] }
-
-/**
- * 简便方法, 默认 "serialName" 为 全类名
- */
-@Suppress("UnusedReceiverParameter")
-inline fun <reified T> KSerializer<T>.primitiveDescriptor(kind: PrimitiveKind) =
-    PrimitiveSerialDescriptor(T::class.java.name, kind)
-
-@Suppress("UnusedReceiverParameter")
-inline fun <reified T> KSerializer<T>.buildClassDescriptor(
-    vararg typeParameters: SerialDescriptor,
-    noinline builderAction: ClassSerialDescriptorBuilder.() -> Unit = {},
-) = buildClassSerialDescriptor(T::class.java.name, *typeParameters, builderAction = builderAction)
 
 /**
  * @return 所有元素注解的迭代器

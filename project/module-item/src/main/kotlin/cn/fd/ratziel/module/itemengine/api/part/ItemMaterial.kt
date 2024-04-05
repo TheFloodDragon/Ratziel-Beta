@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl.part
+package cn.fd.ratziel.module.itemengine.api.part
 
 import cn.fd.ratziel.module.item.exception.UnknownMaterialException
 import taboolib.library.reflex.Reflex.Companion.getProperty

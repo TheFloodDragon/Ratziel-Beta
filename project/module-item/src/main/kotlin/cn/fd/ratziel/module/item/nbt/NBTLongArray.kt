@@ -20,7 +20,7 @@ class NBTLongArray(rawData: Any) : NBTData(rawData, NBTType.LONG_ARRAY) {
 
         fun new(value: LongArray) = NMSUtil.NtLongArray.constructor.instance(value)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtLongArray.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtLongArray.isNmsClass(clazz)
 
     }
 

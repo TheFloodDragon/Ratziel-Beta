@@ -17,7 +17,7 @@ import kotlinx.serialization.json.*
  */
 object NBTSerializer : KSerializer<NBTData> {
 
-    override val descriptor = PrimitiveSerialDescriptor("item.nbt", PrimitiveKind.STRING)
+    override val descriptor = PrimitiveSerialDescriptor("nbt.NBTData", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): NBTData = Mapper.deserializeFromString(decoder.decodeString())
 

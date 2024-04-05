@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.util
 
-import cn.fd.ratziel.module.item.impl.part.ItemMaterial
+import cn.fd.ratziel.module.item.impl.part.VItemMaterial
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemFlag
 import taboolib.common.util.Strings
@@ -33,7 +33,7 @@ object MetaMather {
     fun matchEquipment(source: String) =
         (BukkitEquipment.fromString(source) ?: BukkitEquipment.entries.maxByOrNull {
             Strings.similarDegree(it.name, source)
-        })?.bukkit
+        })?.bukkit!!
 
     /**
      * 匹配物品属性修饰符
@@ -74,6 +74,6 @@ object MetaMather {
      * 匹配物品材料
      */
     @JvmStatic
-    fun matchMaterial(source: String) = ItemMaterial.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value
+    fun matchMaterial(source: String) = VItemMaterial.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value
 
 }

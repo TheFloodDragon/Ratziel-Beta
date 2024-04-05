@@ -1,8 +1,8 @@
 package cn.fd.ratziel.core.serialization.serializers
 
-import cn.fd.ratziel.core.serialization.primitiveDescriptor
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.util.*
@@ -15,7 +15,7 @@ import java.util.*
  */
 object UUIDSerializer : KSerializer<UUID> {
 
-    override val descriptor = primitiveDescriptor(PrimitiveKind.STRING)
+    override val descriptor = PrimitiveSerialDescriptor("util.UUID", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): UUID = UUID.fromString(decoder.decodeString())
 

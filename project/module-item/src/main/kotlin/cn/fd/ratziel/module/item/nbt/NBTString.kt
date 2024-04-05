@@ -20,7 +20,7 @@ class NBTString(rawData: Any) : NBTData(rawData, NBTType.STRING) {
 
         fun new(value: String) = NMSUtil.NtString.constructor.instance(value)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtString.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtString.isNmsClass(clazz)
 
     }
 

@@ -20,7 +20,7 @@ class NBTLong(rawData: Any) : NBTData(rawData, NBTType.LONG) {
 
         fun new(value: Long) = NMSUtil.NtLong.constructor.instance(value)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtLong.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtLong.isNmsClass(clazz)
 
     }
 

@@ -20,7 +20,7 @@ class NBTDouble(rawData: Any) : NBTData(rawData, NBTType.DOUBLE) {
 
         fun new(value: Double) = NMSUtil.NtDouble.constructor.instance(value)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtDouble.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtDouble.isNmsClass(clazz)
 
     }
 

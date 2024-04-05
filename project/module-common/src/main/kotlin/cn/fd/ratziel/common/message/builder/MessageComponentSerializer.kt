@@ -1,9 +1,9 @@
 package cn.fd.ratziel.common.message.builder
 
 import cn.fd.ratziel.common.message.Message
-import cn.fd.ratziel.core.serialization.primitiveDescriptor
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import net.kyori.adventure.text.Component
@@ -16,7 +16,7 @@ import net.kyori.adventure.text.Component
  */
 object MessageComponentSerializer : KSerializer<Component> {
 
-    override val descriptor = primitiveDescriptor(PrimitiveKind.STRING)
+    override val descriptor = PrimitiveSerialDescriptor("adventure.Component", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): Component = Message.buildMessage(decoder.decodeString())
 

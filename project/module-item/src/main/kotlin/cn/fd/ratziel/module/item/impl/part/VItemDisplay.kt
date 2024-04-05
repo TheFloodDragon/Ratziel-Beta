@@ -4,6 +4,7 @@ package cn.fd.ratziel.module.item.impl.part
 
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
+import cn.fd.ratziel.core.serialization.EnhancedList
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.common.SimpleDataTransformer
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
@@ -30,7 +31,7 @@ data class VItemDisplay(
     @JsonNames("loc-name", "locName", "local-name", "localName")
     override var localizedName: MessageComponent? = null,
     @JsonNames("lores")
-    override var lore: List<MessageComponent>? = null,
+    override var lore: EnhancedList<MessageComponent>? = null,
 ) : ItemDisplay {
 
     override fun setName(name: String) {

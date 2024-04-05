@@ -20,7 +20,7 @@ class NBTFloat(rawData: Any) : NBTData(rawData, NBTType.FLOAT) {
 
         fun new(value: Float) = NMSUtil.NtFloat.constructor.instance(value)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtFloat.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtFloat.isNmsClass(clazz)
 
     }
 

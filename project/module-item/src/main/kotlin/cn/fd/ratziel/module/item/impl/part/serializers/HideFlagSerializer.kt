@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.item.impl.part.serializers
 
-import cn.fd.ratziel.core.serialization.primitiveDescriptor
 import cn.fd.ratziel.module.item.util.MetaMather
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import org.bukkit.inventory.ItemFlag
@@ -17,7 +17,7 @@ import java.util.*
  */
 object HideFlagSerializer : KSerializer<ItemFlag> {
 
-    override val descriptor = primitiveDescriptor(PrimitiveKind.STRING)
+    override val descriptor = PrimitiveSerialDescriptor("bukkit.ItemFlag", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): ItemFlag = MetaMather.matchItemFlag(decoder.decodeString())
 

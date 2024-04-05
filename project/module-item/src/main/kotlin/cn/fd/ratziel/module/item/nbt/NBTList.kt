@@ -17,7 +17,11 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
         if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
     }
 
-    internal val sourceList get() = NMSUtil.NtList.sourceField.get(data) as ArrayList<Any>
+    /**
+     * [java.util.List] is the same as [MutableList] in [kotlin.collections]
+     * Because [MutableList] will be compiled to [java.util.List]
+     */
+    internal val sourceList get() = NMSUtil.NtList.sourceField.get(data) as MutableList<Any>
 
     val content: List<NBTData> get() = sourceList.map { NBTConverter.convert(it) }
 
@@ -72,9 +76,9 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
 
         fun new() = new(ArrayList())
 
-        fun new(list: ArrayList<Any>) = NMSUtil.NtList.constructor.instance(list)!!
+        fun new(list: List<Any>) = NMSUtil.NtList.constructor.instance(list, 0.toByte())!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtList.nmsClass.isAssignableFrom(clazz::class.java)
+        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtList.isNmsClass(clazz)
 
     }
 
