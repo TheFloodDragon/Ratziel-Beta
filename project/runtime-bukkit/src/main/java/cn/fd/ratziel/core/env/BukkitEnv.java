@@ -31,5 +31,20 @@ import taboolib.common.platform.PlatformSide;
         test = "!net.kyori.adventure.nbt.BinaryTag",
         transitive = false
 )
+@RuntimeDependency(
+        value = "!net.kyori:adventure-platform-facet:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+        test = "!net.kyori.adventure.platform.facet.FacetAudience",
+        transitive = false
+)
+@RuntimeDependency(
+        value = "!net.kyori:adventure-platform-viaversion:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+        test = "!net.kyori.adventure.platform.viaversion.ViaFacet",
+        transitive = false
+)
+@RuntimeDependency(
+        value = "!net.kyori:adventure-text-serializer-gson-legacy-impl:" + CommonEnv.ADVENTURE_VERSION,
+        test = "!net.kyori.adventure.text.serializer.gson.legacyimpl.NBTLegacyHoverEventSerializer",
+        transitive = false
+)
 public class BukkitEnv {
 }
