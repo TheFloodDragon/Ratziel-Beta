@@ -24,6 +24,6 @@ enum class NBTType(val id: Byte, val alias: Array<String> = emptyArray()) {
     INT_ARRAY(11, arrayOf("intArray", "ia")),
     LONG_ARRAY(12, arrayOf("longArray", "la"));
 
-    val signName get() = name.lowercase()
+    val simpleName get() = name.lowercase()
 
 }

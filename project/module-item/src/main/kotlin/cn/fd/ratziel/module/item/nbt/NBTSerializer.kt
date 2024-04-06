@@ -63,20 +63,20 @@ object NBTSerializer : KSerializer<NBTData> {
          */
         fun serializeToString(target: NBTData): String = when (target) {
             // Basic
-            is NBTByte -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.BYTE.signName
-            is NBTShort -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.SHORT.signName
-            is NBTInt -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.INT.signName
-            is NBTLong -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.LONG.signName
-            is NBTFloat -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.FLOAT.signName
-            is NBTDouble -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.DOUBLE.signName
-            is NBTString -> target.content + EXACT_TYPE_CHAR + NBTType.STRING.signName
+            is NBTByte -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.BYTE.simpleName
+            is NBTShort -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.SHORT.simpleName
+            is NBTInt -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.INT.simpleName
+            is NBTLong -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.LONG.simpleName
+            is NBTFloat -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.FLOAT.simpleName
+            is NBTDouble -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.DOUBLE.simpleName
+            is NBTString -> target.content + EXACT_TYPE_CHAR + NBTType.STRING.simpleName
             // Array
-            is NBTIntArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.INT_ARRAY.signName
-            is NBTByteArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.BYTE_ARRAY.signName
-            is NBTLongArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.LONG_ARRAY.signName
+            is NBTIntArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.INT_ARRAY.simpleName
+            is NBTByteArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.BYTE_ARRAY.simpleName
+            is NBTLongArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.LONG_ARRAY.simpleName
             // Special Type
-            is NBTCompound -> serializeToJsonObject(target).toString() + EXACT_TYPE_CHAR + NBTType.COMPOUND.signName
-            is NBTList -> serializeToJsonArray(target).toString() + EXACT_TYPE_CHAR + NBTType.LIST.signName
+            is NBTCompound -> serializeToJsonObject(target).toString() + EXACT_TYPE_CHAR + NBTType.COMPOUND.simpleName
+            is NBTList -> serializeToJsonArray(target).toString() + EXACT_TYPE_CHAR + NBTType.LIST.simpleName
             else -> throw UnsupportedTypeException(target.type)
         }
 
@@ -88,15 +88,15 @@ object NBTSerializer : KSerializer<NBTData> {
          * 反序列化精确类型
          */
         fun deserializeFromString(target: String): NBTData {
+            if (!target.contains(EXACT_TYPE_CHAR)) return adaptString(target)
+
             val typeStr = target.substringAfterLast(EXACT_TYPE_CHAR)
             val dataStr = target.substringBeforeLast(EXACT_TYPE_CHAR)
 
             // 匹配类型
             val type = NBTType.entries.find {
-                it.alias.contains(typeStr) || it.signName == typeStr
-            }
-            // 无法找到时返回自适应后的
-            if (type == null) return adaptString(target)
+                it.alias.contains(typeStr) || it.simpleName == typeStr
+            } ?: return adaptString(target)
 
             return convertBasicString(dataStr, type)
                 ?: convertArrayString(dataStr, type)
