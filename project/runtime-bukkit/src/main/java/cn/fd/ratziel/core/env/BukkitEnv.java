@@ -42,8 +42,13 @@ import taboolib.common.platform.PlatformSide;
         transitive = false
 )
 @RuntimeDependency(
-        value = "!net.kyori:adventure-text-serializer-gson-legacy-impl:" + CommonEnv.ADVENTURE_VERSION,
-        test = "!net.kyori.adventure.text.serializer.gson.legacyimpl.NBTLegacyHoverEventSerializer",
+        value = "!net.kyori:adventure-text-serializer-json-legacy-impl:" + CommonEnv.ADVENTURE_VERSION,
+        test = "!net.kyori.adventure.text.serializer.json.legacyimpl.NBTLegacyHoverEventSerializer",
+        transitive = false
+)
+@RuntimeDependency(
+        value = "!net.kyori:adventure-text-serializer-json:" + CommonEnv.ADVENTURE_VERSION,
+        test = "!net.kyori.adventure.text.serializer.json.JSONComponentSerializer",
         transitive = false
 )
 public class BukkitEnv {
