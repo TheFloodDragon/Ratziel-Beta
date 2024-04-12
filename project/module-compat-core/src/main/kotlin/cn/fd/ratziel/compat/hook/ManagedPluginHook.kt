@@ -1,6 +1,6 @@
 package cn.fd.ratziel.compat.hook
 
-import cn.fd.ratziel.compat.ClassLoaderProvider
+import cn.fd.ratziel.core.function.ClassProvider
 
 /**
  * ManagedPluginHook
@@ -17,8 +17,8 @@ interface ManagedPluginHook : PluginHook {
     val managedClasses: Array<String>
 
     /**
-     * 绑定的 [ClassLoaderProvider]
+     * 绑定的 [ClassProvider]
      */
-    val bindProvider: ClassLoaderProvider?
+    val bindProvider: ClassProvider?
 
 }

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.compat
 
+import cn.fd.ratziel.core.function.ClassProvider
 import cn.fd.ratziel.core.function.loadClassOrNull
 import java.net.URL
 import java.net.URLClassLoader
@@ -18,21 +19,21 @@ class CompatibleClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoa
 
     /**
      * key - 优先级
-     * value - 同一优先级下的 [ClassLoaderProvider]
+     * value - 同一优先级下的 [ClassProvider]
      */
-    val providers: NavigableMap<Byte, MutableList<ClassLoaderProvider>> = Collections.synchronizedNavigableMap(TreeMap())
+    val providers: NavigableMap<Byte, MutableList<ClassProvider>> = Collections.synchronizedNavigableMap(TreeMap())
 
     /**
-     * 添加 [ClassLoaderProvider]
-     * @param provider 类加载器提供者 [ClassLoaderProvider]
+     * 添加 [ClassProvider]
+     * @param provider 类加载器提供者 [ClassProvider]
      * @param priority [provider] 的优先级
      */
-    fun addProvider(provider: ClassLoaderProvider, priority: Byte = 0) = providers.computeIfAbsent(priority) { mutableListOf() }.add(provider)
+    fun addProvider(provider: ClassProvider, priority: Byte = 0) = providers.computeIfAbsent(priority) { mutableListOf() }.add(provider)
 
     /**
-     * 删除 [ClassLoaderProvider]
+     * 删除 [ClassProvider]
      */
-    fun removeProvider(provider: ClassLoaderProvider) = providers.values.forEach { it.remove(provider) }
+    fun removeProvider(provider: ClassProvider) = providers.values.forEach { it.remove(provider) }
 
     /**
      * 自主加载条件
@@ -52,12 +53,16 @@ class CompatibleClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoa
             if (selfLoadCondition.apply(name) || forceSelfLoad) {
                 c = kotlin.runCatching { findClass(name) }.getOrNull()
             } else {
-                // 尝试通过注册的ClassLoaderProvider加载 (有优先级)
+                // 尝试通过注册的ClassProvider获取 (有优先级)
                 providers.forEach { entry ->
-                    for (loader in entry.value) {
-                        // 由[ClassLoaderProvider], 提供全限类定名([name])以使它动态智能分配 [ClassLoader]
-                        c = loader.apply(name)?.loadClassOrNull(name)
-                        // 直到类能被加载为止
+                    for (provider in entry.value) {
+                        // 由[ClassProvider], 提供全限类定名([name])以使它动态智能获取 [Class]
+                        c = try {
+                            provider.provide(name)
+                        } catch (_: Exception) {
+                            null
+                        }
+                        // 直到类被获取到为止
                         if (c != null) break
                     }
                 }

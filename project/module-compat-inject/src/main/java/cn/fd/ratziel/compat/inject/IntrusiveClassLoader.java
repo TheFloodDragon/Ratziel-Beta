@@ -1,6 +1,12 @@
 package cn.fd.ratziel.compat.inject;
 
+import cn.fd.ratziel.core.function.ClassProvider;
 import taboolib.common.classloader.IsolatedClassLoader;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 /**
  * IntrusiveClassLoader
@@ -16,6 +22,21 @@ public final class IntrusiveClassLoader extends ClassLoader {
         super(parent);
         this.ACCESS_GROUP_NAME = groupName;
     }
+
+    // START::Providers
+
+    private final NavigableMap<Byte, List<ClassProvider>> providers = Collections.synchronizedNavigableMap(new TreeMap<>());
+
+    public boolean addProvider(ClassProvider provider, byte priority) {
+        return providers.computeIfAbsent(priority, key -> Collections.emptyList()).add(provider);
+    }
+
+    public void removeProvider(ClassProvider provider) {
+        for (List<ClassProvider> list : providers.values()) {
+            list.remove(provider);
+        }
+    }
+    // END::Providers
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {

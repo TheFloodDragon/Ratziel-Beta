@@ -43,7 +43,7 @@ object HookManager {
         if (hook.isHookable()) {
             // Add to Registry
             registry[hook.pluginName] = hook
-            // Add ClassLoaderProvider
+            // Add ClassProvider
             if (hook is ManagedPluginHook) hook.bindProvider?.let { hookClassLoader.addProvider(it) }
         }
     }
@@ -54,7 +54,7 @@ object HookManager {
     fun unregister(hook: PluginHook) {
         // Remove from Registry
         registry.remove(hook.pluginName)
-        // Remove ClassLoaderProvider
+        // Remove ClassProvider
         if (hook is ManagedPluginHook) hook.bindProvider?.let { hookClassLoader.removeProvider(it) }
     }
 

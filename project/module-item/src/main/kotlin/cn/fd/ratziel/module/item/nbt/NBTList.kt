@@ -30,7 +30,6 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
      */
     operator fun get(index: Int): NBTData? = NBTConverter.NmsConverter.convert(sourceList[index])
 
-
     /**
      * 在索引处添加数据
      */
@@ -57,6 +56,11 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
      * 设置索引处的数据
      */
     fun set(index: Int, value: NBTData) = sourceList.set(index, value.getData())
+
+    /**
+     * 列表是否为空
+     */
+    fun isEmpty(): Boolean = sourceList.isEmpty()
 
     /**
      * 克隆数据

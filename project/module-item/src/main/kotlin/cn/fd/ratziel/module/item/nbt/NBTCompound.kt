@@ -115,11 +115,11 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
         /**
          * 深度写入
          */
-        fun putDeep(data: NBTCompound, node: String, value: NBTData) = data.apply {
+        fun putDeep(data: NBTCompound, node: String, value: NBTData, checkList: Boolean) = data.apply {
             getDeepWith(this, node, true) { cpd ->
                 supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
                     if (index == null) cpd[nodeName] = value
-                    else ((cpd[nodeName] ?: NBTList().also { cpd[nodeName] = it }) as? NBTList)?.apply { setCreatable(index, value) }
+                    else ((cpd[nodeName] ?: NBTList().also { cpd[nodeName] = it }) as? NBTList)?.apply { setSafely(index, value, checkList) }
                 }
             }
         }

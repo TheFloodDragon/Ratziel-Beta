@@ -21,6 +21,8 @@ public final class IntrusiveCompat {
 
     public static ClassLoader GLOBAL_CLASS_LOADER = PLUGIN_CLASS_LOADER.getParent();
 
+    public static ClassLoader INTRUSIVE_CLASSLOADER;
+
     public static String PLUGIN_GROUP_NAME = "cn.fd.ratziel";
 
     private static final MethodHandle SETTER;
@@ -34,9 +36,10 @@ public final class IntrusiveCompat {
     }
 
     private static void inject() throws Throwable {
+        // 类加载器示例
+        INTRUSIVE_CLASSLOADER = new IntrusiveClassLoader(GLOBAL_CLASS_LOADER, PLUGIN_GROUP_NAME);
         // 隔离模式下注入类加载器
-        if (PrimitiveSettings.IS_ISOLATED_MODE)
-            SETTER.bindTo(PLUGIN_CLASS_LOADER).invokeWithArguments(new IntrusiveClassLoader(GLOBAL_CLASS_LOADER, PLUGIN_GROUP_NAME));
+        if (PrimitiveSettings.IS_ISOLATED_MODE) SETTER.bindTo(PLUGIN_CLASS_LOADER).invokeWithArguments(INTRUSIVE_CLASSLOADER);
     }
 
 }

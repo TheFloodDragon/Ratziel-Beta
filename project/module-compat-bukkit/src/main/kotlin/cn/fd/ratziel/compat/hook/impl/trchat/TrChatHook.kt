@@ -1,9 +1,10 @@
 package cn.fd.ratziel.compat.hook.impl.trchat
 
-import cn.fd.ratziel.compat.ClassLoaderProvider
 import cn.fd.ratziel.compat.hook.HookInject
 import cn.fd.ratziel.compat.hook.HookManager
 import cn.fd.ratziel.compat.hook.ManagedPluginHook
+import cn.fd.ratziel.core.function.ClassProvider
+import me.arasple.mc.trchat.taboolib.common.classloader.IsolatedClassLoader
 import org.bukkit.Bukkit
 
 /**
@@ -22,9 +23,9 @@ object TrChatHook : ManagedPluginHook {
     val plugin get() = Bukkit.getPluginManager().getPlugin(pluginName)
 
     @Suppress("SpellCheckingInspection")
-    override val bindProvider = ClassLoaderProvider { name ->
+    override val bindProvider = ClassProvider { name ->
         if (name.startsWith("me.arasple.mc.trchat"))
-            me.arasple.mc.trchat.taboolib.common.classloader.IsolatedClassLoader.INSTANCE
+            IsolatedClassLoader.INSTANCE.loadClass(name, false, false)
         else null
     }
 
