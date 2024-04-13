@@ -12,11 +12,6 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 interface ItemDurability : ItemComponent<ItemDurability, NBTCompound> {
 
     /**
-     * 物品的当前耐久
-     */
-    var currentDurability: Int?
-
-    /**
      * 物品的最大耐久
      */
     var maxDurability: Int?
@@ -30,30 +25,5 @@ interface ItemDurability : ItemComponent<ItemDurability, NBTCompound> {
      * 物品是否无法破坏
      */
     var unbreakable: Boolean?
-
-    /**
-     * 通过[ItemMaterial]获取物品最大耐久值
-     */
-    fun getMaxDurability(material: ItemMaterial): Int
-
-    /**
-     * 获取物品损伤值
-     */
-    fun getDamage(): Int?
-
-    /**
-     * 通过[ItemMaterial]获取物品损伤值
-     */
-    fun getDamage(material: ItemMaterial): Int
-
-    /**
-     * 设置物品损伤值
-     */
-    fun setDamage(value: Int)
-
-    /**
-     * 通过[ItemMaterial]设置物品损伤值
-     */
-    fun setDamage(value: Int,material: ItemMaterial)
 
 }

@@ -7,6 +7,7 @@ import cn.fd.ratziel.core.serialization.JsonHandler
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.item.api.common.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.part.VItemDisplay
+import cn.fd.ratziel.module.item.impl.part.VItemDurability
 import cn.fd.ratziel.module.item.impl.part.VItemMeta
 import cn.fd.ratziel.module.item.impl.part.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.module.item.impl.part.serializers.AttributeSerializer
@@ -15,6 +16,7 @@ import cn.fd.ratziel.module.item.impl.part.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.item.nbt.NBTData
 import cn.fd.ratziel.module.item.nbt.NBTSerializer
 import cn.fd.ratziel.module.item.util.usedNodes
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -31,9 +33,7 @@ import org.bukkit.inventory.ItemFlag
  * @author TheFloodDragon
  * @since 2024/4/4 19:58
  */
-class DefaultItemSerializer(
-    rawJson: Json
-) : ItemKSerializer<VItemMeta> {
+class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
 
     val json = Json(rawJson) {
         serializersModule += SerializersModule {
@@ -55,9 +55,12 @@ class DefaultItemSerializer(
     override fun deserialize(element: JsonElement): VItemMeta {
         // 结构化解析
         if (element.isStructured()) return json.decodeFromJsonElement(VItemMeta.serializer(), element)
+        // 异步方法
+        fun <T> asyncDecode(deserializer: DeserializationStrategy<T>) = futureAsync { json.decodeFromJsonElement(deserializer, element) }.throwable()
         // 一般解析
-        val display = futureAsync { json.decodeFromJsonElement(VItemDisplay.serializer(), element) }.throwable()
-        return VItemMeta(display.get())
+        val display = asyncDecode(VItemDisplay.serializer())
+        val durability = asyncDecode(VItemDurability.serializer())
+        return VItemMeta(display.get(), durability.get())
     }
 
     /**
@@ -77,7 +80,8 @@ class DefaultItemSerializer(
         val occupiedNodes by lazy {
             arrayOf(
                 VItemMeta.serializer().descriptor.usedNodes,
-                VItemDisplay.serializer().descriptor.usedNodes
+                VItemDisplay.serializer().descriptor.usedNodes,
+                VItemDurability.serializer().descriptor.usedNodes
             ).flatMap { it }.toTypedArray()
         }
 

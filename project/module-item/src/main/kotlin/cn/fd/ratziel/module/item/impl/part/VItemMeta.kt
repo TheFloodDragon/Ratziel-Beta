@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.impl.part
 
 import cn.fd.ratziel.module.item.api.common.SimpleDataTransformer
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
+import cn.fd.ratziel.module.item.api.part.ItemDurability
 import cn.fd.ratziel.module.item.api.part.ItemMetadata
 import kotlinx.serialization.Serializable
 
@@ -13,7 +14,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class VItemMeta(
-    override var display: ItemDisplay? = null
+    override var display: ItemDisplay? = null,
+    override var durability: ItemDurability? = null
 ) : ItemMetadata {
 
     override fun transformer(): SimpleDataTransformer<ItemMetadata> {

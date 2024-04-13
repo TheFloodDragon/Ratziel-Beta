@@ -4,7 +4,7 @@ package cn.fd.ratziel.module.item.command
 
 import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.component.CommandComponentDynamic
-import taboolib.common.platform.command.suggest
+import taboolib.common.platform.command.suggestUncheck
 import taboolib.module.nms.MinecraftVersion
 import taboolib.type.BukkitEquipment
 
@@ -27,7 +27,7 @@ fun CommandComponent.slot(
  *
  * @param suggest 额外建议
  */
-fun CommandComponentDynamic.suggestSlots(suggest: List<String> = emptyList()): CommandComponentDynamic = suggest {
+fun CommandComponentDynamic.suggestSlots(suggest: List<String> = emptyList()): CommandComponentDynamic = suggestUncheck {
     suggest.toMutableList().apply {
         add("main-hand")
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) add("off-hand") // 副手特殊处理

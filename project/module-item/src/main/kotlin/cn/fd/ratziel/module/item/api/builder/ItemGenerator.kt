@@ -16,8 +16,8 @@ interface ItemGenerator {
     val origin: Element
 
     /**
-     * 物品生成流
+     * 物品序列化器
      */
-    val streams: Array<ItemStream>
+    val serializers: Array<ItemSerializer<*, *>>
 
 }

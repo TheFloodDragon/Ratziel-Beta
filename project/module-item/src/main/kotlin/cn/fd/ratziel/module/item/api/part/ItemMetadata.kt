@@ -16,4 +16,9 @@ interface ItemMetadata : ItemComponent<ItemMetadata, NBTCompound> {
      */
     var display: ItemDisplay?
 
+    /**
+     * 物品耐久部分
+     */
+    var durability: ItemDurability?
+
 }
