@@ -24,7 +24,7 @@ class RefItemStack(rawData: Any) {
     private var handle: Any? = when {
         isNmsClass(rawData::class.java) -> rawData // nms.ItemStack
         isObcClass(rawData::class.java) -> getNmsFrom(rawData) // CraftItemStack
-        BukkitItemStack::class.java.isAssignableFrom(rawData::class.java) -> newObc(rawData) // an impl of interface bukkit.ItemStack
+        BukkitItemStack::class.java.isAssignableFrom(rawData::class.java) -> getNmsFrom(newObc(rawData)) // an impl of interface bukkit.ItemStack
         else -> throw UnsupportedTypeException(rawData) // Unsupported Type
     }
 
