@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.part
 
 import cn.fd.ratziel.module.item.api.part.ItemMaterial
 import cn.fd.ratziel.module.item.exception.UnknownMaterialException
-import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.library.reflex.ReflexClass
 import taboolib.library.xseries.XMaterial
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Material as BukkitMaterial
@@ -17,10 +17,18 @@ import org.bukkit.Material as BukkitMaterial
  */
 data class VItemMaterial(override val name: String) : ItemMaterial {
 
+    constructor(mat: XMaterial) : this(mat.name)
+
+    constructor(matId: Int) : this(getBukkitForm(matId) ?: BukkitMaterial.AIR)
+
+    constructor(mat: BukkitMaterial) : this(mat.name)
+
+    constructor(mat: ItemMaterial) : this(mat.name)
+
     /**
-     * 物品标识ID
+     * 材料标识符 (低版本)
      */
-    val id: Int get() = bukkitForm.safeId
+    override val id: Int get() = bukkitForm.getIdByReflex()
 
     /**
      * 材料的默认最大堆叠数量
@@ -49,15 +57,20 @@ data class VItemMaterial(override val name: String) : ItemMaterial {
 
     companion object {
 
+        val AIR by lazy { VItemMaterial(BukkitMaterial.AIR) }
+
         /**
          * 获取 [BukkitMaterial] 形式的物品材料
          */
         fun getBukkitForm(name: String) = BukkitMaterial.getMaterial(name)
 
-        fun getBukkitForm(id: Int) = BukkitMaterial.entries.find { it.safeId == id }
+        fun getBukkitForm(id: Int) = BukkitMaterial.entries.find { it.getIdByReflex() == id }
 
+        /**
+         * 材料大全
+         */
         val materialsMap by lazy {
-            ConcurrentHashMap<String, VItemMaterial>().apply {
+            ConcurrentHashMap<String, ItemMaterial>().apply {
                 BukkitMaterial.entries.forEach { put(it.name, VItemMaterial(it.name)) }
             }
         }
@@ -65,7 +78,12 @@ data class VItemMaterial(override val name: String) : ItemMaterial {
         /**
          * 通过反射获取 [id], 因为 [BukkitMaterial.getId] 不会获取老版物品的 [id]
          */
-        internal val BukkitMaterial.safeId get() = this.getProperty<Int>("id")!!
+        internal fun BukkitMaterial.getIdByReflex() = bukkitIdField.get(this) as Int
+
+        // private final int id
+        internal val bukkitIdField by lazy {
+            ReflexClass.of(BukkitMaterial::class.java, false).structure.getField("id")
+        }
 
     }
 

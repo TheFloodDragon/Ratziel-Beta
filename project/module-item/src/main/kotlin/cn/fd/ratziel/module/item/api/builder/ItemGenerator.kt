@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.item.api.builder
 
+import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
+import java.util.concurrent.ConcurrentLinkedDeque
 
 /**
  * ItemGenerator
@@ -16,8 +18,13 @@ interface ItemGenerator {
     val origin: Element
 
     /**
+     * 物品解析器
+     */
+    val resolvers: ConcurrentLinkedDeque<Priority<ItemResolver>>
+
+    /**
      * 物品序列化器
      */
-    val serializers: Array<ItemSerializer<*, *>>
+    val serializers: ConcurrentLinkedDeque<Priority<ItemSerializer<*, *>>>
 
 }

@@ -23,4 +23,9 @@ interface ItemMaterial {
      */
     val maxDurability: Int
 
+    /**
+     * 材料标识符 (低版本)
+     */
+    val id: Int
+
 }

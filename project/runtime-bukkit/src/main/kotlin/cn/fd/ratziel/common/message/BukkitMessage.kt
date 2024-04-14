@@ -9,27 +9,20 @@ import taboolib.common.platform.PlatformSide
 import taboolib.module.nms.MinecraftVersion
 
 /**
- * BukkitMessageWrapper
+ * BukkitMessage
  *
  * @author TheFloodDragon
  * @since 2023/12/2 13:01
  */
 @Awake
 @PlatformSide(Platform.BUKKIT)
-object BukkitMessageWrapper : MessageWrapper {
+object BukkitMessage : MessageWrapper {
 
-    private val isLowVersion get() = MinecraftVersion.isLower(MinecraftVersion.V1_16)
+    fun isLegacy() = MinecraftVersion.isLower(MinecraftVersion.V1_16)
 
-    override val gsonBuilder by lazy {
-        GsonMessageBuilder(colorDown = isLowVersion)
-    }
+    override val gsonBuilder = GsonMessageBuilder(colorDown = isLegacy())
 
-    override val legacyBuilder by lazy {
-        LegacyMessageBuilder(
-            hexColors = !isLowVersion,
-            useUnusualXRepeatedCharacterHexFormat = !isLowVersion,
-        )
-    }
+    override val legacyBuilder = LegacyMessageBuilder(hexColors = !isLegacy(), useUnusualXRepeatedCharacterHexFormat = !isLegacy())
 
     override val miniBuilder = MiniMessageBuilder
 
