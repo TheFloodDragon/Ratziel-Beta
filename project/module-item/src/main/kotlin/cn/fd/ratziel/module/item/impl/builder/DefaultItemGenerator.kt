@@ -14,6 +14,7 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import sun.security.ssl.SSLLogger.warning
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -42,10 +43,15 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
             FutureFactory {
                 resolvers.sortPriority().forEach {
                     supplyAsync {
-                        it.resolve(element).also { resolved ->
-                            (resolved as? JsonObject)?.forEach {
-                                resolving[it.key] = it.value
+                        try {
+                            it.resolve(element).also { resolved ->
+                                (resolved as? JsonObject)?.forEach {
+                                    resolving[it.key] = it.value
+                                }
                             }
+                        } catch (ex: Exception) {
+                            warning("Failed to resolve element!")
+                            ex.printStackTrace()
                         }
                     }
                 }
@@ -61,7 +67,12 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
             FutureFactory {
                 serializers.sortPriority().forEach {
                     supplyAsync {
-                        serializing.add(it.deserialize(element) as ItemComponent<*>)
+                        try {
+                            serializing.add(it.deserialize(element) as ItemComponent<*>)
+                        } catch (ex: Exception) {
+                            warning("Failed to serialize element!")
+                            ex.printStackTrace()
+                        }
                     }
                 }
             }.whenAllComplete { future.complete(serializing) }
@@ -76,7 +87,12 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
             FutureFactory {
                 components.forEach {
                     supplyAsync {
-                        transforming.add(NBTCompound().also { data -> it.transformer().detransform(it, data) })
+                        try {
+                            transforming.add(NBTCompound().also { data -> it.transformer().detransform(it, data) })
+                        } catch (ex: Exception) {
+                            warning("Failed to serialize element!")
+                            ex.printStackTrace()
+                        }
                     }
                 }
             }.whenAllComplete { future.complete(transforming) }
@@ -84,13 +100,18 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
     }
 
     fun build() {
-        resolve(origin.property).thenApply { jsonObject ->
-            serialize(jsonObject).thenApply { components ->
-                @Suppress("UNCHECKED_CAST")
-                transform(components as List<ItemComponent<in Any>>)
+        resolve(origin.property).thenAccept { jsonObject ->
+            serialize(jsonObject).thenAccept { components ->
+                try {
+                    @Suppress("UNCHECKED_CAST")
+                    transform(components as List<ItemComponent<in Any>>).let {
+                        println(it)
+                    }
+                } catch (ex: Exception) {
+                    warning("Failed to build element!")
+                    ex.printStackTrace()
+                }
             }
-        }.get().get().get().let {
-            println(it)
         }
     }
 
