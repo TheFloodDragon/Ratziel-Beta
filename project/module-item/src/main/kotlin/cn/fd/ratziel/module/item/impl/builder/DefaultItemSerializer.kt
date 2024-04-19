@@ -14,7 +14,7 @@ import cn.fd.ratziel.module.item.impl.part.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.item.impl.part.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.item.nbt.NBTData
 import cn.fd.ratziel.module.item.nbt.NBTSerializer
-import cn.fd.ratziel.module.item.util.usedNodes
+import cn.fd.ratziel.core.serialization.usedNodes
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.SerializersModule
@@ -56,7 +56,8 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
         // 结构化解析
         if (element.isStructured()) return json.decodeFromJsonElement(VItemMeta.serializer(), element)
         // 异步方法
-        fun <T> asyncDecode(deserializer: DeserializationStrategy<T>) =  CompletableFuture.supplyAsync { json.decodeFromJsonElement(deserializer, element) }.printOnException()
+        fun <T> asyncDecode(deserializer: DeserializationStrategy<T>) =
+            CompletableFuture.supplyAsync { json.decodeFromJsonElement(deserializer, element) }.printOnException()
         // 一般解析
         val display = asyncDecode(VItemDisplay.serializer())
         val durability = asyncDecode(VItemDurability.serializer())

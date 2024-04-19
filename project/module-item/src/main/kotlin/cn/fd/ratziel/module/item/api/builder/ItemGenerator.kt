@@ -24,6 +24,6 @@ interface ItemGenerator {
     /**
      * 物品序列化器
      */
-    val serializers: Array<Priority<ItemSerializer<*, *>>>
+    val serializers: Array<Priority<ItemSerializer<*>>>
 
 }

@@ -1,8 +1,7 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package cn.fd.ratziel.module.item.util
+package cn.fd.ratziel.core.serialization
 
-import cn.fd.ratziel.core.serialization.elementAnnotations
 import cn.fd.ratziel.core.util.forEachDually
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -19,4 +18,16 @@ val SerialDescriptor.usedNodes: List<String>
         addAll(elementNames)
         // 添加注解 [JsonNames] 中的名称
         elementAnnotations.forEachDually { if (it is JsonNames) addAll(it.names) }
+    }
+
+/**
+ * @return 所有元素注解的迭代器
+ */
+val SerialDescriptor.elementAnnotations: Iterable<List<Annotation>>
+    get() = Iterable {
+        object : Iterator<List<Annotation>> {
+            private var elementsLeft = elementsCount
+            override fun hasNext(): Boolean = elementsLeft > 0
+            override fun next() = getElementAnnotations(elementsCount - (elementsLeft--))
+        }
     }

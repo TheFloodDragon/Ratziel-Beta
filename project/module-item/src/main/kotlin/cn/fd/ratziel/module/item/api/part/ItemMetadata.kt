@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.api.part
 
 import cn.fd.ratziel.module.item.api.ItemComponent
-import cn.fd.ratziel.module.item.nbt.NBTCompound
 
 /**
  * ItemMetadata
@@ -9,7 +8,7 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
  * @author TheFloodDragon
  * @since 2024/4/4 20:06
  */
-interface ItemMetadata : ItemComponent<ItemMetadata, NBTCompound> {
+interface ItemMetadata : ItemComponent<ItemMetadata> {
 
     /**
      * 物品显示部分

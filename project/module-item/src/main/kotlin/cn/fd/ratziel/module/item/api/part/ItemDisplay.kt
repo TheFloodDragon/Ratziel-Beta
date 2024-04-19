@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.api.part
 import cn.fd.ratziel.common.message.MessageComponent
 import cn.fd.ratziel.core.serialization.EnhancedList
 import cn.fd.ratziel.module.item.api.ItemComponent
-import cn.fd.ratziel.module.item.nbt.NBTCompound
 
 /**
  * ItemDisplay
@@ -11,7 +10,7 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
  * @author TheFloodDragon
  * @since 2024/3/16 10:56
  */
-interface ItemDisplay : ItemComponent<ItemDisplay, NBTCompound> {
+interface ItemDisplay : ItemComponent<ItemDisplay> {
 
     /**
      * 物品名称

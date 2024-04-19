@@ -16,7 +16,7 @@ import kotlinx.serialization.json.JsonEncoder
  * @author TheFloodDragon
  * @since 2024/4/4 20:00
  */
-interface ItemKSerializer<T : ItemComponent<*, *>> : ItemSerializer<JsonElement, T>, KSerializer<T> {
+interface ItemKSerializer<T : ItemComponent<in T>> : ItemSerializer<T>, KSerializer<T> {
 
     /**
      * 重写 [KSerializer] 的 [serialize] 方法

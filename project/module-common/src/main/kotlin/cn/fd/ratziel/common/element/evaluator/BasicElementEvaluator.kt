@@ -50,7 +50,7 @@ object BasicElementEvaluator : ElementEvaluator {
         // 推迟加载
         registerLifeCycleTask(config.lifeCycle, 10) {
             // 异步同步处理
-            if (config.async)  CompletableFuture.runAsync(function)
+            if (config.async) CompletableFuture.runAsync(function)
             else function.run()
         }
 

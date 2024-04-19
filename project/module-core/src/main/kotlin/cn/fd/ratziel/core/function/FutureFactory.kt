@@ -48,8 +48,8 @@ open class FutureFactory<T> {
      * 并提供所有任务返回值的列表
      * @param action 对返回值进行的操作
      */
-    open fun whenAllComplete(action: Consumer<List<T>>) = tasks.toTypedArray().let { futures ->
-        CompletableFuture.allOf(*futures).thenRun {
+    open fun whenAllComplete(action: Consumer<List<T>>): CompletableFuture<List<T>> = tasks.toTypedArray().let { futures ->
+        CompletableFuture.allOf(*futures).thenApply {
             futures.map { it.get() }.also { action.accept(it) }
         }
     }

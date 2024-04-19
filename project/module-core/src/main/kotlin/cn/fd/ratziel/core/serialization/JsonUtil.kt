@@ -3,7 +3,6 @@
 package cn.fd.ratziel.core.serialization
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.json.*
 import java.util.function.Function
 
@@ -45,18 +44,6 @@ fun JsonElement.handlePrimitives(element: JsonElement, action: Function<JsonPrim
     }
 
 fun JsonObject.getTentatively(vararg keys: String): JsonElement? = keys.firstNotNullOfOrNull { this[it] }
-
-/**
- * @return 所有元素注解的迭代器
- */
-val SerialDescriptor.elementAnnotations: Iterable<List<Annotation>>
-    get() = Iterable {
-        object : Iterator<List<Annotation>> {
-            private var elementsLeft = elementsCount
-            override fun hasNext(): Boolean = elementsLeft > 0
-            override fun next() = getElementAnnotations(elementsCount - (elementsLeft--))
-        }
-    }
 
 /**
  * 构造一个空Json如"{}"
