@@ -5,7 +5,6 @@ import cn.fd.ratziel.common.event.ElementHandleEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.core.function.futureRunAsync
 import taboolib.common.TabooLib.registerLifeCycleTask
 import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
@@ -36,7 +35,7 @@ object BasicElementEvaluator : ElementEvaluator {
             else -> ElementConfig()
         }
         // 创建评估任务并提交
-        val future = CompletableFuture<Duration>().also { ApexElementEvaluator.evalTasks += it }
+        val future = CompletableFuture<Duration>().also { ApexElementEvaluator.evalTasks.submit(it) }
         // 函数 (非立即执行) - 处理元素并完成评估任务
         val function = Runnable {
             measureTime {
@@ -51,7 +50,7 @@ object BasicElementEvaluator : ElementEvaluator {
         // 推迟加载
         registerLifeCycleTask(config.lifeCycle, 10) {
             // 异步同步处理
-            if (config.async) futureRunAsync(function)
+            if (config.async)  CompletableFuture.runAsync(function)
             else function.run()
         }
 

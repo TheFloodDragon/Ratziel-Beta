@@ -2,8 +2,6 @@ package cn.fd.ratziel.common.element
 
 import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.element.service.ElementRegistry
-import cn.fd.ratziel.core.function.futureAsync
-import java.util.concurrent.CompletableFuture
 
 /**
  * ElementTypeMather
@@ -24,9 +22,9 @@ object ElementTypeMatcher {
         val split = expression.split(SEPARATOR)
         return when (split.size) {
             // 命名空间:类型名称(或别名)
-            2 -> matchAll(split[0], split[1]).get()
+            2 -> matchAll(split[0], split[1])
             // 类型名称(或别名)
-            1 -> matchName(split[0]).get()
+            1 -> matchName(split[0])
             //错误的表达式
             else -> null
         }
@@ -35,9 +33,7 @@ object ElementTypeMatcher {
     /**
      * 匹配名称和命名空间
      */
-    fun matchAll(space: String, name: String): CompletableFuture<ElementType?> {
-        return matchName(name, matchSpace(space).get().toSet())
-    }
+    fun matchAll(space: String, name: String): ElementType? = matchName(name, matchSpace(space).toSet())
 
     /**
      * 匹配命名空间
@@ -47,11 +43,7 @@ object ElementTypeMatcher {
     fun matchSpace(
         space: String,
         types: Set<ElementType> = ElementRegistry.getAllElementTypes(),
-    ): CompletableFuture<List<ElementType>> {
-        return futureAsync {
-            types.filter { it.space == space }
-        }
-    }
+    ): List<ElementType> = types.filter { it.space == space }
 
     /**
      * 匹配类型名称
@@ -61,11 +53,7 @@ object ElementTypeMatcher {
     fun matchName(
         name: String,
         types: Set<ElementType> = ElementRegistry.getAllElementTypes(),
-    ): CompletableFuture<ElementType?> {
-        return futureAsync {
-            types.find { it.appellations.contains(name) }
-        }
-    }
+    ): ElementType? = types.find { it.appellations.contains(name) }
 
 
 }

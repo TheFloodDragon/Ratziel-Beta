@@ -5,6 +5,7 @@ package cn.fd.ratziel.core.serialization
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.json.*
+import java.util.function.Function
 
 val baseJson by lazy {
     Json {
@@ -22,6 +23,26 @@ val baseJson by lazy {
         serializersModule = baseSerializers
     }
 }
+
+/**
+ * 编辑 [JsonObject]
+ */
+fun JsonObject.handle(action: HashMap<String, JsonElement>.() -> Unit): JsonObject = JsonObject(LinkedHashMap(this).apply(action))
+
+/**
+ * 从给定 [JsonElement] 中寻找 [JsonPrimitive]
+ * 并通过 [action] 的操作后, 用返回的 [JsonElement] 替换掉原来的 [JsonPrimitive]
+ */
+fun JsonElement.handlePrimitives(element: JsonElement, action: Function<JsonPrimitive, JsonElement>): JsonElement =
+    when (element) {
+        is JsonPrimitive -> action.apply(element)
+        is JsonArray -> buildJsonArray { element.jsonArray.forEach { add(handlePrimitives(it, action)) } }
+        is JsonObject -> buildJsonObject {
+            element.jsonObject.forEach { key, value ->
+                put(key, handlePrimitives(value, action))
+            }
+        }
+    }
 
 fun JsonObject.getTentatively(vararg keys: String): JsonElement? = keys.firstNotNullOfOrNull { this[it] }
 

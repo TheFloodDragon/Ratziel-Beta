@@ -1,13 +1,16 @@
 package cn.fd.ratziel.module.item.api.builder
 
+import cn.fd.ratziel.module.item.api.Resolver
+import kotlinx.serialization.json.JsonElement
+
 /**
- * ItemResolver - 基础配置解析
+ * ItemResolver - 物品配置解析
  *
  * @author TheFloodDragon
  * @since 2024/4/14 12:01
  */
-interface ItemResolver {
+interface ItemResolver : Resolver<JsonElement, JsonElement> {
 
-    // TODO(CNM)
+    override fun resolve(target: JsonElement): JsonElement
 
 }

@@ -6,7 +6,7 @@ package cn.fd.ratziel.module.item.api
  * @author TheFloodDragon
  * @since 2024/3/16 10:44
  */
-interface Transformer<T,K> {
+interface Transformer<T, K> {
 
     /**
      * 正向转化 - 输出型转换

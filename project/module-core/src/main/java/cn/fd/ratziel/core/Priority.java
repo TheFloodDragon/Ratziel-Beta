@@ -6,7 +6,7 @@ import java.util.Objects;
  * Priority - 优先级
  *
  * @author TheFloodDragon
- * @since 2024/4/14 下午12:18
+ * @since 2024/4/14 12:18
  */
 public class Priority<T> {
 

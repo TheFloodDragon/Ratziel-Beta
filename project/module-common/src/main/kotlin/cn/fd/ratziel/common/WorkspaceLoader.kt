@@ -48,17 +48,17 @@ object WorkspaceLoader {
             wsm.getFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
-                    loading.newAsync {
+                    loading.supplyAsync {
                         DefaultElementLoader.load(file).onEach {
                             elements += it  // 插入缓存
                             ApexElementEvaluator.handleElement(it) // 处理元素
                         }
                     }
                 }
-        }.wait() // 等待所有加载任务完成
+        }.waitAll() // 等待所有加载任务完成
         WorkspaceLoadEvent.End().call()
     }.let { time ->
-        ApexElementEvaluator.evalTasks.whenFinished { durations ->
+        ApexElementEvaluator.evalTasks.whenAllComplete { durations ->
             durations.forEach { time.plus(it) } // 合并时间
             sender.sendLang("Workspace-Finished", elements.size, time.inWholeMilliseconds)
         }

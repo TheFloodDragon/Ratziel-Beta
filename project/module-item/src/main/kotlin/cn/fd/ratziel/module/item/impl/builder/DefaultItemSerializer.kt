@@ -1,10 +1,9 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
-import cn.fd.ratziel.core.function.futureAsync
-import cn.fd.ratziel.core.function.throwable
-import cn.fd.ratziel.core.serialization.JsonHandler
+import cn.fd.ratziel.core.serialization.handle
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
+import cn.fd.ratziel.core.util.printOnException
 import cn.fd.ratziel.module.item.api.common.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.part.VItemDisplay
 import cn.fd.ratziel.module.item.impl.part.VItemDurability
@@ -26,6 +25,7 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
+import java.util.concurrent.CompletableFuture
 
 /**
  * DefaultItemSerializer - 通过 [Json] 序列化/反序列化 物品组件
@@ -56,7 +56,7 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
         // 结构化解析
         if (element.isStructured()) return json.decodeFromJsonElement(VItemMeta.serializer(), element)
         // 异步方法
-        fun <T> asyncDecode(deserializer: DeserializationStrategy<T>) = futureAsync { json.decodeFromJsonElement(deserializer, element) }.throwable()
+        fun <T> asyncDecode(deserializer: DeserializationStrategy<T>) =  CompletableFuture.supplyAsync { json.decodeFromJsonElement(deserializer, element) }.printOnException()
         // 一般解析
         val display = asyncDecode(VItemDisplay.serializer())
         val durability = asyncDecode(VItemDurability.serializer())
@@ -97,7 +97,7 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
         }
 
         private fun JsonElement.forceStructured(): JsonElement = try {
-            JsonHandler.edit(this.jsonObject) { put(NODE_STRUCTURED, JsonPrimitive(true)) }
+            this.jsonObject.handle { put(NODE_STRUCTURED, JsonPrimitive(true)) }
         } catch (_: Exception) {
             this
         }

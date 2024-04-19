@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.itemengine.item.meta
 import cn.fd.ratziel.module.itemengine.api.attribute.ItemAttribute
 import cn.fd.ratziel.module.itemengine.api.attribute.NBTTransformer
 import cn.fd.ratziel.module.itemengine.api.part.meta.ItemMetadata
-import cn.fd.ratziel.module.itemengine.item.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.itemengine.nbt.NBTTag
 import cn.fd.ratziel.module.itemengine.util.applyFrom
 import cn.fd.ratziel.module.itemengine.util.applyTo
@@ -31,7 +30,7 @@ data class VItemMeta(
         override fun detransform(target: VItemMeta, from: NBTTag): Unit = target.run {
             display.applyTo(from)
             characteristic.applyTo(from)
-            nbt.merge(from.clone().apply { DefaultItemSerializer.usedNodes.forEach { remove(it) } })
+//            nbt.merge(from.clone().apply { DefaultItemSerializer.usedNodes.forEach { remove(it) } })
         }
 
         override fun transform(target: VItemMeta, source: NBTTag): NBTTag = target.run {
