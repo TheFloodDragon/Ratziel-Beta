@@ -2,6 +2,8 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 
 /**
  * DefaultItemResolver
@@ -11,8 +13,11 @@ import kotlinx.serialization.json.JsonElement
  */
 class DefaultItemResolver : ItemResolver {
 
-    override fun resolve(target: JsonElement): JsonElement {
-        return target
-    }
+    override fun resolve(target: JsonElement) = if (target is JsonObject)
+        buildJsonObject {
+            target.forEach {
+                if (DefaultItemSerializer.occupiedNodes.contains(it.key)) put(it.key, it.value)
+            }
+        } else target
 
 }

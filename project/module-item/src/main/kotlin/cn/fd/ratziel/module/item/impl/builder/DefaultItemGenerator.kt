@@ -15,7 +15,6 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
@@ -36,55 +35,54 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         Executors.newFixedThreadPool(8)
     }
 
-    override val serializers = arrayOf<Priority<ItemSerializer<*>>>(DefaultItemSerializer(json).priority())
+    override val serializers: List<Priority<ItemSerializer<*>>> by lazy {
+        listOf(DefaultItemSerializer(json).priority())
+    }
 
-    override val resolvers = arrayOf<Priority<ItemResolver>>(DefaultItemResolver().priority())
+    override val resolvers: List<Priority<ItemResolver>> by lazy {
+        listOf(DefaultItemResolver().priority())
+    }
 
     /**
      * 解析
      */
-    fun resolve(element: JsonElement) = CompletableFuture<JsonObject>().also { future ->
-        val resolving = ConcurrentHashMap<String, JsonElement>()
+    fun resolve(element: JsonElement): CompletableFuture<JsonObject> = ConcurrentHashMap<String, JsonElement>().let { map ->
         FutureFactory {
             resolvers.sortPriority().forEach {
                 supplyAsync(executor) {
                     it.resolve(element).also { resolved ->
                         (resolved as? JsonObject)?.forEach {
-                            resolving[it.key] = it.value
+                            map[it.key] = it.value
                         }
                     }
                 }.printOnException().submit()
             }
-        }.whenAllComplete { future.complete(JsonObject(resolving)) }
+        }.whenComplete<JsonObject> { JsonObject(map) }
     }
 
     /**
      * 序列化
      */
-    fun serialize(element: JsonElement) = CompletableFuture<List<ItemComponent>>().also { future ->
-        val serializing = LinkedList<ItemComponent>()
+    fun serialize(element: JsonElement): CompletableFuture<List<ItemComponent>> =
         FutureFactory {
             serializers.sortPriority().forEach {
                 supplyAsync(executor) {
-                    serializing.add(it.deserialize(element))
+                    it.deserialize(element)
                 }.printOnException().submit()
             }
-        }.whenAllComplete { future.complete(serializing) }
-    }
+        }.whenComplete()
 
     /**
      * 转换
      */
-    fun transform(components: List<ItemComponent>) = CompletableFuture<List<NBTCompound>>().also { future ->
-        val transforming = LinkedList<NBTCompound>()
+    fun transform(components: List<ItemComponent>): CompletableFuture<List<NBTCompound>> =
         FutureFactory {
             components.forEach {
                 supplyAsync(executor) {
-                    transforming.add(it.transform())
+                    it.transform()
                 }.printOnException().submit()
             }
-        }.whenAllComplete { future.complete(transforming) }
-    }
+        }.whenComplete()
 
     fun build() {
         val jsonObject = resolve(origin.property).get()

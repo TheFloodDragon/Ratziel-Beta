@@ -40,14 +40,11 @@ object WorkspaceLoader {
         WorkspaceLoadEvent.Start().call() // 开始加载事件
         // 创建异步工厂
         FutureFactory {
-            /**
-             * 加载元素文件
-             */
             WorkspaceManager.getFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
                     supplyAsync(ApexElementEvaluator.executor) {
-                        DefaultElementLoader.load(file).onEach {
+                        DefaultElementLoader.load(file).forEach {
                             cachedElements += it  // 插入缓存
                             ApexElementEvaluator.handleElement(it) // 处理元素
                         }
@@ -56,7 +53,7 @@ object WorkspaceLoader {
         }.waitAll() // 等待所有加载任务完成
         WorkspaceLoadEvent.End().call() // 结束加载事件
     }.let { time ->
-        ApexElementEvaluator.evalTasks.whenAllComplete { durations ->
+        ApexElementEvaluator.evalTasks.whenComplete { durations ->
             durations.forEach { time.plus(it) } // 合并时间
             sender.sendLang("Workspace-Finished", cachedElements.size, time.inWholeMilliseconds)
         }

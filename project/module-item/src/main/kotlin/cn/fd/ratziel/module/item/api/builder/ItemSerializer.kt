@@ -21,9 +21,4 @@ interface ItemSerializer<T : ItemComponent> {
      */
     fun deserialize(element: JsonElement): T
 
-    /**
-     * 获取被该物品序列化器所使用(占用)的节点
-     */
-    fun getOccupiedNodes(): Array<String>
-
 }

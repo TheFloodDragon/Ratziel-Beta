@@ -19,11 +19,11 @@ interface ItemGenerator {
     /**
      * 物品解析器
      */
-    val resolvers: Array<Priority<ItemResolver>>
+    val resolvers: List<Priority<ItemResolver>>
 
     /**
      * 物品序列化器
      */
-    val serializers: Array<Priority<ItemSerializer<*>>>
+    val serializers: List<Priority<ItemSerializer<*>>>
 
 }

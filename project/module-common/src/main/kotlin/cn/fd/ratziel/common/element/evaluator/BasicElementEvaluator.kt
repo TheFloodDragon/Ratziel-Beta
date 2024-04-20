@@ -35,7 +35,7 @@ object BasicElementEvaluator : ElementEvaluator {
             else -> ElementConfig()
         }
         // 创建评估任务并提交
-        val future = CompletableFuture<Duration>().also { ApexElementEvaluator.evalTasks.submit(it) }
+        val future = CompletableFuture<Duration?>().also { ApexElementEvaluator.evalTasks.submitFuture(it) }
         // 函数 (非立即执行) - 处理元素并完成评估任务
         val function = Runnable {
             measureTime {

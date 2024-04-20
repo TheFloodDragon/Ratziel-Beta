@@ -69,8 +69,6 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
      */
     override fun serialize(component: VItemMeta) = json.encodeToJsonElement(VItemMeta.serializer(), component).run { forceStructured() }
 
-    override fun getOccupiedNodes() = occupiedNodes
-
     override val descriptor = VItemMeta.serializer().descriptor
 
     companion object {
@@ -83,7 +81,7 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
                 VItemMeta.serializer().descriptor.usedNodes,
                 VItemDisplay.serializer().descriptor.usedNodes,
                 VItemDurability.serializer().descriptor.usedNodes
-            ).flatMap { it }.toTypedArray()
+            ).flatMap { it }
         }
 
         /**
