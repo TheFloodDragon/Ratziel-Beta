@@ -11,7 +11,7 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 interface ItemComponent : Transformable<NBTCompound> {
 
     /**
-     * NBT数据的节点分配器
+     * 获取数据的节点分配器
      */
     fun node(): NodeDistributor
 

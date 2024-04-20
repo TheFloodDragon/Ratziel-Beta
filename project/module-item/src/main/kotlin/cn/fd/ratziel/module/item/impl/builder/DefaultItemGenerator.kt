@@ -4,6 +4,7 @@ import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.FutureFactory
 import cn.fd.ratziel.core.serialization.baseJson
+import cn.fd.ratziel.core.util.printOnException
 import cn.fd.ratziel.core.util.priority
 import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.module.item.api.ItemComponent
@@ -14,7 +15,6 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import taboolib.common.platform.function.warning
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -31,85 +31,61 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         Json(baseJson) {}
     }
 
-    override val resolvers = arrayOf<Priority<ItemResolver>>(DefaultItemResolver().priority())
-
     override val serializers = arrayOf<Priority<ItemSerializer<*>>>(DefaultItemSerializer(json).priority())
+
+    override val resolvers = arrayOf<Priority<ItemResolver>>(DefaultItemResolver().priority())
 
     /**
      * 解析
      */
     fun resolve(element: JsonElement) = CompletableFuture<JsonObject>().also { future ->
-        ConcurrentHashMap<String, JsonElement>().also { resolving ->
-            FutureFactory {
-                resolvers.sortPriority().forEach {
-                    supplyAsync {
-                        try {
-                            it.resolve(element).also { resolved ->
-                                (resolved as? JsonObject)?.forEach {
-                                    resolving[it.key] = it.value
-                                }
-                            }
-                        } catch (ex: Exception) {
-                            warning("Failed to resolve element!")
-                            ex.printStackTrace()
+        val resolving = ConcurrentHashMap<String, JsonElement>()
+        FutureFactory {
+            resolvers.sortPriority().forEach {
+                supplyAsync {
+                    it.resolve(element).also { resolved ->
+                        (resolved as? JsonObject)?.forEach {
+                            resolving[it.key] = it.value
                         }
                     }
                 }
-            }.whenAllComplete { future.complete(JsonObject(resolving)) }
-        }
+            }
+        }.whenAllComplete { future.complete(JsonObject(resolving)) }
     }
 
     /**
      * 序列化
      */
     fun serialize(element: JsonElement) = CompletableFuture<List<ItemComponent>>().also { future ->
-        LinkedList<ItemComponent>().also { serializing ->
-            FutureFactory {
-                serializers.sortPriority().forEach {
-                    supplyAsync {
-                        try {
-                            serializing.add(it.deserialize(element))
-                        } catch (ex: Exception) {
-                            warning("Failed to serialize element!")
-                            ex.printStackTrace()
-                        }
-                    }
+        val serializing = LinkedList<ItemComponent>()
+        FutureFactory {
+            serializers.sortPriority().forEach {
+                supplyAsync {
+                    serializing.add(it.deserialize(element))
                 }
-            }.whenAllComplete { future.complete(serializing) }
-        }
+            }
+        }.whenAllComplete { future.complete(serializing) }
     }
 
     /**
      * 转换
      */
     fun transform(components: List<ItemComponent>) = CompletableFuture<List<NBTCompound>>().also { future ->
-        LinkedList<NBTCompound>().also { transforming ->
-            FutureFactory {
-                components.forEach {
-                    supplyAsync {
-                        try {
-                            transforming.add(NBTCompound().also { data -> it.detransform(data) })
-                        } catch (ex: Exception) {
-                            warning("Failed to serialize element!")
-                            ex.printStackTrace()
-                        }
-                    }
-                }
-            }.whenAllComplete { future.complete(transforming) }
-        }
+        val transforming = LinkedList<NBTCompound>()
+        FutureFactory {
+            components.forEach {
+                submit(CompletableFuture.supplyAsync {
+                    transforming.add(it.transform())
+                }.printOnException())
+            }
+        }.whenAllComplete { future.complete(transforming) }
     }
 
     fun build() {
         val jsonObject = resolve(origin.property).get()
-        println(jsonObject)
         val components = serialize(jsonObject).get()
         println(components)
-        try {
-            println(transform(components).get())
-        } catch (ex: Exception) {
-            warning("Failed to build element!")
-            ex.printStackTrace()
-        }
+        println(transform(components).get())
     }
 
 }

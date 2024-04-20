@@ -39,16 +39,16 @@ object WorkspaceLoader {
      * 加载工作空间中的元素
      */
     fun load(sender: ProxyCommandSender) = measureTime {
-        WorkspaceLoadEvent.Start().call()
+        WorkspaceLoadEvent.Start().call() // 开始加载事件
         // 创建异步工厂
-        FutureFactory<List<Element>>().also { loading ->
+        FutureFactory<List<Element>> {
             /**
              * 加载元素文件
              */
             wsm.getFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
-                    loading.supplyAsync {
+                    supplyAsync {
                         DefaultElementLoader.load(file).onEach {
                             elements += it  // 插入缓存
                             ApexElementEvaluator.handleElement(it) // 处理元素
@@ -56,7 +56,7 @@ object WorkspaceLoader {
                     }
                 }
         }.waitAll() // 等待所有加载任务完成
-        WorkspaceLoadEvent.End().call()
+        WorkspaceLoadEvent.End().call() // 结束加载事件
     }.let { time ->
         ApexElementEvaluator.evalTasks.whenAllComplete { durations ->
             durations.forEach { time.plus(it) } // 合并时间

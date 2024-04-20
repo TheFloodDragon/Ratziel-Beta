@@ -24,13 +24,13 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
      */
     internal val sourceMap get() = NMSUtil.NtCompound.sourceField.get(data) as MutableMap<String, Any>
 
-    val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTConverter.NmsConverter.convert(it.value)!!) } }
+    val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTAdapter.NmsAdapter.adapt(it.value)!!) } }
 
     /**
      * 获取数据
      * @param node 节点
      */
-    operator fun get(node: String): NBTData? = sourceMap[node]?.let { NBTConverter.NmsConverter.convert(it) }
+    operator fun get(node: String): NBTData? = sourceMap[node]?.let { NBTAdapter.NmsAdapter.adapt(it) }
 
     /**
      * 写入数据
@@ -43,7 +43,7 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
 
     fun putAll(vararg entries: Pair<String, NBTData?>) = this.apply { entries.forEach { it.second?.let { value -> put(it.first, value) } } }
 
-    fun computeIfAbsent(node: String, function: Function<String, NBTData>) = sourceMap.computeIfAbsent(node, function)
+    fun computeIfAbsent(node: String, function: Function<String, NBTData>) = sourceMap.computeIfAbsent(node, function).let { NBTAdapter.NmsAdapter.adapt(it)!! }
 
     /**
      * 删除数据

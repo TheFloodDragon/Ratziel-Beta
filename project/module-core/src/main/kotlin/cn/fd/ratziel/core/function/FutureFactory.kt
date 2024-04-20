@@ -39,7 +39,7 @@ open class FutureFactory<T> {
     open fun <E> submitWith(list: Iterable<E>, action: E.() -> T) = submit(CompletableFuture())
 
     /**
-     * 异步执行任务并提交
+     * 创建异步带返回值任务并提交
      */
     open fun supplyAsync(function: Supplier<T>) = submit(CompletableFuture.supplyAsync(function))
 

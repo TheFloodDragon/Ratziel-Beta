@@ -3,17 +3,17 @@ package cn.fd.ratziel.module.item.nbt
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 
 /**
- * NBTConverter
+ * NBTAdapter
  *
  * @author TheFloodDragon
  * @since 2024/3/15 20:13
  */
-object NBTConverter {
+object NBTAdapter {
 
-    fun convert(target: Any): NBTData = when {
+    fun adapt(target: Any): NBTData = when {
         target is NBTData -> target
-        isNmsNBT(target) -> NmsConverter.convert(target)
-        else -> BasicConverter.convert(target)
+        isNmsNBT(target) -> NmsAdapter.adapt(target)
+        else -> BasicAdapter.adapt(target)
     } ?: throw UnsupportedTypeException(target)
 
     /**
@@ -21,9 +21,9 @@ object NBTConverter {
      */
     fun isNmsNBT(target: Any) = NMSUtil.NtBase.nmsClass.isAssignableFrom(target::class.java)
 
-    object NmsConverter {
+    object NmsAdapter {
 
-        fun convert(target: Any) = target::class.java.let { c ->
+        fun adapt(target: Any) = target::class.java.let { c ->
             when {
                 NMSUtil.NtCompound.nmsClass.isAssignableFrom(c) -> NBTCompound(target)
                 NMSUtil.NtList.nmsClass.isAssignableFrom(c) -> NBTList(target)
@@ -43,9 +43,9 @@ object NBTConverter {
 
     }
 
-    object BasicConverter {
+    object BasicAdapter {
 
-        fun convert(target: Any): NBTData? = when (target) {
+        fun adapt(target: Any): NBTData? = when (target) {
             // 基本类型转换
             is String -> NBTString(NBTString.new(target))
             is Int -> NBTInt(NBTInt.new(target))
@@ -58,20 +58,20 @@ object NBTConverter {
             is IntArray -> NBTIntArray(NBTIntArray.new(target))
             is ByteArray -> NBTByteArray(NBTByteArray.new(target))
             is LongArray -> NBTLongArray(NBTLongArray.new(target))
-            is Iterable<*> -> convertList(target)
-            is Array<*> -> convertList(listOf(target))
-            is Map<*, *> -> convertMap(target)
+            is Iterable<*> -> adaptList(target)
+            is Array<*> -> adaptList(listOf(target))
+            is Map<*, *> -> adaptMap(target)
             else -> null
         }
 
-        fun convertList(target: Iterable<*>): NBTList = ArrayList<Any>().apply {
-            target.forEach { unsure -> unsure?.let { add(NBTConverter.convert(it).getData()) } }
-        }.let { NBTList(NBTList.new(it)) }
-
-        fun convertMap(target: Map<*, *>): NBTCompound = HashMap<String, Any>().apply {
-            target.forEach { (node, unsure) -> unsure?.let { put(node.toString(), NBTConverter.convert(it).getData()) } }
-        }.let { NBTCompound(NBTCompound.new(it)) }
-
     }
+
+    fun adaptList(target: Iterable<*>): NBTList = ArrayList<Any>().apply {
+        target.forEach { unsure -> unsure?.let { add(adapt(it).getData()) } }
+    }.let { NBTList(NBTList.new(it)) }
+
+    fun adaptMap(target: Map<*, *>): NBTCompound = HashMap<String, Any>().apply {
+        target.forEach { (node, unsure) -> unsure?.let { put(node.toString(), adapt(it).getData()) } }
+    }.let { NBTCompound(NBTCompound.new(it)) }
 
 }

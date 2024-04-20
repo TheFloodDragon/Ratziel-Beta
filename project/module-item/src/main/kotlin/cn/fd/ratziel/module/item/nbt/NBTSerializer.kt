@@ -19,11 +19,11 @@ object NBTSerializer : KSerializer<NBTData> {
 
     override val descriptor = PrimitiveSerialDescriptor("nbt.NBTData", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): NBTData = Mapper.deserializeFromString(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): NBTData = Converter.deserializeFromString(decoder.decodeString())
 
-    override fun serialize(encoder: Encoder, value: NBTData) = encoder.encodeString(Mapper.serializeToString(value))
+    override fun serialize(encoder: Encoder, value: NBTData) = encoder.encodeString(Converter.serializeToString(value))
 
-    object Mapper {
+    object Converter {
 
         /**
          * 精确类型控制符
@@ -38,7 +38,7 @@ object NBTSerializer : KSerializer<NBTData> {
         fun deserializeFromJson(json: JsonElement, source: NBTCompound = NBTCompound()): NBTData =
             when (json) {
                 is JsonPrimitive -> deserializeFromString(json.content)
-                is JsonArray -> NBTConverter.BasicConverter.convertList(json.map { deserializeFromJson(it, NBTCompound()) })
+                is JsonArray -> NBTAdapter.adaptList(json.map { deserializeFromJson(it, NBTCompound()) })
                 is JsonObject -> source.also { tag ->
                     json.forEach {
                         val newSource = tag.getDeep(it.key) as? NBTCompound ?: NBTCompound()
@@ -104,7 +104,7 @@ object NBTSerializer : KSerializer<NBTData> {
                 ?: throw UnsupportedTypeException(type)
         }
 
-        private fun adaptString(str: String) = NBTConverter.BasicConverter.convert(str.adapt())!!
+        private fun adaptString(str: String) = NBTAdapter.BasicAdapter.adapt(str.adapt())!!
 
         private fun convertBasicString(str: String, type: NBTType) = when (type) {
             NBTType.BYTE -> NBTByte(NBTByte.new(str.toByte()))

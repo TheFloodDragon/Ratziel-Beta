@@ -62,7 +62,7 @@ object NBTCommand {
                         val node = ctx.args()[2]
                         val rawValue = ctx.args()[3]
                         player.cast<Player>().inventory.getDataBySlot(ctx.args()[1])?.also {
-                            val value = NBTSerializer.Mapper.deserializeFromString(rawValue)
+                            val value = NBTSerializer.Converter.deserializeFromString(rawValue)
                             it.putDeep(node, value)
                             player.sendLang(
                                 "NBTAction-Set",
@@ -136,7 +136,7 @@ object NBTCommand {
                         newLine(); repeat(level) { append(retractComponent) } // 缩进
                     }
                     append(componentKey(sender, deep, slot)) // 添加键
-                    append(nbtAsComponent(sender, NBTConverter.convert(value), level + 1, slot, deep, isFirst = false))
+                    append(nbtAsComponent(sender, NBTAdapter.adapt(value), level + 1, slot, deep, isFirst = false))
                     first = false
                 }
             }
@@ -152,7 +152,7 @@ object NBTCommand {
      * 转换成 Map 形式 (全部以浅层即一层节点表示)
      */
     private fun NBTCompound.toMapShallow(source: Map<String, Any>? = this.sourceMap): Map<String, NBTData> = buildMap {
-        source?.forEach { shallow -> this[shallow.key] = NBTConverter.convert(shallow.value) }
+        source?.forEach { shallow -> this[shallow.key] = NBTAdapter.adapt(shallow.value) }
     }
 
     /**
@@ -168,7 +168,7 @@ object NBTCommand {
 
     private fun componentValue(sender: ProxyCommandSender, nbt: NBTData) =
         getTypeJson(sender, "NBTFormat-Entry-Value")
-            .buildMessage(sender, asString(nbt), NBTSerializer.Mapper.serializeToString(nbt))
+            .buildMessage(sender, asString(nbt), NBTSerializer.Converter.serializeToString(nbt))
 
     /**
      * 获取语言文件Json内容
@@ -210,7 +210,7 @@ object NBTCommand {
         is NBTByteArray -> nbt.content.toString()
         is NBTIntArray -> nbt.content.toString()
         is NBTLongArray -> nbt.content.toString()
-        else -> NBTSerializer.Mapper.serializeToString(nbt).substringBeforeLast(NBTSerializer.Mapper.EXACT_TYPE_CHAR)
+        else -> NBTSerializer.Converter.serializeToString(nbt).substringBeforeLast(NBTSerializer.Converter.EXACT_TYPE_CHAR)
     }
 
 }

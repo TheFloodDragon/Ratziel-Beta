@@ -23,12 +23,12 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST) {
      */
     internal val sourceList get() = NMSUtil.NtList.sourceField.get(data) as MutableList<Any>
 
-    val content: List<NBTData> get() = sourceList.map { NBTConverter.NmsConverter.convert(it)!! }
+    val content: List<NBTData> get() = sourceList.map { NBTAdapter.NmsAdapter.adapt(it)!! }
 
     /**
      * 获取数据
      */
-    operator fun get(index: Int): NBTData? = NBTConverter.NmsConverter.convert(sourceList[index])
+    operator fun get(index: Int): NBTData? = NBTAdapter.NmsAdapter.adapt(sourceList[index])
 
     /**
      * 在索引处添加数据
