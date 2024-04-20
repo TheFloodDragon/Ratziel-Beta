@@ -9,7 +9,7 @@ import kotlinx.serialization.json.JsonElement
  * @author TheFloodDragon
  * @since 2024/4/4 19:50
  */
-interface ItemSerializer<T : ItemComponent<in T>> {
+interface ItemSerializer<T : ItemComponent> {
 
     /**
      * 序列化 - 组件[T]到[JsonElement]

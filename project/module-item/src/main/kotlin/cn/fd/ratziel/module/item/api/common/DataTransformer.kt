@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.item.api.common
 
-import cn.fd.ratziel.module.item.api.DataTransformer
+import cn.fd.ratziel.module.item.api.NodeDistributor
+import cn.fd.ratziel.module.item.api.Transformable
+import cn.fd.ratziel.module.item.api.Transformer
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 
 /**
@@ -9,7 +11,12 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
  * @author TheFloodDragon
  * @since 2024/3/23 13:13
  */
-interface SimpleDataTransformer<T> : DataTransformer<T> {
+interface DataTransformer<T : Transformable<NBTCompound>> : Transformer<T, NBTCompound> {
+
+    /**
+     * NBT数据的节点分配器
+     */
+    val node: NodeDistributor
 
     /**
      * 正向转化 - 输出型转化

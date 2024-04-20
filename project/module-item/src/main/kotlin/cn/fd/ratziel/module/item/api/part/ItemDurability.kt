@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.item.api.ItemComponent
  * @author TheFloodDragon
  * @since 2024/4/13 16:02
  */
-interface ItemDurability : ItemComponent<ItemDurability> {
+interface ItemDurability : ItemComponent {
 
     /**
      * 物品的最大耐久

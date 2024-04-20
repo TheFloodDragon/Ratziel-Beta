@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder
 import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.core.serialization.handle
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
+import cn.fd.ratziel.core.serialization.usedNodes
 import cn.fd.ratziel.core.util.printOnException
 import cn.fd.ratziel.module.item.api.common.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.part.VItemDisplay
@@ -14,7 +15,6 @@ import cn.fd.ratziel.module.item.impl.part.serializers.EnchantmentSerializer
 import cn.fd.ratziel.module.item.impl.part.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.item.nbt.NBTData
 import cn.fd.ratziel.module.item.nbt.NBTSerializer
-import cn.fd.ratziel.core.serialization.usedNodes
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.SerializersModule

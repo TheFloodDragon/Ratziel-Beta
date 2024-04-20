@@ -201,7 +201,7 @@ object NBTCommand {
      */
     private fun asString(nbt: NBTData): String = when (nbt) {
         is NBTString -> nbt.content
-        is NBTByte -> nbt.contentString
+        is NBTByte -> (nbt.contentBooleanOrNull ?: nbt.content).toString()
         is NBTInt -> nbt.content.toString()
         is NBTFloat -> nbt.content.toString()
         is NBTDouble -> nbt.content.toString()

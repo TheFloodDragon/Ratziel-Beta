@@ -14,7 +14,7 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import sun.security.ssl.SSLLogger.warning
+import taboolib.common.platform.function.warning
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -31,7 +31,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         Json(baseJson) {}
     }
 
-    override val resolvers = arrayOf<Priority<ItemResolver>>()
+    override val resolvers = arrayOf<Priority<ItemResolver>>(DefaultItemResolver().priority())
 
     override val serializers = arrayOf<Priority<ItemSerializer<*>>>(DefaultItemSerializer(json).priority())
 
@@ -62,13 +62,13 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
     /**
      * 序列化
      */
-    fun serialize(element: JsonElement) = CompletableFuture<List<ItemComponent<*>>>().also { future ->
-        LinkedList<ItemComponent<*>>().also { serializing ->
+    fun serialize(element: JsonElement) = CompletableFuture<List<ItemComponent>>().also { future ->
+        LinkedList<ItemComponent>().also { serializing ->
             FutureFactory {
                 serializers.sortPriority().forEach {
                     supplyAsync {
                         try {
-                            serializing.add(it.deserialize(element) as ItemComponent<*>)
+                            serializing.add(it.deserialize(element))
                         } catch (ex: Exception) {
                             warning("Failed to serialize element!")
                             ex.printStackTrace()
@@ -82,13 +82,13 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
     /**
      * 转换
      */
-    fun transform(components: List<ItemComponent<in Any>>) = CompletableFuture<List<NBTCompound>>().also { future ->
+    fun transform(components: List<ItemComponent>) = CompletableFuture<List<NBTCompound>>().also { future ->
         LinkedList<NBTCompound>().also { transforming ->
             FutureFactory {
                 components.forEach {
                     supplyAsync {
                         try {
-                            transforming.add(NBTCompound().also { data -> it.transformer().detransform(it, data) })
+                            transforming.add(NBTCompound().also { data -> it.detransform(data) })
                         } catch (ex: Exception) {
                             warning("Failed to serialize element!")
                             ex.printStackTrace()
@@ -100,18 +100,15 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
     }
 
     fun build() {
-        resolve(origin.property).thenAccept { jsonObject ->
-            serialize(jsonObject).thenAccept { components ->
-                try {
-                    @Suppress("UNCHECKED_CAST")
-                    transform(components as List<ItemComponent<in Any>>).let {
-                        println(it)
-                    }
-                } catch (ex: Exception) {
-                    warning("Failed to build element!")
-                    ex.printStackTrace()
-                }
-            }
+        val jsonObject = resolve(origin.property).get()
+        println(jsonObject)
+        val components = serialize(jsonObject).get()
+        println(components)
+        try {
+            println(transform(components).get())
+        } catch (ex: Exception) {
+            warning("Failed to build element!")
+            ex.printStackTrace()
         }
     }
 

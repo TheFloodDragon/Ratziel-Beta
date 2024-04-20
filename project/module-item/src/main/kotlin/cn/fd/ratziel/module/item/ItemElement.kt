@@ -8,7 +8,6 @@ import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.module.item.impl.ItemManager
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
-import cn.fd.ratziel.module.item.util.transform
 import kotlinx.serialization.json.Json
 import taboolib.common.platform.event.SubscribeEvent
 

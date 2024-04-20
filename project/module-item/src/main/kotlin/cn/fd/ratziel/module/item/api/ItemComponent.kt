@@ -1,16 +1,18 @@
 package cn.fd.ratziel.module.item.api
 
+import cn.fd.ratziel.module.item.nbt.NBTCompound
+
 /**
  * ItemComponent - 物品组件
  *
  * @author TheFloodDragon
- * @since 2024/3/15 18:53
+ * @since 2024/4/20 9:14
  */
-interface ItemComponent<T> {
+interface ItemComponent : Transformable<NBTCompound> {
 
     /**
-     * 获取NBT数据转换器
+     * NBT数据的节点分配器
      */
-    fun transformer(): DataTransformer<T>
+    fun node(): NodeDistributor
 
 }

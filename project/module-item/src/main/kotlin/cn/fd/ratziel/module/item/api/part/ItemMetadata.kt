@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.item.api.ItemComponent
  * @author TheFloodDragon
  * @since 2024/4/4 20:06
  */
-interface ItemMetadata : ItemComponent<ItemMetadata> {
+interface ItemMetadata : ItemComponent {
 
     /**
      * 物品显示部分

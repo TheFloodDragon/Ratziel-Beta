@@ -10,7 +10,7 @@ import cn.fd.ratziel.module.item.api.ItemComponent
  * @author TheFloodDragon
  * @since 2024/3/16 10:56
  */
-interface ItemDisplay : ItemComponent<ItemDisplay> {
+interface ItemDisplay : ItemComponent {
 
     /**
      * 物品名称
