@@ -33,7 +33,7 @@ object CommandElement {
     val list = subCommand {
         executeAsync<ProxyCommandSender> { sender, _, _ ->
             sender.sendLang("Element-Header")
-            WorkspaceLoader.elements.forEach {
+            WorkspaceLoader.cachedElements.forEach {
                 sender.sendLang("Element-Identifier-Format", it.name) // 名称
                 sender.sendLang(
                     "Element-Info-Format",
@@ -53,15 +53,15 @@ object CommandElement {
     val listType = subCommand {
         executeAsync<ProxyCommandSender> { sender, _, _ ->
             sender.sendLang("Element-Type-Header")
-            ElementRegistry.registry.keys.forEach { etype ->
+            ElementRegistry.registry.keys.forEach { type ->
                 // 命名空间消息
-                sender.sendLang("Element-Type-Namespace-Format", etype.space)
+                sender.sendLang("Element-Type-Namespace-Format", type.space)
                 // 具体消息
                 sender.sendLang(
                     "Element-Type-Info-Format",
-                    etype.name, // 名称
-                    format(etype.alias.toList()), // 别名
-                    format(ElementRegistry.getHandlers(etype).map { it::class.java.name }) //处理器
+                    type.name, // 名称
+                    format(type.alias.toList()), // 别名
+                    format(ElementRegistry.getHandlers(type).map { it::class.java.name }) //处理器
                 )
             }
         }

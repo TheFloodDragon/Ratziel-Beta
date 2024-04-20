@@ -1,8 +1,10 @@
 package cn.fd.ratziel.core.element.service
 
+import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.element.api.ElementHandler
-import java.util.function.Consumer
+import java.util.concurrent.ConcurrentHashMap
+import java.util.function.BiConsumer
 
 /**
  * ElementRegistry
@@ -14,29 +16,22 @@ import java.util.function.Consumer
 object ElementRegistry {
 
     /**
-     * 默认元素处理器优先级
-     */
-    const val DEFAULT_PRIORITY: Byte = 0
-
-    /**
      * 元素注册表
      */
     @JvmStatic
-    val registry: HashMap<ElementType, ElementHandlerGroup> = hashMapOf()
+    val registry: ConcurrentHashMap<ElementType, ElementHandlerGroup> = ConcurrentHashMap()
 
     /**
      * 注册元素类型
-     * @param etype 元素类型
+     * @param type 元素类型
      * @param handler 元素处理器
      * @param priority 处理器优先级
      */
     @JvmStatic
-    fun register(etype: ElementType, handler: ElementHandler, priority: Byte = DEFAULT_PRIORITY) =
-        register(etype).register(handler, priority)
+    fun register(type: ElementType, handler: ElementHandler, priority: Byte = 0) = register(type).register(handler, priority)
 
     @JvmStatic
-    fun register(etype: ElementType) =
-        registry.computeIfAbsent(etype) { ElementHandlerGroup() }
+    fun register(type: ElementType) = registry.computeIfAbsent(type) { ElementHandlerGroup() }
 
     @JvmStatic
     fun register(
@@ -44,25 +39,23 @@ object ElementRegistry {
         name: String,
         alias: Array<String>,
         handler: ElementHandler,
-        priority: Byte = DEFAULT_PRIORITY,
-    ) {
-        register(ElementType(space, name, alias), handler, priority)
-    }
+        priority: Byte = 0,
+    ) = register(ElementType(space, name, alias), handler, priority)
 
     /**
      * 取消注册元素类型
-     * @param etype 元素类型
+     * @param type 元素类型
      */
     @JvmStatic
-    fun unregister(etype: ElementType) =
-        registry.remove(etype)
+    fun unregister(type: ElementType) =
+        registry.remove(type)
 
     /**
      * 取消注册元素类型处理器
      */
     @JvmStatic
-    fun unregister(etype: ElementType, handler: ElementHandler) =
-        registry[etype]?.unregister(handler)
+    fun unregister(type: ElementType, handler: ElementHandler) =
+        registry[type]?.unregister(handler)
 
     /**
      * 取消注册命名空间内的所有元素类型
@@ -79,40 +72,34 @@ object ElementRegistry {
      * 获取处理器组
      */
     @JvmStatic
-    fun getHandlerGroup(etype: ElementType): ElementHandlerGroup? = registry[etype]
-
-    /**
-     * 获取处理器表
-     */
-    @JvmStatic
-    fun getHandlerMap(etype: ElementType) = getHandlerGroup(etype)?.handlerMap
+    fun getHandlerGroup(type: ElementType): ElementHandlerGroup? = registry[type]
 
     /**
      * 根据优先级提供处理器以供操作
      */
     @JvmStatic
-    fun runWithHandlers(etype: ElementType, function: Consumer<Pair<Byte, ElementHandler>>) =
-        getHandlerMap(etype)?.forEach { (priority, handlers) ->
-            handlers.forEach {
-                function.accept(Pair(priority, it))
-            }
-        }
+    fun runWithHandlers(type: ElementType, function: BiConsumer<Byte, ElementHandler>) =
+        getHandlersWithPriority(type).forEach { function.accept(it.priority, it.value) }
 
     /**
      * 获取处理器
-     * @param etype 元素类型
-     * @param priority 处理器优先级
+     * @param type 元素类型
      */
     @JvmStatic
-    fun getHandlers(etype: ElementType, priority: Byte): List<ElementHandler> =
-        getHandlerMap(etype)?.get(priority) ?: emptyList()
+    fun getHandlers(type: ElementType): List<ElementHandler> = getHandlersWithPriority(type).map { it.value }
 
     @JvmStatic
-    fun getHandlers(etype: ElementType): List<ElementHandler> =
-        getHandlerMap(etype)?.flatMap { it.value } ?: emptyList()
+    fun getHandlers(): List<ElementHandler> = getHandlersWithPriority().map { it.value }
+
+    /**
+     * 获取处理器 (带优先级)
+     * @param type 元素类型
+     */
+    @JvmStatic
+    fun getHandlersWithPriority(type: ElementType): List<Priority<ElementHandler>> = registry[type]?.handlers ?: emptyList()
 
     @JvmStatic
-    fun getHandlers(): List<ElementHandler> = registry.values.flatMap { it.handlerMap.values.flatten() }
+    fun getHandlersWithPriority(): List<Priority<ElementHandler>> = registry.values.flatMap { it.handlers }
 
     /**
      * 获取元素类型

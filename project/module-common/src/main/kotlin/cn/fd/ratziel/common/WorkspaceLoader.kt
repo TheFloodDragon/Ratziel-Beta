@@ -11,56 +11,54 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
-import java.util.concurrent.ConcurrentLinkedDeque
-import kotlin.system.measureTimeMillis
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.time.measureTime
-import cn.fd.ratziel.common.WorkspaceManager as wsm
 
 object WorkspaceLoader {
 
     /**
-     * 已加载的元素
+     * 缓存的元素
      */
-    val elements = ConcurrentLinkedDeque<Element>()
+    val cachedElements = ConcurrentLinkedQueue<Element>()
 
     /**
      * 初始化工作空间
      */
-    fun init(sender: ProxyCommandSender) =
-        measureTimeMillis {
-            Settings.workspacePaths.forEach { path ->
-                wsm.initializeWorkspace(path, true)
-            }
-        }.also {
-            sender.sendLang("Workspace-Inited", wsm.workspaces.size, it)
+    fun init(sender: ProxyCommandSender) = measureTime {
+        WorkspaceManager.workspaces.clear() // 清空工作空间
+        Settings.workspacePaths.forEach { path ->
+            WorkspaceManager.initializeWorkspace(path, true)
         }
+    }.also { sender.sendLang("Workspace-Inited", WorkspaceManager.workspaces.size, it.inWholeMilliseconds) }
 
     /**
      * 加载工作空间中的元素
      */
     fun load(sender: ProxyCommandSender) = measureTime {
+        cachedElements.clear() // 清空缓存
+        ApexElementEvaluator.evalTasks.clear() // 清空评估任务
         WorkspaceLoadEvent.Start().call() // 开始加载事件
         // 创建异步工厂
-        FutureFactory<List<Element>> {
+        FutureFactory {
             /**
              * 加载元素文件
              */
-            wsm.getFilteredFiles()
+            WorkspaceManager.getFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
-                    supplyAsync {
+                    supplyAsync(ApexElementEvaluator.executor) {
                         DefaultElementLoader.load(file).onEach {
-                            elements += it  // 插入缓存
+                            cachedElements += it  // 插入缓存
                             ApexElementEvaluator.handleElement(it) // 处理元素
                         }
-                    }
+                    }.submit()
                 }
         }.waitAll() // 等待所有加载任务完成
         WorkspaceLoadEvent.End().call() // 结束加载事件
     }.let { time ->
         ApexElementEvaluator.evalTasks.whenAllComplete { durations ->
             durations.forEach { time.plus(it) } // 合并时间
-            sender.sendLang("Workspace-Finished", elements.size, time.inWholeMilliseconds)
+            sender.sendLang("Workspace-Finished", cachedElements.size, time.inWholeMilliseconds)
         }
     }
 
@@ -68,9 +66,6 @@ object WorkspaceLoader {
      * 重新加载工作空间
      */
     fun reload(sender: ProxyCommandSender) {
-        ApexElementEvaluator.evalTasks.clear() // 清空评估任务
-        elements.clear() // 清空缓存
-        wsm.workspaces.clear() // 清空工作空间
         // 初始化工作空间
         init(sender)
         // 加载元素文件

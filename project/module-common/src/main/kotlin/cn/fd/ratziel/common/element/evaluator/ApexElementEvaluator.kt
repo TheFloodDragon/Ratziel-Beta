@@ -5,6 +5,7 @@ import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.function.FutureFactory
+import java.util.concurrent.Executors
 import kotlin.time.Duration
 
 /**
@@ -26,6 +27,13 @@ object ApexElementEvaluator {
      */
     @JvmField
     val evalTasks = FutureFactory<Duration>()
+
+    /**
+     * 线程池
+     */
+    val executor by lazy {
+        Executors.newFixedThreadPool(8)
+    }
 
     /**
      * 对一个元素处理器评估
@@ -50,6 +58,6 @@ object ApexElementEvaluator {
      * 处理元素
      */
     @JvmStatic
-    fun handleElement(element: Element) = ElementRegistry.runWithHandlers(element.type) { (_, handler) -> this.eval(handler, element) }
+    fun handleElement(element: Element) = ElementRegistry.runWithHandlers(element.type) { _, handler -> this.eval(handler, element) }
 
 }

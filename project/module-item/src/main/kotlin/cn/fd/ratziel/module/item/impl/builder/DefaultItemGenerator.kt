@@ -18,6 +18,7 @@ import kotlinx.serialization.json.JsonObject
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 
 /**
  * DefaultItemGenerator
@@ -31,6 +32,10 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         Json(baseJson) {}
     }
 
+    val executor by lazy {
+        Executors.newFixedThreadPool(8)
+    }
+
     override val serializers = arrayOf<Priority<ItemSerializer<*>>>(DefaultItemSerializer(json).priority())
 
     override val resolvers = arrayOf<Priority<ItemResolver>>(DefaultItemResolver().priority())
@@ -42,13 +47,13 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         val resolving = ConcurrentHashMap<String, JsonElement>()
         FutureFactory {
             resolvers.sortPriority().forEach {
-                supplyAsync {
+                supplyAsync(executor) {
                     it.resolve(element).also { resolved ->
                         (resolved as? JsonObject)?.forEach {
                             resolving[it.key] = it.value
                         }
                     }
-                }
+                }.printOnException().submit()
             }
         }.whenAllComplete { future.complete(JsonObject(resolving)) }
     }
@@ -60,9 +65,9 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         val serializing = LinkedList<ItemComponent>()
         FutureFactory {
             serializers.sortPriority().forEach {
-                supplyAsync {
+                supplyAsync(executor) {
                     serializing.add(it.deserialize(element))
-                }
+                }.printOnException().submit()
             }
         }.whenAllComplete { future.complete(serializing) }
     }
@@ -74,9 +79,9 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         val transforming = LinkedList<NBTCompound>()
         FutureFactory {
             components.forEach {
-                submit(CompletableFuture.supplyAsync {
+                supplyAsync(executor) {
                     transforming.add(it.transform())
-                }.printOnException())
+                }.printOnException().submit()
             }
         }.whenAllComplete { future.complete(transforming) }
     }

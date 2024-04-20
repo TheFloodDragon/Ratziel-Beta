@@ -2,6 +2,7 @@ package cn.fd.ratziel.core.function
 
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.Executor
 import java.util.function.Consumer
 import java.util.function.Supplier
 
@@ -33,15 +34,14 @@ open class FutureFactory<T> {
      */
     open fun submit(task: CompletableFuture<T>) = task.also { tasks += it }
 
-    /**
-     * 提交任务 (通过列表的映射)
-     */
-    open fun <E> submitWith(list: Iterable<E>, action: E.() -> T) = submit(CompletableFuture())
+    open fun CompletableFuture<T>.submit() = submit(this)
 
     /**
-     * 创建异步带返回值任务并提交
+     * 创建异步任务但不提交
      */
-    open fun supplyAsync(function: Supplier<T>) = submit(CompletableFuture.supplyAsync(function))
+    open fun supplyAsync(function: Supplier<T>) = CompletableFuture.supplyAsync(function)
+
+    open fun supplyAsync(executor: Executor, function: Supplier<T>) = CompletableFuture.supplyAsync(function, executor)
 
     /**
      * 当所有任务完成时 (非阻塞)

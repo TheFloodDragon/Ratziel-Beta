@@ -30,14 +30,13 @@ data class VItemDurability(
 
     override fun node() = OccupyNode.APEX_NODE
 
+    // TODO 未完成
     override fun transform() = NBTCompound(NBTCompound.new()).putAll(
-        TODO("MAX"),
         ItemMapping.UNBREAKABLE.mapping to unbreakable?.let { NBTByte(NBTByte.new(it)) },
         ItemMapping.REPAIR_COST.mapping to repairCost?.let { NBTInt(NBTInt.new(it)) },
     )
 
     override fun detransform(from: NBTCompound) {
-        TODO("MAX")
         (from[ItemMapping.UNBREAKABLE.mapping] as? NBTByte)?.let { unbreakable = it.contentBoolean }
         (from[ItemMapping.REPAIR_COST.mapping] as? NBTInt)?.let { repairCost = it.content }
     }

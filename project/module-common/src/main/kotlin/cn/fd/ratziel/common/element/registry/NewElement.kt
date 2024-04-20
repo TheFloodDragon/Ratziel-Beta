@@ -1,7 +1,5 @@
 package cn.fd.ratziel.common.element.registry
 
-import cn.fd.ratziel.core.element.service.ElementRegistry
-
 /**
  * 用于注册元素处理器
  */
@@ -24,5 +22,5 @@ annotation class NewElement(
      * 如果使用此注解的类是元素处理器
      * 则该项代表着元素处理器的优先级
      */
-    val priority: Byte = ElementRegistry.DEFAULT_PRIORITY,
+    val priority: Byte = 0,
 )
