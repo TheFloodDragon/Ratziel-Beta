@@ -17,31 +17,24 @@ open class Element(
     /**
      * 元素名称
      */
-    val name get() = identifier.name
+    open val name get() = identifier.name
 
     /**
      * 元素类型
      */
-    val type get() = identifier.type
+    open val type get() = identifier.type
 
     /**
-     * 元素路径
+     * 元素文件
      */
-    val path get() = identifier.path
-
-    constructor(
-        id: String,
-        type: ElementType,
-        path: String?,
-        property: JsonElement,
-    ) : this(ElementIdentifier(id, type, path), property)
+    open val file get() = identifier.file
 
     constructor(
         id: String,
         type: ElementType,
         file: File?,
         property: JsonElement,
-    ) : this(ElementIdentifier(id, type, file?.path), property)
+    ) : this(ElementIdentifier(id, type, file), property)
 
     override fun toString() =
         this::class.java.simpleName + '{' +
@@ -51,7 +44,7 @@ open class Element(
     /**
      * 相似 - 即元素标识符相同
      */
-    fun isSimilar(other: Any?) = other is Element && this.identifier == other.identifier
+    open fun isSimilar(other: Any?) = other is Element && this.identifier == other.identifier
 
     override fun equals(other: Any?) =
         other is Element && this.identifier == other.identifier && this.property == other.property

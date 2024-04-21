@@ -38,7 +38,7 @@ object CommandElement {
                 sender.sendLang(
                     "Element-Info-Format",
                     it.type.toString(), // 类型
-                    it.path ?: "None", // 文件
+                    it.file?.path ?: "None", // 文件
                     it.property.toString() // 属性
                 )
             }

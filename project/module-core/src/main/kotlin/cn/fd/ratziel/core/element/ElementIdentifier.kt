@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.element
 
-typealias ElementAddress = ElementIdentifier
+import java.io.File
 
 /**
  * ElementIdentifier - 元素唯一标识符
@@ -18,20 +18,19 @@ open class ElementIdentifier(
      */
     open val type: ElementType,
     /**
-     * 元素路径
+     * 元素文件
      */
-    open val path: String?,
+    open val file: File?,
 ) {
 
     override fun toString() =
         this::class.java.simpleName + '{' +
                 "name=" + name + ";" +
                 "type=" + type + ";" +
-                "path=" + path + '}'
+                "path=" + file?.path + '}'
 
-    override fun equals(other: Any?) =
-        other is ElementIdentifier && this.name == other.name && this.type == other.type && this.path == other.path
+    override fun equals(other: Any?) = other is ElementIdentifier && this.name == other.name && this.type == other.type && this.file == other.file
 
-    override fun hashCode() = name.hashCode() + type.hashCode() + path.hashCode()
+    override fun hashCode() = name.hashCode() + type.hashCode() + file.hashCode()
 
 }

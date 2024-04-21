@@ -4,12 +4,12 @@ import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.element.service.ElementRegistry
 
 /**
- * ElementTypeMather
+ * ElementMatcher
  *
  * @author: TheFloodDragon
  * @since 2023/8/23 10:55
  */
-object ElementTypeMatcher {
+object ElementMatcher {
 
     const val SEPARATOR = ':'
 
@@ -18,16 +18,16 @@ object ElementTypeMatcher {
      * 表达式格式:
      *    命名空间:类型名称(或别名)
      */
-    fun match(expression: String): ElementType? {
+    fun matchType(expression: String): ElementType {
         val split = expression.split(SEPARATOR)
-        return when (split.size) {
+        return when {
             // 命名空间:类型名称(或别名)
-            2 -> matchAll(split[0], split[1])
+            split.size >= 2 -> matchAll(split[0], split[1])
             // 类型名称(或别名)
-            1 -> matchName(split[0])
-            //错误的表达式
+            split.size == 1 -> matchName(split[0])
+            // 错误的表达式
             else -> null
-        }
+        } ?: error("Unknown element type: \"$expression\" !")
     }
 
     /**

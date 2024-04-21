@@ -3,7 +3,10 @@ package cn.fd.ratziel.core.element.api
 import cn.fd.ratziel.core.element.Element
 
 /**
- * 元素的处理器
+ * ElementHandler - 元素处理器
+ *
+ * @author TheFloodDragon
+ * @since 2024/4/21 9:46
  */
 interface ElementHandler {
 
