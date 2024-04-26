@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.nbt
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import java.util.function.Function
+import taboolib.common.platform.function.warning
 
 /**
  * NBTCompound
@@ -10,13 +9,11 @@ import java.util.function.Function
  * @since 2024/3/15 19:28
  */
 @Suppress("UNCHECKED_CAST")
-class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
+class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), MutableMap<String, NBTData> {
 
     constructor() : this(new())
 
-    init {
-        if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
-    }
+    constructor(map: Map<*, *>) : this(NBTAdapter.adaptMap(map).getData())
 
     /**
      * [java.util.Map] is the same as [MutableMap] in [kotlin.collections]
@@ -24,31 +21,26 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
      */
     internal val sourceMap get() = NMSUtil.NtCompound.sourceField.get(data) as MutableMap<String, Any>
 
-    val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTAdapter.NmsAdapter.adapt(it.value)!!) } }
+    val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTAdapter.adaptNms(it.value)) } }
 
     /**
      * 获取数据
-     * @param node 节点
+     * @param key 节点
      */
-    operator fun get(node: String): NBTData? = sourceMap[node]?.let { NBTAdapter.NmsAdapter.adapt(it) }
+    override operator fun get(key: String): NBTData? = sourceMap[key]?.let { NBTAdapter.adaptNms(it) }
 
     /**
      * 写入数据
-     * @param node 节点
+     * @param key 节点
      * @param value NBT数据
      */
-    fun put(node: String, value: NBTData) = this.apply { sourceMap[node] = value.getData() }
-
-    operator fun set(node: String, value: NBTData?) = value?.let { put(node, it) }
-
-    fun putAll(vararg entries: Pair<String, NBTData?>) = this.apply { entries.forEach { it.second?.let { value -> put(it.first, value) } } }
-
-    fun computeIfAbsent(node: String, function: Function<String, NBTData>) = sourceMap.computeIfAbsent(node, function).let { NBTAdapter.NmsAdapter.adapt(it)!! }
+    override fun put(key: String, value: NBTData) = this.apply { sourceMap[key] = value.getData() }
 
     /**
      * 删除数据
+     * @param key 节点
      */
-    fun remove(node: String) = this.apply { sourceMap.remove(node) }
+    override fun remove(key: String) = this.apply { sourceMap.remove(key) }
 
     /**
      * 克隆数据
@@ -65,9 +57,9 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
             // 如果当前NBT数据中存在, 且不允许替换, 则直接跳出循环
             if (ownValue != null && !replace) return@forEach
             // 反则设置值 (复合类型时递归)
-            if (isOwnNmsClass(targetValue::class.java)) {
+            if (isOwnClass(targetValue::class.java)) {
                 // 判断当前值类型 (若非复合类型,则替换,此时目标值是复合类型的)
-                val value: NBTCompound? = ownValue?.takeIf { isOwnNmsClass(it::class.java) }?.let { NBTCompound(it) }
+                val value: NBTCompound? = ownValue?.takeIf { isOwnClass(it::class.java) }?.let { NBTCompound(it) }
                 this.sourceMap[key] = (value ?: NBTCompound()).merge(NBTCompound(targetValue), replace).getData()
             } else this.sourceMap[key] = targetValue
         }
@@ -75,13 +67,31 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
 
     companion object {
 
+        @JvmStatic
         fun new() = new(HashMap())
 
+        @JvmStatic
         fun new(map: Map<String, Any>) = NMSUtil.NtCompound.constructor.instance(map)!!
 
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtCompound.isNmsClass(clazz)
-
     }
+
+    operator fun set(node: String, value: NBTData?) = value?.let { put(node, it) }
+
+    override fun putAll(from: Map<out String, NBTData>) = from.forEach { put(it.key, it.value) }
+
+    fun addAll(vararg entries: Pair<String, NBTData?>) = this.apply { entries.forEach { it.second?.let { value -> put(it.first, value) } } }
+
+    override val keys: MutableSet<String> get() = sourceMap.keys
+
+    override val size: Int get() = sourceMap.keys.size
+
+    override fun clear() = sourceMap.clear()
+
+    override fun isEmpty() = sourceMap.isEmpty()
+
+    override fun containsValue(value: NBTData) = sourceMap.containsValue(value.getData())
+
+    override fun containsKey(key: String) = sourceMap.containsKey(key)
 
     /**
      * 深度获取NBT数据
@@ -174,5 +184,30 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND) {
         private fun <R> supportList(node: String, action: (Pair<String, Int?>) -> R) = splitListOrNull(node).let(action)
 
     }
+
+    /**
+     * 不安全方法
+     */
+
+    override val entries: MutableSet<MutableMap.MutableEntry<String, NBTData>>
+        get() {
+            warning("It's unsafe to use: NBTCompound.entries")
+            return sourceMap.entries.map {
+                object : MutableMap.MutableEntry<String, NBTData> {
+                    override val key: String
+                        get() = it.key
+                    override val value: NBTData
+                        get() = NBTAdapter.adaptNms(it.value)
+
+                    override fun setValue(newValue: NBTData) = it.setValue(newValue.getData()).let { o -> NBTAdapter.adaptNms(o) }
+                }
+            }.toMutableSet()
+        }
+
+    override val values: MutableCollection<NBTData>
+        get() {
+            warning("It's unsafe to use: NBTCompound.values")
+            return sourceMap.values.map { NBTAdapter.adaptNms(it) }.toMutableList()
+        }
 
 }

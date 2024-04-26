@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.nbt
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-
 /**
  * NBTLongArray
  *
@@ -10,17 +8,14 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
  */
 class NBTLongArray(rawData: Any) : NBTData(rawData, NBTType.LONG_ARRAY) {
 
-    init {
-        if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
-    }
+    constructor(value: LongArray) : this(new(value))
 
     val content get() = NMSUtil.NtLongArray.sourceField.get(data) as LongArray
 
     companion object {
 
+        @JvmStatic
         fun new(value: LongArray) = NMSUtil.NtLongArray.constructor.instance(value)!!
-
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtLongArray.isNmsClass(clazz)
 
     }
 

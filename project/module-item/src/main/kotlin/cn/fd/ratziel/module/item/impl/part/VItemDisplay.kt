@@ -47,7 +47,7 @@ data class VItemDisplay(
     }
 
     override fun node() = transformer.node
-    override fun transform() = transformer.transform(this)
+    override fun transform(source: NBTCompound) = transformer.transform(this, source)
     override fun detransform(from: NBTCompound) = transformer.detransform(this, from)
 
     companion object {
@@ -57,7 +57,7 @@ data class VItemDisplay(
 
                 override val node = OccupyNode(ItemMapping.DISPLAY.mapping, OccupyNode.APEX_NODE)
 
-                override fun transform(target: ItemDisplay, source: NBTCompound) = source.putAll(
+                override fun transform(target: ItemDisplay, source: NBTCompound) = source.addAll(
                     ItemMapping.DISPLAY_NAME.mapping to componentToData(target.name),
                     ItemMapping.DISPLAY_LORE.mapping to target.lore?.map { componentToData(it)!!.getData() }?.let { NBTList(NBTList.new(ArrayList(it))) },
                     ItemMapping.DISPLAY_LOCAL_NAME.mapping to componentToData(target.localizedName)

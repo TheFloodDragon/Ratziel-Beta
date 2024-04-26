@@ -22,7 +22,7 @@ data class VItemMeta(
 
     override fun node() = OccupyNode.APEX_NODE
 
-    override fun transform() = NBTCompound().also { data ->
+    override fun transform(source: NBTCompound) = source.also { data ->
         arrayOf(display, durability).forEach { it?.applyTo(data) }
     }
 

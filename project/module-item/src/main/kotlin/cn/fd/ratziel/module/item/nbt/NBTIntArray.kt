@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.nbt
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-
 /**
  * NBTIntArray
  *
@@ -10,17 +8,14 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
  */
 class NBTIntArray(rawData: Any) : NBTData(rawData, NBTType.INT_ARRAY) {
 
-    init {
-        if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
-    }
+    constructor(value: IntArray) : this(new(value))
 
     val content get() = NMSUtil.NtIntArray.sourceField.get(data) as IntArray
 
     companion object {
 
+        @JvmStatic
         fun new(value: IntArray) = NMSUtil.NtIntArray.constructor.instance(value)!!
-
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtIntArray.isNmsClass(clazz)
 
     }
 

@@ -80,9 +80,9 @@ object NBTSerializer : KSerializer<NBTData> {
             else -> throw UnsupportedTypeException(target.type)
         }
 
-        fun serializeToJsonObject(target: NBTCompound) = buildJsonObject { target.content.forEach { put(it.key, serializeToJson(it.value)) } }
+        fun serializeToJsonObject(target: NBTCompound) = buildJsonObject { target.forEach { put(it.key, serializeToJson(it.value)) } }
 
-        fun serializeToJsonArray(target: NBTList) = buildJsonArray { target.content.forEach { add(serializeToJson(it)) } }
+        fun serializeToJsonArray(target: NBTList) = buildJsonArray { target.forEach { add(serializeToJson(it)) } }
 
         /**
          * 反序列化精确类型

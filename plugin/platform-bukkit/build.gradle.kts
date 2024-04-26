@@ -1,8 +1,4 @@
-import io.izzel.taboolib.gradle.BUKKIT_ALL
-import io.izzel.taboolib.gradle.EXPANSION_PLAYER_FAKE_OP
-import io.izzel.taboolib.gradle.KETHER
-import io.izzel.taboolib.gradle.NMS_UTIL
-
+import io.izzel.taboolib.gradle.*
 dependencies {
     // Core / Common
     shadowModule("module-core")

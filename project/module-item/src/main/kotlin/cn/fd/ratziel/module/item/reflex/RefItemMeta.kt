@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.reflex
 
-import cn.fd.ratziel.module.itemengine.nbt.NBTCompound
+import cn.fd.ratziel.module.item.nbt.NBTCompound
 import com.google.common.collect.Multimap
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier

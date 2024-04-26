@@ -1,6 +1,7 @@
 dependencies {
     compileNMS()
     compileCore(12004)
+    compileCore(12005)
     compileOnly("com.google.guava:guava:32.1.2-jre")
     compileTaboo("platform-bukkit")
     compileTaboo("module-nms")

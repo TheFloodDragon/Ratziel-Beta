@@ -1,5 +1,7 @@
 package cn.fd.ratziel.module.item.nbt
 
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
+
 /**
  * NBTData - NBT数据
  *
@@ -17,10 +19,20 @@ abstract class NBTData(
     val type: NBTType
 ) {
 
+    init {
+        // 数据检验
+        if (!isOwnClass(data::class.java)) throw UnsupportedTypeException(data)
+    }
+
     /**
      * 获取原始数据
      */
     open fun getData() = data
+
+    /**
+     * 判断目标类是否为对应NBT数据类型的NMS类
+     */
+    fun isOwnClass(clazz: Class<*>) = NMSUtil.inferUtil(type).nmsClass.isAssignableFrom(clazz)
 
     override fun equals(other: Any?) = (if (other is NBTData) other.getData() else other) == data
 

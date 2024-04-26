@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.nbt
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-
 /**
  * NBTByte
  *
@@ -10,9 +8,9 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
  */
 class NBTByte(rawData: Any) : NBTData(rawData, NBTType.BYTE) {
 
-    init {
-        if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
-    }
+    constructor(value: Boolean) : this(new(value))
+
+    constructor(value: Byte) : this(new(value))
 
     val content get() = NMSUtil.NtByte.sourceField.get(data) as Byte
 
@@ -25,11 +23,11 @@ class NBTByte(rawData: Any) : NBTData(rawData, NBTType.BYTE) {
         const val BYTE_FALSE: Byte = 0
         const val BYTE_TRUE: Byte = 1
 
+        @JvmStatic
         fun new(value: Boolean) = new(if (value) BYTE_TRUE else BYTE_FALSE)
 
+        @JvmStatic
         fun new(value: Byte) = NMSUtil.NtByte.constructor.instance(value)!!
-
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtByte.isNmsClass(clazz)
 
     }
 

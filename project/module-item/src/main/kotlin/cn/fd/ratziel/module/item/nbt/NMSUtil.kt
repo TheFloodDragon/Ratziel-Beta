@@ -1,5 +1,7 @@
 package cn.fd.ratziel.module.item.nbt
 
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
+import cn.fd.ratziel.module.item.nbt.NBTType.*
 import taboolib.library.reflex.ClassConstructor
 import taboolib.library.reflex.ClassField
 import taboolib.library.reflex.ReflexClass
@@ -21,8 +23,6 @@ internal sealed class NMSUtil {
     abstract val sourceField: ClassField
 
     val reflexClass by lazy { ReflexClass.of(nmsClass, false) }
-
-    fun isNmsClass(clazz: Class<*>) = nmsClass.isAssignableFrom(clazz)
 
     data object NtCompound : NMSUtil() {
         /**
@@ -245,6 +245,26 @@ internal sealed class NMSUtil {
          * net.minecraft.nbt.NBTBase
          */
         val nmsClass by lazy { nmsClass("NBTBase") }
+    }
+
+    companion object {
+
+        internal fun inferUtil(type: NBTType): NMSUtil = when (type) {
+            BYTE -> NtByte
+            SHORT -> NtShort
+            INT -> NtInt
+            LONG -> NtLong
+            FLOAT -> NtFloat
+            DOUBLE -> NtDouble
+            BYTE_ARRAY -> NtByteArray
+            STRING -> NtString
+            LIST -> NtList
+            COMPOUND -> NtCompound
+            INT_ARRAY -> NtIntArray
+            LONG_ARRAY -> NtLongArray
+            else -> throw UnsupportedTypeException(type)
+        }
+
     }
 
 }

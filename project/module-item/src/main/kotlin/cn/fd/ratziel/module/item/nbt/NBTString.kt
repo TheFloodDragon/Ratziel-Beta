@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.nbt
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-
 /**
  * NBTString
  *
@@ -10,17 +8,14 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
  */
 class NBTString(rawData: Any) : NBTData(rawData, NBTType.STRING) {
 
-    init {
-        if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
-    }
+    constructor(value: String) : this(new(value))
 
     val content get() = NMSUtil.NtString.sourceField.get(data) as String
 
     companion object {
 
+        @JvmStatic
         fun new(value: String) = NMSUtil.NtString.constructor.instance(value)!!
-
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtString.isNmsClass(clazz)
 
     }
 

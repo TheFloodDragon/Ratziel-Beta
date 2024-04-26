@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.nbt
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-
 /**
  * NBTShort
  *
@@ -10,17 +8,14 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
  */
 class NBTShort(rawData: Any) : NBTData(rawData, NBTType.SHORT) {
 
-    init {
-        if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
-    }
+    constructor(value: Short) : this(new(value))
 
     val content get() = NMSUtil.NtShort.sourceField.get(data) as Short
 
     companion object {
 
+        @JvmStatic
         fun new(value: Short) = NMSUtil.NtShort.constructor.instance(value)!!
-
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtShort.isNmsClass(clazz)
 
     }
 

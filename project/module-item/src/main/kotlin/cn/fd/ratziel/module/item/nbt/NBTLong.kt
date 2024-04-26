@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.nbt
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-
 /**
  * NBTLong
  *
@@ -10,17 +8,14 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
  */
 class NBTLong(rawData: Any) : NBTData(rawData, NBTType.LONG) {
 
-    init {
-        if (!isOwnNmsClass(rawData::class.java)) throw UnsupportedTypeException(rawData)
-    }
+    constructor(value: Long) : this(new(value))
 
     val content get() = NMSUtil.NtLong.sourceField.get(data) as Long
 
     companion object {
 
+        @JvmStatic
         fun new(value: Long) = NMSUtil.NtLong.constructor.instance(value)!!
-
-        fun isOwnNmsClass(clazz: Class<*>) = NMSUtil.NtLong.isNmsClass(clazz)
 
     }
 

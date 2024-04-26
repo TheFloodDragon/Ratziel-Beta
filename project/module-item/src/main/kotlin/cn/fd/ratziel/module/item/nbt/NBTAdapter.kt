@@ -66,6 +66,8 @@ object NBTAdapter {
 
     }
 
+    fun adaptNms(target: Any) = NmsAdapter.adapt(target)!!
+
     fun adaptList(target: Iterable<*>): NBTList = ArrayList<Any>().apply {
         target.forEach { unsure -> unsure?.let { add(adapt(it).getData()) } }
     }.let { NBTList(NBTList.new(it)) }
