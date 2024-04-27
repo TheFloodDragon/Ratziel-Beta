@@ -8,10 +8,10 @@ import cn.fd.ratziel.core.util.printOnException
 import cn.fd.ratziel.core.util.priority
 import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.module.item.api.ItemComponent
+import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
-import cn.fd.ratziel.module.item.nbt.NBTCompound
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -75,7 +75,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
     /**
      * 转换
      */
-    fun transform(components: List<ItemComponent>): CompletableFuture<List<NBTCompound>> =
+    fun transform(components: List<ItemComponent>): CompletableFuture<List<ItemData>> =
         FutureFactory {
             components.forEach {
                 supplyAsync(executor) {

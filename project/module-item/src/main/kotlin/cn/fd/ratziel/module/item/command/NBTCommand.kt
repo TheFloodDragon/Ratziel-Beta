@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.command
 
 import cn.fd.ratziel.module.item.nbt.*
-import cn.fd.ratziel.module.item.nbt.NBTCompound.DeepVisitor
+import cn.fd.ratziel.module.item.nbt.DeepVisitor
 import cn.fd.ratziel.module.item.util.getDataBySlot
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender

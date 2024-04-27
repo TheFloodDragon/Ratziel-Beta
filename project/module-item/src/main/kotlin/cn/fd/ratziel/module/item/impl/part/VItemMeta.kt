@@ -1,10 +1,10 @@
 package cn.fd.ratziel.module.item.impl.part
 
+import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.api.part.ItemDurability
 import cn.fd.ratziel.module.item.api.part.ItemMetadata
-import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.util.applyTo
 import kotlinx.serialization.Serializable
 
@@ -20,13 +20,12 @@ data class VItemMeta(
     override var durability: ItemDurability? = null
 ) : ItemMetadata {
 
-    override fun node() = OccupyNode.APEX_NODE
-
-    override fun transform(source: NBTCompound) = source.also { data ->
-        arrayOf(display, durability).forEach { it?.applyTo(data) }
+    override fun getNode() = OccupyNode.APEX_NODE
+    override fun transform(source: ItemData) = source.apply {
+        arrayOf(display, durability).forEach { it?.applyTo(nbt) }
     }
 
-    override fun detransform(from: NBTCompound) {
+    override fun detransform(target: ItemData) {
         TODO("Not yet implemented")
     }
 

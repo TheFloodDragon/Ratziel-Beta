@@ -1,6 +1,6 @@
-package cn.fd.ratziel.module.item.impl.part
+package cn.fd.ratziel.module.item.impl
 
-import cn.fd.ratziel.module.item.api.part.ItemMaterial
+import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.exception.UnknownMaterialException
 import taboolib.library.reflex.ReflexClass
 import taboolib.library.xseries.XMaterial
@@ -43,7 +43,7 @@ data class VItemMaterial(override val name: String) : ItemMaterial {
     /**
      * 材料是否为空气材料
      */
-    val isAir: Boolean get() = bukkitForm.isAir
+    fun isAir() = bukkitForm.isAir || ItemMaterial.isEmpty(this)
 
     /**
      * [BukkitMaterial] 形式 (若获取不到则抛出异常)

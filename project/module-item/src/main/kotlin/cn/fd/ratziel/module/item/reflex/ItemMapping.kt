@@ -9,20 +9,36 @@ package cn.fd.ratziel.module.item.reflex
  */
 @Suppress("SpellCheckingInspection")
 enum class ItemMapping(
-    private val method0: String
+    private val method0: String,
+    private val fallback0: String?,
+    private val fallback1: String?,
 ) {
 
-    DISPLAY("DISPLAY"),
-    DISPLAY_NAME("NAME"),
-    DISPLAY_LORE("LORE"),
-    DISPLAY_LOCAL_NAME("LOCNAME"),
-    ENCHANTMENTS("ENCHANTMENTS"),
-    ATTRIBUTE_MODIFIERS("ATTRIBUTES"),
-    CUSTOM_MODEL_DATA("CUSTOM_MODEL_DATA"),
-    HIDE_FLAG("HIDEFLAGS"),
-    REPAIR_COST("REPAIR"),
-    DAMAGE("DAMAGE"),
-    UNBREAKABLE("UNBREAKABLE");
+    /**
+     * 1.20.4-: static final ItemMetaKey
+     * 1.20.5+: static final ItemMetaKeyType<?>
+     *     static final class ItemMetaKeyType<T> extends ItemMetaKey
+     */
+
+    DISPLAY("DISPLAY", "display", null),
+    DISPLAY_NAME("NAME", "Name", "display-name"),
+    DISPLAY_LORE("LORE", "Lore", "lore"),
+    DISPLAY_LOCAL_NAME("LOCNAME", "LocName", null),
+    ENCHANTMENTS("ENCHANTMENTS", "Enchantments", "enchants"),
+    ATTRIBUTE_MODIFIERS("ATTRIBUTES", "AttributeName", "attribute-modifiers"),
+    CUSTOM_MODEL_DATA("CUSTOM_MODEL_DATA", "CustomModelData", "custom-model-data"),
+    HIDE_FLAG("HIDEFLAGS", "HideFlags", "ItemFlags"),
+    REPAIR_COST("REPAIR", "RepairCost", "repair-cost"),
+    DAMAGE("DAMAGE", "Damage", "Damage"),
+    UNBREAKABLE("UNBREAKABLE", "Unbreakable", "Unbreakable"),
+    ITEM_NAME("ITEM_NAME", null, "item-name"),
+    MAX_DAMAGE("MAX_DAMAGE", null, "max-damage"),
+    FOOD("FOOD", null, "food"),
+    RARITY("RARITY", null, "rarity"),
+    MAX_STACK_SIZE("MAX_STACK_SIZE", null, "max-stack-size"),
+    FIRE_RESISTANT("FIRE_RESISTANT", null, "fire-resistant"),
+    ENCHANTMENT_GLINT_OVERRIDE("ENCHANTMENT_GLINT_OVERRIDE", null, "enchantment-glint-override"),
+    HIDE_TOOLTIP("HIDE_TOOLTIP", null, "hide-tool-tip");
 
     internal val obcKey by lazy {
         RefItemMeta.RefItemMetaKey(method0)
@@ -32,6 +48,7 @@ enum class ItemMapping(
      * 映射后的名字
      */
     val mapping by lazy {
+        //TODO
         obcKey.NMS_NAME ?: error("Unknown fieldName \"${obcKey.fieldName}\" in CraftMetaItem")
     }
 

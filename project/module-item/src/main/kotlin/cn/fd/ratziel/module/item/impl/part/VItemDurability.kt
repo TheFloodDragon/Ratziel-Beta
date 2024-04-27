@@ -2,10 +2,10 @@
 
 package cn.fd.ratziel.module.item.impl.part
 
+import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDurability
 import cn.fd.ratziel.module.item.nbt.NBTByte
-import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.reflex.ItemMapping
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -28,17 +28,19 @@ data class VItemDurability(
     override var unbreakable: Boolean? = null
 ) : ItemDurability {
 
-    override fun node() = OccupyNode.APEX_NODE
+    override fun getNode() = OccupyNode.APEX_NODE
 
     // TODO 未完成
-    override fun transform(source:NBTCompound) = source.addAll(
-        ItemMapping.UNBREAKABLE.mapping to unbreakable?.let { NBTByte(NBTByte.new(it)) },
-        ItemMapping.REPAIR_COST.mapping to repairCost?.let { NBTInt(NBTInt.new(it)) },
-    )
+    override fun transform(source: ItemData) = source.apply {
+        nbt.addAll(
+            ItemMapping.UNBREAKABLE.mapping to unbreakable?.let { NBTByte(NBTByte.new(it)) },
+            ItemMapping.REPAIR_COST.mapping to repairCost?.let { NBTInt(NBTInt.new(it)) },
+        )
+    }
 
-    override fun detransform(from: NBTCompound) {
-        (from[ItemMapping.UNBREAKABLE.mapping] as? NBTByte)?.let { unbreakable = it.contentBoolean }
-        (from[ItemMapping.REPAIR_COST.mapping] as? NBTInt)?.let { repairCost = it.content }
+    override fun detransform(target: ItemData) {
+        (target.nbt[ItemMapping.UNBREAKABLE.mapping] as? NBTByte)?.let { unbreakable = it.contentBoolean }
+        (target.nbt[ItemMapping.REPAIR_COST.mapping] as? NBTInt)?.let { repairCost = it.content }
     }
 
 }

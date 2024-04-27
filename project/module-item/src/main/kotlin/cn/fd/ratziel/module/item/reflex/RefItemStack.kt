@@ -1,10 +1,10 @@
 package cn.fd.ratziel.module.item.reflex
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.module.item.api.part.ItemMaterial
-import cn.fd.ratziel.module.item.impl.part.VItemMaterial
-import cn.fd.ratziel.module.item.impl.part.VItemMaterial.Companion.getBukkitForm
-import cn.fd.ratziel.module.item.impl.part.VItemMaterial.Companion.getIdByReflex
+import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.impl.VItemMaterial
+import cn.fd.ratziel.module.item.impl.VItemMaterial.Companion.getBukkitForm
+import cn.fd.ratziel.module.item.impl.VItemMaterial.Companion.getIdByReflex
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.reflex.RefItemStack.Companion.obcClass
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
@@ -16,7 +16,7 @@ import org.bukkit.Material as BukkitMaterial
 import org.bukkit.inventory.ItemStack as BukkitItemStack
 
 /**
- * RefItemStack
+ * RefItemStack TODO 1.20.5 Support
  *
  * @author TheFloodDragon
  * @since 2024/4/4 11:20

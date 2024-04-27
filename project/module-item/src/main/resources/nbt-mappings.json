@@ -1,0 +1,12 @@
+{
+  "DISPLAY": {
+    "field": "CraftMetaItem:DISPLAY",
+    "m0": "display",
+    "m1": null
+  },
+  "DISPLAY_NAME": {
+    "field": "CraftMetaItem:NAME",
+    "m0": "Name",
+    "m1": "display-name"
+  }
+}

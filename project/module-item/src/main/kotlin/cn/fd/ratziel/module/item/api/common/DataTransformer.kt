@@ -1,17 +1,15 @@
 package cn.fd.ratziel.module.item.api.common
 
+import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NodeDistributor
-import cn.fd.ratziel.module.item.api.Transformable
-import cn.fd.ratziel.module.item.api.Transformer
-import cn.fd.ratziel.module.item.nbt.NBTCompound
 
 /**
- * SimpleDataTransformer
+ * DataTransformer
  *
  * @author TheFloodDragon
- * @since 2024/3/23 13:13
+ * @since 2024/4/27 10:01
  */
-interface DataTransformer<T : Transformable<NBTCompound>> : Transformer<T, NBTCompound> {
+interface DataTransformer<T> {
 
     /**
      * NBT数据的节点分配器
@@ -22,12 +20,11 @@ interface DataTransformer<T : Transformable<NBTCompound>> : Transformer<T, NBTCo
      * 正向转化 - 输出型转化
      * @param source 源标签
      */
-    fun transform(target: T, source: NBTCompound): NBTCompound
+    fun transform(target: T, source: ItemData): ItemData
 
     /**
-     * 正向转化 - 输出型转化
-     * 重写并调用 [transform] 方法, 默认使用空的 [NBTCompound] 作为源数据
+     * 反向转化 - 应用型转换
      */
-    override fun transform(target: T): NBTCompound = transform(target, NBTCompound())
+    fun detransform(target: T, from: ItemData)
 
 }

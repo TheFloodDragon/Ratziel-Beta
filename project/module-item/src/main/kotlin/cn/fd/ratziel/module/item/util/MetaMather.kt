@@ -2,8 +2,8 @@
 
 package cn.fd.ratziel.module.item.util
 
-import cn.fd.ratziel.module.item.api.part.ItemMaterial
-import cn.fd.ratziel.module.item.impl.part.VItemMaterial
+import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.impl.VItemMaterial
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.util.Strings

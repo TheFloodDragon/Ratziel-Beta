@@ -5,10 +5,10 @@ package cn.fd.ratziel.module.item.impl.part
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
 import cn.fd.ratziel.core.serialization.EnhancedList
+import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.common.DataTransformer
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
-import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTList
 import cn.fd.ratziel.module.item.nbt.NBTString
 import cn.fd.ratziel.module.item.reflex.ItemMapping
@@ -46,44 +46,55 @@ data class VItemDisplay(
         this.localizedName = Message.buildMessage(localizedName)
     }
 
-    override fun node() = transformer.node
-    override fun transform(source: NBTCompound) = transformer.transform(this, source)
-    override fun detransform(from: NBTCompound) = transformer.detransform(this, from)
+    override fun getNode() = transformer.node
+    override fun transform(source: ItemData) = transformer.transform(this, source)
+    override fun detransform(target: ItemData) = transformer.detransform(this, target)
 
-    companion object {
+    /**
+     * 低版本 1.8~1.20.4
+     */
+    object TransformerLow : DataTransformer<ItemDisplay> {
 
-        val transformer by lazy {
-            if (MinecraftVersion.isLower(12005)) object : DataTransformer<ItemDisplay> {
+        override val node = OccupyNode(ItemMapping.DISPLAY.mapping, OccupyNode.APEX_NODE)
 
-                override val node = OccupyNode(ItemMapping.DISPLAY.mapping, OccupyNode.APEX_NODE)
+        override fun transform(target: ItemDisplay, source: ItemData) = source.apply {
+            nbt.addAll(
+                ItemMapping.DISPLAY_NAME.mapping to componentToData(target.name),
+                ItemMapping.DISPLAY_LORE.mapping to target.lore?.map { componentToData(it)!!.getData() }?.let { NBTList(NBTList.new(ArrayList(it))) },
+                ItemMapping.DISPLAY_LOCAL_NAME.mapping to componentToData(target.localizedName)
+            )
+        }
 
-                override fun transform(target: ItemDisplay, source: NBTCompound) = source.addAll(
-                    ItemMapping.DISPLAY_NAME.mapping to componentToData(target.name),
-                    ItemMapping.DISPLAY_LORE.mapping to target.lore?.map { componentToData(it)!!.getData() }?.let { NBTList(NBTList.new(ArrayList(it))) },
-                    ItemMapping.DISPLAY_LOCAL_NAME.mapping to componentToData(target.localizedName)
-                )
-
-                override fun detransform(target: ItemDisplay, from: NBTCompound): Unit = target.run {
-                    (from[ItemMapping.DISPLAY_NAME.mapping] as? NBTString)?.let { setName(it.content) }
-                    (from[ItemMapping.DISPLAY_LORE.mapping] as? NBTList)?.let { setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content }) }
-                    (from[ItemMapping.DISPLAY_LOCAL_NAME.mapping] as? NBTString)?.let { setLocalizedName(it.content) }
-                }
-            } else object : DataTransformer<ItemDisplay> {
-
-                override val node = OccupyNode.APEX_NODE
-
-                override fun transform(target: ItemDisplay, source: NBTCompound) = source.apply {
-                    TODO("Not yet implemented")
-                }
-
-                override fun detransform(target: ItemDisplay, from: NBTCompound) = target.run {
-                    TODO("Not yet implemented")
-                }
-
-            }
+        override fun detransform(target: ItemDisplay, from: ItemData): Unit = target.run {
+            (from.nbt[ItemMapping.DISPLAY_NAME.mapping] as? NBTString)?.let { setName(it.content) }
+            (from.nbt[ItemMapping.DISPLAY_LORE.mapping] as? NBTList)?.let { setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content }) }
+            (from.nbt[ItemMapping.DISPLAY_LOCAL_NAME.mapping] as? NBTString)?.let { setLocalizedName(it.content) }
         }
 
         internal fun componentToData(component: Component?): NBTString? = component?.let { NBTString(NBTString.new(transformComponent(it))) }
+
+    }
+
+    /**
+     * 高版本 1.20.5+
+     */
+    object TransformerHigh : DataTransformer<ItemDisplay> {
+
+        override val node = OccupyNode.APEX_NODE
+
+        override fun transform(target: ItemDisplay, source: ItemData) = source.apply {
+            TODO("Not yet implemented")
+        }
+
+        override fun detransform(target: ItemDisplay, from: ItemData) = target.run {
+            TODO("Not yet implemented")
+        }
+
+    }
+
+    companion object {
+
+        val transformer: DataTransformer<ItemDisplay> = if (MinecraftVersion.isLower(12005)) TransformerLow else TransformerHigh
 
         /**
          * Type:
