@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.nbt
 
-import taboolib.common.platform.function.warning
-
 /**
  * NBTCompound
  *
@@ -93,121 +91,44 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), MutableMap
 
     override fun containsKey(key: String) = sourceMap.containsKey(key)
 
-    /**
-     * 深度获取NBT数据
-     */
-    object DeepVisitor {
+    override val entries by lazy {
+        object : AbstractMutableSet<MutableMap.MutableEntry<String, NBTData>>() {
+            override val size get() = sourceMap.entries.size
+            override fun add(element: MutableMap.MutableEntry<String, NBTData>) =
+                sourceMap.entries.add(object : MutableMap.MutableEntry<String, Any> {
+                    override val key get() = element.key
+                    override val value get() = element.value.getData()
+                    override fun setValue(newValue: Any) = element.setValue(NBTAdapter.adaptNms(newValue)).getData()
+                })
 
-        /**
-         * 深度操作分层符
-         */
-        const val DEEP_SEPARATION = "."
-
-        /**
-         * 列表索引标识符
-         */
-        const val LIST_INDEX_START = "["
-
-        const val LIST_INDEX_END = "]"
-
-        /**
-         * 深度获取
-         */
-        fun getDeep(data: NBTCompound, node: String): NBTData? = data.run {
-            getDeepWith(this, node, false) { cpd ->
-                supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
-                    if (index == null) cpd[nodeName]
-                    else (cpd[nodeName] as? NBTList)?.let { it[index] }
+            override fun iterator() = sourceMap.entries.iterator().let { source ->
+                object : MutableIterator<MutableMap.MutableEntry<String, NBTData>> {
+                    override fun hasNext() = source.hasNext()
+                    override fun remove() = source.remove()
+                    override fun next() = source.next().let {
+                        object : MutableMap.MutableEntry<String, NBTData> {
+                            override val key get() = it.key
+                            override val value get() = NBTAdapter.adaptNms(it.value)
+                            override fun setValue(newValue: NBTData) = NBTAdapter.adaptNms(it.setValue(newValue.getData()))
+                        }
+                    }
                 }
             }
         }
-
-        /**
-         * 深度写入
-         */
-        fun putDeep(data: NBTCompound, node: String, value: NBTData, checkList: Boolean) = data.apply {
-            getDeepWith(this, node, true) { cpd ->
-                supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
-                    if (index == null) cpd[nodeName] = value
-                    else ((cpd[nodeName] ?: NBTList().also { cpd[nodeName] = it }) as? NBTList)?.apply { setSafely(index, value, checkList) }
-                }
-            }
-        }
-
-        /**
-         * 深度删除
-         */
-        fun removeDeep(data: NBTCompound, node: String) = data.apply {
-            getDeepWith(this, node, false) { cpd ->
-                supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
-                    if (index == null) cpd.remove(nodeName)
-                    else (cpd[nodeName] as? NBTList)?.apply { removeAt(index) }
-                }
-            }
-        }
-
-        /**
-         * 针对"深度方法"的重复代码做出的优化
-         */
-        fun getDeepWith(data: NBTCompound, node: String, create: Boolean, action: (NBTCompound) -> Any?): NBTData? = data.apply {
-            if (!node.contains(DEEP_SEPARATION)) return action(data) as? NBTData
-            // 分割节点 (丢弃最后一层)
-            val keys = node.split(DEEP_SEPARATION).dropLast(1)
-            // 找到的标签
-            var find: NBTCompound = this
-            // 遍历各级节点
-            for (element in keys) {
-                var next = find.getDeep(element) // 下一级节点
-                if (next == null) {
-                    if (create) {
-                        next = NBTCompound(new())
-                        find.putDeep(element, next)
-                    } else return null
-                }
-                // 如果下一级节点还是复合标签,则代表可以继续获取
-                if (next is NBTCompound) find = next else return null
-            }
-            return action(find) as? NBTData
-        }
-
-        /**
-         * 分割节点以获取索引值
-         */
-        private fun splitListOrNull(node: String): Pair<String, Int?> {
-            if (node.contains(LIST_INDEX_START) && node.contains(LIST_INDEX_END)) {
-                val nodeName = node.substringBeforeLast(LIST_INDEX_START)
-                val index = node.substring(node.lastIndexOf(LIST_INDEX_START) + LIST_INDEX_START.length, node.lastIndexOf(LIST_INDEX_END))
-                return nodeName to index.toInt()
-            } else return node to null
-        }
-
-        private fun <R> supportList(node: String, action: (Pair<String, Int?>) -> R) = splitListOrNull(node).let(action)
-
     }
 
-    /**
-     * 不安全方法
-     */
-
-    override val entries: MutableSet<MutableMap.MutableEntry<String, NBTData>>
-        get() {
-            warning("It's unsafe to use: NBTCompound.entries")
-            return sourceMap.entries.map {
-                object : MutableMap.MutableEntry<String, NBTData> {
-                    override val key: String
-                        get() = it.key
-                    override val value: NBTData
-                        get() = NBTAdapter.adaptNms(it.value)
-
-                    override fun setValue(newValue: NBTData) = it.setValue(newValue.getData()).let { o -> NBTAdapter.adaptNms(o) }
+    override val values by lazy {
+        object : AbstractMutableCollection<NBTData>() {
+            override fun add(element: NBTData) = sourceMap.values.add(element.getData())
+            override val size get() = sourceMap.values.size
+            override fun iterator() = sourceMap.values.iterator().let {
+                object : MutableIterator<NBTData> {
+                    override fun hasNext() = it.hasNext()
+                    override fun next() = NBTAdapter.adaptNms(it.next())
+                    override fun remove() = it.remove()
                 }
-            }.toMutableSet()
+            }
         }
-
-    override val values: MutableCollection<NBTData>
-        get() {
-            warning("It's unsafe to use: NBTCompound.values")
-            return sourceMap.values.map { NBTAdapter.adaptNms(it) }.toMutableList()
-        }
+    }
 
 }

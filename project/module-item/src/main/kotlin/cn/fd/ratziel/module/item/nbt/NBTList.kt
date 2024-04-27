@@ -1,9 +1,5 @@
 package cn.fd.ratziel.module.item.nbt
 
-import taboolib.common.platform.function.warning
-import taboolib.library.reflex.Reflex.Companion.invokeConstructor
-import taboolib.library.reflex.Reflex.Companion.invokeMethod
-
 /**
  * NBTList
  *
@@ -60,6 +56,14 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<NBTDat
      */
     fun clone() = this.apply { data = NMSUtil.NtList.methodClone.invoke(data)!! }
 
+    companion object {
+
+        fun new() = new(ArrayList())
+
+        fun new(list: List<Any>) = NMSUtil.NtList.constructor.instance(list, 0.toByte())!!
+
+    }
+
     /**
      * 列表是否为空
      */
@@ -83,38 +87,33 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<NBTDat
 
     override fun addAll(index: Int, elements: Collection<NBTData>) = sourceList.addAll(index, elements.map { it.getData() })
 
-    companion object {
-
-        fun new() = new(ArrayList())
-
-        fun new(list: List<Any>) = NMSUtil.NtList.constructor.instance(list, 0.toByte())!!
-
+    override fun subList(fromIndex: Int, toIndex: Int) = object : AbstractMutableList<NBTData>() {
+        val source = sourceList.subList(fromIndex, toIndex)
+        override fun add(index: Int, element: NBTData) = source.add(index, element.getData())
+        override val size: Int get() = source.size
+        override fun get(index: Int) = NBTAdapter.adaptNms(source[index])
+        override fun removeAt(index: Int) = NBTAdapter.adaptNms(source.removeAt(index))
+        override fun set(index: Int, element: NBTData) = NBTAdapter.adaptNms(source.set(index, element.getData()))
     }
 
-    /**
-     * 不安全方法
-     */
-
-    override fun subList(fromIndex: Int, toIndex: Int): MutableList<NBTData> {
-        warning("It's unsafe to use: NBTList.subList")
-        ArrayList::class.java.invokeMethod<Any?>("subListRangeCheck", isStatic = true)
-        return Class.forName("java.util.ArrayList\$SubList").invokeConstructor(this, fromIndex, toIndex) as MutableList<NBTData>
-    }
-
-
-    override fun iterator(): MutableIterator<NBTData> {
-        warning("It's unsafe to use: NBTList.iterator")
-        return Class.forName("java.util.ArrayList\$Itr").invokeConstructor() as MutableIterator<NBTData>
-    }
+    override fun iterator() = listIterator()
 
     override fun listIterator() = listIterator(0)
 
-    override fun listIterator(index: Int): MutableListIterator<NBTData> {
-        warning("It's unsafe to use: NBTList.listIterator")
-        if (index < 0 || index > size) throw IndexOutOfBoundsException("Index: $index")
-        return Class.forName("java.util.ArrayList\$ListItr").invokeConstructor(index) as MutableListIterator<NBTData>
+    override fun listIterator(index: Int) = sourceList.listIterator().let { source ->
+        object : MutableListIterator<NBTData> {
+            override fun add(element: NBTData) = source.add(element.getData())
+            override fun hasNext() = source.hasNext()
+            override fun hasPrevious() = source.hasPrevious()
+            override fun next() = NBTAdapter.adaptNms(source.next())
+            override fun nextIndex() = source.nextIndex()
+            override fun previous() = NBTAdapter.adaptNms(source.previous())
+            override fun previousIndex() = source.previousIndex()
+            override fun remove() = source.remove()
+            override fun set(element: NBTData) = source.set(element.getData())
+        }
     }
 
-    override fun retainAll(elements: Collection<NBTData>) = throw UnsupportedOperationException("It's unsupported to invoke function: MutableList.retainAll")
+    override fun retainAll(elements: Collection<NBTData>) = sourceList.retainAll(elements.map { it.getData() })
 
 }
