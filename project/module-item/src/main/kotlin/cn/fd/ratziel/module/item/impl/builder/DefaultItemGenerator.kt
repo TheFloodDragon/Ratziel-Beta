@@ -2,8 +2,8 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.core.serialization.baseJson
+import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.core.util.printOnException
 import cn.fd.ratziel.core.util.priority
 import cn.fd.ratziel.core.util.sortPriority
@@ -49,7 +49,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
     fun resolve(element: JsonElement): CompletableFuture<JsonObject> = ConcurrentHashMap<String, JsonElement>().let { map ->
         FutureFactory {
             resolvers.sortPriority().forEach {
-                supplyAsync(executor) {
+                submitAsync(executor) {
                     it.resolve(element).also { resolved ->
                         (resolved as? JsonObject)?.forEach {
                             map[it.key] = it.value
@@ -66,7 +66,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
     fun serialize(element: JsonElement): CompletableFuture<List<ItemComponent>> =
         FutureFactory {
             serializers.sortPriority().forEach {
-                supplyAsync(executor) {
+                submitAsync(executor) {
                     it.deserialize(element)
                 }.printOnException().submit()
             }
@@ -78,7 +78,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
     fun transform(components: List<ItemComponent>): CompletableFuture<List<ItemData>> =
         FutureFactory {
             components.forEach {
-                supplyAsync(executor) {
+                submitAsync(executor) {
                     it.transform()
                 }.printOnException().submit()
             }

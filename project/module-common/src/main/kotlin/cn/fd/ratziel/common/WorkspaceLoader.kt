@@ -43,7 +43,7 @@ object WorkspaceLoader {
             WorkspaceManager.getFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
-                    supplyAsync(ApexElementEvaluator.executor) {
+                    submitAsync(ApexElementEvaluator.executor) {
                         DefaultElementLoader.load(file).forEach {
                             cachedElements += it  // 插入缓存
                             ApexElementEvaluator.handleElement(it) // 处理元素

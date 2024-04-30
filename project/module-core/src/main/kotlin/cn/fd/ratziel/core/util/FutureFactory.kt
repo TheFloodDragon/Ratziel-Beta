@@ -8,6 +8,11 @@ import java.util.function.Function
 import java.util.function.Supplier
 
 /**
+ * 捕获异常并打印
+ */
+inline fun <T> CompletableFuture<T>.printOnException(): CompletableFuture<T> = this.exceptionally { it.printStackTrace();null }
+
+/**
  * 简化多异步任务的过程
  */
 inline fun <T> FutureFactory(block: FutureFactory<T>.() -> Unit) = FutureFactory<T>().apply(block)
@@ -18,31 +23,28 @@ inline fun <T> FutureFactory(block: FutureFactory<T>.() -> Unit) = FutureFactory
  * @author TheFloodDragon
  * @since 2023/11/19 11:27
  */
-open class FutureFactory<T> {
-
+open class FutureFactory<T>(
     /**
-     * 提交的任务列表
+     * 任务列表
      */
-    protected open val tasks: ConcurrentLinkedQueue<CompletableFuture<T?>> = ConcurrentLinkedQueue()
+    protected open val tasks: MutableCollection<CompletableFuture<T>>
+) : MutableCollection<CompletableFuture<T>> by tasks {
 
-    /**
-     * 清空所有任务
-     */
-    open fun clear() = tasks.clear()
+    constructor() : this(ConcurrentLinkedQueue())
 
     /**
      * 提交任务
      */
-    open fun submitFuture(task: CompletableFuture<T?>) = task.also { tasks += it }
+    open fun submitTask(task: CompletableFuture<T>) = task.also { tasks += it }
 
-    open fun CompletableFuture<T?>.submit() = submitFuture(this)
+    open fun CompletableFuture<T>.submit() = submitTask(this)
 
     /**
-     * 创建异步任务但不提交
+     * 创建异步任务并提交
      */
-    open fun supplyAsync(function: Supplier<T?>) = CompletableFuture.supplyAsync(function)
+    open fun submitAsync(function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function))
 
-    open fun supplyAsync(executor: Executor, function: Supplier<T?>) = CompletableFuture.supplyAsync(function, executor)
+    open fun submitAsync(executor: Executor, function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function, executor))
 
     /**
      * 当所有任务完成时 (非阻塞)

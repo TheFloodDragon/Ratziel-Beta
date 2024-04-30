@@ -22,16 +22,16 @@ import org.bukkit.inventory.ItemStack as BukkitItemStack
  * @author TheFloodDragon
  * @since 2024/4/4 11:20
  */
-class RefItemStack(rawData: Any) {
+class RefItemStack(raw: Any) {
 
     /**
      * ItemStack的CraftBukkit处理对象
      */
     private var handle: Any? = when {
-        isObcClass(rawData::class.java) -> rawData // CraftItemStack
-        isNmsClass(rawData::class.java) -> newObc(rawData) // nms.ItemStack
-        BukkitItemStack::class.java.isAssignableFrom(rawData::class.java) -> newObc(rawData) // an impl of interface bukkit.ItemStack
-        else -> throw UnsupportedTypeException(rawData) // Unsupported Type
+        isObcClass(raw::class.java) -> raw // CraftItemStack
+        isNmsClass(raw::class.java) -> newObc(raw) // nms.ItemStack
+        BukkitItemStack::class.java.isAssignableFrom(raw::class.java) -> newObc(raw) // an impl of interface bukkit.ItemStack
+        else -> throw UnsupportedTypeException(raw) // Unsupported Type
     }
 
     /**
