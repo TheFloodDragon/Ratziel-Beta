@@ -5,7 +5,7 @@ import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.element.evaluator.ApexElementEvaluator
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.function.FutureFactory
+import cn.fd.ratziel.core.util.FutureFactory
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender

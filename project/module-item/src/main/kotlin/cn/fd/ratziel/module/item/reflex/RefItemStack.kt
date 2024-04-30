@@ -6,6 +6,7 @@ import cn.fd.ratziel.module.item.impl.VItemMaterial
 import cn.fd.ratziel.module.item.impl.VItemMaterial.Companion.getBukkitForm
 import cn.fd.ratziel.module.item.impl.VItemMaterial.Companion.getIdByReflex
 import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.module.item.reflex.NMSItem.Companion.nmsClass
 import cn.fd.ratziel.module.item.reflex.RefItemStack.Companion.obcClass
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.ReflexClass
@@ -16,7 +17,7 @@ import org.bukkit.Material as BukkitMaterial
 import org.bukkit.inventory.ItemStack as BukkitItemStack
 
 /**
- * RefItemStack TODO 1.20.5 Support
+ * RefItemStack
  *
  * @author TheFloodDragon
  * @since 2024/4/4 11:20
@@ -36,16 +37,12 @@ class RefItemStack(rawData: Any) {
     /**
      * 获取物品NBT数据
      */
-    fun getData(): NBTCompound? = getAsNms()?.let {
-        if (MinecraftVersion.isHigherOrEqual(12005)) {
-            TODO("操你妈去实现")
-        } else nmsTagField.get(it)
-    }?.let { NBTCompound(it) }
+    fun getData(): NBTCompound? = getAsNms()?.let { NMSItem.instance.getItemNBT(it) }?.let { NBTCompound(it) }
 
     /**
-     * 获取物品NBT数据
+     * 设置物品NBT数据
      */
-    fun setData(nbt: NBTCompound) = getAsNms()?.let { nmsTagField.set(it, nbt.getData()) }
+    fun setData(data: NBTCompound) = getAsNms()?.let { NMSItem.instance.setItemNBT(it, data.getData()) }
 
     /**
      * 获取物品材料
@@ -118,20 +115,6 @@ class RefItemStack(rawData: Any) {
          */
         val obcClass by lazy { obcClass("inventory.CraftItemStack") }
 
-        /**
-         * nms.ItemStack
-         *   1.17+ net.minecraft.world.item.ItemStack
-         *   1.17- net.minecraft.server.$VERSION.ItemStack
-         */
-        val nmsClass by lazy { nmsClass("ItemStack") }
-
-        /**
-         * [net.minecraft.core.component.DataComponents]
-         */
-        val dataComponentsClass by lazy {
-            net.minecraft.core.component.DataComponents::class.java
-        }
-
         fun newObc() = obcClass.invokeConstructor()
 
         // private CraftItemStack(nms.ItemStack item)
@@ -157,38 +140,6 @@ class RefItemStack(rawData: Any) {
          * 检查类是否为[nmsClass]
          */
         fun isNmsClass(clazz: Class<*>) = nmsClass.isAssignableFrom(clazz)
-
-        /**
-         * 1.20.4-
-         * private NBTTagCompound A
-         * private NBTTagCompound tag
-         */
-        internal val nmsTagField by lazy {
-            if (MinecraftVersion.isHigherOrEqual(12005)) throw UnsupportedOperationException("RefItemStack#nmsTagField only support 1.20.4 or lower!")
-            ReflexClass.of(nmsClass).structure.getField(
-                if (MinecraftVersion.isUniversal) "A" else "tag"
-            )
-        }
-
-        /**
-         * 1.20.5+
-         * final PatchedDataComponentMap r
-         */
-        internal val nmsComponentField by lazy {
-            if (MinecraftVersion.isLower(12005)) throw UnsupportedOperationException("RefItemStack#nmsComponentField only support 1.20.5 or higher!")
-            ReflexClass.of(nmsClass).structure.getField("r")
-        }
-
-        // public nms.ItemStack p()
-        // public nms.ItemStack cloneItemStack()
-        // public ItemStack s()
-        internal val nmsCloneMethod by lazy {
-            ReflexClass.of(nmsClass).structure.getMethodByType(
-                if (MinecraftVersion.isHigherOrEqual(12005)) "s"
-                else if (MinecraftVersion.isUniversal) "p"
-                else "cloneItemStack"
-            )
-        }
 
         // net.minecraft.world.item.ItemStack handle;
         internal val obcHandleField by lazy {

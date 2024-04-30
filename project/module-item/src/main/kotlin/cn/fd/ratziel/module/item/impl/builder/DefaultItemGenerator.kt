@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.function.FutureFactory
+import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.util.printOnException
 import cn.fd.ratziel.core.util.priority

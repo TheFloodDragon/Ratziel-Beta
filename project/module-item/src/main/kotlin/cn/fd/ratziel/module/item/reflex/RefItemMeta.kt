@@ -8,6 +8,8 @@ import org.bukkit.enchantments.Enchantment
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
+import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.nmsProxy
 import taboolib.module.nms.obcClass
 
 /**
@@ -16,83 +18,97 @@ import taboolib.module.nms.obcClass
  * @author TheFloodDragon
  * @since 2023/10/22 10:14
  */
-object RefItemMeta {
+abstract class RefItemMeta {
 
-    val clazz by lazy { obcClass("inventory.CraftMetaItem") }
+    // TODO(完善)
 
-    /**
-     * CraftMetaItem#constructor(NBTTagCompound)
-     * @return CraftMetaItem
-     */
-    fun new(value: Any) = clazz.invokeConstructor(value)
+    companion object {
 
-    /**
-     * 创建空对象
-     */
-    fun new() = new(NBTCompound.new())
+        val instance by lazy { nmsProxy<RefItemMeta>() }
+
+        val obcClass by lazy { obcClass("inventory.CraftMetaItem") }
+
+        /**
+         * CraftMetaItem#constructor(NBTTagCompound)
+         * @return CraftMetaItem
+         */
+        fun new(value: Any) = obcClass.invokeConstructor(value)
+
+        /**
+         * 创建空对象
+         */
+        fun new() = new(NBTCompound.new())
+
+    }
 
     /**
      * CraftMetaItem#applyToItem(NBTTagCompound)
      * @param craft CraftMetaItem
      * @param nbtTag NBTTagCompound
      */
-    @JvmStatic
     fun applyToItem(craft: Any, nbtTag: Any) {
         craft.invokeMethod<Void>("applyToItem", nbtTag)
     }
 
+    internal val ENCHANTMENTS_KEY by lazy {
+        obcClass.getProperty<Any>("ENCHANTMENTS", isStatic = true)
+    }
 
     /**
-     * Enchantments to NmsTag
+     * Enchantments to NBTTagCompound
      * CraftMetaItem#applyEnchantments(Map<Enchantment,Int>,NBTTagCompound,ItemMetaKey);Static
      */
     fun applyEnchantments(nbtTag: Any, enchantments: Map<Enchantment, Int>) =
-        clazz.invokeMethod<Void>(
+        obcClass.invokeMethod<Void>(
             "applyEnchantments", enchantments, nbtTag,
-            ItemMapping.ENCHANTMENTS.obcKey.obcData, isStatic = true
-        )
-
-
-    /**
-     * AttributeModifiers to NmsTag
-     * CraftMetaItem#applyModifiers(MultiMap<Attribute,AttributeModifier>,NBTTagCompound,ItemMetaKey);Static
-     */
-    fun applyModifiers(nbtTag: Any, modifiers: Multimap<Attribute, AttributeModifier>) =
-        clazz.invokeMethod<Void>(
-            "applyModifiers", modifiers, nbtTag,
-            ItemMapping.ATTRIBUTE_MODIFIERS.obcKey.obcData, isStatic = true
+            ENCHANTMENTS_KEY, isStatic = true
         )
 
     /**
-     * NmsTag to AttributeModifiers
-     * CraftMetaItem#buildModifiers(NBTTagCompound,ItemMetaKey):MultiMap<Attribute,AttributeModifier>;Static
-     */
-    fun buildModifiers(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
-        clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
-            "buildModifiers", nbtTag,
-            ItemMapping.ATTRIBUTE_MODIFIERS.obcKey.obcData, isStatic = true
-        )!!
-
-    /**
-     * NmsTag to Enchantments
+     * NBTTagCompound to Enchantments
      * CraftMetaItem#buildEnchantments(NBTTagCompound,ItemMetaKey):Map<Enchantment,Integer>;Static
      */
     fun buildEnchantments(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
-        clazz.invokeMethod<Multimap<Attribute, AttributeModifier>>(
+        obcClass.invokeMethod<Multimap<Attribute, AttributeModifier>>(
             "buildEnchantments", nbtTag,
-            ItemMapping.ENCHANTMENTS.obcKey.obcData, isStatic = true
+            ENCHANTMENTS_KEY, isStatic = true
+        )!!
+
+
+    /**
+     * AttributeModifiers to NBTTagCompound
+     * CraftMetaItem#applyModifiers(MultiMap<Attribute,AttributeModifier>,NBTTagCompound,ItemMetaKey);Static
+     */
+    fun applyModifiers(nbtTag: Any, modifiers: Multimap<Attribute, AttributeModifier>) =
+        obcClass.invokeMethod<Void>(
+            "applyModifiers", modifiers, nbtTag,
+            obcClass.getProperty("ATTRIBUTES", isStatic = true), isStatic = true
+        )
+
+    /**
+     * NBTTagCompound to AttributeModifiers
+     * CraftMetaItem#buildModifiers(NBTTagCompound,ItemMetaKey):MultiMap<Attribute,AttributeModifier>;Static
+     */
+    fun buildModifiers(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
+        obcClass.invokeMethod<Multimap<Attribute, AttributeModifier>>(
+            if (MinecraftVersion.isHigherOrEqual(12005)) "buildModifiersLegacy" else "buildModifiers", nbtTag,
+            obcClass.getProperty("ATTRIBUTES", isStatic = true), isStatic = true
         )!!
 
     /**
-     * CraftMetaItem中的ItemMetaKey
+     * CraftMetaItem.ItemMetaKey
+     * 其他:
+     * 1.20.4-: static final ItemMetaKey
+     * 1.20.5+: static final ItemMetaKeyType<?>
+     *     static final class ItemMetaKeyType<T> extends ItemMetaKey
      */
-    internal class RefItemMetaKey(val fieldName: String) {
+    class RefItemMetaKey(val fieldName: String, val targetClass: Class<*> = obcClass) {
 
-        val obcData by lazy { clazz.getProperty<Any?>(fieldName, isStatic = true) }
+        val obcData by lazy { targetClass.getProperty<Any>(fieldName, isStatic = true)!! }
 
-        val NMS_NAME by lazy { obcData?.getProperty<String>("NBT") }
+        val nmsName by lazy { obcData.getProperty<String>("NBT")!! }
 
-        val BUKKIT_NAME by lazy { obcData?.getProperty<String>("BUKKIT") }
+        val bukkitName by lazy { obcData.getProperty<String>("BUKKIT")!! }
 
     }
 

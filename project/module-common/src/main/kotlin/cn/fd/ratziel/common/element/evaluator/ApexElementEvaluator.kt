@@ -4,7 +4,7 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementEvaluator
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
-import cn.fd.ratziel.core.function.FutureFactory
+import cn.fd.ratziel.core.util.FutureFactory
 import java.util.concurrent.Executors
 import kotlin.time.Duration
 

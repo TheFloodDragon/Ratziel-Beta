@@ -11,7 +11,7 @@ import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.nbt.NBTList
 import cn.fd.ratziel.module.item.nbt.NBTString
-import cn.fd.ratziel.module.item.reflex.ItemMapping
+import cn.fd.ratziel.module.item.reflex.ItemSheet
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -55,20 +55,20 @@ data class VItemDisplay(
      */
     object TransformerLow : DataTransformer<ItemDisplay> {
 
-        override val node = OccupyNode(ItemMapping.DISPLAY.mapping, OccupyNode.APEX_NODE)
+        override val node = OccupyNode(ItemSheet.DISPLAY, OccupyNode.APEX_NODE)
 
         override fun transform(target: ItemDisplay, source: ItemData) = source.apply {
             nbt.addAll(
-                ItemMapping.DISPLAY_NAME.mapping to componentToData(target.name),
-                ItemMapping.DISPLAY_LORE.mapping to target.lore?.map { componentToData(it)!!.getData() }?.let { NBTList(NBTList.new(ArrayList(it))) },
-                ItemMapping.DISPLAY_LOCAL_NAME.mapping to componentToData(target.localizedName)
+                ItemSheet.DISPLAY_NAME to componentToData(target.name),
+                ItemSheet.DISPLAY_LORE to target.lore?.map { componentToData(it)!!.getData() }?.let { NBTList(NBTList.new(ArrayList(it))) },
+                ItemSheet.DISPLAY_LOCAL_NAME to componentToData(target.localizedName)
             )
         }
 
         override fun detransform(target: ItemDisplay, from: ItemData): Unit = target.run {
-            (from.nbt[ItemMapping.DISPLAY_NAME.mapping] as? NBTString)?.let { setName(it.content) }
-            (from.nbt[ItemMapping.DISPLAY_LORE.mapping] as? NBTList)?.let { setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content }) }
-            (from.nbt[ItemMapping.DISPLAY_LOCAL_NAME.mapping] as? NBTString)?.let { setLocalizedName(it.content) }
+            (from.nbt[ItemSheet.DISPLAY_NAME] as? NBTString)?.let { setName(it.content) }
+            (from.nbt[ItemSheet.DISPLAY_LORE] as? NBTList)?.let { setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content }) }
+            (from.nbt[ItemSheet.DISPLAY_LOCAL_NAME] as? NBTString)?.let { setLocalizedName(it.content) }
         }
 
         internal fun componentToData(component: Component?): NBTString? = component?.let { NBTString(NBTString.new(transformComponent(it))) }

@@ -1,7 +1,6 @@
 package cn.fd.ratziel.compat
 
 import cn.fd.ratziel.core.function.ClassProvider
-import cn.fd.ratziel.core.function.loadClassOrNull
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.*
@@ -67,8 +66,8 @@ class CompatibleClassLoader(urls: Array<URL>, parent: ClassLoader) : URLClassLoa
                     }
                 }
             }
-            // 尝试让父类加载器加载, 无法时加载抛出异常
-            if (c == null) c = parent.loadClassOrNull(name) ?: throw ClassNotFoundException()
+            // 尝试让父类加载器加载
+            if (c == null) c = parent.loadClass(name)
             // 连接类
             if (resolve) this.resolveClass(c)
         }
