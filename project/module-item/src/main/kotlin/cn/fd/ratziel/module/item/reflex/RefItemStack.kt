@@ -36,7 +36,11 @@ class RefItemStack(rawData: Any) {
     /**
      * 获取物品NBT数据
      */
-    fun getData(): NBTCompound? = getAsNms()?.let { nmsTagField.get(it) }?.let { NBTCompound(it) }
+    fun getData(): NBTCompound? = getAsNms()?.let {
+        if (MinecraftVersion.isHigherOrEqual(12005)) {
+            TODO("操你妈去实现")
+        } else nmsTagField.get(it)
+    }?.let { NBTCompound(it) }
 
     /**
      * 获取物品NBT数据
@@ -121,6 +125,13 @@ class RefItemStack(rawData: Any) {
          */
         val nmsClass by lazy { nmsClass("ItemStack") }
 
+        /**
+         * [net.minecraft.core.component.DataComponents]
+         */
+        val dataComponentsClass by lazy {
+            net.minecraft.core.component.DataComponents::class.java
+        }
+
         fun newObc() = obcClass.invokeConstructor()
 
         // private CraftItemStack(nms.ItemStack item)
@@ -147,19 +158,35 @@ class RefItemStack(rawData: Any) {
          */
         fun isNmsClass(clazz: Class<*>) = nmsClass.isAssignableFrom(clazz)
 
-        // private NBTTagCompound A
-        // private NBTTagCompound tag
+        /**
+         * 1.20.4-
+         * private NBTTagCompound A
+         * private NBTTagCompound tag
+         */
         internal val nmsTagField by lazy {
+            if (MinecraftVersion.isHigherOrEqual(12005)) throw UnsupportedOperationException("RefItemStack#nmsTagField only support 1.20.4 or lower!")
             ReflexClass.of(nmsClass).structure.getField(
                 if (MinecraftVersion.isUniversal) "A" else "tag"
             )
         }
 
+        /**
+         * 1.20.5+
+         * final PatchedDataComponentMap r
+         */
+        internal val nmsComponentField by lazy {
+            if (MinecraftVersion.isLower(12005)) throw UnsupportedOperationException("RefItemStack#nmsComponentField only support 1.20.5 or higher!")
+            ReflexClass.of(nmsClass).structure.getField("r")
+        }
+
         // public nms.ItemStack p()
         // public nms.ItemStack cloneItemStack()
+        // public ItemStack s()
         internal val nmsCloneMethod by lazy {
             ReflexClass.of(nmsClass).structure.getMethodByType(
-                if (MinecraftVersion.isUniversal) "p" else "cloneItemStack"
+                if (MinecraftVersion.isHigherOrEqual(12005)) "s"
+                else if (MinecraftVersion.isUniversal) "p"
+                else "cloneItemStack"
             )
         }
 

@@ -87,13 +87,14 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<NBTDat
 
     override fun addAll(index: Int, elements: Collection<NBTData>) = sourceList.addAll(index, elements.map { it.getData() })
 
-    override fun subList(fromIndex: Int, toIndex: Int) = object : AbstractMutableList<NBTData>() {
-        val source = sourceList.subList(fromIndex, toIndex)
-        override fun add(index: Int, element: NBTData) = source.add(index, element.getData())
-        override val size: Int get() = source.size
-        override fun get(index: Int) = NBTAdapter.adaptNms(source[index])
-        override fun removeAt(index: Int) = NBTAdapter.adaptNms(source.removeAt(index))
-        override fun set(index: Int, element: NBTData) = NBTAdapter.adaptNms(source.set(index, element.getData()))
+    override fun subList(fromIndex: Int, toIndex: Int) = sourceList.subList(fromIndex, toIndex).let { source ->
+        object : AbstractMutableList<NBTData>() {
+            override fun add(index: Int, element: NBTData) = source.add(index, element.getData())
+            override val size: Int get() = source.size
+            override fun get(index: Int) = NBTAdapter.adaptNms(source[index])
+            override fun removeAt(index: Int) = NBTAdapter.adaptNms(source.removeAt(index))
+            override fun set(index: Int, element: NBTData) = NBTAdapter.adaptNms(source.set(index, element.getData()))
+        }
     }
 
     override fun iterator() = listIterator()

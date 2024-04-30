@@ -15,7 +15,7 @@ dependencies {
 
 taboolib {
     env {
-        install(BUKKIT_ALL, KETHER, NMS_UTIL, EXPANSION_PLAYER_FAKE_OP)
+        install(BUKKIT_ALL, KETHER, EXPANSION_PLAYER_FAKE_OP, "module-nms", "module-nms-util-stable")
     }
     description {
         dependencies {
