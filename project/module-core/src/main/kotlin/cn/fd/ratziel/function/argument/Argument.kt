@@ -9,13 +9,13 @@ package cn.fd.ratziel.function.argument
 interface Argument<T> {
 
     /**
-     * 参数类型
-     */
-    val type: Class<*>
-
-    /**
      * 参数的值
      */
     val value: T
+
+    /**
+     * 参数类型
+     */
+    val type: Class<out T>
 
 }
