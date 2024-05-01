@@ -57,12 +57,12 @@ object WorkspaceLoader {
             WorkspaceManager.getFilteredFiles()
                 .forEach { file ->
                     // 加载元素文件
-                    submitAsync(executor) {
+                    CompletableFuture.supplyAsync({
                         DefaultElementLoader.load(file).onEach {
                             evaluator.submitWith(it) // 提交到评估器
                             cachedElements += it // 插入缓存
                         }
-                    }.printOnException()
+                    }, executor).printOnException().submit()
                 }
         }.thenRun {
             // 评估器开始评估

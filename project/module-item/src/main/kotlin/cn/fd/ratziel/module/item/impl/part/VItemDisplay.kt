@@ -55,20 +55,31 @@ data class VItemDisplay(
      */
     object TransformerLow : DataTransformer<ItemDisplay> {
 
-        override val node = OccupyNode(ItemSheet.DISPLAY, OccupyNode.APEX_NODE)
+        override val node by lazy { OccupyNode(ItemSheet.DISPLAY, OccupyNode.APEX_NODE) }
 
-        override fun transform(target: ItemDisplay, source: ItemData) = source.apply {
-            nbt.addAll(
+        fun transformDisplay(target: ItemDisplay, source: ItemData) {
+            source.nbt.addAll(
                 ItemSheet.DISPLAY_NAME to componentToData(target.name),
-                ItemSheet.DISPLAY_LORE to target.lore?.map { componentToData(it)!!.getData() }?.let { NBTList(NBTList.new(ArrayList(it))) },
-                ItemSheet.DISPLAY_LOCAL_NAME to componentToData(target.localizedName)
+                ItemSheet.DISPLAY_LORE to target.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) }
             )
         }
 
-        override fun detransform(target: ItemDisplay, from: ItemData): Unit = target.run {
-            (from.nbt[ItemSheet.DISPLAY_NAME] as? NBTString)?.let { setName(it.content) }
-            (from.nbt[ItemSheet.DISPLAY_LORE] as? NBTList)?.let { setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content }) }
-            (from.nbt[ItemSheet.DISPLAY_LOCAL_NAME] as? NBTString)?.let { setLocalizedName(it.content) }
+        fun detransformDisplay(target: ItemDisplay, source: ItemData) {
+            val name = source.nbt[ItemSheet.DISPLAY_NAME] as? NBTString
+            val lore = source.nbt[ItemSheet.DISPLAY_LORE] as? NBTList
+            if (name != null) target.setName(name.content)
+            if (lore != null) target.setLore(lore.content.mapNotNull { line -> (line as? NBTString)?.content })
+        }
+
+        override fun transform(target: ItemDisplay, source: ItemData) {
+            transformDisplay(target, source)
+            source.nbt[ItemSheet.DISPLAY_LOCAL_NAME] = componentToData(target.localizedName)
+        }
+
+        override fun detransform(target: ItemDisplay, source: ItemData) {
+            detransformDisplay(target, source)
+            val locName = source.nbt[ItemSheet.DISPLAY_LOCAL_NAME] as? NBTString
+            if (locName != null) target.setLocalizedName(locName.content)
         }
 
         internal fun componentToData(component: Component?): NBTString? = component?.let { NBTString(NBTString.new(transformComponent(it))) }
@@ -82,19 +93,22 @@ data class VItemDisplay(
 
         override val node = OccupyNode.APEX_NODE
 
-        override fun transform(target: ItemDisplay, source: ItemData) = source.apply {
-            TODO("Not yet implemented")
+        override fun transform(target: ItemDisplay, source: ItemData) {
+            TransformerLow.transformDisplay(target, source)
+            source.nbt[ItemSheet.ITEM_NAME] = TransformerLow.componentToData(target.localizedName)
         }
 
-        override fun detransform(target: ItemDisplay, from: ItemData) = target.run {
-            TODO("Not yet implemented")
+        override fun detransform(target: ItemDisplay, source: ItemData) {
+            TransformerLow.detransformDisplay(target, source)
+            val itemName = source.nbt[ItemSheet.ITEM_NAME] as? NBTString
+            if (itemName != null) target.setLocalizedName(itemName.content)
         }
 
     }
 
     companion object {
 
-        val transformer: DataTransformer<ItemDisplay> = if (MinecraftVersion.isLower(12005)) TransformerLow else TransformerHigh
+        val transformer: DataTransformer<ItemDisplay> = if (MinecraftVersion.majorLegacy < 12005) TransformerLow else TransformerHigh
 
         /**
          * Type:

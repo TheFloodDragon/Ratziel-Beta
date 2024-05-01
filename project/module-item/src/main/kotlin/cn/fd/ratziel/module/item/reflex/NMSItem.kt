@@ -34,7 +34,7 @@ abstract class NMSItem {
         val nmsClass by lazy { nmsClass("ItemStack") }
 
         val instance by lazy {
-            if (MinecraftVersion.isHigherOrEqual(12005)) nmsProxy<NMSItem>("{name}Impl2") else NMSItemImpl1
+            if (MinecraftVersion.majorLegacy >= 12005) nmsProxy<NMSItem>("{name}Impl2") else NMSItemImpl1
         }
 
     }
@@ -63,7 +63,7 @@ object NMSItemImpl1 : NMSItem() {
      */
     val nmsCloneMethod by lazy {
         ReflexClass.of(nmsClass).structure.getMethodByType(
-            if (MinecraftVersion.isHigherOrEqual(12005)) "s"
+            if (MinecraftVersion.majorLegacy >= 12005) "s"
             else if (MinecraftVersion.isUniversal) "p"
             else "cloneItemStack"
         )
@@ -96,7 +96,7 @@ class NMSItemImpl2 : NMSItem() {
         return (nmsItem as NMSItemStack).copy()
     }
 
-    fun applierHandle(){
+    fun applierHandle() {
 
     }
 

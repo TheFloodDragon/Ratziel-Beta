@@ -143,22 +143,22 @@ class RefItemStack(raw: Any) {
 
         // net.minecraft.world.item.ItemStack handle;
         internal val obcHandleField by lazy {
-            ReflexClass.of(obcClass).structure.getField("handle")
+            ReflexClass.of(obcClass).getField("handle")
         }
 
         // public CraftItemStack clone()
         internal val obcCloneMethod by lazy {
-            ReflexClass.of(obcClass).structure.getMethodByType("clone")
+            ReflexClass.of(obcClass).getMethod("clone")
         }
 
         // public Material getType()
         // public int getTypeId()
         internal val obcGetMaterialMethod by lazy {
-            ReflexClass.of(obcClass).structure.getMethodByType("getType")
+            ReflexClass.of(obcClass).getMethod("getType")
         }
 
         internal val obcGetMaterialMethodLegacy by lazy {
-            ReflexClass.of(obcClass).structure.getMethodByType("getTypeId")
+            ReflexClass.of(obcClass).getMethod("getTypeId")
         }
 
         // public void setType(Material type)
@@ -173,7 +173,7 @@ class RefItemStack(raw: Any) {
 
         // public int getAmount()
         internal val obcGetAmountMethod by lazy {
-            ReflexClass.of(obcClass).structure.getMethodByType("getAmount")
+            ReflexClass.of(obcClass).getMethod("getAmount")
         }
 
         // public void setAmount(int var1)
@@ -183,12 +183,12 @@ class RefItemStack(raw: Any) {
 
         // public int getMaxStackSize()
         internal val obcGetMaxStackSizeMethod by lazy {
-            ReflexClass.of(obcClass).structure.getMethodByType("getMaxStackSize")
+            ReflexClass.of(obcClass).getMethod("getMaxStackSize")
         }
 
         // public short getDurability()
         internal val obcGetDamageMethod by lazy {
-            ReflexClass.of(obcClass).structure.getMethodByType("getDurability")
+            ReflexClass.of(obcClass).getMethod("getDurability")
         }
 
         // public void setDurability(short var1)

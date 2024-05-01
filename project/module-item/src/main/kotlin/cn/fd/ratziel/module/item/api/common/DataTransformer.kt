@@ -20,11 +20,11 @@ interface DataTransformer<T> {
      * 正向转化 - 输出型转化
      * @param source 源标签
      */
-    fun transform(target: T, source: ItemData): ItemData
+    fun transform(target: T, source: ItemData)
 
     /**
      * 反向转化 - 应用型转换
      */
-    fun detransform(target: T, from: ItemData)
+    fun detransform(target: T, source: ItemData)
 
 }

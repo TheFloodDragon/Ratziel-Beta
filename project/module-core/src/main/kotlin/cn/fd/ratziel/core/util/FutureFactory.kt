@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package cn.fd.ratziel.core.util
 
 import java.util.concurrent.CompletableFuture

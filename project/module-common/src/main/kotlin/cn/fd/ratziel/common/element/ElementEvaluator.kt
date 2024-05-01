@@ -12,9 +12,9 @@ import cn.fd.ratziel.function.argument.popOrNull
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.function.severe
-import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executor
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -97,9 +97,7 @@ class ElementEvaluator(val executor: Executor) {
      * 提交评估任务
      */
     fun submitTask(task: EvaluationTask) =
-        evaluations.computeIfAbsent(popConfig(task.args).lifeCycle) {
-            Collections.synchronizedList(listOf<EvaluationTask>())
-        }.add(task)
+        evaluations.computeIfAbsent(popConfig(task.args).lifeCycle) { CopyOnWriteArrayList() }.add(task)
 
     /**
      * 解析 [Element] 并提交评估任务

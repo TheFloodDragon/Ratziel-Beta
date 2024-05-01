@@ -19,12 +19,12 @@ interface ItemComponent : Transformable<ItemData> {
      * 正向转化 - 输出型转化
      * @param source 源标签
      */
-    fun transform(source: ItemData): ItemData
+    fun transform(source: ItemData)
 
     /**
      * 正向转化 - 输出型转化
      * 重写并调用 [transform] 方法, 默认使用空的 [NBTCompound] 作为源数据
      */
-    override fun transform(): ItemData = transform(ItemData())
+    override fun transform(): ItemData = ItemData().also { transform(it) }
 
 }

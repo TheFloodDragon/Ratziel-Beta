@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalSerializationApi::class)
+@file:Suppress("DEPRECATION")
 
 package cn.fd.ratziel.module.item.impl.part.serializers
 

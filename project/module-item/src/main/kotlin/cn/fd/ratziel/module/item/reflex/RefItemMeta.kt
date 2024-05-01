@@ -128,7 +128,7 @@ class RefItemMeta(raw: Any) {
          */
         fun buildModifiers(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
             obcClass.invokeMethod<Multimap<Attribute, AttributeModifier>>(
-                if (MinecraftVersion.isHigherOrEqual(12005)) "buildModifiersLegacy" else "buildModifiers", nbtTag,
+                if (MinecraftVersion.majorLegacy >= 12005) "buildModifiersLegacy" else "buildModifiers", nbtTag,
                 ATTRIBUTES_KEY, isStatic = true
             )!!
 
@@ -136,7 +136,7 @@ class RefItemMeta(raw: Any) {
          * 1.20.5+: NBTTagCompound to CraftMetaItem.Applicator
          */
         fun handleApplicator(tag: Any) =
-            if (MinecraftVersion.isHigherOrEqual(12005))
+            if (MinecraftVersion.majorLegacy >= 12005)
                 applicatorPutData(tag)
             else tag
 
@@ -144,7 +144,7 @@ class RefItemMeta(raw: Any) {
          * 1.20.5+: NBTTagCompound to DataComponentPatch
          */
         fun handleDataComponentPatch(tag: Any) =
-            if (MinecraftVersion.isHigherOrEqual(12005))
+            if (MinecraftVersion.majorLegacy >= 12005)
                 applicatorPutData(tag).invokeMethod<Any>("build")
             else tag
 

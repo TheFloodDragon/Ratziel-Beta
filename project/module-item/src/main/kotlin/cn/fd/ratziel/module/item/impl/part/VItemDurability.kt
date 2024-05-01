@@ -30,17 +30,18 @@ data class VItemDurability(
 
     override fun getNode() = OccupyNode.APEX_NODE
 
-    // TODO 未完成
-    override fun transform(source: ItemData) = source.apply {
-        nbt.addAll(
-            ItemSheet.UNBREAKABLE to unbreakable?.let { NBTByte(NBTByte.new(it)) },
-            ItemSheet.REPAIR_COST to repairCost?.let { NBTInt(NBTInt.new(it)) },
+    override fun transform(source: ItemData) {
+        source.nbt.addAll(
+            ItemSheet.UNBREAKABLE to this.unbreakable?.let { NBTByte(it) },
+            ItemSheet.REPAIR_COST to this.repairCost?.let { NBTInt(it) },
         )
     }
 
     override fun detransform(target: ItemData) {
-        (target.nbt[ItemSheet.UNBREAKABLE] as? NBTByte)?.let { unbreakable = it.contentBoolean }
-        (target.nbt[ItemSheet.REPAIR_COST] as? NBTInt)?.let { repairCost = it.content }
+        val unbreakable = target.nbt[ItemSheet.UNBREAKABLE] as? NBTByte
+        val repairCost = target.nbt[ItemSheet.REPAIR_COST] as? NBTInt
+        if (unbreakable != null) this.unbreakable = unbreakable.contentBoolean
+        if (repairCost != null) this.repairCost = repairCost.content
     }
 
 }

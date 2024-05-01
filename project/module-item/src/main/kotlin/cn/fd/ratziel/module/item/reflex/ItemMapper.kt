@@ -24,24 +24,24 @@ object ItemMapper {
     fun map(name: String): String {
         val data = mappingData.jsonObject[name]!!.jsonObject
         // 使用静态字段反射
-        val fieldPair = data["field"]?.let { mapFiled(it) }
-        if (fieldPair != null) return RefItemMeta.RefItemMetaKey(fieldPair.second, fieldPair.first).nmsName
+        val field = runCatching { data["field"]?.let { mapFiled(it).nmsName } }.getOrNull()
+        if (field != null) return field
         // 备用 Fallback
         val fallback = data["hold"]?.let { matchVersion(it) }
         return fallback ?: throw IllegalStateException("Failed on mapping: $name")
     }
 
-    fun mapFiled(json: JsonElement): Pair<Class<*>, String> {
+    fun mapFiled(json: JsonElement): RefItemMeta.RefItemMetaKey {
         val split = matchVersion(json).split("#")
-        return obcClass(split[0]) to split[1]
+        return RefItemMeta.RefItemMetaKey(split[1], obcClass(split[0]))
     }
 
     fun matchVersion(json: JsonElement): String {
         if (json is JsonObject) {
             val sorted = json.entries.map { it.key.toInt() to it.value }.sortedBy { it.first }.reversed() // 从大到小
-            val find = sorted.find { MinecraftVersion.isHigherOrEqual(it.first) } ?: throw IllegalStateException("Unable to match version!")
+            val find = sorted.find { MinecraftVersion.majorLegacy >= it.first } ?: throw IllegalStateException("Unable to match version!")
             return find.second.jsonPrimitive.content
-        } else return json.toString()
+        } else return if (json is JsonPrimitive) json.content else json.toString()
     }
 
     fun initData(): JsonElement {
