@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.reflex
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.reflex.RefItemStack.Companion.newObc
 import com.google.common.collect.Multimap
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
@@ -25,7 +24,7 @@ class RefItemMeta(raw: Any) {
      * ItemMeta的CraftMetaItem处理对象
      */
     private var handle: Any = when {
-        obcClass::class.java.isAssignableFrom(raw::class.java) -> newObc(raw) // CraftMetaItem
+        obcClass::class.java.isAssignableFrom(raw::class.java) -> raw // CraftMetaItem
         else -> throw UnsupportedTypeException(raw) // Unsupported Type
     }
 

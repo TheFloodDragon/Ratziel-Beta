@@ -61,7 +61,7 @@ object CommandElement {
                     "Element-Type-Info-Format",
                     type.name, // 名称
                     format(type.alias.toList()), // 别名
-                    format(ElementRegistry.getHandlers(type).map { it::class.java.name }) //处理器
+                    format(ElementRegistry.getHandlersByType(type).map { it::class.java.name }) //处理器
                 )
             }
         }

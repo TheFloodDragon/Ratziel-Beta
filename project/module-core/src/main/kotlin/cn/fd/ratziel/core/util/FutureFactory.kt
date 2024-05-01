@@ -51,17 +51,25 @@ open class FutureFactory<T>(
      * 并提供所有任务返回值的列表
      * @param action 对返回值进行的操作
      */
-    open fun <R> whenComplete(action: Function<List<T>, R>): CompletableFuture<R> = tasks.toTypedArray().let { futures ->
+    open fun <R> thenApply(action: Function<List<T>, R>): CompletableFuture<R> = tasks.toTypedArray().let { futures ->
         CompletableFuture.allOf(*futures).thenApply {
-            futures.mapNotNull { it.get() }.let { action.apply(it) }
+            tasks.clear() // 清除任务
+            val results = futures.mapNotNull { it.getNow(null) } // 获取异步结果
+            action.apply(results) // 处理结果
         }
     }
 
-    open fun whenComplete(action: Consumer<List<T>> = Consumer {}): CompletableFuture<List<T>> = whenComplete(Function { action.accept(it); it })
+    open fun thenAccept(action: Consumer<List<T>> = Consumer {}): CompletableFuture<List<T>> = thenApply { action.accept(it); it }
+
+    open fun thenRun(action: Runnable = Runnable {}): CompletableFuture<List<T>> = thenAccept { action.run() }
 
     /**
      * 等待所有任务完成 (阻塞)
      */
-    open fun waitAll() = CompletableFuture.allOf(*tasks.toTypedArray()).join()
+    open fun waitAll() {
+        val future = CompletableFuture.allOf(*tasks.toTypedArray())
+        tasks.clear() // 清除任务
+        future.join() // 阻塞等待完成
+    }
 
 }

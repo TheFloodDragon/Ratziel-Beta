@@ -3,8 +3,8 @@ package cn.fd.ratziel.core.element.service
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.ElementType
 import cn.fd.ratziel.core.element.api.ElementHandler
+import cn.fd.ratziel.core.util.sortPriority
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.BiConsumer
 
 /**
  * ElementRegistry
@@ -75,21 +75,14 @@ object ElementRegistry {
     fun getHandlerGroup(type: ElementType): ElementHandlerGroup? = registry[type]
 
     /**
-     * 根据优先级提供处理器以供操作
-     */
-    @JvmStatic
-    fun runWithHandlers(type: ElementType, function: BiConsumer<Byte, ElementHandler>) =
-        getHandlersWithPriority(type).forEach { function.accept(it.priority, it.value) }
-
-    /**
      * 获取处理器
      * @param type 元素类型
      */
     @JvmStatic
-    fun getHandlers(type: ElementType): List<ElementHandler> = getHandlersWithPriority(type).map { it.value }
+    fun getHandlersByType(type: ElementType): List<ElementHandler> = getHandlersWithPriority(type).sortPriority()
 
     @JvmStatic
-    fun getHandlers(): List<ElementHandler> = getHandlersWithPriority().map { it.value }
+    fun getHandlers(): List<ElementHandler> = getHandlersWithPriority().sortPriority()
 
     /**
      * 获取处理器 (带优先级)

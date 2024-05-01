@@ -57,7 +57,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
                     }
                 }.printOnException().submit()
             }
-        }.whenComplete<JsonObject> { JsonObject(map) }
+        }.thenApply<JsonObject> { JsonObject(map) }
     }
 
     /**
@@ -70,7 +70,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
                     it.deserialize(element)
                 }.printOnException().submit()
             }
-        }.whenComplete()
+        }.thenAccept()
 
     /**
      * 转换
@@ -82,7 +82,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
                     it.transform()
                 }.printOnException().submit()
             }
-        }.whenComplete()
+        }.thenAccept()
 
     fun build() {
         val jsonObject = resolve(origin.property).get()
