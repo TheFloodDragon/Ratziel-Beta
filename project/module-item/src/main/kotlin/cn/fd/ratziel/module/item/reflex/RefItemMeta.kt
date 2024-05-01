@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
@@ -23,8 +24,8 @@ class RefItemMeta(raw: Any) {
     /**
      * ItemMeta的CraftMetaItem处理对象
      */
-    private var handle: Any = when {
-        obcClass::class.java.isAssignableFrom(raw::class.java) -> raw // CraftMetaItem
+    private var handle: ItemMeta = when {
+        obcClass::class.java.isAssignableFrom(raw::class.java) -> raw as ItemMeta // CraftMetaItem
         else -> throw UnsupportedTypeException(raw) // Unsupported Type
     }
 
@@ -54,18 +55,17 @@ class RefItemMeta(raw: Any) {
 
         /**
          * CraftMetaItem#constructor(NBTTagCompound)
+         * CraftMetaItem(DataComponentPatch tag)
          * @return CraftMetaItem
          */
-        fun new(value: Any) = obcClass.invokeConstructor(value)
+        fun new(value: NBTCompound) = obcClass.invokeConstructor(InternalImpl.handleDataComponentPatch(value.getData()))
 
         /**
          * 创建空对象
          */
-        fun new() = new(NBTCompound.new())
+        fun new() = new(NBTCompound())
 
     }
-
-    //TODO(CNM)
 
     fun applyToTag(tag: NBTCompound) = tag.also {
         InternalImpl.applyToItem(handle, it.getData())
@@ -80,7 +80,7 @@ class RefItemMeta(raw: Any) {
          * @param tag NBTTagCompound
          */
         fun applyToItem(craft: Any, tag: Any) {
-            craft.invokeMethod<Void>("applyToItem", handle(tag))
+            craft.invokeMethod<Void>("applyToItem", handleApplicator(tag))
         }
 
         internal val ENCHANTMENTS_KEY by lazy {
@@ -133,17 +133,32 @@ class RefItemMeta(raw: Any) {
             )!!
 
         /**
+         * 1.20.5+: NBTTagCompound to CraftMetaItem.Applicator
+         */
+        fun handleApplicator(tag: Any) =
+            if (MinecraftVersion.isHigherOrEqual(12005))
+                applicatorPutData(tag)
+            else tag
+
+        /**
+         * 1.20.5+: NBTTagCompound to DataComponentPatch
+         */
+        fun handleDataComponentPatch(tag: Any) =
+            if (MinecraftVersion.isHigherOrEqual(12005))
+                applicatorPutData(tag).invokeMethod<Any>("build")
+            else tag
+
+        /**
          * 处理1.20.5的CraftMetaItem.Applicator
          *
          * Applicator(){}
          * <T> Applicator put(ItemMetaKeyType<T> key, T value)
+         * DataComponentPatch build()
          */
-        fun handleApplicator(tag: Any): Any {
+        fun applicatorPutData(tag: Any): Any {
             val applicator = applicatorClass.invokeConstructor()
             return applicator.invokeMethod<Any>("put", customDataKey, tag)!!
         }
-
-        fun handle(tag: Any) = if (MinecraftVersion.isHigherOrEqual(12005)) handleApplicator(tag) else tag
 
         val applicatorClass by lazy {
             obcClass("inventory.CraftMetaItem\$Applicator")

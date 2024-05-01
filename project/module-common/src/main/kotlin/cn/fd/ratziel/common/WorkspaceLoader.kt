@@ -6,6 +6,7 @@ import cn.fd.ratziel.common.element.ElementEvaluator
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.FutureFactory
+import cn.fd.ratziel.core.util.printOnException
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
@@ -61,7 +62,7 @@ object WorkspaceLoader {
                             evaluator.submitWith(it) // 提交到评估器
                             cachedElements += it // 插入缓存
                         }
-                    }
+                    }.printOnException()
                 }
         }.thenRun {
             // 评估器开始评估

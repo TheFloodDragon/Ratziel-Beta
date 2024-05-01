@@ -30,8 +30,6 @@ object ItemElement : ElementHandler {
 
     override fun handle(element: Element) {
 
-        println(element)
-
         val serializer = DefaultItemSerializer(json)
         val generator = DefaultItemGenerator(element)
 
