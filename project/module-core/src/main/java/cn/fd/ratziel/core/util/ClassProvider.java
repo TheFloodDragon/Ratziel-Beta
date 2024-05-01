@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.function;
+package cn.fd.ratziel.core.util;
 
 import java.util.function.Function;
 

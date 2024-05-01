@@ -1,6 +1,6 @@
 package cn.fd.ratziel.compat.inject;
 
-import cn.fd.ratziel.core.function.ClassProvider;
+import cn.fd.ratziel.core.util.ClassProvider;
 import taboolib.common.classloader.IsolatedClassLoader;
 
 import java.util.Collections;

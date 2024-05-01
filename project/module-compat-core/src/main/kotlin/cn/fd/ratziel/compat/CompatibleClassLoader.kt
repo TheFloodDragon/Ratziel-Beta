@@ -1,6 +1,6 @@
 package cn.fd.ratziel.compat
 
-import cn.fd.ratziel.core.function.ClassProvider
+import cn.fd.ratziel.core.util.ClassProvider
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.*

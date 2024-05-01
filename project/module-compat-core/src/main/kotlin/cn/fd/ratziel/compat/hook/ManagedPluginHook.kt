@@ -1,6 +1,6 @@
 package cn.fd.ratziel.compat.hook
 
-import cn.fd.ratziel.core.function.ClassProvider
+import cn.fd.ratziel.core.util.ClassProvider
 
 /**
  * ManagedPluginHook

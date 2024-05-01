@@ -3,7 +3,7 @@ package cn.fd.ratziel.compat.hook.impl.trchat
 import cn.fd.ratziel.compat.hook.HookInject
 import cn.fd.ratziel.compat.hook.HookManager
 import cn.fd.ratziel.compat.hook.ManagedPluginHook
-import cn.fd.ratziel.core.function.ClassProvider
+import cn.fd.ratziel.core.util.ClassProvider
 import me.arasple.mc.trchat.taboolib.common.classloader.IsolatedClassLoader
 import org.bukkit.Bukkit
 
