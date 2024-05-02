@@ -16,6 +16,16 @@ object NBTAdapter {
         else -> BasicAdapter.adapt(target)
     } ?: throw UnsupportedTypeException(target)
 
+    fun adaptNms(target: Any) = NmsAdapter.adapt(target)!!
+
+    fun adaptList(target: Iterable<*>): NBTList = ArrayList<Any>().apply {
+        target.forEach { unsure -> unsure?.let { add(adapt(it).getData()) } }
+    }.let { NBTList(NBTList.new(it)) }
+
+    fun adaptMap(target: Map<*, *>): NBTCompound = HashMap<String, Any>().apply {
+        target.forEach { (node, unsure) -> unsure?.let { put(node.toString(), adapt(it).getData()) } }
+    }.let { NBTCompound(NBTCompound.new(it)) }
+
     /**
      * 判断目标是否为 NmsNBT
      */
@@ -65,15 +75,5 @@ object NBTAdapter {
         }
 
     }
-
-    fun adaptNms(target: Any) = NmsAdapter.adapt(target)!!
-
-    fun adaptList(target: Iterable<*>): NBTList = ArrayList<Any>().apply {
-        target.forEach { unsure -> unsure?.let { add(adapt(it).getData()) } }
-    }.let { NBTList(NBTList.new(it)) }
-
-    fun adaptMap(target: Map<*, *>): NBTCompound = HashMap<String, Any>().apply {
-        target.forEach { (node, unsure) -> unsure?.let { put(node.toString(), adapt(it).getData()) } }
-    }.let { NBTCompound(NBTCompound.new(it)) }
 
 }

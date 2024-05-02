@@ -19,7 +19,7 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), MutableMap
      */
     internal val sourceMap get() = NMSUtil.NtCompound.sourceField.get(data) as MutableMap<String, Any>
 
-    val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTAdapter.adaptNms(it.value)) } }
+    override val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTAdapter.adaptNms(it.value)) } }
 
     /**
      * 获取数据

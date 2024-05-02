@@ -10,7 +10,7 @@ class NBTLongArray(rawData: Any) : NBTData(rawData, NBTType.LONG_ARRAY) {
 
     constructor(value: LongArray) : this(new(value))
 
-    val content get() = NMSUtil.NtLongArray.sourceField.get(data) as LongArray
+    override val content get() = NMSUtil.NtLongArray.sourceField.get(data) as LongArray
 
     companion object {
 

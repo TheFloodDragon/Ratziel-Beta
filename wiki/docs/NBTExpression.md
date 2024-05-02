@@ -1,6 +1,6 @@
 ---
 title: NBT表达式
-sidebar_position: 1
+sidebar_position: 10
 ---
 
 # NBT表达式
@@ -91,7 +91,9 @@ Vacation:
 对于特殊类型，如下:
 
 ```YAML
+# 复合类型
 { "name": "帅哥",items: [ "小贱剑","好吃的" ] };compound
+  # 列表类型
   [ "小贱剑","好吃的" ];compound
 ```
 

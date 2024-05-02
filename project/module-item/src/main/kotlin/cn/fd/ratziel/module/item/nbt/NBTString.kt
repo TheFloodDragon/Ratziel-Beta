@@ -10,7 +10,7 @@ class NBTString(rawData: Any) : NBTData(rawData, NBTType.STRING) {
 
     constructor(value: String) : this(new(value))
 
-    val content get() = NMSUtil.NtString.sourceField.get(data) as String
+    override val content get() = NMSUtil.NtString.sourceField.get(data) as String
 
     companion object {
 

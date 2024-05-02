@@ -10,7 +10,7 @@ class NBTDouble(rawData: Any) : NBTData(rawData, NBTType.DOUBLE) {
 
     constructor(value: Double) : this(new(value))
 
-    val content get() = NMSUtil.NtDouble.sourceField.get(data) as Double
+    override val content get() = NMSUtil.NtDouble.sourceField.get(data) as Double
 
     companion object {
 

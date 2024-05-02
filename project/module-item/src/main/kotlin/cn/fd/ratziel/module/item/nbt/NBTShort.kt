@@ -10,7 +10,7 @@ class NBTShort(rawData: Any) : NBTData(rawData, NBTType.SHORT) {
 
     constructor(value: Short) : this(new(value))
 
-    val content get() = NMSUtil.NtShort.sourceField.get(data) as Short
+    override val content get() = NMSUtil.NtShort.sourceField.get(data) as Short
 
     companion object {
 

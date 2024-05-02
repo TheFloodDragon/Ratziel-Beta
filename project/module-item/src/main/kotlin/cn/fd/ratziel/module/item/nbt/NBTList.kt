@@ -19,7 +19,7 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<NBTDat
      */
     internal val sourceList get() = NMSUtil.NtList.sourceField.get(data) as MutableList<Any>
 
-    val content: List<NBTData> get() = sourceList.map { NBTAdapter.adaptNms(it) }
+    override val content: List<NBTData> get() = sourceList.map { NBTAdapter.adaptNms(it) }
 
     /**
      * 获取数据

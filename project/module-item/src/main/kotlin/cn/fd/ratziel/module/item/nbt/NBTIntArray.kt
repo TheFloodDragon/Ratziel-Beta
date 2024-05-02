@@ -10,7 +10,7 @@ class NBTIntArray(rawData: Any) : NBTData(rawData, NBTType.INT_ARRAY) {
 
     constructor(value: IntArray) : this(new(value))
 
-    val content get() = NMSUtil.NtIntArray.sourceField.get(data) as IntArray
+    override val content get() = NMSUtil.NtIntArray.sourceField.get(data) as IntArray
 
     companion object {
 

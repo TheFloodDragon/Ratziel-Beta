@@ -25,6 +25,11 @@ abstract class NBTData(
     }
 
     /**
+     * 供外部使用的内容 (通常是不可变的)
+     */
+    abstract val content: Any
+
+    /**
      * 获取原始数据
      */
     open fun getData() = data

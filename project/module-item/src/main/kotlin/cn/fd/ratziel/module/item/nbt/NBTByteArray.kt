@@ -10,7 +10,7 @@ class NBTByteArray(rawData: Any) : NBTData(rawData, NBTType.BYTE_ARRAY) {
 
     constructor(value: ByteArray) : this(new(value))
 
-    val content get() = NMSUtil.NtByteArray.sourceField.get(data) as ByteArray
+    override val content get() = NMSUtil.NtByteArray.sourceField.get(data) as ByteArray
 
     companion object {
 

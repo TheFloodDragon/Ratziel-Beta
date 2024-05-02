@@ -10,7 +10,7 @@ class NBTLong(rawData: Any) : NBTData(rawData, NBTType.LONG) {
 
     constructor(value: Long) : this(new(value))
 
-    val content get() = NMSUtil.NtLong.sourceField.get(data) as Long
+    override val content get() = NMSUtil.NtLong.sourceField.get(data) as Long
 
     companion object {
 

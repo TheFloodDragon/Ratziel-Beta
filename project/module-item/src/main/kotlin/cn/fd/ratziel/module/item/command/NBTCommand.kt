@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.command
 
 import cn.fd.ratziel.module.item.nbt.*
-import cn.fd.ratziel.module.item.nbt.DeepVisitor
 import cn.fd.ratziel.module.item.util.getDataBySlot
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
@@ -201,7 +200,7 @@ object NBTCommand {
      */
     private fun asString(nbt: NBTData): String = when (nbt) {
         is NBTString -> nbt.content
-        is NBTByte -> (nbt.contentBooleanOrNull ?: nbt.content).toString()
+        is NBTByte -> (NBTByte.adaptOrNull(nbt.content) ?: nbt.content).toString()
         is NBTInt -> nbt.content.toString()
         is NBTFloat -> nbt.content.toString()
         is NBTDouble -> nbt.content.toString()

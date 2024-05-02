@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.api.common
 
 import cn.fd.ratziel.module.item.api.NodeDistributor
+import cn.fd.ratziel.module.item.reflex.ItemSheet
 
 /**
  * OccupyNode - [NodeDistributor] 实现
@@ -19,6 +20,8 @@ data class OccupyNode(
          * 一些默认节点
          */
         val APEX_NODE = OccupyNode("!", null)
+
+        val CUSTOM_NODE = OccupyNode(ItemSheet.CUSTOM_DATA, APEX_NODE)
 
     }
 

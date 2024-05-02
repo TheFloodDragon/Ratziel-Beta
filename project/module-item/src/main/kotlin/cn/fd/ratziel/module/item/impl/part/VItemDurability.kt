@@ -6,11 +6,14 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDurability
 import cn.fd.ratziel.module.item.nbt.NBTByte
+import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.module.item.nbt.NBTData
 import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.reflex.ItemSheet
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
+import taboolib.module.nms.MinecraftVersion
 
 /**
  * VItemDurability
@@ -31,8 +34,12 @@ data class VItemDurability(
     override fun getNode() = OccupyNode.APEX_NODE
 
     override fun transform(source: ItemData) {
+        fun handle0(unbreakable: Boolean?): NBTData? =
+            if (MinecraftVersion.majorLegacy >= 12005) {
+                if (unbreakable == true) NBTCompound() else null
+            } else unbreakable?.let { NBTByte(it) }
         source.nbt.addAll(
-            ItemSheet.UNBREAKABLE to this.unbreakable?.let { NBTByte(it) },
+            ItemSheet.UNBREAKABLE to handle0(this.unbreakable),
             ItemSheet.REPAIR_COST to this.repairCost?.let { NBTInt(it) },
             ItemSheet.MAX_DAMAGE to this.maxDurability?.let { NBTInt(it) }
         )
@@ -40,7 +47,7 @@ data class VItemDurability(
 
     override fun detransform(target: ItemData) {
         val unbreakable = target.nbt[ItemSheet.UNBREAKABLE] as? NBTByte
-        if (unbreakable != null) this.unbreakable = unbreakable.contentBoolean
+        if (unbreakable != null) this.unbreakable = NBTByte.adapt(unbreakable.content)
         val repairCost = target.nbt[ItemSheet.REPAIR_COST] as? NBTInt
         if (repairCost != null) this.repairCost = repairCost.content
         val maxDamage = target.nbt[ItemSheet.MAX_DAMAGE] as? NBTInt

@@ -10,7 +10,7 @@ class NBTFloat(rawData: Any) : NBTData(rawData, NBTType.FLOAT) {
 
     constructor(value: Float) : this(new(value))
 
-    val content get() = NMSUtil.NtFloat.sourceField.get(data) as Float
+    override val content get() = NMSUtil.NtFloat.sourceField.get(data) as Float
 
     companion object {
 
