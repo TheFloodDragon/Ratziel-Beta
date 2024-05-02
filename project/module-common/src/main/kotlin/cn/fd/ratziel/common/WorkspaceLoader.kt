@@ -67,14 +67,14 @@ object WorkspaceLoader {
                 }
             }
         }.thenRun {
+            val loadTime = timeMark.elapsedNow() // 加载所耗费的时间
             // 评估器开始评估
-            evaluator.evaluate()
-                .thenAccept {
-                    val time = timeMark.elapsedNow().plus(it)
-                    sender.sendLang("Workspace-Finished", cachedElements.size, time.inWholeMilliseconds)
-                    WorkspaceLoadEvent.End().call() // 事件 - 结束加载
-                    result.complete(timeMark.elapsedNow().plus(it)) // 完成最后任务
-                }
+            evaluator.evaluate().thenAccept {
+                val time = loadTime.plus(it) // 计算最终时间 = 加载时间 + 评估时间
+                sender.sendLang("Workspace-Finished", cachedElements.size, time.inWholeMilliseconds)
+                WorkspaceLoadEvent.End().call() // 事件 - 结束加载
+                result.complete(time) // 完成最后任务
+            }
         }
         return result
     }
