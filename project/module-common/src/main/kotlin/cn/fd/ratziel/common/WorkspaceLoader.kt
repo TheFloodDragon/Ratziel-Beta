@@ -6,7 +6,6 @@ import cn.fd.ratziel.common.element.ElementEvaluator
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.FutureFactory
-import cn.fd.ratziel.core.util.printOnException
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
@@ -54,16 +53,19 @@ object WorkspaceLoader {
         val evaluator = ElementEvaluator(executor) // 创建评估器
         // 创建异步工厂
         FutureFactory {
-            WorkspaceManager.getFilteredFiles()
-                .forEach { file ->
-                    // 加载元素文件
-                    CompletableFuture.supplyAsync({
+            for (file in WorkspaceManager.getFilteredFiles()) {
+                submitAsync(executor) {
+                    try {
+                        // 加载元素文件
                         DefaultElementLoader.load(file).onEach {
                             evaluator.submitWith(it) // 提交到评估器
-                            cachedElements += it // 插入缓存
+                            cachedElements.add(it) // 插入缓存
                         }
-                    }, executor).printOnException().submit()
+                    } catch (ex: Exception) {
+                        ex.printStackTrace()
+                    }
                 }
+            }
         }.thenRun {
             // 评估器开始评估
             evaluator.evaluate()

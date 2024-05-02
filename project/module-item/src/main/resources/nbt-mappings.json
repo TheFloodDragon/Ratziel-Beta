@@ -12,6 +12,13 @@
       "12005": "display-name"
     }
   },
+  "DISPLAY_LORE": {
+    "field": "inventory.CraftMetaItem#LORE",
+    "hold": {
+      "0": "Lore",
+      "12005": "lore"
+    }
+  },
   "DISPLAY_LOCAL_NAME": {
     "field": "inventory.CraftMetaItem#LOCNAME",
     "hold": {

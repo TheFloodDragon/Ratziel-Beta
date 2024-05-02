@@ -61,7 +61,7 @@ object ItemElement : ElementHandler {
     }
 
     @SubscribeEvent
-    fun onLoadStart(event: WorkspaceLoadEvent) {
+    fun onLoadStart(event: WorkspaceLoadEvent.Start) {
         // 清除注册的物品
         ItemManager.registry.clear()
     }

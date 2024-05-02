@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalSerializationApi::class)
+@file:Suppress("NOTHING_TO_INLINE")
 
 package cn.fd.ratziel.core.serialization
 
@@ -24,39 +25,46 @@ val baseJson by lazy {
 }
 
 /**
- * 编辑 [JsonObject]
+ * 可变的 [JsonObject]
  */
-fun JsonObject.handle(action: HashMap<String, JsonElement>.() -> Unit): JsonObject = JsonObject(LinkedHashMap(this).apply(action))
+typealias MutableJsonObject = MutableMap<String, JsonElement>
 
 /**
- * 从给定 [JsonElement] 中寻找 [JsonPrimitive]
- * 并通过 [action] 的操作后, 用返回的 [JsonElement] 替换掉原来的 [JsonPrimitive]
+ * 可变化
  */
-fun JsonElement.handlePrimitives(element: JsonElement, action: Function<JsonPrimitive, JsonElement>): JsonElement =
-    when (element) {
-        is JsonPrimitive -> action.apply(element)
-        is JsonArray -> buildJsonArray { element.jsonArray.forEach { add(handlePrimitives(it, action)) } }
-        is JsonObject -> buildJsonObject {
-            element.jsonObject.forEach { key, value ->
-                put(key, handlePrimitives(value, action))
-            }
-        }
-    }
-
-fun JsonObject.getTentatively(vararg keys: String): JsonElement? = keys.firstNotNullOfOrNull { this[it] }
+inline fun Map<String, JsonElement>.asMutable(): MutableJsonObject = LinkedHashMap(this)
 
 /**
- * 构造一个空Json如"{}"
+ * 处理 [JsonObject]
+ * @action 处理动作, 会接受原来的 [JsonObject]
+ * @return 一个新的 [JsonObject]
  */
-fun emptyJson() = JsonObject(emptyMap())
+fun JsonObject.handle(action: MutableJsonObject.(JsonObject) -> Unit): JsonObject = JsonObject(this.asMutable().also { action(it, this) })
 
 /**
- * 简单的Json检查
+ * 处理[JsonPrimitive]
+ * @see [JsonHandler.handlePrimitives]
  */
-fun String.isJson(): Boolean = startsWith('{') && endsWith('}')
+fun JsonElement.handlePrimitives(action: Function<JsonPrimitive, JsonElement>): JsonElement = JsonHandler.handlePrimitives(this, action)
 
 /**
- * JsonPrimitive类型的判断
+ * 合并目标
+ * @see [JsonHandler.merge]
+ */
+fun JsonObject.merge(target: JsonObject, replace: Boolean = true): MutableJsonObject = JsonHandler.merge(this, target, replace)
+
+/**
+ * 构造一个空的[JsonObject]
+ */
+inline fun emptyJson() = JsonObject(emptyMap())
+
+/**
+ * 简易的[JsonObject]检查
+ */
+fun String.isJsonObject(): Boolean = startsWith('{') && endsWith('}')
+
+/**
+ * [JsonPrimitive]类型的判断
  */
 fun JsonPrimitive.isInt() = !this.isString && this.intOrNull != null
 

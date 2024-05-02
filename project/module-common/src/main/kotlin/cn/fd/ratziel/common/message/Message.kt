@@ -3,7 +3,7 @@ package cn.fd.ratziel.common.message
 import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_END
 import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_START
-import cn.fd.ratziel.core.serialization.isJson
+import cn.fd.ratziel.core.serialization.isJsonObject
 import cn.fd.ratziel.core.util.replaceNonEscaped
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
@@ -55,7 +55,7 @@ object Message {
      */
     @JvmStatic
     fun buildMessage(source: String?, vararg tagResolver: TagResolver): Component = source?.let {
-        if (it.isJson()) transformFromJson(it)
+        if (it.isJsonObject()) transformFromJson(it)
         else parseAdventure(it, *tagResolver)
     } ?: Component.empty()
 

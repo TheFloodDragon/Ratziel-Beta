@@ -66,8 +66,8 @@ data class VItemDisplay(
 
         fun detransformDisplay(target: ItemDisplay, source: ItemData) {
             val name = source.nbt[ItemSheet.DISPLAY_NAME] as? NBTString
-            val lore = source.nbt[ItemSheet.DISPLAY_LORE] as? NBTList
             if (name != null) target.setName(name.content)
+            val lore = source.nbt[ItemSheet.DISPLAY_LORE] as? NBTList
             if (lore != null) target.setLore(lore.content.mapNotNull { line -> (line as? NBTString)?.content })
         }
 

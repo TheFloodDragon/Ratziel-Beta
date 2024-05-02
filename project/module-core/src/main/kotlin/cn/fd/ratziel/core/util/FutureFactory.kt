@@ -1,5 +1,3 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package cn.fd.ratziel.core.util
 
 import java.util.concurrent.CompletableFuture
@@ -8,11 +6,6 @@ import java.util.concurrent.Executor
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Supplier
-
-/**
- * 捕获异常并打印
- */
-inline fun <T> CompletableFuture<T>.printOnException(): CompletableFuture<T> = this.exceptionally { it.printStackTrace();null }
 
 /**
  * 简化多异步任务的过程
@@ -39,14 +32,12 @@ open class FutureFactory<T>(
      */
     open fun submitTask(task: CompletableFuture<T>) = task.also { tasks += it }
 
-    open fun CompletableFuture<T>.submit() = submitTask(this)
-
     /**
      * 创建异步任务并提交
      */
-    open fun submitAsync(function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function))
+    fun submitAsync(function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function))
 
-    open fun submitAsync(executor: Executor, function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function, executor))
+    fun submitAsync(executor: Executor, function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function, executor))
 
     /**
      * 当所有任务完成时 (非阻塞)
@@ -56,14 +47,14 @@ open class FutureFactory<T>(
     open fun <R> thenApply(action: Function<List<T>, R>): CompletableFuture<R> = tasks.toTypedArray().let { futures ->
         CompletableFuture.allOf(*futures).thenApply {
             tasks.clear() // 清除任务
-            val results = futures.mapNotNull { it.getNow(null) } // 获取异步结果
+            val results = futures.map { it.get() } // 获取异步结果
             action.apply(results) // 处理结果
         }
     }
 
-    open fun thenAccept(action: Consumer<List<T>> = Consumer {}): CompletableFuture<List<T>> = thenApply { action.accept(it); it }
+    open fun thenAccept(action: Consumer<List<T>> = Consumer {}) = thenApply { action.accept(it) }
 
-    open fun thenRun(action: Runnable = Runnable {}): CompletableFuture<List<T>> = thenAccept { action.run() }
+    open fun thenRun(action: Runnable = Runnable {}) = thenApply { action.run() }
 
     /**
      * 等待所有任务完成 (阻塞)

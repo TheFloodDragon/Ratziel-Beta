@@ -20,11 +20,11 @@ import kotlinx.serialization.json.JsonNames
  */
 @Serializable
 data class VItemDurability(
-    @JsonNames("max-durability", "durability-max", "durability")
+    @JsonNames("maxDamage", "max-damage", "max-durability", "durability")
     override var maxDurability: Int? = null,
     @JsonNames("repair-cost")
     override var repairCost: Int? = null,
-    @JsonNames("isUnbreakable", "unbreak")
+    @JsonNames("isUnbreakable")
     override var unbreakable: Boolean? = null
 ) : ItemDurability {
 
@@ -34,14 +34,17 @@ data class VItemDurability(
         source.nbt.addAll(
             ItemSheet.UNBREAKABLE to this.unbreakable?.let { NBTByte(it) },
             ItemSheet.REPAIR_COST to this.repairCost?.let { NBTInt(it) },
+            ItemSheet.MAX_DAMAGE to this.maxDurability?.let { NBTInt(it) }
         )
     }
 
     override fun detransform(target: ItemData) {
         val unbreakable = target.nbt[ItemSheet.UNBREAKABLE] as? NBTByte
-        val repairCost = target.nbt[ItemSheet.REPAIR_COST] as? NBTInt
         if (unbreakable != null) this.unbreakable = unbreakable.contentBoolean
+        val repairCost = target.nbt[ItemSheet.REPAIR_COST] as? NBTInt
         if (repairCost != null) this.repairCost = repairCost.content
+        val maxDamage = target.nbt[ItemSheet.MAX_DAMAGE] as? NBTInt
+        if (maxDamage != null) this.maxDurability = maxDamage.content
     }
 
 }

@@ -4,7 +4,6 @@ import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.core.serialization.handle
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.core.serialization.usedNodes
-import cn.fd.ratziel.core.util.printOnException
 import cn.fd.ratziel.module.item.api.common.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.part.VItemDisplay
 import cn.fd.ratziel.module.item.impl.part.VItemDurability
@@ -57,7 +56,9 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
         if (element.isStructured()) return json.decodeFromJsonElement(VItemMeta.serializer(), element)
         // 异步方法
         fun <T> asyncDecode(deserializer: DeserializationStrategy<T>) =
-            CompletableFuture.supplyAsync { json.decodeFromJsonElement(deserializer, element) }.printOnException()
+            CompletableFuture.supplyAsync {
+                json.decodeFromJsonElement(deserializer, element)
+            }.exceptionally { it.printStackTrace();null }
         // 一般解析
         val display = asyncDecode(VItemDisplay.serializer())
         val durability = asyncDecode(VItemDurability.serializer())

@@ -1,10 +1,19 @@
+---
+title: NBT表达式
+sidebar_position: 1
+---
+
 # NBT表达式
 
 > 在对物品的**NBT标签**进行操作时, 就会用到*NBT表达式*
 
+:::info
+在**Minecraft 1.20.5**后, `NBT标签`改为了`物品堆叠组件`
+:::
+
 ## 简介
 
-NBT表达式分为两种:
+**NBT表达式**分为两种:
 
 + NBT节点表达式
 
@@ -75,35 +84,42 @@ Vacation:
 
 <h6>另一种是精确写法(精确指定类型)</h6>
 
-精确写法必须以 `:` 开头
-
-一般形式 `:{V}{T}` ，其中`{V}`代表值，`{T}`代表**类型代号**
+形式为 `{V};{T}` ，其中`{V}`代表值，`{T}`代表**类型代号**，具体详见下文**值的类型**
 
 对于集合类型，需要用 `,` 分割集合中的元素，如 `1,1,4,5,1,4ba`，其中 `ba` 是**集合类型代号**，表示 `NBTByteArray`
 
-对于特殊类型，`:cpd` 表示 `NBTCompound` 类型，`:list` 表示 `NBTList` 类型
+对于特殊类型，如下:
 
-示例:
+```YAML
+{ "name": "帅哥",items: [ "小贱剑","好吃的" ] };compound
+  [ "小贱剑","好吃的" ];compound
+```
 
-NBTShort - `:666s`
-NBTFloat - `:2.333f`
-NBTIntArray - `1,2,3,4,5ia`
+遵循**Json格式**,内部内容会自动解析成**NBT对象**
+
+:::warning
+
+**列表类型**内的元素的类型必须保持一致，不允许诸如: `["字符串",123,6.6]` 这种
+
+若违反规则，可能会导致**玩家数据丢失**等后果
+
+:::
 
 ### 值的类型
 
 **允许以下类型的值**
 
-|      类型      |        代号         |   描述   |
-|:------------:|:-----------------:|:------:|
-| NBTCompound  | c , cpd, compound |  复合类型  |
-|   NBTList    |      l, list      |  列表类型  |
-| NBTIntArray  |        ia         |  集合类型  |
-| NBTByteArray |        ba         |  集合类型  |
-| NBTLongArray |        la         |  集合类型  |
-|  NBTString   |         t         |  字符串   |
-|    NBTInt    |         i         |   整形   |
-|  NBTDouble   |         d         | Double |
-|   NBTByte    |         b         |  Byte  |
-|   NBTLong    |         l         |  Long  |
-|   NBTFloat   |         f         | Float  |
-|   NBTShort   |         s         | Short  |
+|      类型      |           代号            |   描述   |
+|:------------:|:-----------------------:|:------:|
+| NBTCompound  |  compound.c , cpd,tag   |  复合类型  |
+|   NBTList    |      list,a,array       |  列表类型  |
+| NBTIntArray  |  int_array,intArray,ia  |  集合类型  |
+| NBTByteArray | byte_array,byteArray,ba |  集合类型  |
+| NBTLongArray | long_array,longArray,la |  集合类型  |
+|  NBTString   |        string,t         |  字符串   |
+|    NBTInt    |          int,i          |   整形   |
+|  NBTDouble   |        double,d         | Double |
+|   NBTByte    |         byte,b          |  Byte  |
+|   NBTLong    |         long,l          |  Long  |
+|   NBTFloat   |         float,f         | Float  |
+|   NBTShort   |         short,s         | Short  |
