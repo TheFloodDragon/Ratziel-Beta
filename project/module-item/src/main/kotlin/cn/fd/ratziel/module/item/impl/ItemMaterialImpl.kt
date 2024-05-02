@@ -8,14 +8,14 @@ import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Material as BukkitMaterial
 
 /**
- * VItemMaterial
+ * ItemMaterialImpl
  *
  * 由于不可抗力的影响(我不会), 仅支持 [BukkitMaterial], 即仅支持原版物品
  *
  * @author TheFloodDragon
  * @since 2024/4/5 13:26
  */
-data class VItemMaterial(override val name: String) : ItemMaterial {
+data class ItemMaterialImpl(override val name: String) : ItemMaterial {
 
     constructor(mat: XMaterial) : this(mat.name)
 
@@ -57,7 +57,7 @@ data class VItemMaterial(override val name: String) : ItemMaterial {
 
     companion object {
 
-        val AIR by lazy { VItemMaterial(BukkitMaterial.AIR) }
+        val AIR by lazy { ItemMaterialImpl(BukkitMaterial.AIR) }
 
         /**
          * 获取 [BukkitMaterial] 形式的物品材料
@@ -71,7 +71,7 @@ data class VItemMaterial(override val name: String) : ItemMaterial {
          */
         val materialsMap by lazy {
             ConcurrentHashMap<String, ItemMaterial>().apply {
-                BukkitMaterial.entries.forEach { put(it.name, VItemMaterial(it.name)) }
+                BukkitMaterial.entries.forEach { put(it.name, ItemMaterialImpl(it.name)) }
             }
         }
 

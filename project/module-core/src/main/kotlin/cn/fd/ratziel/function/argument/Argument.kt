@@ -6,7 +6,7 @@ package cn.fd.ratziel.function.argument
  * @author TheFloodDragon
  * @since 2024/5/1 13:18
  */
-interface Argument<T> {
+interface Argument<T : Any> {
 
     /**
      * 参数的值

@@ -5,27 +5,31 @@ sidebar_position: 10
 
 # NBT表达式
 
-> 在对物品的**NBT标签**进行操作时, 就会用到*NBT表达式*
+> 在对物品的**NBT标签**进行操作时, 就会用到**NBT表达式**
 
 :::info
-在**Minecraft 1.20.5**后, `NBT标签`改为了`物品堆叠组件`
+自**Minecraft 1.20.5**后, `NBT标签`改为了`物品堆叠组件`
 :::
 
-## 简介
-
-**NBT表达式**分为两种:
+**NBT表达式**则分为两种:
 
 + NBT节点表达式
 
 + NBT值表达式
 
-顾名思义，对NBT标签的编辑，既需要知道在哪修改，也需要知道修改成什么。
+## 相关链接:
+
++ [NBT格式](https://zh.minecraft.wiki/w/NBT%E6%A0%BC%E5%BC%8F)
+
++ [物品堆叠组件(1.20.5+)](https://zh.minecraft.wiki/w/%E7%89%A9%E5%93%81%E5%A0%86%E5%8F%A0%E7%BB%84%E4%BB%B6)
 
 ## NBT节点表达式
 
 > NBT的节点其实就是指定*在哪修改*
 
-### 一般形式
+**NBT节点表达式**用来对 **复合类型(NBTCompound)** 或者 **列表类型(NBTList)** 进行编辑
+
+### 形式
 
 **浅层节点:** `节点名`
 
@@ -47,9 +51,9 @@ sidebar_position: 10
 
 则 `AWA[0]` 表示列表中的第一个元素 `a` (*没错，索引是从0开始的*)
 
-### 实际判断
+### 实战
 
-假定有这样一串NBT:
+假定有这样一串NBT(复合类型展开):
 
 ```YAML
 Vacation:
@@ -65,8 +69,9 @@ Vacation:
 
 再看 `Duration` 其实是个列表，第一个元素是 `"5 ~ 7"`，它的索引位置是 0 ，引用它，就需要这样的表达式 `Vacation.Duration[0]`
 
-而 `Duration` 的第二个元素是复合的，要引用它的 `from` 或 `to` ，我们需要使用 `Vacation.Duration[1].from`
-或者 `Vacation.Duration[1].to`
+而 `Duration` 的第二个元素是**复合类型(NBTCompound)**的，
+
+要引用它的 `from` 或 `to` ，我们需要使用 `Vacation.Duration[1].from`或者 `Vacation.Duration[1].to`
 
 我们可以分别得到 `"2024/1/5"` 和 `"2024/1/7"`
 
@@ -74,7 +79,9 @@ Vacation:
 
 > NBT的值其实就是*修改成什么*
 
-### 一般形式
+**NBT值表达式**用来表示的是一种**NBT类型**
+
+### 形式
 
 <h6>一种是直接写</h6>
 
@@ -90,34 +97,37 @@ Vacation:
 
 对于特殊类型，如下:
 
-复合类型表达式 `{ "name": "帅哥",items: [ "小贱剑","好吃的" ] };compound` `[];cpd`
+复合类型表达式: `{ "name": "帅哥",items: [ "小贱剑","好吃的" ] };compound` `{};cpd`
+
 列表类型表达式: `[ "小贱剑","好吃的" ];list` `[];list`
 
-遵循**Json格式**,内部内容会自动解析成**NBT对象**
+遵循**Json格式**,内部内容会自动解析成**NBT对象**。
 
 :::warning
 
-**列表类型**内的元素的类型必须保持一致，不允许诸如: `["字符串",123,6.6]` 这种
+**列表类型**中的的元素如果数据类型不同，则会无法被正常转换。
 
-若违反规则，可能会导致**玩家数据丢失**等后果
+例如，列表`[0,1,2]`、`[3.14,2.5]`可以被成功转换，
+
+而`[1,2.5,66]`、`["阿巴阿巴", 666]`、`[0.0, 0.1]`无法被正常转换。
+
+若违反此规则，可能会导致**玩家数据丢失**等后果！
 
 :::
 
-### 值的类型
-
-**允许以下类型的值**
+### NBT类型
 
 |      类型      |           代号            |   描述   |
 |:------------:|:-----------------------:|:------:|
-| NBTCompound  |  compound.c , cpd,tag   |  复合类型  |
-|   NBTList    |      list,a,array       |  列表类型  |
-| NBTIntArray  |  int_array,intArray,ia  |  集合类型  |
-| NBTByteArray | byte_array,byteArray,ba |  集合类型  |
-| NBTLongArray | long_array,longArray,la |  集合类型  |
+| NBTCompound  |  compound.c , cpd,tag   |  复合标签  |
+|   NBTList    |      list,a,array       |   列表   |
+| NBTIntArray  |  int_array,intArray,ia  |  整型数组  |
+| NBTByteArray | byte_array,byteArray,ba | 字节型数组  |
+| NBTLongArray | long_array,longArray,la | 长整型数组  |
 |  NBTString   |        string,t         |  字符串   |
 |    NBTInt    |          int,i          |   整形   |
-|  NBTDouble   |        double,d         | Double |
-|   NBTByte    |         byte,b          |  Byte  |
-|   NBTLong    |         long,l          |  Long  |
-|   NBTFloat   |         float,f         | Float  |
-|   NBTShort   |         short,s         | Short  |
+|  NBTDouble   |        double,d         | 双精度浮点数 |
+|   NBTFloat   |         float,f         | 单精度浮点数 |
+|   NBTByte    |         byte,b          |  字节型   |
+|   NBTLong    |         long,l          |  长整型   |
+|   NBTShort   |         short,s         |  短整型   |

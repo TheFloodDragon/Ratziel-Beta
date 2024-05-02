@@ -2,12 +2,18 @@ package cn.fd.ratziel.function.argument
 
 /**
  * ArgumentFactory - 参数工厂
- * 用于处理多参数情况
+ * 多参数情况的处理
  *
  * @author TheFloodDragon
  * @since 2024/5/1 13:19
  */
-interface ArgumentFactory {
+interface ArgumentFactory : ArgumentSupplier {
+
+    override fun <T> get(type: Class<T>): T = try {
+        pop(type)
+    } catch (ex: Throwable) {
+        throw ArgumentSupplyException(this, type, ex)
+    }
 
     /**
      * 弹出一个指定类型的参数

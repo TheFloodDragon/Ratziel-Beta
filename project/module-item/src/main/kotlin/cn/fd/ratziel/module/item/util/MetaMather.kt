@@ -3,7 +3,7 @@
 package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.impl.VItemMaterial
+import cn.fd.ratziel.module.item.impl.ItemMaterialImpl
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.util.Strings
@@ -71,6 +71,6 @@ object MetaMather {
      * 匹配物品材料
      */
     @JvmStatic
-    fun matchMaterial(source: String): ItemMaterial = VItemMaterial.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value
+    fun matchMaterial(source: String): ItemMaterial = ItemMaterialImpl.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value
 
 }

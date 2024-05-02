@@ -2,9 +2,9 @@ package cn.fd.ratziel.module.item.reflex
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.impl.VItemMaterial
-import cn.fd.ratziel.module.item.impl.VItemMaterial.Companion.getBukkitForm
-import cn.fd.ratziel.module.item.impl.VItemMaterial.Companion.getIdByReflex
+import cn.fd.ratziel.module.item.impl.ItemMaterialImpl
+import cn.fd.ratziel.module.item.impl.ItemMaterialImpl.Companion.getBukkitForm
+import cn.fd.ratziel.module.item.impl.ItemMaterialImpl.Companion.getIdByReflex
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.reflex.NMSItem.Companion.nmsClass
 import cn.fd.ratziel.module.item.reflex.RefItemStack.Companion.obcClass
@@ -51,7 +51,7 @@ class RefItemStack(raw: Any) {
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13))
             (obcGetMaterialMethod.invoke(craft) as? BukkitMaterial)
         else (obcGetMaterialMethodLegacy.invoke(craft) as? Int)?.let { getBukkitForm(it) }
-    }?.let { VItemMaterial(it) } ?: VItemMaterial.AIR
+    }?.let { ItemMaterialImpl(it) } ?: ItemMaterialImpl.AIR
 
     /**
      * 设置物品材料
