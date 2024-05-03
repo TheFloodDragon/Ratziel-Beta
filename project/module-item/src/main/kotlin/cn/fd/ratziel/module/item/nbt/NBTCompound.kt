@@ -77,8 +77,6 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), MutableMap
 
     override fun putAll(from: Map<out String, NBTData>) = from.forEach { put(it.key, it.value) }
 
-    fun addAll(vararg entries: Pair<String, NBTData?>) = this.apply { entries.forEach { it.second?.let { value -> put(it.first, value) } } }
-
     override val keys: MutableSet<String> get() = sourceMap.keys
 
     override val size: Int get() = sourceMap.keys.size

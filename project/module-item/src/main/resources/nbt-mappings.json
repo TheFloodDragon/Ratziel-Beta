@@ -36,9 +36,11 @@
     }
   },
   "CUSTOM_MODEL_DATA": {
-    "field": "inventory.CraftMetaItem#CUSTOM_MODEL_DATA",
+    "field": {
+      "11400": "inventory.CraftMetaItem#CUSTOM_MODEL_DATA"
+    },
     "hold": {
-      "0": "CustomModelData",
+      "11400": "CustomModelData",
       "12005": "custom-model-data"
     }
   },

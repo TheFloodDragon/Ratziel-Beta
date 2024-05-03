@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.item.api.common.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.part.VItemDisplay
 import cn.fd.ratziel.module.item.impl.part.VItemDurability
 import cn.fd.ratziel.module.item.impl.part.VItemMeta
+import cn.fd.ratziel.module.item.impl.part.VItemSundry
 import cn.fd.ratziel.module.item.impl.part.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.module.item.impl.part.serializers.AttributeSerializer
 import cn.fd.ratziel.module.item.impl.part.serializers.EnchantmentSerializer
@@ -62,7 +63,8 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
         // 一般解析
         val display = asyncDecode(VItemDisplay.serializer())
         val durability = asyncDecode(VItemDurability.serializer())
-        return VItemMeta(display.get(), durability.get())
+        val sundry = asyncDecode(VItemSundry.serializer())
+        return VItemMeta(display.get(), durability.get(), sundry.get())
     }
 
     /**
@@ -74,15 +76,20 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
 
     companion object {
 
+        val serializers by lazy {
+            arrayOf(
+                VItemMeta.serializer(),
+                VItemDisplay.serializer(),
+                VItemDurability.serializer(),
+                VItemSundry.serializer(),
+            )
+        }
+
         /**
          * 占据的节点
          */
         val occupiedNodes by lazy {
-            arrayOf(
-                VItemMeta.serializer().descriptor.usedNodes,
-                VItemDisplay.serializer().descriptor.usedNodes,
-                VItemDurability.serializer().descriptor.usedNodes
-            ).flatMap { it }
+            serializers.flatMap { it.descriptor.usedNodes }
         }
 
         /**

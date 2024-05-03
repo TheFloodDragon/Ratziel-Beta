@@ -20,4 +20,9 @@ interface ItemMetadata : ItemComponent {
      */
     var durability: ItemDurability?
 
+    /**
+     * 物品杂项部分
+     */
+    var sundry: ItemSundry?
+
 }

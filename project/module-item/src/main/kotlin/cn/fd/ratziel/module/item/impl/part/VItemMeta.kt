@@ -1,10 +1,12 @@
 package cn.fd.ratziel.module.item.impl.part
 
+import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.api.part.ItemDurability
 import cn.fd.ratziel.module.item.api.part.ItemMetadata
+import cn.fd.ratziel.module.item.api.part.ItemSundry
 import cn.fd.ratziel.module.item.util.applyTo
 import kotlinx.serialization.Serializable
 
@@ -17,18 +19,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class VItemMeta(
     override var display: ItemDisplay? = null,
-    override var durability: ItemDurability? = null
+    override var durability: ItemDurability? = null,
+    override var sundry: ItemSundry? = null
 ) : ItemMetadata {
 
     override fun getNode() = OccupyNode.APEX_NODE
 
-    override fun transform(source: ItemData) {
-        arrayOf(display, durability).forEach { it?.applyTo(source.nbt) }
-    }
+    override fun transform(source: ItemData) = elements.forEach { it?.applyTo(source.nbt) }
 
-    override fun detransform(target: ItemData) {
-        display?.detransform(target)
-        durability?.detransform(target)
-    }
+    override fun detransform(target: ItemData) = elements.forEach { it?.detransform(target) }
+
+    private val elements: Array<ItemComponent?> get() = arrayOf(display, durability, sundry)
 
 }

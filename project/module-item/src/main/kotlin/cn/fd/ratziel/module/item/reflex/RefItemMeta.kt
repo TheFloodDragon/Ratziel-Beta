@@ -21,12 +21,24 @@ import taboolib.module.nms.obcClass
  */
 class RefItemMeta(raw: Any) {
 
+    constructor() : this(new())
+
+    constructor(tag: NBTCompound) : this(new(tag))
+
     /**
      * ItemMeta的CraftMetaItem处理对象
      */
-    private var handle: ItemMeta = when {
+    var handle: ItemMeta = when {
         obcClass::class.java.isAssignableFrom(raw::class.java) -> raw as ItemMeta // CraftMetaItem
         else -> throw UnsupportedTypeException(raw) // Unsupported Type
+    }
+        private set
+
+    /**
+     * 将 [ItemMeta] 应用到 [NBTCompound]
+     */
+    fun applyToTag(tag: NBTCompound) = tag.also {
+        InternalImpl.applyToItem(handle, it.getData())
     }
 
     /**
@@ -65,10 +77,6 @@ class RefItemMeta(raw: Any) {
          */
         fun new() = new(NBTCompound())
 
-    }
-
-    fun applyToTag(tag: NBTCompound) = tag.also {
-        InternalImpl.applyToItem(handle, it.getData())
     }
 
     internal object InternalImpl {

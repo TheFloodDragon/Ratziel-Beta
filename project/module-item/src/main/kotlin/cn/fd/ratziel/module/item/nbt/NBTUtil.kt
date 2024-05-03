@@ -7,6 +7,8 @@ fun NBTCompound.getDeep(node: String) = DeepVisitor.getDeep(this, node)
 fun NBTCompound.putDeep(node: String, value: NBTData, checkList: Boolean = true) = DeepVisitor.putDeep(this, node, value, checkList)
 fun NBTCompound.removeDeep(node: String) = DeepVisitor.removeDeep(this, node)
 
+fun NBTCompound.addAll(vararg pairs: Pair<String, NBTData?>) = this.apply { pairs.forEach { it.second?.let { value -> put(it.first, value) } } }
+
 fun NBTList.setSafely(index: Int, value: NBTData) {
     if (index == size) add(value) else set(index, value)
 }

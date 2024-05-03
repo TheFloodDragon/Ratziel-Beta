@@ -8,7 +8,9 @@ import cn.fd.ratziel.module.item.api.part.ItemDurability
 import cn.fd.ratziel.module.item.nbt.NBTByte
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTInt
+import cn.fd.ratziel.module.item.nbt.addAll
 import cn.fd.ratziel.module.item.reflex.ItemSheet
+import cn.fd.ratziel.module.item.util.castThen
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -48,10 +50,12 @@ data class VItemDurability(
     }
 
     override fun detransform(target: ItemData) {
-        val repairCost = target.nbt[ItemSheet.REPAIR_COST]
-        if (repairCost != null) this.repairCost = (repairCost as NBTInt).content
-        val maxDamage = target.nbt[ItemSheet.MAX_DAMAGE]
-        if (maxDamage != null) this.maxDurability = (maxDamage as NBTInt).content
+        target.nbt[ItemSheet.REPAIR_COST].castThen<NBTInt> {
+            this.repairCost = it.content
+        }
+        target.nbt[ItemSheet.MAX_DAMAGE].castThen<NBTInt> {
+            this.maxDurability = it.content
+        }
         // 无法破坏部分的特殊处理
         val unsure = target.nbt[ItemSheet.UNBREAKABLE]
         if (MinecraftVersion.majorLegacy >= 12005) this.unbreakable = unsure != null
