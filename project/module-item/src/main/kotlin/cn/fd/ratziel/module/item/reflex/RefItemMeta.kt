@@ -29,7 +29,7 @@ class RefItemMeta(raw: Any) {
      * ItemMeta的CraftMetaItem处理对象
      */
     var handle: ItemMeta = when {
-        obcClas.isAssignableFrom(raw::class.java) -> raw as ItemMeta // CraftMetaItem
+        obcClass.isAssignableFrom(raw::class.java) -> raw as ItemMeta // CraftMetaItem
         else -> throw UnsupportedTypeException(raw) // Unsupported Type
     }
         private set
