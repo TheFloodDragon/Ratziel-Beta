@@ -1,4 +1,4 @@
-package cn.fd.ratziel.function.argument
+package cn.fd.ratziel.function.argument.exception
 
 /**
  * ArgumentNotFoundException
@@ -6,7 +6,7 @@ package cn.fd.ratziel.function.argument
  * @author TheFloodDragon
  * @since 2024/5/1 14:12
  */
-class ArgumentNotFoundException : Exception {
+class ArgumentNotFoundException : ArgumentException {
 
     constructor(type: Class<*>, throwable: Throwable) : super("Cannot found the argument: ${type.name} !", throwable)
 

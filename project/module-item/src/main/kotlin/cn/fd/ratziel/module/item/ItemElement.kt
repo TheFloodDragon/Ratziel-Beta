@@ -6,7 +6,7 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.module.item.impl.ItemManager
-import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
+import cn.fd.ratziel.module.item.impl.builder.NativeItemGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
 import kotlinx.serialization.json.Json
 import taboolib.common.platform.event.SubscribeEvent
@@ -31,7 +31,7 @@ object ItemElement : ElementHandler {
     override fun handle(element: Element) {
 
         val serializer = DefaultItemSerializer(json)
-        val generator = DefaultItemGenerator(element)
+        val generator = NativeItemGenerator(element)
 
         val meta = serializer.deserialize(element.property)
 

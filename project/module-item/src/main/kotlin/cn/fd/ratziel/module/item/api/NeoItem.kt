@@ -16,6 +16,6 @@ interface NeoItem {
     /**
      * 物品服务
      */
-    val service: ItemService
+    val service: ItemService?
 
 }

@@ -6,12 +6,7 @@ package cn.fd.ratziel.function.argument
  * @author TheFloodDragon
  * @since 2024/5/1 13:22
  */
-open class SingleArgument<T : Any>(
-    override val value: T,
-    override val type: Class<out T>
-) : Argument<T> {
-
-    constructor(value: T) : this(value, value::class.java)
+open class SingleArgument<out T : Any>(override val value: T) : Argument<T> {
 
     override fun hashCode() = value.hashCode()
 

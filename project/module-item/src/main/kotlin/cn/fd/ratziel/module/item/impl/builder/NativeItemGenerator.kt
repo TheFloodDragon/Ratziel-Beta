@@ -16,12 +16,12 @@ import taboolib.common.platform.function.severe
 import java.util.concurrent.Executors
 
 /**
- * DefaultItemGenerator
+ * NativeItemGenerator
  *
  * @author TheFloodDragon
  * @since 2024/4/13 17:34
  */
-class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
+class NativeItemGenerator(override val origin: Element) : ItemGenerator {
 
     val json: Json by lazy {
         Json(baseJson) {}

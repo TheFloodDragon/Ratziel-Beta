@@ -14,14 +14,14 @@ import kotlinx.serialization.json.JsonObject
  */
 class DefaultItemResolver : ItemResolver {
 
-    override fun resolve(target: JsonElement) = safe(target) { origin ->
+    override fun resolve(target: JsonElement) = access(target) { origin ->
         // 过滤拿到处理对象并处理
         val handle = origin.filter { DefaultItemSerializer.occupiedNodes.contains(it.key) }.asMutable()
         // 写回修改过的部分
         putAll(handle)
     }
 
-    internal fun safe(target: JsonElement, action: MutableMap<String, JsonElement>.(JsonObject) -> Unit) =
+    internal fun access(target: JsonElement, action: MutableMap<String, JsonElement>.(JsonObject) -> Unit) =
         if (target is JsonObject) target.handle(action) else target
 
 }

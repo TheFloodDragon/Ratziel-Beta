@@ -1,31 +1,29 @@
 package cn.fd.ratziel.function.argument
 
+import cn.fd.ratziel.function.argument.exception.ArgumentSupplyException
+
 /**
  * SuppliableArgument
  *
  * @author TheFloodDragon
  * @since 2024/5/2 21:42
  */
-abstract class SuppliableArgument<T : Any>(value: T, type: Class<out T>) : SingleArgument<T>(value, type), ArgumentSupplier {
+abstract class SuppliableArgument<T : Any>(value: T) : SingleArgument<T>(value), ArgumentSupplier {
 
-    constructor(value: T) : this(value, value::class.java)
-
-    abstract fun <T> supply(type: Class<T>): T
+    /**
+     * 提供对应参数的值
+     */
+    abstract fun <K> supply(type: Class<K>): K
 
     /**
      * 重写以封装异常
+     * @return 一个新的参数
      */
-    override fun <T> get(type: Class<T>): T = try {
-        supply(type)
+    override fun <K : Any> get(type: Class<K>): Argument<K> = try {
+        SingleArgument(supply(type))
     } catch (ex: Throwable) {
         throw ArgumentSupplyException(this, type, ex)
     }
-
-    /**
-     * 简便方法 - 用于表示类型已受过检查
-     */
-    @Suppress("UNCHECKED_CAST")
-    fun <T> uncheck(target: Any): T = target as T
 
     override fun toString() = "SuppliableArgument(value=$value, type=$type)"
 

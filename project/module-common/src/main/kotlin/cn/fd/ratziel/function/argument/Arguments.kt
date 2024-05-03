@@ -1,5 +1,6 @@
 package cn.fd.ratziel.function.argument
 
+import cn.fd.ratziel.function.util.uncheck
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.adaptPlayer
 

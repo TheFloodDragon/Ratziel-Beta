@@ -120,7 +120,7 @@ class ElementEvaluator(val executor: Executor) {
         /**
          * 弹出 [ElementConfig]
          */
-        fun popConfig(args: ArgumentFactory) = args.popOrNull<ElementConfig>() ?: ElementConfig()
+        fun popConfig(args: ArgumentFactory): ElementConfig = args.popOrNull<ElementConfig>()?.value ?: ElementConfig()
 
         /**
          * 获取[ElementHandler]的[ElementConfig]

@@ -58,7 +58,7 @@ sidebar_position: 10
 ```YAML
 Vacation:
   Duration:
-    - "5 ~ 7"
+    - days: "5~7"
     - from: "2024/1/5"
       to: "2024/1/7"
 ```
@@ -67,9 +67,11 @@ Vacation:
 
 而 `Duration` 则不一样，它隶属于 `Vacation`，是深层节点，在第二层位置，表示为 `Vacation.Duration`
 
-再看 `Duration` 其实是个列表，第一个元素是 `"5 ~ 7"`，它的索引位置是 0 ，引用它，就需要这样的表达式 `Vacation.Duration[0]`
+`Duration` 列表的第一个元素是 `days: "5~7"`，他是**复合类型**的，索引位置是 **0** ，
 
-而 `Duration` 的第二个元素是**复合类型(NBTCompound)**的，
+引用它，就需要这样的表达式 `Vacation.Duration[0]`
+
+再看 `Duration` 的第二个元素也是**复合类型**的，
 
 要引用它的 `from` 或 `to` ，我们需要使用 `Vacation.Duration[1].from`或者 `Vacation.Duration[1].to`
 
@@ -77,7 +79,7 @@ Vacation:
 
 ## NBT值表达式
 
-> NBT的值其实就是*修改成什么*
+> NBT的值其实就是**修改成什么**
 
 **NBT值表达式**用来表示的是一种**NBT类型**
 
@@ -107,9 +109,9 @@ Vacation:
 
 **列表类型**中的的元素如果数据类型不同，则会无法被正常转换。
 
-例如，列表`[0,1,2]`、`[3.14,2.5]`可以被成功转换，
+例如，列表`[0, 1, 2]`、`[3.14, 2.5]`可以被成功转换，
 
-而`[1,2.5,66]`、`["阿巴阿巴", 666]`、`[0.0, 0.1]`无法被正常转换。
+而`[1, 2.5, 66]`、`["阿巴阿巴", 666]`、`[0.0, 0.1]`无法被正常转换。
 
 若违反此规则，可能会导致**玩家数据丢失**等后果！
 
@@ -117,17 +119,17 @@ Vacation:
 
 ### NBT类型
 
-|      类型      |           代号            |   描述   |
-|:------------:|:-----------------------:|:------:|
-| NBTCompound  |  compound.c , cpd,tag   |  复合标签  |
-|   NBTList    |      list,a,array       |   列表   |
-| NBTIntArray  |  int_array,intArray,ia  |  整型数组  |
-| NBTByteArray | byte_array,byteArray,ba | 字节型数组  |
-| NBTLongArray | long_array,longArray,la | 长整型数组  |
-|  NBTString   |        string,t         |  字符串   |
-|    NBTInt    |          int,i          |   整形   |
-|  NBTDouble   |        double,d         | 双精度浮点数 |
-|   NBTFloat   |         float,f         | 单精度浮点数 |
-|   NBTByte    |         byte,b          |  字节型   |
-|   NBTLong    |         long,l          |  长整型   |
-|   NBTShort   |         short,s         |  短整型   |
+|      类型      |            代号             |   描述   |
+|:------------:|:-------------------------:|:------:|
+| NBTCompound  |   compound, c, cpd, tag   |  复合标签  |
+|   NBTList    |      list, a, array       |   列表   |
+| NBTIntArray  |  int_array, intArray, ia  |  整型数组  |
+| NBTByteArray | byte_array, byteArray, ba | 字节型数组  |
+| NBTLongArray | long_array, longArray, la | 长整型数组  |
+|  NBTString   |         string, t         |  字符串   |
+|    NBTInt    |          int, i           |   整形   |
+|  NBTDouble   |         double, d         | 双精度浮点数 |
+|   NBTFloat   |         float, f          | 单精度浮点数 |
+|   NBTByte    |          byte, b          |  字节型   |
+|   NBTLong    |          long, l          |  长整型   |
+|   NBTShort   |         short, s          |  短整型   |

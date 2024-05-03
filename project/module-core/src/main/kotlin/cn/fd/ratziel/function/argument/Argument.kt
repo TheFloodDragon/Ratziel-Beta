@@ -6,7 +6,7 @@ package cn.fd.ratziel.function.argument
  * @author TheFloodDragon
  * @since 2024/5/1 13:18
  */
-interface Argument<T : Any> {
+interface Argument<out T : Any> {
 
     /**
      * 参数的值
@@ -16,6 +16,6 @@ interface Argument<T : Any> {
     /**
      * 参数类型
      */
-    val type: Class<out T>
+    val type: Class<*> get() = value::class.java
 
 }

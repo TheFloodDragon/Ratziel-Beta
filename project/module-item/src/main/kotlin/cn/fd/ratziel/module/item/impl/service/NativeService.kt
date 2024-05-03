@@ -1,19 +1,20 @@
 package cn.fd.ratziel.module.item.impl.service
 
+import cn.fd.ratziel.function.argument.Argument
 import cn.fd.ratziel.module.item.api.ItemService
 import cn.fd.ratziel.module.item.impl.RatzielItem
 
 /**
- * RatzielItemService
+ * NativeService
  *
  * @author TheFloodDragon
  * @since 2024/5/2 22:04
  */
-class RatzielItemService(
+class NativeService(
     val item: RatzielItem
 ) : ItemService {
 
-    override fun <T> get(type: Class<T>): T {
+    override fun <T : Any> get(type: Class<T>): Argument<T> {
         TODO("Not yet implemented")
     }
 

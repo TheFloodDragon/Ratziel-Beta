@@ -1,5 +1,7 @@
 package cn.fd.ratziel.function.argument
 
+import cn.fd.ratziel.function.argument.exception.*
+
 /**
  * ArgumentFactory - 参数工厂
  * 多参数情况的处理
@@ -9,43 +11,37 @@ package cn.fd.ratziel.function.argument
  */
 interface ArgumentFactory : ArgumentSupplier {
 
-    override fun <T> get(type: Class<T>): T = try {
+    /**
+     * 重写以封装 [ArgumentNotFoundException]
+     * @see [ArgumentSupplier.get]
+     */
+    @Throws(ArgumentSupplyException::class)
+    override fun <T : Any> get(type: Class<T>) = try {
         pop(type)
     } catch (ex: Throwable) {
         throw ArgumentSupplyException(this, type, ex)
     }
 
     /**
-     * 弹出一个指定类型的参数
+     * 弹出第一个指定类型的参数
      * @throws ArgumentNotFoundException 当无法找到指定类型的参数时抛出
      */
-    fun <T> pop(type: Class<T>): T
-
-    /**
-     * 弹出一个指定类型的参数
-     * 异常时返回默认值
-     */
-    fun <T> popOr(type: Class<T>, default: T): T
-
-    /**
-     * 弹出一个指定类型的参数
-     * 异常时返回为空
-     */
-    fun <T> popOrNull(type: Class<T>): T?
+    @Throws(ArgumentNotFoundException::class)
+    fun <T : Any> pop(type: Class<T>): Argument<T>
 
     /**
      * 弹出所有指定类型的参数
      */
-    fun <T> popAll(type: Class<T>): Iterable<T>
+    fun <T : Any> popAll(type: Class<T>): Iterable<Argument<T>>
 
     /**
-     * 添加一个参数
+     * 添加一个参数元素
      */
-    fun addArg(argument: Argument<*>): Boolean
+    fun add(element: Argument<*>): Boolean
 
     /**
-     * 删除一个参数
+     * 删除一个参数元素
      */
-    fun removeArg(argument: Argument<*>): Boolean
+    fun remove(element: Argument<*>): Boolean
 
 }

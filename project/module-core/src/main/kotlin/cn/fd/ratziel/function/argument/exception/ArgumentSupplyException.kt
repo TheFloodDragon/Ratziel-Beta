@@ -1,4 +1,6 @@
-package cn.fd.ratziel.function.argument
+package cn.fd.ratziel.function.argument.exception
+
+import cn.fd.ratziel.function.argument.ArgumentSupplier
 
 /**
  * ArgumentSupplyException
@@ -6,7 +8,7 @@ package cn.fd.ratziel.function.argument
  * @author TheFloodDragon
  * @since 2024/5/2 21:21
  */
-class ArgumentSupplyException : Exception {
+class ArgumentSupplyException : ArgumentException {
 
     constructor(
         supplier: ArgumentSupplier,

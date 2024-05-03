@@ -1,7 +1,8 @@
 package cn.fd.ratziel.function.argument
 
-import java.util.*
-import java.util.concurrent.ConcurrentLinkedQueue
+import cn.fd.ratziel.function.argument.exception.ArgumentNotFoundException
+import cn.fd.ratziel.function.util.uncheck
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * ArgumentQueue
@@ -9,35 +10,18 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * @author TheFloodDragon
  * @since 2024/5/1 13:55
  */
-@Suppress("UNCHECKED_CAST")
-open class DefaultArgumentFactory(open val queue: Queue<Argument<*>>) : ArgumentFactory, Queue<Argument<*>> by queue {
+open class DefaultArgumentFactory(protected open val list: CopyOnWriteArrayList<Argument<*>>) : ArgumentFactory, MutableList<Argument<*>> by list {
 
-    constructor(collection: Collection<Argument<*>>) : this(ConcurrentLinkedQueue(collection))
+    constructor(collection: Collection<Argument<*>>) : this(CopyOnWriteArrayList(collection))
 
-    constructor(vararg argument: Argument<*>) : this(argument.toList())
+    constructor(vararg arguments: Argument<*>) : this(CopyOnWriteArrayList(arguments))
 
-    override fun <T> pop(type: Class<T>) =
-        queue.find { it.type.isAssignableFrom(type) }?.value as? T
-            ?: throw ArgumentNotFoundException(type)
+    constructor() : this(CopyOnWriteArrayList())
 
-    override fun <T> popOr(type: Class<T>, default: T): T =
-        try {
-            pop(type)
-        } catch (ex: ArgumentNotFoundException) {
-            default
-        }
+    override fun <T : Any> pop(type: Class<T>): Argument<T> =
+        list.find { type.isAssignableFrom(it.type) }?.let { uncheck(it) } ?: throw ArgumentNotFoundException(type)
 
-    override fun <T> popOrNull(type: Class<T>): T? = try {
-        pop(type)
-    } catch (ex: ArgumentNotFoundException) {
-        null
-    }
-
-    override fun <T> popAll(type: Class<T>) =
-        queue.filter { it.type.isAssignableFrom(type) } as Iterable<T>
-
-    override fun addArg(argument: Argument<*>) = queue.add(argument)
-
-    override fun removeArg(argument: Argument<*>) = queue.remove(argument)
+    override fun <T : Any> popAll(type: Class<T>): List<Argument<T>> =
+        list.mapNotNull { arg -> arg.takeIf { it.type.isAssignableFrom(type) }?.let { uncheck(it) } }
 
 }
