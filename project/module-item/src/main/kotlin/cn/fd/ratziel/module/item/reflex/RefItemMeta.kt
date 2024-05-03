@@ -29,7 +29,7 @@ class RefItemMeta(raw: Any) {
      * ItemMeta的CraftMetaItem处理对象
      */
     var handle: ItemMeta = when {
-        obcClass::class.java.isAssignableFrom(raw::class.java) -> raw as ItemMeta // CraftMetaItem
+        obcClas.isAssignableFrom(raw::class.java) -> raw as ItemMeta // CraftMetaItem
         else -> throw UnsupportedTypeException(raw) // Unsupported Type
     }
         private set
@@ -90,55 +90,6 @@ class RefItemMeta(raw: Any) {
         fun applyToItem(craft: Any, tag: Any) {
             craft.invokeMethod<Void>("applyToItem", handleApplicator(tag))
         }
-
-        internal val ENCHANTMENTS_KEY by lazy {
-            obcClass.getProperty<Any>("ENCHANTMENTS", isStatic = true)
-        }
-
-        internal val ATTRIBUTES_KEY by lazy {
-            obcClass.getProperty<Any>("ATTRIBUTES", isStatic = true)
-        }
-
-        /**
-         * Enchantments to NBTTagCompound
-         * CraftMetaItem#applyEnchantments(Map<Enchantment,Int>,NBTTagCompound,ItemMetaKey);Static
-         */
-        fun applyEnchantments(nbtTag: Any, enchantments: Map<Enchantment, Int>) =
-            obcClass.invokeMethod<Void>(
-                "applyEnchantments", enchantments, nbtTag,
-                ENCHANTMENTS_KEY, isStatic = true
-            )
-
-        /**
-         * NBTTagCompound to Enchantments
-         * CraftMetaItem#buildEnchantments(NBTTagCompound,ItemMetaKey):Map<Enchantment,Integer>;Static
-         */
-        fun buildEnchantments(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
-            obcClass.invokeMethod<Multimap<Attribute, AttributeModifier>>(
-                "buildEnchantments", nbtTag,
-                ENCHANTMENTS_KEY, isStatic = true
-            )!!
-
-
-        /**
-         * AttributeModifiers to NBTTagCompound
-         * CraftMetaItem#applyModifiers(MultiMap<Attribute,AttributeModifier>,NBTTagCompound,ItemMetaKey);Static
-         */
-        fun applyModifiers(nbtTag: Any, modifiers: Multimap<Attribute, AttributeModifier>) =
-            obcClass.invokeMethod<Void>(
-                "applyModifiers", modifiers, nbtTag,
-                ATTRIBUTES_KEY, isStatic = true
-            )
-
-        /**
-         * NBTTagCompound to AttributeModifiers
-         * CraftMetaItem#buildModifiers(NBTTagCompound,ItemMetaKey):MultiMap<Attribute,AttributeModifier>;Static
-         */
-        fun buildModifiers(nbtTag: Any): Multimap<Attribute, AttributeModifier> =
-            obcClass.invokeMethod<Multimap<Attribute, AttributeModifier>>(
-                if (MinecraftVersion.majorLegacy >= 12005) "buildModifiersLegacy" else "buildModifiers", nbtTag,
-                ATTRIBUTES_KEY, isStatic = true
-            )!!
 
         /**
          * 1.20.5+: NBTTagCompound to CraftMetaItem.Applicator
