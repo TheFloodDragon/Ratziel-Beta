@@ -116,7 +116,7 @@ class RefItemMeta(raw: Any) {
          */
         fun applicatorPutData(tag: Any): Any {
             val applicator = applicatorClass.invokeConstructor()
-            return applicator.invokeMethod<Any>("put", customDataKey, tag)!!
+            return applicator.invokeMethod<Any>("put", customDataKey, tag)!! // TODO 修复
         }
 
         val applicatorClass by lazy {

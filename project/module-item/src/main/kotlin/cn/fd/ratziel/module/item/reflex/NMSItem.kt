@@ -36,7 +36,7 @@ abstract class NMSItem {
         val nmsClass by lazy { nmsClass("ItemStack") }
 
         val instance by lazy {
-            if (MinecraftVersion.majorLegacy >= 12005) nmsProxy<NMSItem>("NMSItemImpl2") else NMSItemImpl1
+            if (MinecraftVersion.majorLegacy >= 12005) nmsProxy<NMSItem>("{name}Impl2") else NMSItemImpl1
         }
 
     }

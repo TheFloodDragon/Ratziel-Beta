@@ -16,23 +16,19 @@ import taboolib.common.env.RuntimeDependency;
         ),
         @RuntimeDependency(
                 value = "!net.kyori:adventure-text-serializer-gson:" + CommonEnv.ADVENTURE_VERSION,
-                test = "!net.kyori.adventure.text.serializer.gson.GsonComponentSerializer",
-                transitive = false
+                test = "!net.kyori.adventure.text.serializer.gson.GsonComponentSerializer"
         ),
         @RuntimeDependency(
                 value = "!net.kyori:adventure-text-minimessage:" + CommonEnv.ADVENTURE_VERSION,
-                test = "!net.kyori.adventure.text.minimessage.MiniMessage",
-                transitive = false
+                test = "!net.kyori.adventure.text.minimessage.MiniMessage"
         ),
         @RuntimeDependency(
                 value = "!net.kyori:adventure-text-serializer-legacy:" + CommonEnv.ADVENTURE_VERSION,
-                test = "!net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer",
-                transitive = false
+                test = "!net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer"
         ),
         @RuntimeDependency(
                 value = "!net.kyori:adventure-platform-api:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
-                test = "!net.kyori.adventure.platform.AudienceProvider",
-                transitive = false
+                test = "!net.kyori.adventure.platform.AudienceProvider"
         )
 })
 public class CommonEnv {
