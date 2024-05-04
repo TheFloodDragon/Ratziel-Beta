@@ -9,7 +9,6 @@ import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.argument.ArgumentFactory
 import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.impl.RatzielItem
@@ -20,12 +19,12 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 
 /**
- * NativeItemGenerator
+ * DefaultItemGenerator
  *
  * @author TheFloodDragon
  * @since 2024/4/13 17:34
  */
-class NativeItemGenerator(override val origin: Element) : ItemGenerator {
+class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
 
     val json: Json by lazy {
         Json(baseJson) {}
@@ -85,7 +84,7 @@ class NativeItemGenerator(override val origin: Element) : ItemGenerator {
         }
     }
 
-    override fun build(arguments: ArgumentFactory): CompletableFuture<out NeoItem> {
+    override fun build(arguments: ArgumentFactory): CompletableFuture<RatzielItem> {
         // 解析成 JsonElement
         val element = resolve(origin.property, arguments)
         // 并行序列化并收集结果

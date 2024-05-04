@@ -10,30 +10,30 @@ import taboolib.common.env.RuntimeDependency;
  * @since 2023/5/21 11:06
  */
 @RuntimeDependencies({
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-api:" + CommonEnv.ADVENTURE_VERSION,
-            test = "!net.kyori.adventure.text.Component"
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-text-serializer-gson:" + CommonEnv.ADVENTURE_VERSION,
-            test = "!net.kyori.adventure.text.serializer.gson.GsonComponentSerializer",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-text-minimessage:" + CommonEnv.ADVENTURE_VERSION,
-            test = "!net.kyori.adventure.text.minimessage.MiniMessage",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-text-serializer-legacy:" + CommonEnv.ADVENTURE_VERSION,
-            test = "!net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-platform-api:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
-            test = "!net.kyori.adventure.platform.AudienceProvider",
-            transitive = false
-    )
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-api:" + CommonEnv.ADVENTURE_VERSION,
+                test = "!net.kyori.adventure.text.Component"
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-text-serializer-gson:" + CommonEnv.ADVENTURE_VERSION,
+                test = "!net.kyori.adventure.text.serializer.gson.GsonComponentSerializer",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-text-minimessage:" + CommonEnv.ADVENTURE_VERSION,
+                test = "!net.kyori.adventure.text.minimessage.MiniMessage",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-text-serializer-legacy:" + CommonEnv.ADVENTURE_VERSION,
+                test = "!net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-platform-api:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+                test = "!net.kyori.adventure.platform.AudienceProvider",
+                transitive = false
+        )
 })
 public class CommonEnv {
 

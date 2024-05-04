@@ -6,8 +6,7 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.module.item.impl.ItemManager
-import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
-import cn.fd.ratziel.module.item.impl.builder.NativeItemGenerator
+import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
 import kotlinx.serialization.json.Json
 import taboolib.common.platform.event.SubscribeEvent
 
@@ -30,33 +29,12 @@ object ItemElement : ElementHandler {
 
     override fun handle(element: Element) {
 
-        val serializer = DefaultItemSerializer(json)
-        val generator = NativeItemGenerator(element)
+        val generator = DefaultItemGenerator(element)
 
-        val meta = serializer.deserialize(element.property)
+        val item = generator.build().get()
 
-        println(meta.display)
+        println(item.data)
 
-//        println(meta.characteristic)
-//        println(meta.durability)
-//        println(meta.nbt)
-
-        println("————————————————————————————————")
-
-
-        val test = generator.build()
-
-//
-//        println(testMeta)
-//
-//        println("————————————————————————————————")
-//
-//        println(serializer.usedNodes.toList().toString())
-//
-//        println("————————————————————————————————")
-//
-//        // 注册物品
-//        ItemManager.registry[element.name] = generator
     }
 
     @SubscribeEvent

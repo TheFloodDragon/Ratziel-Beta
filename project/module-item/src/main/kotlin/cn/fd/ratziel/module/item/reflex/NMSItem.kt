@@ -3,7 +3,9 @@
 package cn.fd.ratziel.module.item.reflex
 
 import net.minecraft.core.component.DataComponents
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.item.component.CustomData
+import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
@@ -34,7 +36,7 @@ abstract class NMSItem {
         val nmsClass by lazy { nmsClass("ItemStack") }
 
         val instance by lazy {
-            if (MinecraftVersion.majorLegacy >= 12005) nmsProxy<NMSItem>("{name}Impl2") else NMSItemImpl1
+            if (MinecraftVersion.majorLegacy >= 12005) nmsProxy<NMSItem>("NMSItemImpl2") else NMSItemImpl1
         }
 
     }
@@ -80,26 +82,25 @@ object NMSItemImpl1 : NMSItem() {
 /**
  * 1.20.5+
  */
+@Suppress("DEPRECATION")
 class NMSItemImpl2 : NMSItem() {
 
-    val tagField = ReflexClass.of(CustomData::class.java).getField("tag", remap = true)
-
     override fun getItemNBT(nmsItem: Any): Any? {
-        return tagField.get(getCustomData(nmsItem) ?: return null)
+        val customData = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
+        return try {
+            customData?.unsafe
+        } catch (ex: Exception) {
+            customData?.getProperty("tag")
+        }
     }
 
     override fun setItemNBT(nmsItem: Any, nmsNBT: Any) {
-        return tagField.set(getCustomData(nmsItem) ?: return, nmsNBT)
+        val customData = CustomData.of(nmsNBT as NBTTagCompound)
+        (nmsItem as NMSItemStack).set(DataComponents.CUSTOM_DATA, customData)
     }
 
     override fun copyItem(nmsItem: Any): Any {
         return (nmsItem as NMSItemStack).copy()
     }
-
-    fun applierHandle() {
-
-    }
-
-    fun getCustomData(nmsItem: Any): CustomData? = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
 
 }

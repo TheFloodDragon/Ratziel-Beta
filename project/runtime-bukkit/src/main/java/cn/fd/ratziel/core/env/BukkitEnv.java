@@ -13,51 +13,51 @@ import taboolib.common.platform.PlatformSide;
  */
 @PlatformSide(Platform.BUKKIT)
 @RuntimeDependencies({
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-platform-bukkit:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
-            test = "!net.kyori.adventure.platform.bukkit.BukkitAudience",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-text-serializer-bungeecord:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
-            test = "!net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-text-serializer-bungeecord:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
-            test = "!net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-nbt:" + CommonEnv.ADVENTURE_VERSION,
-            test = "!net.kyori.adventure.nbt.BinaryTag",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-platform-facet:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
-            test = "!net.kyori.adventure.platform.facet.FacetAudience",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-platform-viaversion:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
-            test = "!net.kyori.adventure.platform.viaversion.ViaFacet",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-text-serializer-gson-legacy-impl:" + CommonEnv.ADVENTURE_VERSION,
-            test = "!net.kyori.adventure.text.serializer.gson.legacyimpl.NBTLegacyHoverEventSerializer",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-text-serializer-json-legacy-impl:" + CommonEnv.ADVENTURE_VERSION,
-            test = "!net.kyori.adventure.text.serializer.json.legacyimpl.NBTLegacyHoverEventSerializer",
-            transitive = false
-    ),
-    @RuntimeDependency(
-            value = "!net.kyori:adventure-text-serializer-json:" + CommonEnv.ADVENTURE_VERSION,
-            test = "!net.kyori.adventure.text.serializer.json.JSONComponentSerializer",
-            transitive = false
-    )
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-platform-bukkit:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+                test = "!net.kyori.adventure.platform.bukkit.BukkitAudience",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-text-serializer-bungeecord:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+                test = "!net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-text-serializer-bungeecord:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+                test = "!net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-nbt:" + CommonEnv.ADVENTURE_VERSION,
+                test = "!net.kyori.adventure.nbt.BinaryTag",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-platform-facet:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+                test = "!net.kyori.adventure.platform.facet.FacetAudience",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-platform-viaversion:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+                test = "!net.kyori.adventure.platform.viaversion.ViaFacet",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-text-serializer-gson-legacy-impl:" + CommonEnv.ADVENTURE_VERSION,
+                test = "!net.kyori.adventure.text.serializer.gson.legacyimpl.NBTLegacyHoverEventSerializer",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-text-serializer-json-legacy-impl:" + CommonEnv.ADVENTURE_VERSION,
+                test = "!net.kyori.adventure.text.serializer.json.legacyimpl.NBTLegacyHoverEventSerializer",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!net.kyori:adventure-text-serializer-json:" + CommonEnv.ADVENTURE_VERSION,
+                test = "!net.kyori.adventure.text.serializer.json.JSONComponentSerializer",
+                transitive = false
+        )
 })
 public class BukkitEnv {
 }
