@@ -6,11 +6,11 @@ package cn.fd.ratziel.module.item.api
  * @author TheFloodDragon
  * @since 2024/4/19 20:57
  */
-interface Resolver<T, R> {
+interface Resolver<E, T> {
 
     /**
-     * 解析[T]为[R]
+     * 解析 [E] 为 [T]
      */
-    fun resolve(target: T): R
+    fun resolve(element: E): T
 
 }

@@ -6,13 +6,17 @@ import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.core.util.priority
 import cn.fd.ratziel.core.util.sortPriority
+import cn.fd.ratziel.function.argument.ArgumentFactory
 import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
+import cn.fd.ratziel.module.item.impl.RatzielItem
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 
 /**
@@ -38,11 +42,11 @@ class NativeItemGenerator(override val origin: Element) : ItemGenerator {
     /**
      * 解析
      */
-    fun resolve(element: JsonElement): JsonElement {
+    fun resolve(element: JsonElement, arguments: ArgumentFactory): JsonElement {
         var result = element
         for (resolver in resolvers.sortPriority()) {
             try {
-                result = resolver.resolve(result)
+                result = resolver.resolve(result, arguments)
             } catch (ex: Exception) {
                 severe("Failed to resolve element by $resolver!")
                 ex.printStackTrace()
@@ -81,15 +85,16 @@ class NativeItemGenerator(override val origin: Element) : ItemGenerator {
         }
     }
 
-    fun build() {
+    override fun build(arguments: ArgumentFactory): CompletableFuture<out NeoItem> {
         // 解析成 JsonElement
-        val element = resolve(origin.property)
+        val element = resolve(origin.property, arguments)
         // 并行序列化并收集结果
-        serialize(element).thenAccept { components ->
-            // 转换
+        val serializeTask = serialize(element)
+        // 合成最终产物
+        return serializeTask.thenApply { components ->
             val data = ItemData()
             transform(data, components.mapNotNull { it })
-            println(data)
+            RatzielItem(data)
         }
     }
 

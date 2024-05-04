@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalSerializationApi::class)
-@file:Suppress("ConvertArgumentToSet", "DEPRECATION")
+@file:Suppress( "DEPRECATION")
 
 package cn.fd.ratziel.module.item.impl.part
 
@@ -28,11 +28,11 @@ import taboolib.module.nms.MinecraftVersion
  */
 @Serializable
 data class VItemSundry(
-    @JsonNames("custom-model-data", "cmd")
+    @JsonNames("custom-model-data")
     override var customModelData: Int? = null,
     @JsonNames("hideflag", "hideflags", "hideFlag")
     override var hideFlags: MutableSet<@Contextual HideFlag>? = null,
-    @JsonNames("attribute-modifiers", "attributesModifiers")
+    @JsonNames("attribute-modifiers", "attributeModifiers", "bukkit-attributes")
     override var bukkitAttributes: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null
 ) : ItemSundry {
 
@@ -44,7 +44,7 @@ data class VItemSundry(
     /**
      * 删除物品隐藏标签
      */
-    fun removeHideFlags(vararg flags: HideFlag) = fetchHideFlags().removeAll(flags)
+    fun removeHideFlags(vararg flags: HideFlag) = fetchHideFlags().removeAll(flags.toSet())
 
     /**
      * 获取属性修饰符
@@ -59,7 +59,7 @@ data class VItemSundry(
     /**
      * 删除属性修饰符
      */
-    fun removeAttributeModifiers(attribute: Attribute, vararg modifiers: AttributeModifier) = bukkitAttributes?.get(attribute)?.removeAll(modifiers)
+    fun removeAttributeModifiers(attribute: Attribute, vararg modifiers: AttributeModifier) = bukkitAttributes?.get(attribute)?.removeAll(modifiers.toSet())
 
     fun removeAttributeModifiers(slot: EquipmentSlot) =
         bukkitAttributes?.forEach { (key, value) -> value.forEach { if (it.slot == slot) bukkitAttributes?.get(key)?.remove(it) } }

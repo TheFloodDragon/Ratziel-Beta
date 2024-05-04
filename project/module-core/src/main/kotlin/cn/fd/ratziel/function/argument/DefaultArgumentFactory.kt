@@ -19,9 +19,20 @@ open class DefaultArgumentFactory(protected open val list: CopyOnWriteArrayList<
     constructor() : this(CopyOnWriteArrayList())
 
     override fun <T : Any> pop(type: Class<T>): Argument<T> =
-        list.find { type.isAssignableFrom(it.type) }?.let { uncheck(it) } ?: throw ArgumentNotFoundException(type)
+        list.find { type.isAssignableFrom(it.type) }
+            ?.let { handledCast(it, type) }
+            ?: throw ArgumentNotFoundException(type)
 
     override fun <T : Any> popAll(type: Class<T>): List<Argument<T>> =
-        list.mapNotNull { arg -> arg.takeIf { it.type.isAssignableFrom(type) }?.let { uncheck(it) } }
+        list.mapNotNull { arg ->
+            arg.takeIf {
+                it.type.isAssignableFrom(type)
+            }?.let { handledCast(it, type) }
+        }
+
+    /**
+     * 处理 [SuppliableArgument]
+     */
+    private fun <T : Any> handledCast(arg: Argument<*>, type: Class<T>) = if (arg is SuppliableArgument<*>) arg[type] else uncheck(arg)
 
 }

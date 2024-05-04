@@ -8,4 +8,5 @@ dependencies {
     compileTaboo("module-bukkit-xseries")
     compileTaboo("module-bukkit-util")
     compileModule("runtime-bukkit")
+    compileOnly(fileTree("libs"))
 }

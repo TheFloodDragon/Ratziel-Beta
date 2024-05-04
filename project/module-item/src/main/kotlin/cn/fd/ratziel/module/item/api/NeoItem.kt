@@ -1,5 +1,7 @@
 package cn.fd.ratziel.module.item.api
 
+import cn.fd.ratziel.module.item.api.service.ItemService
+
 /**
  * NeoItem - 物品
  *
@@ -16,6 +18,6 @@ interface NeoItem {
     /**
      * 物品服务
      */
-    val service: ItemService?
+    val service: ItemService
 
 }

@@ -76,21 +76,17 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
 
     companion object {
 
-        val serializers by lazy {
-            arrayOf(
-                VItemMeta.serializer(),
-                VItemDisplay.serializer(),
-                VItemDurability.serializer(),
-                VItemSundry.serializer(),
-            )
-        }
+        val serializers = arrayOf(
+            VItemMeta.serializer(),
+            VItemDisplay.serializer(),
+            VItemDurability.serializer(),
+            VItemSundry.serializer(),
+        )
 
         /**
          * 占据的节点
          */
-        val occupiedNodes by lazy {
-            serializers.flatMap { it.descriptor.usedNodes }
-        }
+        val occupiedNodes = serializers.flatMap { it.descriptor.usedNodes }
 
         /**
          * 结构化解析

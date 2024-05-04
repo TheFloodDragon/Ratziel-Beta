@@ -9,13 +9,17 @@ import java.util.*
  * @author TheFloodDragon
  * @since 2024/5/3 14:47
  */
-data class ItemIdentifierImpl(
-    val uuid: UUID,
+open class ItemIdentifierImpl(
+    val id: String,
 ) : ItemIdentifier {
 
-    override fun asString() = uuid.toString()
+    constructor(uuid: UUID) : this(uuid.toString())
 
-    override fun isIdentical(other: ItemIdentifier) = this.asString() == other.asString()
+    override fun equals(other: Any?) = id == other
+
+    override fun toString() = id
+
+    override fun hashCode() = id.hashCode()
 
     companion object {
 
@@ -24,12 +28,6 @@ data class ItemIdentifierImpl(
          */
         @JvmStatic
         fun random(): ItemIdentifier = ItemIdentifierImpl(UUID.randomUUID())
-
-        /**
-         * 由字符串获取物品标识符
-         */
-        @JvmStatic
-        fun fromString(name: String): ItemIdentifier = ItemIdentifierImpl(UUID.fromString(name))
 
     }
 
