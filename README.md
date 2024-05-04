@@ -21,13 +21,13 @@
 
 ### Beta-第二阶段
 
-<h6>版本号：B.0.x.x.x</h6>
+<h6>版本号：B.x.x.x.x</h6>
 
 - [ ] 插件基础内容和部分扩展内容开发完成，开始测试
 
 ### RC-第四阶段
 
-<h6>版本号：0.1.0-RC</h6>
+<h6>版本号：1.0.0-RC</h6>
 
 - [ ] 第一个发布版
 
@@ -44,11 +44,3 @@
     ./gradlew clean build
 
 构建工件在 `./outs` 文件夹中
-
-## 鸣谢
-
-- **设计参考**
-
-    - Bkm016 - [Zaphkiel](https://github.com/TabooLib/zaphkiel/)
-    - Lanscarlos - [Vulpecula](https://github.com/Lanscarlos/Vulpecula/)
-    - Neige - [NeigeItems](https://github.com/ankhorg/NeigeItems-Kotlin/)
