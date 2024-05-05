@@ -19,7 +19,7 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
 
     constructor(mat: XMaterial) : this(mat.name)
 
-    constructor(matId: Int) : this(getBukkitForm(matId) ?: BukkitMaterial.AIR)
+    constructor(matId: Int) : this(getBukkitMaterial(matId) ?: BukkitMaterial.AIR)
 
     constructor(mat: BukkitMaterial) : this(mat.name)
 
@@ -28,43 +28,41 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
     /**
      * 材料标识符 (低版本)
      */
-    override val id: Int get() = bukkitForm.getIdByReflex()
+    override val id: Int get() = getIdUnsafe(bukkitMaterial)
 
     /**
      * 材料的默认最大堆叠数量
      */
-    override val maxStackSize: Int get() = bukkitForm.maxStackSize
+    override val maxStackSize: Int get() = bukkitMaterial.maxStackSize
 
     /**
      * 材料的默认最大耐久度
      */
-    override val maxDurability: Int get() = bukkitForm.maxDurability.toInt()
+    override val maxDurability: Int get() = bukkitMaterial.maxDurability.toInt()
 
     /**
      * 材料是否为空气材料
      */
-    fun isAir() = bukkitForm.isAir || ItemMaterial.isEmpty(this)
+    fun isAir() = bukkitMaterial.isAir || ItemMaterial.isEmpty(this)
 
     /**
      * [BukkitMaterial] 形式 (若获取不到则抛出异常)
      */
-    val bukkitForm: BukkitMaterial by lazy { getBukkitForm(name) ?: throw UnknownMaterialException(name) }
+    val bukkitMaterial: BukkitMaterial by lazy { getBukkitMaterial(name) ?: throw UnknownMaterialException(name) }
 
     /**
      * [XMaterial] 形式 (若获取不到则抛出异常)
      */
-    val xseriesForm: XMaterial by lazy { XMaterial.matchXMaterial(bukkitForm) }
+    val xseriesMaterial: XMaterial by lazy { XMaterial.matchXMaterial(bukkitMaterial) }
 
     companion object {
-
-        val AIR by lazy { ItemMaterialImpl(BukkitMaterial.AIR) }
 
         /**
          * 获取 [BukkitMaterial] 形式的物品材料
          */
-        fun getBukkitForm(name: String) = BukkitMaterial.getMaterial(name)
+        fun getBukkitMaterial(name: String) = BukkitMaterial.getMaterial(name)
 
-        fun getBukkitForm(id: Int) = BukkitMaterial.entries.find { it.getIdByReflex() == id }
+        fun getBukkitMaterial(id: Int) = BukkitMaterial.entries.find { getIdUnsafe(it) == id }
 
         /**
          * 材料大全
@@ -78,9 +76,11 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
         /**
          * 通过反射获取 [id], 因为 [BukkitMaterial.getId] 不会获取老版物品的 [id]
          */
-        internal fun BukkitMaterial.getIdByReflex() = bukkitIdField.get(this) as Int
+        fun getIdUnsafe(material: BukkitMaterial) = bukkitIdField.get(material) as Int
 
-        // private final int id
+        /**
+         * private final int id
+         */
         internal val bukkitIdField by lazy {
             ReflexClass.of(BukkitMaterial::class.java, false).structure.getField("id")
         }

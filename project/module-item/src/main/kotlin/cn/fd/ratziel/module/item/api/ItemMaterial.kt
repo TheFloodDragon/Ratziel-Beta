@@ -14,6 +14,11 @@ interface ItemMaterial {
     val name: String
 
     /**
+     * 材料ID (低版本)
+     */
+    val id: Int
+
+    /**
      * 材料的默认最大堆叠数量
      */
     val maxStackSize: Int
@@ -22,11 +27,6 @@ interface ItemMaterial {
      * 材料的默认最大耐久度
      */
     val maxDurability: Int
-
-    /**
-     * 材料标识符 (低版本)
-     */
-    val id: Int
 
     companion object {
 

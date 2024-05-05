@@ -5,7 +5,7 @@ package cn.fd.ratziel.module.item.reflex
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.item.component.CustomData
-import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
@@ -20,10 +20,23 @@ import net.minecraft.world.item.ItemStack as NMSItemStack
  */
 abstract class NMSItem {
 
+    /**
+     * 获取[NMSItemStack]的 NBT
+     * 注意: 一般不会经过克隆过程!
+     * @return [NBTTagCompound]
+     */
     abstract fun getItemNBT(nmsItem: Any): Any?
 
+    /**
+     * 设置[NMSItemStack]的 NBT
+     * 注意: 一般不会经过克隆过程! (也许会?)
+     * @param nmsNBT [NBTTagCompound]
+     */
     abstract fun setItemNBT(nmsItem: Any, nmsNBT: Any)
 
+    /**
+     * 克隆[NMSItemStack]
+     */
     abstract fun copyItem(nmsItem: Any): Any
 
     companion object {
@@ -90,12 +103,12 @@ class NMSItemImpl2 : NMSItem() {
         return try {
             customData?.unsafe
         } catch (ex: Exception) {
-            customData?.getProperty("tag")
+            customData?.invokeMethod("tag", remap = true)
         }
     }
 
     override fun setItemNBT(nmsItem: Any, nmsNBT: Any) {
-        val customData = CustomData.of(nmsNBT as NBTTagCompound)
+        val customData = RefItemMeta.InternalUtil.newCustomData(nmsNBT as NBTTagCompound) as CustomData
         (nmsItem as NMSItemStack).set(DataComponents.CUSTOM_DATA, customData)
     }
 

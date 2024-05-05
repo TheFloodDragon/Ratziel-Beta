@@ -12,8 +12,8 @@ import taboolib.common.platform.PlatformSide;
  */
 @PlatformSide(Platform.BUKKIT)
 @RuntimeDependency(
-        value = "!net.kyori:adventure-platform-bukkit:" + CommonEnv.ADVENTURE_PLATFORM_VERSION,
+        value = "!net.kyori:adventure-platform-bukkit:" + AdventureEnv.ADVENTURE_PLATFORM_VERSION,
         test = "!net.kyori.adventure.platform.bukkit.BukkitAudience"
 )
-public class ZxBukkitEnv {
+public class BukkitEnv {
 }

@@ -2,15 +2,12 @@ package cn.fd.ratziel.module.item.reflex
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.nbt.NBTCompound
-import com.google.common.collect.Multimap
-import org.bukkit.attribute.Attribute
-import org.bukkit.attribute.AttributeModifier
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
 
 /**
@@ -38,7 +35,7 @@ class RefItemMeta(raw: Any) {
      * 将 [ItemMeta] 应用到 [NBTCompound]
      */
     fun applyToTag(tag: NBTCompound) = tag.also {
-        InternalImpl.applyToItem(handle, it.getData())
+        InternalUtil.applyToItem(handle, it.getData())
     }
 
     /**
@@ -70,7 +67,7 @@ class RefItemMeta(raw: Any) {
          * CraftMetaItem(DataComponentPatch tag)
          * @return CraftMetaItem
          */
-        fun new(value: NBTCompound) = obcClass.invokeConstructor(InternalImpl.handleDataComponentPatch(value.getData()))
+        fun new(value: NBTCompound) = obcClass.invokeConstructor(InternalUtil.handleDataComponentPatch(value.getData()))
 
         /**
          * 创建空对象
@@ -79,7 +76,26 @@ class RefItemMeta(raw: Any) {
 
     }
 
-    internal object InternalImpl {
+    internal object InternalUtil {
+
+        /**
+         * Only 1.20.5+
+         */
+        val customDataClass by lazy {
+            nmsClass("CustomData")
+        }
+
+        /**
+         * private CustomData(NBTTagCompound var0)
+         */
+        fun newCustomData(tag: Any) = customDataClass.invokeConstructor(tag)
+
+        /**
+         * Only 1.20.5+
+         */
+        val applicatorClass by lazy {
+            obcClass("inventory.CraftMetaItem\$Applicator")
+        }
 
         /**
          * CraftMetaItem#applyToItem(NBTTagCompound)
@@ -116,11 +132,7 @@ class RefItemMeta(raw: Any) {
          */
         fun applicatorPutData(tag: Any): Any {
             val applicator = applicatorClass.invokeConstructor()
-            return applicator.invokeMethod<Any>("put", customDataKey, tag)!! // TODO 修复
-        }
-
-        val applicatorClass by lazy {
-            obcClass("inventory.CraftMetaItem\$Applicator")
+            return applicator.invokeMethod<Any>("put", customDataKey, newCustomData(tag))!!
         }
 
         val customDataKey by lazy {
