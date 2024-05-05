@@ -5,7 +5,7 @@ package cn.fd.ratziel.module.item.reflex
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.item.component.CustomData
-import taboolib.library.reflex.Reflex.Companion.invokeMethod
+import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
@@ -103,7 +103,7 @@ class NMSItemImpl2 : NMSItem() {
         return try {
             customData?.unsafe
         } catch (ex: Exception) {
-            customData?.invokeMethod("tag", remap = true)
+            customData?.getProperty("tag", remap = true)
         }
     }
 
