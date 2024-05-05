@@ -1,13 +1,14 @@
 package cn.fd.ratziel.module.item.nbt
 
+import cn.fd.ratziel.function.util.uncheck
+
 /**
  * NBTCompound
  *
  * @author TheFloodDragon
  * @since 2024/3/15 19:28
  */
-@Suppress("UNCHECKED_CAST")
-class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), MutableMap<String, NBTData> {
+open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), MutableMap<String, NBTData> {
 
     constructor() : this(new())
 
@@ -17,7 +18,7 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), MutableMap
      * [java.util.Map] is the same as [MutableMap] in [kotlin.collections]
      * Because [MutableMap] will be compiled to [java.util.Map]
      */
-    internal val sourceMap get() = NMSUtil.NtCompound.sourceField.get(data) as MutableMap<String, Any>
+    internal val sourceMap: MutableMap<String, Any> get() = uncheck(NMSUtil.NtCompound.sourceField.get(data)!!)
 
     override val content: Map<String, NBTData> get() = buildMap { sourceMap.forEach { put(it.key, NBTAdapter.adaptNms(it.value)) } }
 
@@ -32,18 +33,18 @@ class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), MutableMap
      * @param key 节点
      * @param value NBT数据
      */
-    override fun put(key: String, value: NBTData) = this.apply { sourceMap[key] = value.getData() }
+    override fun put(key: String, value: NBTData) = sourceMap.put(key, value)?.let { NBTAdapter.adaptNms(it) }
 
     /**
      * 删除数据
      * @param key 节点
      */
-    override fun remove(key: String) = this.apply { sourceMap.remove(key) }
+    override fun remove(key: String) = sourceMap.remove(key)?.let { NBTAdapter.adaptNms(it) }
 
     /**
      * 克隆数据
      */
-    fun clone() = this.apply { data = NMSUtil.NtCompound.methodClone.invoke(data)!! }
+    open fun clone() = this.apply { data = NMSUtil.NtCompound.methodClone.invoke(data)!! }
 
     /**
      * 合并目标数据

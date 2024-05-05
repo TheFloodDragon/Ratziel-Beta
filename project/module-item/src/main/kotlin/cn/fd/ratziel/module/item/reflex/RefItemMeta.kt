@@ -44,7 +44,7 @@ class RefItemMeta(raw: Any) {
             val newTag = InternalUtil.applicatorClass.invokeConstructor()
             InternalUtil.invokeApplyToItem(handle, newTag)
             val dcp = InternalUtil.applicatorToDCP(newTag)
-            val nbtTag = NMSItem.instance.getNBTFromDCP(dcp)
+            val nbtTag = NMSItem.INSTANCE.getNBTFromDCP(dcp)
             if (nbtTag != null) tag.merge(NBTCompound(nbtTag), true)
         } else {
             InternalUtil.invokeApplyToItem(handle, tag.getData())

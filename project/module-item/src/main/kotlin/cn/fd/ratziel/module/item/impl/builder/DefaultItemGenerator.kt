@@ -11,6 +11,7 @@ import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
+import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -91,7 +92,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         val serializeTask = serialize(element)
         // 合成最终产物
         return serializeTask.thenApply { components ->
-            val data = ItemData()
+            val data = ItemDataImpl()
             transform(data, components.mapNotNull { it })
             RatzielItem(data)
         }

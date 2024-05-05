@@ -23,27 +23,26 @@ import net.minecraft.world.item.ItemStack as NMSItemStack
 abstract class NMSItem {
 
     /**
-     * 获取[NMSItemStack]的 NBT
-     * 注意: 一般不会经过克隆过程!
+     * 获取 [NMSItemStack]的 NBT
      * @return [NBTTagCompound]
      */
     abstract fun getItemNBT(nmsItem: Any): Any?
 
     /**
-     * 设置[NMSItemStack]的 NBT
-     * 注意: 一般不会经过克隆过程! (也许会?)
+     * 设置 [NMSItemStack]的 NBT
      * @param nmsNBT [NBTTagCompound]
      */
     abstract fun setItemNBT(nmsItem: Any, nmsNBT: Any)
 
     /**
-     * 克隆[NMSItemStack]
+     * 克隆 [NMSItemStack]
      */
     abstract fun copyItem(nmsItem: Any): Any
 
     /**
      * 1.20.5 从 [DataComponentPatch] 获取 [NBTTagCompound]
      */
+    @Deprecated("草你妈")
     open fun getNBTFromDCP(dcp: Any): Any? = throw NotImplementedError("Not implement. It's unsupported below 1.20.5!")
 
     companion object {
@@ -55,7 +54,7 @@ abstract class NMSItem {
          */
         val nmsClass by lazy { nmsClass("ItemStack") }
 
-        val instance by lazy {
+        val INSTANCE by lazy {
             if (MinecraftVersion.majorLegacy >= 12005) nmsProxy<NMSItem>("{name}Impl2") else NMSItemImpl1
         }
 
