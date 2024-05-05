@@ -2,14 +2,16 @@
 
 package cn.fd.ratziel.module.item.reflex
 
+import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.item.component.CustomData
-import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
+import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
 /**
@@ -38,6 +40,11 @@ abstract class NMSItem {
      * 克隆[NMSItemStack]
      */
     abstract fun copyItem(nmsItem: Any): Any
+
+    /**
+     * 1.20.5 从 [DataComponentPatch] 获取 [NBTTagCompound]
+     */
+    open fun getNBTFromDCP(dcp: Any): Any? = throw NotImplementedError("Not implement. It's unsupported below 1.20.5!")
 
     companion object {
 
@@ -100,11 +107,7 @@ class NMSItemImpl2 : NMSItem() {
 
     override fun getItemNBT(nmsItem: Any): Any? {
         val customData = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
-        return try {
-            customData?.unsafe
-        } catch (ex: Exception) {
-            customData?.getProperty("tag", remap = true)
-        }
+        return nbtFromCustomData(customData)
     }
 
     override fun setItemNBT(nmsItem: Any, nmsNBT: Any) {
@@ -115,5 +118,14 @@ class NMSItemImpl2 : NMSItem() {
     override fun copyItem(nmsItem: Any): Any {
         return (nmsItem as NMSItemStack).copy()
     }
+
+    override fun getNBTFromDCP(dcp: Any): Any? = nbtFromCustomData((dcp as DataComponentPatch).get(DataComponents.CUSTOM_DATA)?.getOrNull())
+
+    private fun nbtFromCustomData(customData: CustomData?) =
+        try {
+            customData?.unsafe
+        } catch (ex: Exception) {
+            customData?.invokeMethod("tag", remap = true)
+        }
 
 }

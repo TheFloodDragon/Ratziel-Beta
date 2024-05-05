@@ -7,7 +7,11 @@ import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.module.item.impl.ItemManager
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
+import cn.fd.ratziel.module.item.reflex.RefItemStack
 import kotlinx.serialization.json.Json
+import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.event.SubscribeEvent
 
 /**
@@ -34,6 +38,10 @@ object ItemElement : ElementHandler {
         val item = generator.build().get()
 
         println(item.data)
+
+        RefItemStack(ItemStack(Material.BOW).apply { addUnsafeEnchantment(Enchantment.EFFICIENCY, 1) })
+            .also { println(it) }
+            .getData().also { println(it) }
 
     }
 

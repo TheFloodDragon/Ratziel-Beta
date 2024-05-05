@@ -19,11 +19,11 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
 
     constructor(mat: XMaterial) : this(mat.name)
 
-    constructor(matId: Int) : this(getBukkitMaterial(matId) ?: BukkitMaterial.AIR)
-
     constructor(mat: BukkitMaterial) : this(mat.name)
 
     constructor(mat: ItemMaterial) : this(mat.name)
+
+    constructor(id: Int) : this(getBukkitMaterial(id) ?: BukkitMaterial.AIR)
 
     /**
      * 材料标识符 (低版本)

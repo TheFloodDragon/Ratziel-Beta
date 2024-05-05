@@ -29,13 +29,26 @@ class RefItemMeta(raw: Any) {
         obcClass.isAssignableFrom(raw::class.java) -> raw as ItemMeta // CraftMetaItem
         else -> throw UnsupportedTypeException(raw) // Unsupported Type
     }
-        private set
 
     /**
      * 将 [ItemMeta] 应用到 [NBTCompound]
      */
     fun applyToTag(tag: NBTCompound) = tag.also {
-        InternalUtil.applyToItem(handle, it.getData())
+        if (MinecraftVersion.majorLegacy >= 12005) {
+            /*
+            1.20.5+ 巨tm坑:
+            if (this.customTag != null) {
+              itemTag.put(CUSTOM_DATA, CustomData.a(this.customTag));
+            }
+             */
+            val newTag = InternalUtil.applicatorClass.invokeConstructor()
+            InternalUtil.invokeApplyToItem(handle, newTag)
+            val dcp = InternalUtil.applicatorToDCP(newTag)
+            val nbtTag = NMSItem.instance.getNBTFromDCP(dcp)
+            if (nbtTag != null) tag.merge(NBTCompound(nbtTag), true)
+        } else {
+            InternalUtil.invokeApplyToItem(handle, tag.getData())
+        }
     }
 
     /**
@@ -67,11 +80,11 @@ class RefItemMeta(raw: Any) {
          * CraftMetaItem(DataComponentPatch tag)
          * @return CraftMetaItem
          */
-        fun new(value: NBTCompound) = obcClass.invokeConstructor(InternalUtil.handleDataComponentPatch(value.getData()))
+        fun new(tag: NBTCompound): Any {
+            val handledTag = if (MinecraftVersion.majorLegacy >= 12005) InternalUtil.toDCP(tag.getData()) else tag
+            return obcClass.invokeConstructor(handledTag)
+        }
 
-        /**
-         * 创建空对象
-         */
         fun new() = new(NBTCompound())
 
     }
@@ -100,28 +113,17 @@ class RefItemMeta(raw: Any) {
         /**
          * CraftMetaItem#applyToItem(NBTTagCompound)
          * void applyToItem(Applicator itemTag)
-         * @param craft CraftMetaItem
-         * @param tag NBTTagCompound
          */
-        fun applyToItem(craft: Any, tag: Any) {
-            craft.invokeMethod<Void>("applyToItem", handleApplicator(tag))
+        fun invokeApplyToItem(handle: Any, tag: Any) {
+            handle.invokeMethod<Any>("applyToItem", tag)
         }
-
-        /**
-         * 1.20.5+: NBTTagCompound to CraftMetaItem.Applicator
-         */
-        fun handleApplicator(tag: Any) =
-            if (MinecraftVersion.majorLegacy >= 12005)
-                applicatorPutData(tag)
-            else tag
 
         /**
          * 1.20.5+: NBTTagCompound to DataComponentPatch
          */
-        fun handleDataComponentPatch(tag: Any) =
-            if (MinecraftVersion.majorLegacy >= 12005)
-                applicatorPutData(tag).invokeMethod<Any>("build")
-            else tag
+        fun toDCP(tag: Any): Any = applicatorToDCP(toApplicator(tag))
+
+        fun applicatorToDCP(applicator: Any): Any = applicator.invokeMethod<Any>("build")!!
 
         /**
          * 处理1.20.5的CraftMetaItem.Applicator
@@ -130,10 +132,9 @@ class RefItemMeta(raw: Any) {
          * <T> Applicator put(ItemMetaKeyType<T> key, T value)
          * DataComponentPatch build()
          */
-        fun applicatorPutData(tag: Any): Any {
-            val applicator = applicatorClass.invokeConstructor()
-            return applicator.invokeMethod<Any>("put", customDataKey, newCustomData(tag))!!
-        }
+        fun toApplicator(tag: Any): Any =
+            applicatorClass.invokeConstructor()
+                .invokeMethod<Any>("put", customDataKey, newCustomData(tag))!!
 
         val customDataKey by lazy {
             obcClass.getProperty<Any>("CUSTOM_DATA", isStatic = true)
