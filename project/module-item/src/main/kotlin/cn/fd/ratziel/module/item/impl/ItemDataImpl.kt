@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.impl
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.nbt.ProxyNBTCompound
 
 /**
  * ItemDataImpl
@@ -19,7 +18,7 @@ data class ItemDataImpl(
     /**
      * 物品NBT
      */
-    override var nbt: NBTCompound = ProxyNBTCompound(),
+    override var nbt: NBTCompound = NBTCompound(),
     /**
      * 物品数量
      */

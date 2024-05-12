@@ -40,12 +40,12 @@ class RefItemStack(raw: Any) {
     /**
      * 获取物品NBT数据
      */
-    fun getData(): NBTCompound? = NMSItem.INSTANCE.getItemNBT(getAsNms())?.let { NBTCompound(it) }
+    fun getData(): NBTCompound? = NMSItem.INSTANCE.getItemNBT(getAsNms())
 
     /**
      * 设置物品NBT数据
      */
-    fun setData(data: NBTCompound) = NMSItem.INSTANCE.setItemNBT(getAsNms(), data.getData())
+    fun setData(data: NBTCompound) = NMSItem.INSTANCE.setItemNBT(getAsNms(), data)
 
     /**
      * 获取物品材料

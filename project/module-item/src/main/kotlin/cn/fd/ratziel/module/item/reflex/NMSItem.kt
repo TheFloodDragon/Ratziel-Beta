@@ -2,16 +2,15 @@
 
 package cn.fd.ratziel.module.item.reflex
 
+import cn.fd.ratziel.module.item.nbt.NBTCompound
 import net.minecraft.core.component.DataComponentPatch
-import net.minecraft.core.component.DataComponents
+import net.minecraft.core.component.PatchedDataComponentMap
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.world.item.component.CustomData
-import taboolib.library.reflex.Reflex.Companion.invokeMethod
+import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
-import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
 /**
@@ -23,27 +22,21 @@ import net.minecraft.world.item.ItemStack as NMSItemStack
 abstract class NMSItem {
 
     /**
-     * 获取 [NMSItemStack]的 NBT
-     * @return [NBTTagCompound]
+     * 获取 [NMSItemStack]的 NBT (克隆)
+     * @return [NBTCompound]
      */
-    abstract fun getItemNBT(nmsItem: Any): Any?
+    abstract fun getItemNBT(nmsItem: Any): NBTCompound?
 
     /**
-     * 设置 [NMSItemStack]的 NBT
-     * @param nmsNBT [NBTTagCompound]
+     * 设置 [NMSItemStack]的 NBT (克隆)
+     * @param nbt [NBTTagCompound]
      */
-    abstract fun setItemNBT(nmsItem: Any, nmsNBT: Any)
+    abstract fun setItemNBT(nmsItem: Any, nbt: NBTCompound)
 
     /**
      * 克隆 [NMSItemStack]
      */
     abstract fun copyItem(nmsItem: Any): Any
-
-    /**
-     * 1.20.5 从 [DataComponentPatch] 获取 [NBTTagCompound]
-     */
-    @Deprecated("草你妈")
-    open fun getNBTFromDCP(dcp: Any): Any? = throw NotImplementedError("Not implement. It's unsupported below 1.20.5!")
 
     companion object {
 
@@ -90,9 +83,9 @@ object NMSItemImpl1 : NMSItem() {
         )
     }
 
-    override fun getItemNBT(nmsItem: Any): Any? = nmsTagField.get(nmsItem)
+    override fun getItemNBT(nmsItem: Any): NBTCompound? = nmsTagField.get(nmsItem)?.let { NBTCompound(it).clone() }
 
-    override fun setItemNBT(nmsItem: Any, nmsNBT: Any) = nmsTagField.set(nmsItem, nmsNBT)
+    override fun setItemNBT(nmsItem: Any, nbt: NBTCompound) = nmsTagField.set(nmsItem, nbt.clone().getData())
 
     override fun copyItem(nmsItem: Any): Any = nmsCloneMethod.invoke(nmsItem)!!
 
@@ -101,30 +94,20 @@ object NMSItemImpl1 : NMSItem() {
 /**
  * 1.20.5+
  */
-@Suppress("DEPRECATION")
 class NMSItemImpl2 : NMSItem() {
 
-    override fun getItemNBT(nmsItem: Any): Any? {
-        val customData = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
-        return nbtFromCustomData(customData)
+    override fun getItemNBT(nmsItem: Any): NBTCompound? {
+        return NMSDataComponent.INSTANCE.save((nmsItem as NMSItemStack).componentsPatch)?.let { NBTCompound(it) }
     }
 
-    override fun setItemNBT(nmsItem: Any, nmsNBT: Any) {
-        val customData = RefItemMeta.InternalUtil.newCustomData(nmsNBT as NBTTagCompound) as CustomData
-        (nmsItem as NMSItemStack).set(DataComponents.CUSTOM_DATA, customData)
+    override fun setItemNBT(nmsItem: Any, nbt: NBTCompound) {
+        val dcp = NMSDataComponent.INSTANCE.parse(nbt.getData() as NBTTagCompound) as? DataComponentPatch
+        val map = (nmsItem as NMSItemStack).getProperty<PatchedDataComponentMap>("components")
+        map?.restorePatch(dcp)
     }
 
     override fun copyItem(nmsItem: Any): Any {
         return (nmsItem as NMSItemStack).copy()
     }
-
-    override fun getNBTFromDCP(dcp: Any): Any? = nbtFromCustomData((dcp as DataComponentPatch).get(DataComponents.CUSTOM_DATA)?.getOrNull())
-
-    private fun nbtFromCustomData(customData: CustomData?) =
-        try {
-            customData?.unsafe
-        } catch (ex: Exception) {
-            customData?.invokeMethod("tag", remap = true)
-        }
 
 }

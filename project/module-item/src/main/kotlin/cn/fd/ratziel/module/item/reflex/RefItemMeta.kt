@@ -41,11 +41,11 @@ class RefItemMeta(raw: Any) {
               itemTag.put(CUSTOM_DATA, CustomData.a(this.customTag));
             }
              */
-            val newTag = InternalUtil.applicatorClass.invokeConstructor()
-            InternalUtil.invokeApplyToItem(handle, newTag)
-            val dcp = InternalUtil.applicatorToDCP(newTag)
-            val nbtTag = NMSItem.INSTANCE.getNBTFromDCP(dcp)
-            if (nbtTag != null) tag.merge(NBTCompound(nbtTag), true)
+            val applicator = InternalUtil.applicatorClass.invokeConstructor() // new Applicator
+            InternalUtil.invokeApplyToItem(handle, applicator) // Apply to the applicator
+            val dcp = InternalUtil.applicatorToDCP(applicator) // Applicator to DataComponentPatch
+            val newTag = NMSDataComponent.INSTANCE.save(dcp) // DataComponentPatch save to NBT
+            if (newTag != null) tag.merge(NBTCompound(newTag), true) // Merge
         } else {
             InternalUtil.invokeApplyToItem(handle, tag.getData())
         }

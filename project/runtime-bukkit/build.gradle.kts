@@ -1,6 +1,6 @@
 dependencies {
     // Core
-    compileCore(12004)
+    compileCore(12005)
     compileTaboo("platform-bukkit")
     compileTaboo("module-nms")
     compileTaboo("module-kether")

@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.command
 
 import cn.fd.ratziel.module.item.nbt.*
-import cn.fd.ratziel.module.item.util.getDataBySlot
+import cn.fd.ratziel.module.item.util.editItemData
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
@@ -39,7 +39,7 @@ object NBTCommand {
     val view = subCommand {
         slot {
             execute<ProxyPlayer> { player, _, arg ->
-                player.cast<Player>().inventory.getDataBySlot(arg)?.also {
+                player.cast<Player>().inventory.editItemData(arg) {
                     // 构建消息组件并发送
                     nbtAsComponent(player, it, 0, arg).sendTo(player)
                 } ?: player.sendLang("NBTAction-EmptyTag")
@@ -60,7 +60,7 @@ object NBTCommand {
                         // 获取基本信息
                         val node = ctx.args()[2]
                         val rawValue = ctx.args()[3]
-                        player.cast<Player>().inventory.getDataBySlot(ctx.args()[1])?.also {
+                        player.cast<Player>().inventory.editItemData(ctx.args()[1]) {
                             val value = NBTSerializer.Converter.deserializeFromString(rawValue)
                             it.putDeep(node, value)
                             player.sendLang(
@@ -86,7 +86,7 @@ object NBTCommand {
                 execute<ProxyPlayer> { player, ctx, _ ->
                     // 获取基本信息
                     val rawNode = ctx.args()[2]
-                    player.cast<Player>().inventory.getDataBySlot(ctx.args()[1])?.also {
+                    player.cast<Player>().inventory.editItemData(ctx.args()[1]) {
                         it.removeDeep(rawNode)
                         player.sendLang("NBTAction-Remove", rawNode)
                     } ?: player.sendLang("NBTAction-EmptyTag")
