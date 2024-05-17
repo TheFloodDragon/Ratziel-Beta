@@ -16,6 +16,6 @@ interface Argument<out V : Any> {
     /**
      * 参数类型
      */
-    val type: Class<*> get() = value::class.java
+    val type: Class<*>
 
 }

@@ -7,7 +7,7 @@ package cn.fd.ratziel.module.item.nbt
  * @since 2024/3/15 20:31
  */
 @Suppress("UNCHECKED_CAST")
-class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<NBTData> {
+open class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<NBTData> {
 
     constructor() : this(new())
 
@@ -54,7 +54,7 @@ class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<NBTDat
     /**
      * 克隆数据
      */
-    fun clone() = this.apply { data = NMSUtil.NtList.methodClone.invoke(data)!! }
+    open fun clone() = this.apply { data = NMSUtil.NtList.methodClone.invoke(data)!! }
 
     companion object {
 

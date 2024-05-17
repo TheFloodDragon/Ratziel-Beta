@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package cn.fd.ratziel.module.item.reflex
 
 import cn.fd.ratziel.module.item.nbt.NMSUtil
@@ -63,6 +61,7 @@ abstract class NMS12005 {
 
 }
 
+@Suppress("unused")
 class NMS12005Impl : NMS12005() {
 
 //    val access: IRegistryCustom.Dimension = (Bukkit.getServer() as CraftServer).server.registryAccess()

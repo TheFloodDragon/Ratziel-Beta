@@ -50,7 +50,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), Mutab
      * 合并目标数据
      * @param replace 是否替换原有的标签
      */
-    fun merge(target: NBTCompound, replace: Boolean = true): NBTCompound = this.apply {
+    open fun merge(target: NBTCompound, replace: Boolean = true): NBTCompound = this.apply {
         target.sourceMap.forEach { (key, targetValue) ->
             val ownValue = this.sourceMap[key]
             // 如果当前NBT数据中存在, 且不允许替换, 则直接跳出循环
@@ -90,7 +90,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), Mutab
 
     override fun containsKey(key: String) = sourceMap.containsKey(key)
 
-    override val entries by lazy {
+    override val entries: MutableSet<MutableMap.MutableEntry<String, NBTData>> by lazy {
         object : AbstractMutableSet<MutableMap.MutableEntry<String, NBTData>>() {
             override val size get() = sourceMap.entries.size
             override fun add(element: MutableMap.MutableEntry<String, NBTData>) =
@@ -116,7 +116,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), Mutab
         }
     }
 
-    override val values by lazy {
+    override val values: MutableCollection<NBTData> by lazy {
         object : AbstractMutableCollection<NBTData>() {
             override fun add(element: NBTData) = sourceMap.values.add(element.getData())
             override val size get() = sourceMap.values.size

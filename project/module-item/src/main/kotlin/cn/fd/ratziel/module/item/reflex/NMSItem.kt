@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package cn.fd.ratziel.module.item.reflex
 
 import cn.fd.ratziel.module.item.nbt.NBTCompound
@@ -65,6 +63,7 @@ object NMSItemImpl1 : NMSItem() {
 /**
  * 1.20.5+
  */
+@Suppress("unused")
 class NMSItemImpl2 : NMSItem() {
 
 //    override fun getItemNBT(nmsItem: Any): NBTCompound? {

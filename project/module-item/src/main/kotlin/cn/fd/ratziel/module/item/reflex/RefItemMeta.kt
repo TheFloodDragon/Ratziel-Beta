@@ -135,7 +135,8 @@ class RefItemMeta(raw: Any) {
         }
 
         val applicatorPutMethod by lazy {
-            ReflexClass.of(applicatorClass).getMethod("put")
+            ReflexClass.of(applicatorClass).structure.methods.firstOrNull { it.name == "put" }
+                ?: throw NoSuchMethodException("${applicatorClass.name}#put")
         }
 
         val applicatorBuildMethod by lazy {
