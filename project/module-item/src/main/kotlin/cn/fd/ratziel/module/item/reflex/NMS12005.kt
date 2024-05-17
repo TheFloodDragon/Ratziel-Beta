@@ -54,7 +54,7 @@ abstract class NMS12005 {
          * private CustomData(NBTTagCompound var0)
          */
         val customDataConstructor by lazy {
-            ReflexClass.of(customDataClass).getConstructor(NMSUtil.NtCompound.nmsClass)
+            ReflexClass.of(customDataClass).structure.getConstructorByType(NMSUtil.NtCompound.nmsClass)
         }
 
     }

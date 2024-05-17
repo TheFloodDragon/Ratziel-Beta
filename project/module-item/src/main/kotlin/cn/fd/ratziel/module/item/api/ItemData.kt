@@ -13,16 +13,16 @@ interface ItemData {
     /**
      * 物品材料
      */
-    val material: ItemMaterial
+    var material: ItemMaterial
 
     /**
      * 物品NBT
      */
-    val nbt: NBTCompound
+    var nbt: NBTCompound
 
     /**
      * 物品数量
      */
-    val amount: Int
+    var amount: Int
 
 }

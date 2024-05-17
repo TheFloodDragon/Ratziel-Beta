@@ -33,7 +33,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), Mutab
      * @param key 节点
      * @param value NBT数据
      */
-    override fun put(key: String, value: NBTData) = sourceMap.put(key, value)?.let { NBTAdapter.adaptNms(it) }
+    override fun put(key: String, value: NBTData) = sourceMap.put(key, value.getData())?.let { NBTAdapter.adaptNms(it) }
 
     /**
      * 删除数据

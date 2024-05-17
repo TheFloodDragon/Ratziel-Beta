@@ -25,7 +25,7 @@ data class VItemMeta(
 
     override fun getNode() = OccupyNode.APEX_NODE
 
-    override fun transform(source: ItemData) = elements.forEach { it?.applyTo(source.nbt) }
+    override fun transform(source: ItemData) = elements.forEach { it?.applyTo(source) }
 
     override fun detransform(target: ItemData) = elements.forEach { it?.detransform(target) }
 

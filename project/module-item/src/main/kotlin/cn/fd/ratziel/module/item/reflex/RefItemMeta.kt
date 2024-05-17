@@ -32,7 +32,7 @@ class RefItemMeta(raw: Any) {
     /**
      * 将 [ItemMeta] 应用到 [NBTCompound]
      */
-    fun applyToTag(tag: NBTCompound) = tag.also {
+    fun applyToTag(nbt: NBTCompound) = nbt.also { tag ->
         if (MinecraftVersion.majorLegacy >= 12005) {
             /*
             1.20.5+ 巨tm坑:
@@ -40,11 +40,11 @@ class RefItemMeta(raw: Any) {
               itemTag.put(CUSTOM_DATA, CustomData.a(this.customTag));
             }
              */
-            val applicator = InternalUtil.applicatorClass.invokeConstructor() // new Applicator
+            val applicator = InternalUtil.applicatorConstructor.instance()!! // new Applicator
             InternalUtil.applyToItemMethod.invoke(handle, applicator) // Apply to the applicator
             val dcp = InternalUtil.applicatorToDcp(applicator) // Applicator to DataComponentPatch
             val newTag = NMS12005.INSTANCE.save(dcp) // DataComponentPatch save to NBT
-            if (newTag != null) tag.merge(NBTCompound(newTag), true) // Merge
+            if (newTag != null) tag.merge(NBTCompound(newTag), true) // TODO 这里应该是浅合并
         } else {
             InternalUtil.applyToItemMethod.invoke(handle, tag.getData())
         }
@@ -98,7 +98,8 @@ class RefItemMeta(raw: Any) {
          * void applyToItem(Applicator itemTag)
          */
         val applyToItemMethod by lazy {
-            ReflexClass.of(obcClass).getMethod("applyToItem")
+            ReflexClass.of(obcClass).structure.methods.firstOrNull { it.name == "applyToItem" }
+                ?: throw NoSuchMethodException("${obcClass.name}#applyToItem")
         }
 
         /**
