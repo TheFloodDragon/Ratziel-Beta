@@ -7,9 +7,7 @@ import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.PatchedDataComponentMap
 import net.minecraft.nbt.NBTTagCompound
 import taboolib.library.reflex.Reflex.Companion.getProperty
-import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
@@ -40,13 +38,6 @@ abstract class NMSItem {
 
     companion object {
 
-        /**
-         * nms.ItemStack
-         *   1.17+ net.minecraft.world.item.ItemStack
-         *   1.17- net.minecraft.server.$VERSION.ItemStack
-         */
-        val nmsClass by lazy { nmsClass("ItemStack") }
-
         val INSTANCE by lazy {
             if (MinecraftVersion.majorLegacy >= 12005) nmsProxy<NMSItem>("{name}Impl2") else NMSItemImpl1
         }
@@ -60,34 +51,14 @@ abstract class NMSItem {
  */
 object NMSItemImpl1 : NMSItem() {
 
-    /**
-     * private NBTTagCompound A
-     * private NBTTagCompound tag
-     */
-    val nmsTagField by lazy {
-        ReflexClass.of(nmsClass).structure.getField(
-            if (MinecraftVersion.isUniversal) "A" else "tag"
-        )
-    }
+    override fun getItemNBT(nmsItem: Any): NBTCompound? =
+        RefItemStack.InternalUtil.nmsTagField.get(nmsItem)?.let { NBTCompound(it).clone() }
 
-    /**
-     * public nms.ItemStack p()
-     * public nms.ItemStack cloneItemStack()
-     * public ItemStack s()
-     */
-    val nmsCloneMethod by lazy {
-        ReflexClass.of(nmsClass).structure.getMethodByType(
-            if (MinecraftVersion.majorLegacy >= 12005) "s"
-            else if (MinecraftVersion.isUniversal) "p"
-            else "cloneItemStack"
-        )
-    }
+    override fun setItemNBT(nmsItem: Any, nbt: NBTCompound) =
+        RefItemStack.InternalUtil.nmsTagField.set(nmsItem, nbt.clone().getData())
 
-    override fun getItemNBT(nmsItem: Any): NBTCompound? = nmsTagField.get(nmsItem)?.let { NBTCompound(it).clone() }
-
-    override fun setItemNBT(nmsItem: Any, nbt: NBTCompound) = nmsTagField.set(nmsItem, nbt.clone().getData())
-
-    override fun copyItem(nmsItem: Any): Any = nmsCloneMethod.invoke(nmsItem)!!
+    override fun copyItem(nmsItem: Any): Any =
+        RefItemStack.InternalUtil.nmsCloneMethod.invoke(nmsItem)!!
 
 }
 
@@ -96,18 +67,32 @@ object NMSItemImpl1 : NMSItem() {
  */
 class NMSItemImpl2 : NMSItem() {
 
+//    override fun getItemNBT(nmsItem: Any): NBTCompound? {
+//        return NMS12005.INSTANCE.save((nmsItem as NMSItemStack).componentsPatch)?.let { NBTCompound(it) }
+//    }
+//
+//    override fun setItemNBT(nmsItem: Any, nbt: NBTCompound) {
+//        val dcp = NMS12005.INSTANCE.parse(nbt.getData() as NBTTagCompound) as? DataComponentPatch
+//        val map = (nmsItem as NMSItemStack).getProperty<PatchedDataComponentMap>("components")
+//        map?.restorePatch(dcp)
+//    }
+//
+//    override fun copyItem(nmsItem: Any): Any {
+//        return (nmsItem as NMSItemStack).copy()
+//    }
+
     override fun getItemNBT(nmsItem: Any): NBTCompound? {
-        return NMSDataComponent.INSTANCE.save((nmsItem as NMSItemStack).componentsPatch)?.let { NBTCompound(it) }
+        return NMS12005.INSTANCE.save((nmsItem as NMSItemStack).d())?.let { NBTCompound(it) }
     }
 
     override fun setItemNBT(nmsItem: Any, nbt: NBTCompound) {
-        val dcp = NMSDataComponent.INSTANCE.parse(nbt.getData() as NBTTagCompound) as? DataComponentPatch
+        val dcp = NMS12005.INSTANCE.parse(nbt.getData() as NBTTagCompound) as? DataComponentPatch
         val map = (nmsItem as NMSItemStack).getProperty<PatchedDataComponentMap>("components")
-        map?.restorePatch(dcp)
+        map?.b(dcp)
     }
 
     override fun copyItem(nmsItem: Any): Any {
-        return (nmsItem as NMSItemStack).copy()
+        return (nmsItem as NMSItemStack).s()
     }
 
 }

@@ -1,3 +1,5 @@
+@file:Suppress("ConvertObjectToDataObject")
+
 package cn.fd.ratziel.module.item.nbt
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
@@ -24,7 +26,7 @@ internal sealed class NMSUtil {
 
     val reflexClass by lazy { ReflexClass.of(nmsClass, false) }
 
-    data object NtCompound : NMSUtil() {
+    object NtCompound : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagCompound
          */
@@ -45,9 +47,10 @@ internal sealed class NMSUtil {
          * public CompoundTag h()
          */
         val methodClone by lazy { reflexClass.structure.getMethod(if (MinecraftVersion.isUniversal) "h" else "clone") }
+
     }
 
-    data object NtList : NMSUtil() {
+    object NtList : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagList
          */
@@ -68,9 +71,10 @@ internal sealed class NMSUtil {
          * public ListTag e()
          */
         val methodClone by lazy { reflexClass.structure.getMethod(if (MinecraftVersion.isUniversal) "e" else "clone") }
+
     }
 
-    data object NtString : NMSUtil() {
+    object NtString : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagString
          */
@@ -85,9 +89,10 @@ internal sealed class NMSUtil {
          *  private final String A
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "A" else "data") }
+
     }
 
-    data object NtByte : NMSUtil() {
+    object NtByte : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagByte
          */
@@ -102,9 +107,10 @@ internal sealed class NMSUtil {
          *  private final byte x
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "x" else "data") }
+
     }
 
-    data object NtByteArray : NMSUtil() {
+    object NtByteArray : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagByteArray
          */
@@ -119,9 +125,10 @@ internal sealed class NMSUtil {
          * private byte[] c
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+
     }
 
-    data object NtDouble : NMSUtil() {
+    object NtDouble : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagDouble
          */
@@ -136,9 +143,10 @@ internal sealed class NMSUtil {
          * private final double w
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "w" else "data") }
+
     }
 
-    data object NtFloat : NMSUtil() {
+    object NtFloat : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagFloat
          */
@@ -153,9 +161,10 @@ internal sealed class NMSUtil {
          * private final float w
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "w" else "data") }
+
     }
 
-    data object NtInt : NMSUtil() {
+    object NtInt : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagInt
          */
@@ -170,9 +179,10 @@ internal sealed class NMSUtil {
          * private final int c
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+
     }
 
-    data object NtIntArray : NMSUtil() {
+    object NtIntArray : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagIntArray
          */
@@ -187,9 +197,10 @@ internal sealed class NMSUtil {
          * private int[] c
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+
     }
 
-    data object NtLong : NMSUtil() {
+    object NtLong : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagLong
          */
@@ -204,9 +215,10 @@ internal sealed class NMSUtil {
          * private final long c
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+
     }
 
-    data object NtLongArray : NMSUtil() {
+    object NtLongArray : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagLongArray
          */
@@ -221,9 +233,11 @@ internal sealed class NMSUtil {
          * private long[] c
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "b") }
+
     }
 
-    data object NtShort : NMSUtil() {
+    object NtShort : NMSUtil() {
+
         /**
          * net.minecraft.nbt.NBTTagShort
          */
@@ -238,6 +252,7 @@ internal sealed class NMSUtil {
          * private final short c
          */
         override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+
     }
 
     object NtBase {
@@ -245,6 +260,7 @@ internal sealed class NMSUtil {
          * net.minecraft.nbt.NBTBase
          */
         val nmsClass by lazy { nmsClass("NBTBase") }
+
     }
 
     companion object {

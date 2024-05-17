@@ -3,8 +3,6 @@ package cn.fd.ratziel.module.item.reflex
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.impl.ItemMaterialImpl
 import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.reflex.NMSItem.Companion.nmsClass
-import cn.fd.ratziel.module.item.reflex.RefItemStack.Companion.obcClass
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
@@ -52,9 +50,9 @@ class RefItemStack(raw: Any) {
      */
     fun getMaterial(): BukkitMaterial =
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
-            obcGetMaterialMethod.invoke(handle)!! as BukkitMaterial
+            InternalUtil.obcGetMaterialMethod.invoke(handle)!! as BukkitMaterial
         } else {
-            ItemMaterialImpl.getBukkitMaterial(obcGetMaterialMethodLegacy.invoke(handle)!! as Int)!!
+            ItemMaterialImpl.getBukkitMaterial(InternalUtil.obcGetMaterialMethodLegacy.invoke(handle)!! as Int)!!
         }
 
     /**
@@ -62,46 +60,46 @@ class RefItemStack(raw: Any) {
      */
     fun setMaterial(material: BukkitMaterial) =
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
-            obcSetMaterialMethod.invoke(handle, material)
+            InternalUtil.obcSetMaterialMethod.invoke(handle, material)
         } else {
-            obcSetMaterialMethodLegacy.invoke(handle, ItemMaterialImpl.getIdUnsafe(material))
+            InternalUtil.obcSetMaterialMethodLegacy.invoke(handle, ItemMaterialImpl.getIdUnsafe(material))
         }
 
     /**
      * 获取物品数量
      */
-    fun getAmount(): Int = obcGetAmountMethod.invoke(handle) as Int
+    fun getAmount(): Int = InternalUtil.obcGetAmountMethod.invoke(handle) as Int
 
     /**
      * 设置物品数量
      */
-    fun setAmount(amount: Int) = obcSetAmountMethod.invoke(handle, amount)
+    fun setAmount(amount: Int) = InternalUtil.obcSetAmountMethod.invoke(handle, amount)
 
     /**
      * 获取物品最大堆叠数量
      */
-    fun getMaxStackSize(): Int = obcGetMaxStackSizeMethod.invoke(handle) as Int
+    fun getMaxStackSize(): Int = InternalUtil.obcGetMaxStackSizeMethod.invoke(handle) as Int
 
     /**
      * 获取物品损伤值
      * @return [Short]
      */
-    fun getDamage(): Short = obcGetDamageMethod.invoke(handle) as Short
+    fun getDamage(): Short = InternalUtil.obcGetDamageMethod.invoke(handle) as Short
 
     /**
      * 设置物品损伤值
      */
-    fun setDamage(damage: Short) = obcSetDamageMethod.invoke(handle, damage)
+    fun setDamage(damage: Short) = InternalUtil.obcSetDamageMethod.invoke(handle, damage)
 
     /**
      * 克隆数据
      */
-    fun clone() = this.apply { this.handle = obcCloneMethod.invoke(handle)!! }
+    fun clone() = this.apply { this.handle = InternalUtil.obcCloneMethod.invoke(handle)!! }
 
     /**
      * 获取NMS形式实例 (net.minecraft.world.ItemStack)
      */
-    fun getAsNms(): Any = obcHandleField.get(handle)!!
+    fun getAsNms(): Any = InternalUtil.obcHandleField.get(handle)!!
 
     /**
      * 获取CraftBukkit形式实例 (CraftItemStack)
@@ -116,6 +114,20 @@ class RefItemStack(raw: Any) {
     companion object {
 
         /**
+         * nms.ItemStack
+         *   1.17+ net.minecraft.world.item.ItemStack
+         *   1.17- net.minecraft.server.$VERSION.ItemStack
+         */
+        val nmsClass by lazy { nmsClass("ItemStack") }
+
+        fun newNms() = nmsClass.invokeConstructor()
+
+        /**
+         * private nms.ItemStack(NBTTagCompound nbt)
+         */
+        fun newNms(nbt: Any) = nmsClass.invokeConstructor(nbt)
+
+        /**
          * obc.ItemStack
          *   org.bukkit.craftbukkit.$VERSION.inventory.CraftItemStack
          */
@@ -128,11 +140,6 @@ class RefItemStack(raw: Any) {
          * private CraftItemStack(ItemStack item)
          */
         fun newObc(nmsItem: Any) = obcClass.invokeConstructor(nmsItem)
-
-        fun newNms() = nmsClass.invokeConstructor()
-
-        // private nms.ItemStack(NBTTagCompound nbt)
-        fun newNms(nbt: Any) = nmsClass.invokeConstructor(nbt)
 
         /**
          * public static net.minecraft.world.item.ItemStack asNMSCopy(ItemStack original)
@@ -159,58 +166,85 @@ class RefItemStack(raw: Any) {
          */
         fun isNmsClass(clazz: Class<*>) = nmsClass.isAssignableFrom(clazz)
 
+    }
+
+    internal object InternalUtil {
+
+        /**
+         * private NBTTagCompound A
+         * private NBTTagCompound tag
+         */
+        val nmsTagField by lazy {
+            ReflexClass.of(RefItemStack.nmsClass).structure.getField(
+                if (MinecraftVersion.isUniversal) "A" else "tag"
+            )
+        }
+
+        /**
+         * public nms.ItemStack p()
+         * public nms.ItemStack cloneItemStack()
+         * public ItemStack s()
+         */
+        val nmsCloneMethod by lazy {
+            ReflexClass.of(RefItemStack.nmsClass).structure.getMethodByType(
+                if (MinecraftVersion.majorLegacy >= 12005) "s"
+                else if (MinecraftVersion.isUniversal) "p"
+                else "cloneItemStack"
+            )
+        }
+
         // net.minecraft.world.item.ItemStack handle;
-        internal val obcHandleField by lazy {
+        val obcHandleField by lazy {
             ReflexClass.of(obcClass).getField("handle")
         }
 
         // public CraftItemStack clone()
-        internal val obcCloneMethod by lazy {
+        val obcCloneMethod by lazy {
             ReflexClass.of(obcClass).getMethod("clone")
         }
 
         // public Material getType()
         // public int getTypeId()
-        internal val obcGetMaterialMethod by lazy {
+        val obcGetMaterialMethod by lazy {
             ReflexClass.of(obcClass).getMethod("getType")
         }
 
-        internal val obcGetMaterialMethodLegacy by lazy {
+        val obcGetMaterialMethodLegacy by lazy {
             ReflexClass.of(obcClass).getMethod("getTypeId")
         }
 
         // public void setType(Material type)
         // public void setTypeId(int var1)
-        internal val obcSetMaterialMethod by lazy {
+        val obcSetMaterialMethod by lazy {
             ReflexClass.of(obcClass).structure.getMethodByType("setType", BukkitMaterial::class.java)
         }
 
-        internal val obcSetMaterialMethodLegacy by lazy {
+        val obcSetMaterialMethodLegacy by lazy {
             ReflexClass.of(obcClass).structure.getMethodByType("setTypeId", Int::class.java)
         }
 
         // public int getAmount()
-        internal val obcGetAmountMethod by lazy {
+        val obcGetAmountMethod by lazy {
             ReflexClass.of(obcClass).getMethod("getAmount")
         }
 
         // public void setAmount(int var1)
-        internal val obcSetAmountMethod by lazy {
+        val obcSetAmountMethod by lazy {
             ReflexClass.of(obcClass).structure.getMethodByType("setAmount", Int::class.java)
         }
 
         // public int getMaxStackSize()
-        internal val obcGetMaxStackSizeMethod by lazy {
+        val obcGetMaxStackSizeMethod by lazy {
             ReflexClass.of(obcClass).getMethod("getMaxStackSize")
         }
 
         // public short getDurability()
-        internal val obcGetDamageMethod by lazy {
+        val obcGetDamageMethod by lazy {
             ReflexClass.of(obcClass).getMethod("getDurability")
         }
 
         // public void setDurability(short var1)
-        internal val obcSetDamageMethod by lazy {
+        val obcSetDamageMethod by lazy {
             ReflexClass.of(obcClass).structure.getMethodByType("setDurability", Short::class.java)
         }
 

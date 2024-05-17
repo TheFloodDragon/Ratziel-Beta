@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item.nbt
 /**
  * NBTType - NBT类型
  *
- * 来自 net.minecraft.nbt.TagTypes
+ * 来自 [net.minecraft.nbt.NBTTagTypes]
  *
  * @author TheFloodDragon
  * @since 2024/3/15 18:59

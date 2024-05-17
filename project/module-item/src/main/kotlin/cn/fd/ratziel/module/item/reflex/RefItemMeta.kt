@@ -5,9 +5,8 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
-import taboolib.library.reflex.Reflex.Companion.invokeMethod
+import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
 
 /**
@@ -42,12 +41,12 @@ class RefItemMeta(raw: Any) {
             }
              */
             val applicator = InternalUtil.applicatorClass.invokeConstructor() // new Applicator
-            InternalUtil.invokeApplyToItem(handle, applicator) // Apply to the applicator
-            val dcp = InternalUtil.applicatorToDCP(applicator) // Applicator to DataComponentPatch
-            val newTag = NMSDataComponent.INSTANCE.save(dcp) // DataComponentPatch save to NBT
+            InternalUtil.applyToItemMethod.invoke(handle, applicator) // Apply to the applicator
+            val dcp = InternalUtil.applicatorToDcp(applicator) // Applicator to DataComponentPatch
+            val newTag = NMS12005.INSTANCE.save(dcp) // DataComponentPatch save to NBT
             if (newTag != null) tag.merge(NBTCompound(newTag), true) // Merge
         } else {
-            InternalUtil.invokeApplyToItem(handle, tag.getData())
+            InternalUtil.applyToItemMethod.invoke(handle, tag.getData())
         }
     }
 
@@ -80,8 +79,11 @@ class RefItemMeta(raw: Any) {
          * CraftMetaItem(DataComponentPatch tag)
          * @return CraftMetaItem
          */
-        fun new(tag: NBTCompound): Any {
-            val handledTag = if (MinecraftVersion.majorLegacy >= 12005) InternalUtil.toDCP(tag.getData()) else tag
+        fun new(nbt: NBTCompound): Any {
+            val handledTag =
+                if (MinecraftVersion.majorLegacy >= 12005)
+                    InternalUtil.nbtToDcp(nbt.getData())
+                else nbt
             return obcClass.invokeConstructor(handledTag)
         }
 
@@ -92,38 +94,12 @@ class RefItemMeta(raw: Any) {
     internal object InternalUtil {
 
         /**
-         * Only 1.20.5+
-         */
-        val customDataClass by lazy {
-            nmsClass("CustomData")
-        }
-
-        /**
-         * private CustomData(NBTTagCompound var0)
-         */
-        fun newCustomData(tag: Any) = customDataClass.invokeConstructor(tag)
-
-        /**
-         * Only 1.20.5+
-         */
-        val applicatorClass by lazy {
-            obcClass("inventory.CraftMetaItem\$Applicator")
-        }
-
-        /**
          * CraftMetaItem#applyToItem(NBTTagCompound)
          * void applyToItem(Applicator itemTag)
          */
-        fun invokeApplyToItem(handle: Any, tag: Any) {
-            handle.invokeMethod<Any>("applyToItem", tag)
+        val applyToItemMethod by lazy {
+            ReflexClass.of(obcClass).getMethod("applyToItem")
         }
-
-        /**
-         * 1.20.5+: NBTTagCompound to DataComponentPatch
-         */
-        fun toDCP(tag: Any): Any = applicatorToDCP(toApplicator(tag))
-
-        fun applicatorToDCP(applicator: Any): Any = applicator.invokeMethod<Any>("build")!!
 
         /**
          * 处理1.20.5的CraftMetaItem.Applicator
@@ -132,12 +108,38 @@ class RefItemMeta(raw: Any) {
          * <T> Applicator put(ItemMetaKeyType<T> key, T value)
          * DataComponentPatch build()
          */
-        fun toApplicator(tag: Any): Any =
-            applicatorClass.invokeConstructor()
-                .invokeMethod<Any>("put", customDataKey, newCustomData(tag))!!
+        val applicatorClass by lazy {
+            obcClass("inventory.CraftMetaItem\$Applicator")
+        }
+
+        /**
+         * NBTTagCompound to DataComponentPatch
+         */
+        fun nbtToDcp(tag: Any): Any = applicatorToDcp(nbtToApplicator(tag))
+
+        fun applicatorToDcp(applicator: Any): Any = applicatorBuildMethod.invoke(applicator)!!
+
+        fun nbtToApplicator(nbt: Any): Any =
+            applicatorPutMethod.invoke(
+                applicatorConstructor.instance()!!,
+                customDataKey,
+                NMS12005.customDataConstructor.instance(nbt)
+            )!!
 
         val customDataKey by lazy {
             obcClass.getProperty<Any>("CUSTOM_DATA", isStatic = true)
+        }
+
+        val applicatorConstructor by lazy {
+            ReflexClass.of(applicatorClass).getConstructor()
+        }
+
+        val applicatorPutMethod by lazy {
+            ReflexClass.of(applicatorClass).getMethod("put")
+        }
+
+        val applicatorBuildMethod by lazy {
+            ReflexClass.of(applicatorClass).getMethod("build")
         }
 
     }
