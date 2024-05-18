@@ -79,7 +79,7 @@ class ElementEvaluator(val executor: Executor) {
                 handler.handle(element)
                 future.complete(null) // 完成任务
             } catch (ex: Throwable) {
-                severe("Couldn't handle element $element by $handler")
+                severe("Couldn't handle element by $handler!")
                 ex.printStackTrace()
                 future.complete(ex) // 异常时返回(尽管已经处理过了)
             }

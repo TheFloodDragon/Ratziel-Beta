@@ -4,7 +4,7 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.PatchedDataComponentMap
 import net.minecraft.nbt.NBTTagCompound
-import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
 import net.minecraft.world.item.ItemStack as NMSItemStack
@@ -66,32 +66,23 @@ object NMSItemImpl1 : NMSItem() {
 @Suppress("unused")
 class NMSItemImpl2 : NMSItem() {
 
-//    override fun getItemNBT(nmsItem: Any): NBTCompound? {
-//        return NMS12005.INSTANCE.save((nmsItem as NMSItemStack).componentsPatch)?.let { NBTCompound(it) }
-//    }
-//
-//    override fun setItemNBT(nmsItem: Any, nbt: NBTCompound) {
-//        val dcp = NMS12005.INSTANCE.parse(nbt.getData() as NBTTagCompound) as? DataComponentPatch
-//        val map = (nmsItem as NMSItemStack).getProperty<PatchedDataComponentMap>("components")
-//        map?.restorePatch(dcp)
-//    }
-//
-//    override fun copyItem(nmsItem: Any): Any {
-//        return (nmsItem as NMSItemStack).copy()
-//    }
+    val componentsField by lazy {
+        ReflexClass.of(RefItemStack.nmsClass).getField("components", remap = true)
+    }
 
     override fun getItemNBT(nmsItem: Any): NBTCompound? {
-        return NMS12005.INSTANCE.save((nmsItem as NMSItemStack).d())?.let { NBTCompound(it) }
+        val dcp = (nmsItem as NMSItemStack).componentsPatch
+        return NMS12005.INSTANCE.save(dcp)?.let { NBTCompound(it) }
     }
 
     override fun setItemNBT(nmsItem: Any, nbt: NBTCompound) {
         val dcp = NMS12005.INSTANCE.parse(nbt.getData() as NBTTagCompound) as? DataComponentPatch
-        val map = (nmsItem as NMSItemStack).getProperty<PatchedDataComponentMap>("components")
-        map?.b(dcp)
+        val components = componentsField.get(nmsItem) as? PatchedDataComponentMap
+        components?.restorePatch(dcp)
     }
 
     override fun copyItem(nmsItem: Any): Any {
-        return (nmsItem as NMSItemStack).s()
+        return (nmsItem as NMSItemStack).copy()
     }
 
 }

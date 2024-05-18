@@ -1,159 +1,73 @@
 {
   "CUSTOM_DATA": {
-    "field": {
-      "12005": "inventory.CraftMetaItem#CUSTOM_DATA"
-    },
-    "hold": {
-      "0": "custom_data"
-    }
+    "0": "custom_data"
   },
   "DISPLAY_NAME": {
-    "field": "inventory.CraftMetaItem#NAME",
-    "hold": {
-      "0": "Name",
-      "12005": "display-name"
-    }
+    "0": "Name",
+    "12005": "custom_name"
   },
   "DISPLAY_LORE": {
-    "field": "inventory.CraftMetaItem#LORE",
-    "hold": {
-      "0": "Lore",
-      "12005": "lore"
-    }
+    "0": "Lore",
+    "12005": "lore"
   },
   "ENCHANTMENTS": {
-    "field": "inventory.CraftMetaItem#ENCHANTMENTS",
-    "hold": {
-      "0": "Enchantments",
-      "12005": "enchants"
-    }
+    "0": "Enchantments",
+    "12005": "enchants"
   },
   "ATTRIBUTE_MODIFIERS": {
-    "field": "inventory.CraftMetaItem#ATTRIBUTES",
-    "hold": {
-      "0": "AttributeName",
-      "12005": "attribute-modifiers"
-    }
+    "0": "AttributeName",
+    "12005": "attribute_modifiers"
   },
   "CUSTOM_MODEL_DATA": {
-    "field": {
-      "11400": "inventory.CraftMetaItem#CUSTOM_MODEL_DATA"
-    },
-    "hold": {
-      "11400": "CustomModelData",
-      "12005": "custom-model-data"
-    }
+    "11400": "CustomModelData",
+    "12005": "custom_model_data"
   },
   "REPAIR_COST": {
-    "field": "inventory.CraftMetaItem#REPAIR",
-    "hold": {
-      "0": "RepairCost",
-      "12005": "repair-cost"
-    }
+    "0": "RepairCost",
+    "12005": "repair_cost"
   },
   "DAMAGE": {
-    "field": "inventory.CraftMetaItem#DAMAGE",
-    "hold": {
-      "0": "Damage",
-      "12005": "damage"
-    }
+    "0": "Damage",
+    "12005": "damage"
   },
   "UNBREAKABLE": {
-    "field": "inventory.CraftMetaItem#UNBREAKABLE",
-    "hold": {
-      "0": "Unbreakable",
-      "12005": "unbreakable"
-    }
+    "0": "Unbreakable",
+    "12005": "unbreakable"
   },
   "MAX_DAMAGE": {
-    "field": {
-      "12005": "inventory.CraftMetaItem#MAX_DAMAGE"
-    },
-    "hold": {
-      "0": "max-damage"
-    }
+    "0": "max_damage"
   },
   "MAX_STACK_SIZE": {
-    "field": {
-      "12005": "inventory.CraftMetaItem#MAX_STACK_SIZE"
-    },
-    "hold": {
-      "0": "max-stack-size"
-    }
+    "0": "max_stack_size"
   },
   "FOOD": {
-    "field": {
-      "12005": "inventory.CraftMetaItem#FOOD"
-    },
-    "hold": {
-      "12005": "food"
-    }
+    "12005": "food"
   },
   "ITEM_NAME": {
-    "field": {
-      "12005": "inventory.CraftMetaItem#ITEM_NAME"
-    },
-    "hold": {
-      "12005": "item_name"
-    }
+    "12005": "item_name"
   },
   "RARITY": {
-    "field": {
-      "12005": "inventory.CraftMetaItem#RARITY"
-    },
-    "hold": {
-      "12005": "rarity"
-    }
+    "12005": "rarity"
   },
   "FIRE_RESISTANT": {
-    "field": {
-      "12005": "inventory.CraftMetaItem#FIRE_RESISTANT"
-    },
-    "hold": {
-      "12005": "fire-resistant"
-    }
+    "12005": "fire_resistant"
   },
   "ENCHANTMENT_GLINT_OVERRIDE": {
-    "field": {
-      "12005": "inventory.CraftMetaItem#ENCHANTMENT_GLINT_OVERRIDE"
-    },
-    "hold": {
-      "12005": "enchantment-glint-override"
-    }
+    "12005": "enchantment_glint_override"
   },
   "HIDE_TOOLTIP": {
-    "field": {
-      "12005": "inventory.CraftMetaItem#HIDE_TOOLTIP"
-    },
-    "hold": {
-      "12005": "hide-tool-tip"
-    }
+    "12005": "hide_tool_tip"
   },
   "DISPLAY": {
-    "field": {
-      "0": "inventory.CraftMetaItem#DISPLAY",
-      "12005": null
-    },
-    "hold": {
-      "0": "display",
-      "12005": null
-    }
+    "0": "display",
+    "12005": null
   },
   "DISPLAY_LOCAL_NAME": {
-    "field": {
-      "0": "inventory.CraftMetaItem#LOCNAME",
-      "12005": null
-    },
-    "hold": {
-      "0": "LocName",
-      "12005": null
-    }
+    "0": "LocName",
+    "12005": null
   },
   "HIDE_FLAG": {
-    "field": "inventory.CraftMetaItem#HIDEFLAGS",
-    "hold": {
-      "0": "HideFlags",
-      "12005": "ItemFlags"
-    }
+    "0": "HideFlags",
+    "12005": "ItemFlags"
   }
 }

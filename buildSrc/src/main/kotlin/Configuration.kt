@@ -1,6 +1,6 @@
 const val rootName = "Ratziel"
 const val rootGroup = "cn.fd.ratziel"
-const val rootVersion = "A.0.3.0.3"
+const val rootVersion = "A.0.3.0.4"
 
 const val kotlinVersion = "2.0.0-Beta4"
 const val serializationVersion = "1.6.3"
@@ -8,7 +8,7 @@ const val coroutineVersion = "1.8.0"
 const val shadowJarVersion = "8.1.1"
 const val taboolibPluginVersion = "2.0.11"
 
-const val taboolibVersion = "6.1.2-beta2"
+const val taboolibVersion = "6.1.2-beta4"
 
 val adventureModules = setOf(
     "net.kyori:adventure-api:4.16.0",

@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.reflex
 import kotlinx.serialization.json.*
 import taboolib.common.io.runningResources
 import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.obcClass
 
 /**
  * ItemMapper
@@ -23,17 +22,8 @@ object ItemMapper {
      */
     fun map(name: String): String {
         val data = mappingData.jsonObject[name]!!.jsonObject
-        // 使用静态字段反射
-        val field = runCatching { data["field"]?.let { mapFiled(it).nmsName } }.getOrNull()
-        if (field != null) return field
-        // 备用 Fallback
-        val fallback = data["hold"]?.let { matchVersion(it) }
-        return fallback ?: throw IllegalStateException("Failed on mapping: $name")
-    }
-
-    fun mapFiled(json: JsonElement): RefItemMeta.RefItemMetaKey {
-        val split = matchVersion(json).split("#")
-        return RefItemMeta.RefItemMetaKey(split[1], obcClass(split[0]))
+        // 使用固定值
+        return matchVersion(data)
     }
 
     fun matchVersion(json: JsonElement): String = when (json) {

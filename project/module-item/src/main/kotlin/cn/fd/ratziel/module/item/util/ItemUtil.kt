@@ -17,10 +17,10 @@ fun PlayerInventory.getItemBySlot(slot: String): ItemStack? = inferEquipmentSlot
 /**
  * 根据物品栏位操作物品NBT数据
  */
-fun PlayerInventory.editItemData(slot: String, action: Consumer<NBTCompound>): NBTCompound? {
+fun PlayerInventory.handleItemTag(slot: String, action: Consumer<NBTCompound>): NBTCompound? {
     val item = RefItemStack(getItemBySlot(slot) ?: return null)
-    val data = item.getData() ?: return null
-    action.accept(data)
-    item.setData(data)
-    return data
+    val tag = item.getData() ?: return null
+    action.accept(tag)
+    item.setData(tag)
+    return tag
 }
