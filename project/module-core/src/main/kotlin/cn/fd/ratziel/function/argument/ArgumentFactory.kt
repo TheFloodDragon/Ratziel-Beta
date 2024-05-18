@@ -27,7 +27,9 @@ interface ArgumentFactory : ArgumentSupplier {
      * @throws ArgumentNotFoundException 当无法找到指定类型的参数时抛出
      */
     @Throws(ArgumentNotFoundException::class)
-    fun <T : Any> pop(type: Class<T>): Argument<T>
+    fun <T : Any> pop(type: Class<T>): Argument<T> = popOrNull(type) ?: throw ArgumentNotFoundException(type)
+
+    fun <T : Any> popOrNull(type: Class<T>): Argument<T>?
 
     /**
      * 弹出所有指定类型的参数

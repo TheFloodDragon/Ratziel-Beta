@@ -12,7 +12,6 @@ const val DEFAULT_ALGORITHM = "SHA-256"
 
 fun randomUUID() = UUID.randomUUID().toString().replace("-", "").lowercase()
 
-
 const val ESCAPE_CHAR = "\\"
 
 /**

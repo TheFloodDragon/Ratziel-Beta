@@ -4,19 +4,7 @@ import cn.fd.ratziel.function.argument.exception.ArgumentException
 import cn.fd.ratziel.function.util.uncheck
 import java.util.function.Function
 
-fun <T : Any> ArgumentFactory.popOrNull(type: Class<T>): Argument<T>? =
-    try {
-        pop(type)
-    } catch (ex: ArgumentException) {
-        null
-    }
-
-fun <T : Any> ArgumentFactory.popOr(type: Class<T>, default: T): Argument<T> =
-    try {
-        pop(type)
-    } catch (ex: ArgumentException) {
-        SingleArgument(default)
-    }
+fun <T : Any> ArgumentFactory.popOr(type: Class<T>, default: T): Argument<T> = popOrNull(type) ?: SingleArgument(default)
 
 fun <T : Any> ArgumentSupplier.supplyOrNull(type: Class<T>): Argument<T>? =
     try {

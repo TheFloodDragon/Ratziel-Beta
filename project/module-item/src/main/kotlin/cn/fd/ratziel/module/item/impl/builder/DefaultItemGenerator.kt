@@ -39,7 +39,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
 
     override val serializers: MutableSet<Priority<ItemSerializer<*>>> = CopyOnWriteArraySet(listOf(DefaultItemSerializer(json).priority()))
 
-    override val resolvers: MutableSet<Priority<ItemResolver>> = CopyOnWriteArraySet(listOf(DefaultItemResolver().priority()))
+    override val resolvers: MutableSet<Priority<ItemResolver>> = CopyOnWriteArraySet(listOf(DefaultItemResolver.priority()))
 
     /**
      * 解析

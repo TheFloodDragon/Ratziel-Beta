@@ -8,6 +8,7 @@ dependencies {
     compileTaboo("module-nms-util-stable")
     compileTaboo("module-bukkit-xseries")
     compileTaboo("module-bukkit-util")
+    compileTaboo("module-bukkit-hook")
     compileModule("runtime-bukkit")
     compileOnly(fileTree("libs"))
 }
