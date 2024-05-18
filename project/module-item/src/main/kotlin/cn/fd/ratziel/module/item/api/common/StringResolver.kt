@@ -10,7 +10,7 @@ import cn.fd.ratziel.module.item.api.Resolver
  * @author TheFloodDragon
  * @since 2024/5/18 15:15
  */
-interface StringResolver : Resolver<Array<String>, String?> {
+interface StringResolver : Resolver<Iterable<String>, String?> {
 
     /**
      * 解析器名称
@@ -25,11 +25,11 @@ interface StringResolver : Resolver<Array<String>, String?> {
     /**
      * 解析元素 (带参数)
      */
-    fun resolve(element: Array<String>, arguments: ArgumentFactory): String?
+    fun resolve(element: Iterable<String>, arguments: ArgumentFactory): String?
 
     /**
      * 解析元素 (带空参数)
      */
-    override fun resolve(element: Array<String>): String? = resolve(element, DefaultArgumentFactory())
+    override fun resolve(element: Iterable<String>): String? = resolve(element, DefaultArgumentFactory())
 
 }

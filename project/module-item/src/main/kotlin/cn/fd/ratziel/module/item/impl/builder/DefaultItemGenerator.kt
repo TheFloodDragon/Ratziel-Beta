@@ -54,7 +54,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
                 ex.printStackTrace()
             }
         }
-        return element
+        return result
     }
 
     /**

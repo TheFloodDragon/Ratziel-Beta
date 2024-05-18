@@ -68,7 +68,7 @@ object DefaultItemResolver : ItemResolver {
                 // 如果是变量, 则通过字符串解析器解析
                 if (it.isVariable) {
                     distribute(it.text, arguments)
-                } else it // 不然就是他本身
+                } else it.text // 不然就是它本身
             }
             JsonPrimitive(result.joinToString("")) // 拼接结果成字符串并返回
         } ?: p
@@ -84,7 +84,7 @@ object DefaultItemResolver : ItemResolver {
         // 获取解析器
         val resolver = resolvers.find { it.name == name || it.alias.contains(name) }
         // 解析并返回
-        return resolver?.resolve(split.drop(1).toTypedArray(), arguments) ?: source
+        return resolver?.resolve(split.drop(1), arguments) ?: source
     }
 
     /**

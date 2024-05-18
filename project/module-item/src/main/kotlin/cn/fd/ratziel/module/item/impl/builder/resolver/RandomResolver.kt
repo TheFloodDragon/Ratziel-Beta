@@ -16,9 +16,8 @@ object RandomResolver : StringResolver {
 
     override val alias = arrayOf("ran", "rd")
 
-    override fun resolve(element: Array<String>, arguments: ArgumentFactory): String? {
-        if (element.isEmpty()) return null
-        // TODO 写完这个
+    // TODO 写完这个
+    override fun resolve(element: Iterable<String>, arguments: ArgumentFactory): String? {
         return random().nextInt().toString()
     }
 
