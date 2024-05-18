@@ -44,7 +44,7 @@ class RefItemMeta(raw: Any) {
             InternalUtil.applyToItemMethod.invoke(handle, applicator) // Apply to the applicator
             val dcp = InternalUtil.applicatorToDcp(applicator) // Applicator to DataComponentPatch
             val newTag = NMS12005.INSTANCE.save(dcp) // DataComponentPatch save to NBT
-            if (newTag != null) tag.merge(NBTCompound(newTag), true) // TODO 这里应该是浅合并
+            if (newTag != null) tag.putAll(NBTCompound(newTag))
         } else {
             InternalUtil.applyToItemMethod.invoke(handle, tag.getData())
         }

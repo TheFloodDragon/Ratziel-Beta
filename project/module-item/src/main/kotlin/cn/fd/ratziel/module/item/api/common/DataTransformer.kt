@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.api.common
 
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.NodeDistributor
+import cn.fd.ratziel.module.item.api.ItemNode
 
 /**
  * DataTransformer
@@ -14,7 +14,7 @@ interface DataTransformer<T> {
     /**
      * NBT数据的节点分配器
      */
-    val node: NodeDistributor
+    val node: ItemNode
 
     /**
      * 正向转化 - 输出型转化

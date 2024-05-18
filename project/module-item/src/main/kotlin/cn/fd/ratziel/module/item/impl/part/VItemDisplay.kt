@@ -50,7 +50,7 @@ data class VItemDisplay(
     override fun getNode() = node
 
     override fun transform(source: ItemData) {
-        source.nbt.addAll(
+        source.tag.addAll(
             ItemSheet.DISPLAY_NAME to componentToData(this.name),
             ItemSheet.DISPLAY_LORE to this.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) },
             itemNameNode to componentToData(this.localizedName)
@@ -59,13 +59,13 @@ data class VItemDisplay(
 
     override fun detransform(target: ItemData) {
         // Universal
-        target.nbt[ItemSheet.DISPLAY_NAME].castThen<NBTString> {
+        target.tag[ItemSheet.DISPLAY_NAME].castThen<NBTString> {
             this.setName(it.content)
         }
-        target.nbt[ItemSheet.DISPLAY_LORE].castThen<NBTList> {
+        target.tag[ItemSheet.DISPLAY_LORE].castThen<NBTList> {
             this.setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content })
         }
-        target.nbt[itemNameNode].castThen<NBTString> {
+        target.tag[itemNameNode].castThen<NBTString> {
             this.setLocalizedName(it.content)
         }
     }

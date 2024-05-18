@@ -14,10 +14,10 @@ interface ItemComponent : Transformable<ItemData> {
     /**
      * 获取数据的节点分配器
      */
-    fun getNode(): NodeDistributor
+    fun getNode(): ItemNode
 
     /**
-     * 正向转化 - 输出型转化
+     * 正向转化 - 输出型转化 (可对[source]进行任意操作)
      * @param source 源标签
      */
     fun transform(source: ItemData)

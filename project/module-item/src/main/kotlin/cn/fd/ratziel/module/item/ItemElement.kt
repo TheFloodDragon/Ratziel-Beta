@@ -39,9 +39,12 @@ object ItemElement : ElementHandler {
 
         println(item.data)
 
-        RefItemStack(ItemStack(Material.BOW).apply { addUnsafeEnchantment(Enchantment.EFFICIENCY, 1) })
-            .also { println(it) }
-            .getData().also { println(it) }
+        val test = RefItemStack(ItemStack(Material.BOW).apply { addUnsafeEnchantment(Enchantment.EFFICIENCY, 1) })
+        println(test)
+        println(test.getData())
+        test.setData(item.data.tag)
+        println(test)
+        println(test.getData())
 
     }
 

@@ -7,7 +7,7 @@ import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.api.part.ItemDurability
 import cn.fd.ratziel.module.item.api.part.ItemMetadata
 import cn.fd.ratziel.module.item.api.part.ItemSundry
-import cn.fd.ratziel.module.item.util.applyTo
+import cn.fd.ratziel.module.item.util.transfer
 import kotlinx.serialization.Serializable
 
 /**
@@ -25,7 +25,7 @@ data class VItemMeta(
 
     override fun getNode() = OccupyNode.APEX_NODE
 
-    override fun transform(source: ItemData) = elements.forEach { it?.applyTo(source) }
+    override fun transform(source: ItemData) = elements.forEach { it?.transfer(source) }
 
     override fun detransform(target: ItemData) = elements.forEach { it?.detransform(target) }
 

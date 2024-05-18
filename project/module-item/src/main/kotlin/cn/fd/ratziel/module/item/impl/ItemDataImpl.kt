@@ -18,7 +18,7 @@ data class ItemDataImpl(
     /**
      * 物品NBT
      */
-    override var nbt: NBTCompound = NBTCompound(),
+    override var tag: NBTCompound = NBTCompound(),
     /**
      * 物品数量
      */

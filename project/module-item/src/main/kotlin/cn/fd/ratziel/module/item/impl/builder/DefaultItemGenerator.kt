@@ -11,12 +11,14 @@ import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
+import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executors
 
 /**
@@ -35,9 +37,9 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         Executors.newFixedThreadPool(8)
     }
 
-    override val serializers = mutableListOf(DefaultItemSerializer(json))
+    override val serializers: MutableSet<Priority<ItemSerializer<*>>> = CopyOnWriteArraySet(listOf(DefaultItemSerializer(json).priority()))
 
-    override val resolvers: MutableList<Priority<ItemResolver>> = mutableListOf(DefaultItemResolver().priority())
+    override val resolvers: MutableSet<Priority<ItemResolver>> = CopyOnWriteArraySet(listOf(DefaultItemResolver().priority()))
 
     /**
      * 解析
@@ -57,12 +59,13 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
 
     /**
      * 序列化 (并行)
+     * 传递优先级至 [transform] 阶段
      */
-    fun serialize(element: JsonElement): FutureFactory<ItemComponent?> = FutureFactory {
+    fun serialize(element: JsonElement): FutureFactory<Priority<ItemComponent>?> = FutureFactory {
         for (serializer in serializers) {
             submitAsync(executor) {
                 try {
-                    serializer.deserialize(element)
+                    serializer.value.deserialize(element) priority serializer.priority
                 } catch (ex: Exception) {
                     severe("Failed to deserialize element by $serializer!")
                     ex.printStackTrace(); null
@@ -74,8 +77,8 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
     /**
      * 转换
      */
-    fun transform(data: ItemData, components: Iterable<ItemComponent>) {
-        for (component in components) {
+    fun transform(data: ItemData, components: Iterable<Priority<ItemComponent>>) {
+        for (component in components.sortPriority()) {
             try {
                 component.transform(data)
             } catch (ex: Exception) {
@@ -85,17 +88,18 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         }
     }
 
-    override fun build(arguments: ArgumentFactory): CompletableFuture<RatzielItem> {
+    fun build(data: ItemData, arguments: ArgumentFactory): CompletableFuture<RatzielItem> {
         // 解析成 JsonElement
         val element = resolve(origin.property, arguments)
         // 并行序列化并收集结果
         val serializeTask = serialize(element)
         // 合成最终产物
         return serializeTask.thenApply { components ->
-            val data = ItemDataImpl()
             transform(data, components.mapNotNull { it })
             RatzielItem(data)
         }
     }
+
+    override fun build(arguments: ArgumentFactory) = build(ItemDataImpl(), arguments)
 
 }

@@ -1,12 +1,12 @@
 package cn.fd.ratziel.module.item.api
 
 /**
- * NodeDistributor - 物品节点分配器
+ * ItemNode - 物品节点
  *
  * @author TheFloodDragon
  * @since 2024/3/16 10:43
  */
-interface NodeDistributor {
+interface ItemNode {
 
     /**
      * 节点名称
@@ -14,8 +14,8 @@ interface NodeDistributor {
     val name: String
 
     /**
-     * 上级节点分配器 (空代表最高级)
+     * 上级节点 (空代表最高级)
      */
-    val parent: NodeDistributor?
+    val parent: ItemNode?
 
 }

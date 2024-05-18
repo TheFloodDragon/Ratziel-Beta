@@ -1,18 +1,18 @@
 package cn.fd.ratziel.module.item.api.common
 
-import cn.fd.ratziel.module.item.api.NodeDistributor
+import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.reflex.ItemSheet
 
 /**
- * OccupyNode - [NodeDistributor] 实现
+ * OccupyNode - [ItemNode] 实现
  *
  * @author TheFloodDragon
  * @since 2024/3/16 11:53
  */
 data class OccupyNode(
     override val name: String,
-    override val parent: NodeDistributor?
-) : NodeDistributor {
+    override val parent: ItemNode?
+) : ItemNode {
 
     companion object {
 

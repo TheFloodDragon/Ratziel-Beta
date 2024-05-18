@@ -14,7 +14,7 @@ interface Transformable<T> {
     fun transform(): T
 
     /**
-     * 反向转化 - 应用型转换
+     * 反向转化 - 应用型转换 (禁止改写[target])
      */
     fun detransform(target: T)
 

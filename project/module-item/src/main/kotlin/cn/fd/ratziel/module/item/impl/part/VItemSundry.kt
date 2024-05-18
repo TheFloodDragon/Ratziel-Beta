@@ -75,15 +75,15 @@ data class VItemSundry(
             value.forEach { itemMeta.handle.addAttributeModifier(key, it) }
         }
         // Merge
-        itemMeta.applyToTag(source.nbt)
+        itemMeta.applyToTag(source.tag)
         // CustomModelData (1.14+)
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-            source.nbt[ItemSheet.CUSTOM_MODEL_DATA] = customModelData?.let { NBTInt(it) }
+            source.tag[ItemSheet.CUSTOM_MODEL_DATA] = customModelData?.let { NBTInt(it) }
         }
     }
 
     override fun detransform(target: ItemData) {
-        val itemMeta = RefItemMeta(target.nbt)
+        val itemMeta = RefItemMeta(target.tag)
         // HideFlags
         val hideFlags = itemMeta.handle.itemFlags
         if (hideFlags.isNotEmpty()) {
@@ -96,7 +96,7 @@ data class VItemSundry(
         }
         // CustomModelData (1.14+)
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-            target.nbt[ItemSheet.CUSTOM_MODEL_DATA].castThen<NBTInt> {
+            target.tag[ItemSheet.CUSTOM_MODEL_DATA].castThen<NBTInt> {
                 customModelData = it.content
             }
         }
