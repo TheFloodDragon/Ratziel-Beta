@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.item.reflex
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
+import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.impl.ItemMaterialImpl
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
@@ -19,6 +21,14 @@ import org.bukkit.inventory.ItemStack as BukkitItemStack
  * @since 2024/4/4 11:20
  */
 class RefItemStack(raw: Any) {
+
+    constructor() : this(newObc())
+
+    constructor(data: ItemData) : this() {
+        setMaterial(data.material)
+        setData(data.tag)
+        setAmount(data.amount)
+    }
 
     /**
      * ItemStack处理对象 (CraftItemStack)
@@ -58,12 +68,17 @@ class RefItemStack(raw: Any) {
     /**
      * 设置物品材料
      */
-    fun setMaterial(material: BukkitMaterial) =
+    fun setMaterial(material: BukkitMaterial) {
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
             InternalUtil.obcSetMaterialMethod.invoke(handle, material)
         } else {
             InternalUtil.obcSetMaterialMethodLegacy.invoke(handle, ItemMaterialImpl.getIdUnsafe(material))
         }
+    }
+
+    fun setMaterial(material: ItemMaterial) {
+        ItemMaterialImpl.getBukkitMaterial(material.name)?.let { setMaterial(it) }
+    }
 
     /**
      * 获取物品数量

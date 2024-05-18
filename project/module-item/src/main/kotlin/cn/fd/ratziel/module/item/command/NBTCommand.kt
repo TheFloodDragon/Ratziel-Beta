@@ -57,8 +57,8 @@ object NBTCommand {
     @CommandBody
     val edit = subCommand {
         slot {
-            dynamic {
-                dynamic {
+            dynamic("node") {
+                dynamic("value") {
                     execute<ProxyPlayer> { player, ctx, _ ->
                         // 获取基本信息
                         val node = ctx.args()[2]
@@ -85,7 +85,7 @@ object NBTCommand {
     @CommandBody
     val remove = subCommand {
         slot {
-            dynamic {
+            dynamic("node") {
                 execute<ProxyPlayer> { player, ctx, _ ->
                     // 获取基本信息
                     val rawNode = ctx.args()[2]

@@ -15,6 +15,6 @@ object ItemManager {
      * 物品注册表
      * 物品标识符:物品生成器
      */
-    val registry = ConcurrentHashMap<String, ItemGenerator>()
+    val registry: MutableMap<String, ItemGenerator> = ConcurrentHashMap()
 
 }

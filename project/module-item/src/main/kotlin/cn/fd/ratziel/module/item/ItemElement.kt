@@ -46,6 +46,8 @@ object ItemElement : ElementHandler {
         println(test)
         println(test.getData())
 
+        // 注册
+        ItemManager.registry[element.name] = generator
     }
 
     @SubscribeEvent

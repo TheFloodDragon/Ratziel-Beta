@@ -38,9 +38,7 @@ object JsonHandler {
             is JsonPrimitive -> action.apply(element)
             is JsonArray -> JsonArray(element.map { handlePrimitives(it, action) })
             is JsonObject -> buildJsonObject {
-                element.forEach { key, value ->
-                    put(key, handlePrimitives(value, action))
-                }
+                element.forEach { put(it.key, handlePrimitives(it.value, action)) }
             }
         }
 
