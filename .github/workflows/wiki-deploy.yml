@@ -14,6 +14,11 @@ on:
 permissions:
   contents: write
 
+# 默认设置
+defaults:
+  run:
+    working-directory: ./wiki # 工作路径
+
 # 任务
 jobs:
   deploy:
@@ -27,14 +32,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: latest
-          node-version-file: wiki/package.json
           cache: 'npm'
-          cache-dependency-path: wiki/package-lock.json
       # 打包静态文件
       - name: Install and Build
-        run: cd ./wiki && npm install && npm run build
+        run: npm install && npm run build
       # 部署
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: wiki/build
+          folder: build
