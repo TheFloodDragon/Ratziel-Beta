@@ -29,6 +29,7 @@ jobs:
           node-version: latest
           node-version-file: wiki/package.json
           cache: 'npm'
+          cache-dependency-path: wiki/package-lock.json
       # 打包静态文件
       - name: Install and Build
         run: cd ./wiki && npm install && npm run build
