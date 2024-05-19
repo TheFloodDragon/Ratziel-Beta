@@ -18,9 +18,6 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./wiki
     steps:
       # 拉取代码
       - name: Checkout
@@ -28,14 +25,17 @@ jobs:
       # 设置 Node 版本
       - name: Setup Node Version
         uses: actions/setup-node@v4
+        working-directory: ./wiki
         with:
           node-version: latest
           cache: 'npm'
       # 打包静态文件
       - name: Install and Build
+        working-directory: ./wiki
         run: npm install && npm run build
       # 部署
       - name: Deploy
+        working-directory: ./wiki
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build
