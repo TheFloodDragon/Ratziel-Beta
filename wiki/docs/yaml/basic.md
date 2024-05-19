@@ -18,7 +18,6 @@ sidebar_position: 2
   ```
 
   ```JSON
-  // JSON
   "key": "value"
   ```
 
@@ -31,7 +30,6 @@ sidebar_position: 2
   ```
 
   ```JSON
-  // JSON
   "key": {
     "child-key1": "value1",
     "child-key2": "value2",
@@ -44,7 +42,6 @@ sidebar_position: 2
   ```
 
   ```JSON
-  // JSON
   "key": { "child-key1": "value1", "child-key2": "value2" }
   ```
 
@@ -68,9 +65,8 @@ sidebar_position: 2
     - value2
     - value3
   ```
-  
+
   ```JSON
-  // JSON
   "values": [ "value1", "value2", "value3" ]
   ```
 
@@ -79,9 +75,8 @@ sidebar_position: 2
   # YAML
   values: [value1, value2, value3]
   ```
-  
+
   ```JSON
-  // JSON
   "values": [ "value1", "value2", "value3" ]
   ```
 
@@ -98,24 +93,23 @@ sidebar_position: 2
   ```
 
   ```JSON
-  // JSON
-  "values": [ [ "value1", "value2"], ["value3", "value4"] ]
+  "values": [[ "value1", "value2"], ["value3", "value4"] ]
   ```
 
 ## 字符串（String）
 
 字符串**一般不需要用引号包裹**, 但如果字符串包含**空格或者特殊字符(例如冒号)**，则需要加**引号**
 
-- **双引号“"”**不会对字符串中转义字符进行转义（即正常处理转义字符）
+- **双引号“"”** 不会对字符串中转义字符进行转义（即正常处理转义字符）
 
-- **单引号“'”**会对串中转义字符进行转义（将转义字符转成文本）
+- **单引号“'”** 会对串中转义字符进行转义（将转义字符转成文本）
 
 ```YAML
 # YAML
 strings:
   - Hello without quote # 不用引号包裹
   - Hello
-   world # 拆成多行后会自动在中间添加空格
+    world # 拆成多行后会自动在中间添加空格
   - 'Hello with single quotes' # 单引号包裹
   - "Hello with double quotes" # 双引号包裹
   - "I am fine. \u263A" # 使用双引号包裹时支持 Unicode 编码
@@ -124,15 +118,16 @@ strings:
 ```
 
 ```JSON
-// JSON
 "strings":
-  [ "Hello without quote",
-    "Hello world",
-    "Hello with single quotes",
-    "Hello with double quotes",
-    "I am fine. ☺",
-    "\r\n is \r\n",
-    "He said: 'Hello!'" ]
+[
+"Hello without quote",
+"Hello world",
+"Hello with single quotes",
+"Hello with double quotes",
+"I am fine. ☺",
+"\r\n is \r\n",
+"He said: 'Hello!'"
+]
 ```
 
 ## 布尔值（Boolean）
@@ -150,8 +145,7 @@ boolean:
 ```
 
 ```JSON
-// JSON
-"boolean": [ true, true, false, false ]
+"boolean": [true, true, false, false]
 ```
 
 ## 整数（Integer）
@@ -166,8 +160,7 @@ int:
 ```
 
 ```JSON
-// JSON
-"int": [ 666, 4096 ]
+"int": [666, 4096]
 ```
 
 ## 浮点数（Floating Point）
@@ -182,8 +175,7 @@ float:
 ```
 
 ```JSON
-// JSON
-"float": [ 3.14, 685230.15 ]
+"float": [3.14, 685230.15]
 ```
 
 ## 空（Null）
@@ -200,9 +192,9 @@ nulls:
 ```
 
 ```JSON
-// JSON
-"nulls": [ null, null, null, null ]
+"nulls": [null, null, null, null]
 ```
+
 ## 时间戳（Timestamp）
 
 > YAML 也支持 ISO 8601 格式的时间数据
@@ -212,16 +204,63 @@ nulls:
 # YAML
 date1: 2020-05-26
 date2: 2020-05-26T01:00:00+08:00
-dete3: 2020-05-26T02:00:00.10+08:00
+date3: 2020-05-26T02:00:00.10+08:00
 date4: 2020-05-26 03:00:00.10 +8
 ```
 
 ```JS
 // JavaScript
-date1: Tue May 26 2020 08:00:00 GMT+0800 (中国标准时间),
-date2: Tue May 26 2020 01:00:00 GMT+0800 (中国标准时间),
-dete3: Tue May 26 2020 02:00:00 GMT+0800 (中国标准时间),
-date4: Tue May 26 2020 03:00:00 GMT+0800 (中国标准时间)
+date1: Tue
+May
+26
+2020
+0
+8
+:
+00
+:
+00
+GMT + 0
+800(中国标准时间),
+    date2
+:
+Tue
+May
+26
+2020
+01
+:
+00
+:
+00
+GMT + 0
+800(中国标准时间),
+    dete3
+:
+Tue
+May
+26
+2020
+02
+:
+00
+:
+00
+GMT + 0
+800(中国标准时间),
+    date4
+:
+Tue
+May
+26
+2020
+03
+:
+00
+:
+00
+GMT + 0
+800(中国标准时间)
 ```
 
 ## 标量（Scalars）
@@ -229,6 +268,7 @@ date4: Tue May 26 2020 03:00:00 GMT+0800 (中国标准时间)
 > 表示 YAML 中最基本的数据类型
 
 包括：
+
 - 字符串
 - 布尔值
 - 整数

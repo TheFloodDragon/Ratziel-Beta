@@ -18,7 +18,6 @@ f: !!str yes # 布尔值转为字符串
 ```
 
 ```JOSN
-// JSON
 "a": 666,
 "b": "666",
 "c": "666",
@@ -41,7 +40,6 @@ lines: |
 ```
 
 ```JSON
-// JSON
 "lines": "我是第一行\n我是第二行\n  我是吴彦祖\n     我是第四行\n我是第五行"
 ```
 
@@ -62,7 +60,6 @@ lines: >
 ```
 
 ```JSON
-// JSON
 "lines": "我是第一行 我也是第一行 我仍是第一行 我依旧是第一行\n我是第二行 这么巧我也是第二行"
 ```
 
@@ -80,7 +77,6 @@ b: *anchor # 引用锚点
 ```
 
 ```JSON
-// JSON
 "a": {
   "one": 1,
   "two": 2,
@@ -98,19 +94,18 @@ b: *anchor # 引用锚点
 ```YAML
 # YAML
 human: &base # 添加名为 base 的锚点
-    body: 1
-    hair: 999
+  body: 1
+  hair: 999
 singer:
-    <<: *base # 引用 base 锚点，实例化时会自动展开
-    skill: sing # 添加额外的属性
-programer:
-    <<: *base # 引用 base 锚点，实例化时会自动展开
-    hair: 6 # 覆写 base 中的属性
-    skill: code # 添加额外的属性
+  <<: *base # 引用 base 锚点，实例化时会自动展开
+  skill: sing # 添加额外的属性
+programmer:
+  <<: *base # 引用 base 锚点，实例化时会自动展开
+  hair: 6 # 覆写 base 中的属性
+  skill: code # 添加额外的属性
 ```
 
 ```JSON
-// JSON
 "human": { "body": 1, "hair": 999 },
 "singer": { "body": 1, "hair": 999, "skill": "sing" },
 "programer": { "body": 1, "hair": 6, "skill": "code" }

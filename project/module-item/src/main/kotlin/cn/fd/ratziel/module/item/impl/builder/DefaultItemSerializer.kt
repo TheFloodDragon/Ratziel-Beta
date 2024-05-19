@@ -1,26 +1,23 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
-import cn.fd.ratziel.core.serialization.handle
-import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.core.serialization.usedNodes
+import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.common.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.part.VItemDisplay
 import cn.fd.ratziel.module.item.impl.part.VItemDurability
 import cn.fd.ratziel.module.item.impl.part.VItemMeta
 import cn.fd.ratziel.module.item.impl.part.VItemSundry
-import cn.fd.ratziel.module.item.impl.part.serializers.AttributeModifierSerializer
-import cn.fd.ratziel.module.item.impl.part.serializers.AttributeSerializer
-import cn.fd.ratziel.module.item.impl.part.serializers.EnchantmentSerializer
-import cn.fd.ratziel.module.item.impl.part.serializers.HideFlagSerializer
+import cn.fd.ratziel.module.item.impl.part.serializers.*
 import cn.fd.ratziel.module.item.nbt.NBTData
 import cn.fd.ratziel.module.item.nbt.NBTSerializer
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.json.*
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.plus
-import net.kyori.adventure.text.Component
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
@@ -39,8 +36,7 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
         serializersModule += SerializersModule {
             // Common Serializers
             contextual(NBTData::class, NBTSerializer)
-            contextual(Component::class, MessageComponentSerializer)
-            contextual(EnhancedListSerializer(MessageComponentSerializer))
+            contextual(ItemMaterial::class, ItemMaterialSerializer)
             // Bukkit Serializers
             contextual(Enchantment::class, EnchantmentSerializer)
             contextual(ItemFlag::class, HideFlagSerializer)
@@ -53,24 +49,28 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
      * 反序列化 (检查结构化解析)
      */
     override fun deserialize(element: JsonElement): VItemMeta {
-        // 结构化解析
-        if (element.isStructured()) return json.decodeFromJsonElement(VItemMeta.serializer(), element)
         // 异步方法
         fun <T> asyncDecode(deserializer: DeserializationStrategy<T>) =
             CompletableFuture.supplyAsync {
                 json.decodeFromJsonElement(deserializer, element)
             }.exceptionally { it.printStackTrace();null }
-        // 一般解析
+        // 结构化解析
+        val meta = asyncDecode(VItemMeta.serializer())
+        // 非结构化解析
         val display = asyncDecode(VItemDisplay.serializer())
         val durability = asyncDecode(VItemDurability.serializer())
         val sundry = asyncDecode(VItemSundry.serializer())
-        return VItemMeta(display.get(), durability.get(), sundry.get())
+        return meta.get().apply {
+            this.display = display.get()
+            this.durability = durability.get()
+            this.sundry = sundry.get()
+        }
     }
 
     /**
      * 序列化 (强制开启结构化解析)
      */
-    override fun serialize(component: VItemMeta) = json.encodeToJsonElement(VItemMeta.serializer(), component).run { forceStructured() }
+    override fun serialize(component: VItemMeta) = json.encodeToJsonElement(VItemMeta.serializer(), component)
 
     override val descriptor = VItemMeta.serializer().descriptor
 
@@ -87,23 +87,6 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
          * 占据的节点
          */
         val occupiedNodes = serializers.flatMap { it.descriptor.usedNodes }
-
-        /**
-         * 结构化解析
-         */
-        const val NODE_STRUCTURED = "structured"
-
-        private fun JsonElement.isStructured(): Boolean = try {
-            this.jsonObject[NODE_STRUCTURED]!!.jsonPrimitive.boolean
-        } catch (_: Exception) {
-            false
-        }
-
-        private fun JsonElement.forceStructured(): JsonElement = try {
-            this.jsonObject.handle { put(NODE_STRUCTURED, JsonPrimitive(true)) }
-        } catch (_: Exception) {
-            this
-        }
 
     }
 

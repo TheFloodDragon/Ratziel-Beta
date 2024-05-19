@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.api.part
 
 import cn.fd.ratziel.module.item.api.ItemComponent
+import cn.fd.ratziel.module.item.api.ItemMaterial
 
 /**
  * ItemMetadata
@@ -11,18 +12,23 @@ import cn.fd.ratziel.module.item.api.ItemComponent
 interface ItemMetadata : ItemComponent {
 
     /**
+     * 物品材料
+     */
+    var material: ItemMaterial
+
+    /**
      * 物品显示部分
      */
-    var display: ItemDisplay?
+    var display: ItemDisplay
 
     /**
      * 物品耐久部分
      */
-    var durability: ItemDurability?
+    var durability: ItemDurability
 
     /**
      * 物品杂项部分
      */
-    var sundry: ItemSundry?
+    var sundry: ItemSundry
 
 }

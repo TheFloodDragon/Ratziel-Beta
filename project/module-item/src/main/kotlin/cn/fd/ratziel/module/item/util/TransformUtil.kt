@@ -9,9 +9,9 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTData
 import java.util.function.Consumer
 
-fun ItemComponent.transfer(data: ItemData) = ComponentUtil.transfer(this, data)
+fun <T : ItemComponent> T.transfer(data: ItemData) = this.apply { ComponentUtil.transfer(this, data) }
 
-fun ItemComponent.accept(data: ItemData) = ComponentUtil.accept(this, data)
+fun <T : ItemComponent> T.accept(data: ItemData) = this.apply { ComponentUtil.accept(this, data) }
 
 /**
  * 转换[NBTData], 若成功转换(不为空), 则执行 [action]
