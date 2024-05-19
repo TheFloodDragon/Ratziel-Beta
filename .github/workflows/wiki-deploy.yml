@@ -27,6 +27,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: latest
+          node-version-file: wiki/package.json
           cache: 'npm'
       # 打包静态文件
       - name: Install and Build
