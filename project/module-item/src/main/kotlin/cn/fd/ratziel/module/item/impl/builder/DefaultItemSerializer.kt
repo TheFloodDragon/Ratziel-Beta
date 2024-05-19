@@ -1,7 +1,7 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package cn.fd.ratziel.module.item.impl.builder
 
+import cn.fd.ratziel.core.serialization.get
+import cn.fd.ratziel.core.serialization.getElementDescriptor
 import cn.fd.ratziel.core.serialization.handle
 import cn.fd.ratziel.core.serialization.usedNodes
 import cn.fd.ratziel.module.item.api.ItemMaterial
@@ -14,7 +14,6 @@ import cn.fd.ratziel.module.item.impl.part.serializers.*
 import cn.fd.ratziel.module.item.nbt.NBTData
 import cn.fd.ratziel.module.item.nbt.NBTSerializer
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
@@ -49,23 +48,20 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
      * 反序列化 (检查结构化解析)
      */
     override fun deserialize(element: JsonElement): VItemMeta {
-        // 异步方法
-        fun <T> asyncDecode(deserializer: DeserializationStrategy<T>) =
-            CompletableFuture.supplyAsync {
-                json.decodeFromJsonElement(deserializer, element)
-            }.exceptionally { it.printStackTrace();null }
         // 结构化解析
-        val meta = asyncDecode(VItemMeta.serializer())
-        if (isStructured(element)) return meta.get()
-        // 非结构化解析
+        if (isStructured(element)) return json.decodeFromJsonElement(VItemMeta.serializer(), element)
+        // 异步方法
+        fun <T> asyncDecode(deserializer: DeserializationStrategy<T>, from: JsonElement = element) =
+            CompletableFuture.supplyAsync {
+                json.decodeFromJsonElement(deserializer, from)
+            }.exceptionally { it.printStackTrace();null }
+        // 一般解析
         val display = asyncDecode(VItemDisplay.serializer())
         val durability = asyncDecode(VItemDurability.serializer())
         val sundry = asyncDecode(VItemSundry.serializer())
-        return meta.get().apply {
-            this.display = display.get()
-            this.durability = durability.get()
-            this.sundry = sundry.get()
-        }
+        val material = (element as? JsonObject)?.get(NODES_MATERIAL)
+            ?.let { asyncDecode(ItemMaterialSerializer, it) } ?: CompletableFuture.completedFuture(ItemMaterial.EMPTY)
+        return VItemMeta(material.get(), display.get(), durability.get(), sundry.get())
     }
 
     /**
@@ -83,6 +79,8 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
             VItemDurability.serializer(),
             VItemSundry.serializer(),
         )
+
+        val NODES_MATERIAL = VItemMeta.serializer().descriptor.getElementDescriptor(VItemMeta::material.name).usedNodes
 
         /**
          * 占据的节点

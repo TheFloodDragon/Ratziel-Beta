@@ -93,7 +93,7 @@ sidebar_position: 2
   ```
 
   ```JSON
-  "values": [[ "value1", "value2"], ["value3", "value4"] ]
+  "values":[[ "value1", "value2"], ["value3", "value4"]]
   ```
 
 ## 字符串（String）
@@ -180,7 +180,7 @@ float:
 
 ## 空（Null）
 
-> “null”、“Null”和“~”都是空，不指定值默认也是空
+> “null”、“Null”和“~”都是**空**，不指定值默认也是**空**
 
 ```YAML
 # YAML
@@ -191,14 +191,9 @@ nulls:
   -
 ```
 
-```JSON
-"nulls": [null, null, null, null]
-```
-
 ## 时间戳（Timestamp）
 
 > YAML 也支持 ISO 8601 格式的时间数据
-> 这里使用 JavaScript 对象进行对比
 
 ```YAML
 # YAML
@@ -206,61 +201,6 @@ date1: 2020-05-26
 date2: 2020-05-26T01:00:00+08:00
 date3: 2020-05-26T02:00:00.10+08:00
 date4: 2020-05-26 03:00:00.10 +8
-```
-
-```JS
-// JavaScript
-date1: Tue
-May
-26
-2020
-0
-8
-:
-00
-:
-00
-GMT + 0
-800(中国标准时间),
-    date2
-:
-Tue
-May
-26
-2020
-01
-:
-00
-:
-00
-GMT + 0
-800(中国标准时间),
-    dete3
-:
-Tue
-May
-26
-2020
-02
-:
-00
-:
-00
-GMT + 0
-800(中国标准时间),
-    date4
-:
-Tue
-May
-26
-2020
-03
-:
-00
-:
-00
-GMT + 0
-800(中国标准时间)
 ```
 
 ## 标量（Scalars）

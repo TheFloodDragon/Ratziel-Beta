@@ -8,6 +8,8 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.json.JsonNames
 
+fun SerialDescriptor.getElementDescriptor(name:String) = this.getElementDescriptor(this.getElementIndex(name))
+
 /**
  * 获取序列化器中使用的节点
  * 即所有的元素名称和 [JsonNames] 注解中的所有名称
