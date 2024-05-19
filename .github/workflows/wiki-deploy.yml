@@ -27,7 +27,6 @@ jobs:
         run: cd ./wiki && npm install && npm run build
       # 部署
       - name: Deploy
-        working-directory: ./wiki
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: wiki/build
