@@ -2,6 +2,7 @@
 
 package cn.fd.ratziel.module.item.impl.builder
 
+import cn.fd.ratziel.core.serialization.handle
 import cn.fd.ratziel.core.serialization.usedNodes
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.common.ItemKSerializer
@@ -14,8 +15,7 @@ import cn.fd.ratziel.module.item.nbt.NBTData
 import cn.fd.ratziel.module.item.nbt.NBTSerializer
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import org.bukkit.attribute.Attribute
@@ -56,6 +56,7 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
             }.exceptionally { it.printStackTrace();null }
         // 结构化解析
         val meta = asyncDecode(VItemMeta.serializer())
+        if (isStructured(element)) return meta.get()
         // 非结构化解析
         val display = asyncDecode(VItemDisplay.serializer())
         val durability = asyncDecode(VItemDurability.serializer())
@@ -70,7 +71,7 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
     /**
      * 序列化 (强制开启结构化解析)
      */
-    override fun serialize(component: VItemMeta) = json.encodeToJsonElement(VItemMeta.serializer(), component)
+    override fun serialize(component: VItemMeta) = forceStructured(json.encodeToJsonElement(VItemMeta.serializer(), component))
 
     override val descriptor = VItemMeta.serializer().descriptor
 
@@ -87,6 +88,23 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
          * 占据的节点
          */
         val occupiedNodes = serializers.flatMap { it.descriptor.usedNodes }
+
+        /**
+         * 结构化解析
+         */
+        const val NODE_STRUCTURED = "structured"
+
+        internal fun isStructured(element: JsonElement): Boolean = try {
+            element.jsonObject[NODE_STRUCTURED]!!.jsonPrimitive.boolean
+        } catch (_: Exception) {
+            false
+        }
+
+        internal fun forceStructured(element: JsonElement): JsonElement = try {
+            element.jsonObject.handle { put(NODE_STRUCTURED, JsonPrimitive(true)) }
+        } catch (_: Exception) {
+            element
+        }
 
     }
 
