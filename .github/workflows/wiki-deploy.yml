@@ -14,15 +14,13 @@ on:
 permissions:
   contents: write
 
-# 默认设置
-defaults:
-  run:
-    working-directory: ./wiki # 工作路径
-
 # 任务
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./wiki
     steps:
       # 拉取代码
       - name: Checkout
