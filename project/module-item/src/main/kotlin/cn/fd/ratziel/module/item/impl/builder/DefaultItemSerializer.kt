@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.item.impl.builder
 
+import cn.fd.ratziel.core.serialization.elementAlias
 import cn.fd.ratziel.core.serialization.get
-import cn.fd.ratziel.core.serialization.getElementDescriptor
+import cn.fd.ratziel.core.serialization.getElementNames
 import cn.fd.ratziel.core.serialization.handle
-import cn.fd.ratziel.core.serialization.usedNodes
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.common.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.part.VItemDisplay
@@ -80,12 +80,12 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
             VItemSundry.serializer(),
         )
 
-        val NODES_MATERIAL = VItemMeta.serializer().descriptor.getElementDescriptor(VItemMeta::material.name).usedNodes
+        val NODES_MATERIAL =  VItemMeta.serializer().descriptor.getElementNames(VItemMeta::material.name)
 
         /**
          * 占据的节点
          */
-        val occupiedNodes = serializers.flatMap { it.descriptor.usedNodes }
+        val occupiedNodes = serializers.flatMap { it.descriptor.elementAlias }
 
         /**
          * 结构化解析

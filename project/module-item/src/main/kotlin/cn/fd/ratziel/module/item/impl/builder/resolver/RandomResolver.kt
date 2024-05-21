@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.resolver
 
 import cn.fd.ratziel.function.argument.ArgumentFactory
-import cn.fd.ratziel.module.item.api.common.StringResolver
+import cn.fd.ratziel.module.item.api.common.NamedStringResolver
 import taboolib.common.util.random
 
 /**
@@ -10,7 +10,7 @@ import taboolib.common.util.random
  * @author TheFloodDragon
  * @since 2024/5/18 16:22
  */
-object RandomResolver : StringResolver {
+object RandomResolver : NamedStringResolver {
 
     override val name = "random"
 

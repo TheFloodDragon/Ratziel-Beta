@@ -6,6 +6,7 @@ import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.function.argument.ArgumentFactory
 import cn.fd.ratziel.function.argument.popOrNull
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
+import cn.fd.ratziel.module.item.api.common.NamedStringResolver
 import cn.fd.ratziel.module.item.api.common.StringResolver
 import cn.fd.ratziel.module.item.impl.builder.resolver.RandomResolver
 import kotlinx.serialization.json.JsonElement
@@ -36,7 +37,7 @@ object DefaultItemResolver : ItemResolver {
     /**
      * 字符串解析器 (解析器名称-解析器)
      */
-    val resolvers = mutableListOf<StringResolver>(
+    val resolvers = mutableListOf<NamedStringResolver>(
         RandomResolver
     )
 
