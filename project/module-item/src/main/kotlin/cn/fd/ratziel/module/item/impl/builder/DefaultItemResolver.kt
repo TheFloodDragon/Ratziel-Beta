@@ -107,7 +107,7 @@ object DefaultItemResolver : ItemResolver {
 
     fun access(target: JsonElement, action: MutableJsonObject.(JsonObject) -> Unit): JsonElement {
         if (target is JsonObject) {
-            val map = LinkedHashMap<String, JsonElement>()
+            val map = MutableJsonObject()
             action(map, target)
             return JsonObject(map)
         } else return target

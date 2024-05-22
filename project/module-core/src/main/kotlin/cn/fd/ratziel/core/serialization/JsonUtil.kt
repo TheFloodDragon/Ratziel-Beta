@@ -33,14 +33,9 @@ operator fun JsonObject.get(names: Iterable<String>): JsonElement? {
 }
 
 /**
- * 可变的 [JsonObject]
- */
-typealias MutableJsonObject = MutableMap<String, JsonElement>
-
-/**
  * 可变化
  */
-inline fun Map<String, JsonElement>.asMutable(): MutableJsonObject = LinkedHashMap(this)
+inline fun Map<String, JsonElement>.asMutable(): MutableJsonObject = MutableJsonObject(this)
 
 /**
  * 处理 [JsonObject]
