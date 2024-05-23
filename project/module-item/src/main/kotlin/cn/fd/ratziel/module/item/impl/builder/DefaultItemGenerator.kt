@@ -37,9 +37,16 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
         Executors.newFixedThreadPool(8)
     }
 
-    override val serializers: MutableSet<Priority<ItemSerializer<*>>> = CopyOnWriteArraySet(listOf(DefaultItemSerializer(json).priority()))
+    /**
+     * 物品序列化器
+     * 注意: 序列化没有优先, 序列化器的优先级会传递到物品转换阶段
+     */
+    val serializers: MutableSet<Priority<ItemSerializer<*>>> = CopyOnWriteArraySet(listOf(DefaultItemSerializer(json).priority()))
 
-    override val resolvers: MutableSet<Priority<ItemResolver>> = CopyOnWriteArraySet(listOf(DefaultItemResolver.priority()))
+    /**
+     * 物品解析器
+     */
+    val resolvers: MutableSet<Priority<ItemResolver>> = CopyOnWriteArraySet(listOf(DefaultItemResolver.priority()))
 
     /**
      * 解析

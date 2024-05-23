@@ -3,15 +3,18 @@
 package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.api.part.HideFlag
 import cn.fd.ratziel.module.item.impl.ItemMaterialImpl
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.util.Strings
 import taboolib.library.xseries.XEnchantment
+import taboolib.library.xseries.XMaterial
 import taboolib.module.nms.BukkitAttribute
 import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrElse
-import org.bukkit.inventory.ItemFlag as HideFlag
+import kotlin.jvm.optionals.getOrNull
+import org.bukkit.Material as BukkitMaterial
 
 /**
  * MetaMather
@@ -71,6 +74,16 @@ object MetaMather {
      * 匹配物品材料
      */
     @JvmStatic
-    fun matchMaterial(source: String): ItemMaterial = ItemMaterialImpl.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value
+    fun matchMaterial(source: String): ItemMaterial {
+        val cleanForm = source
+            .uppercase()
+            .replace(" +".toRegex(), "_")
+            .replace('-', '_')
+        val matched =
+            BukkitMaterial.getMaterial(cleanForm)?.let { ItemMaterialImpl(it) } // BukkitMaterial Match
+                ?: XMaterial.matchXMaterial(cleanForm).getOrNull()?.let { ItemMaterialImpl(it) } // XMaterial Match
+                ?: ItemMaterialImpl.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value // Similar
+        return matched
+    }
 
 }

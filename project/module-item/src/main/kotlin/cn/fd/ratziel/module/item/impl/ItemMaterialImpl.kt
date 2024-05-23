@@ -4,8 +4,6 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.exception.UnknownMaterialException
 import taboolib.library.reflex.ReflexClass
 import taboolib.library.xseries.XMaterial
-import java.util.concurrent.ConcurrentHashMap
-import org.bukkit.Material as BukkitMaterial
 
 /**
  * ItemMaterialImpl
@@ -68,8 +66,8 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
          * 材料大全
          */
         val materialsMap by lazy {
-            ConcurrentHashMap<String, ItemMaterial>().apply {
-                BukkitMaterial.entries.forEach { put(it.name, ItemMaterialImpl(it.name)) }
+            HashMap<String, ItemMaterial>().apply {
+                BukkitMaterial.entries.forEach { put(it.name, ItemMaterialImpl(it)) }
             }
         }
 
@@ -88,3 +86,5 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
     }
 
 }
+
+typealias BukkitMaterial = org.bukkit.Material
