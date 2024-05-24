@@ -4,15 +4,14 @@ import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.module.item.impl.ItemManager
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.item.reflex.RefItemStack
-import kotlinx.serialization.json.Json
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.event.SubscribeEvent
+import java.util.concurrent.Executors
 
 /**
  * ItemElement
@@ -26,9 +25,11 @@ import taboolib.common.platform.event.SubscribeEvent
 )
 object ItemElement : ElementHandler {
 
-    val json by lazy {
-        Json(baseJson) {
-        }
+    /**
+     * 构建物品用到的线程池
+     */
+    val executor by lazy {
+        Executors.newFixedThreadPool(8)
     }
 
     override fun handle(element: Element) {

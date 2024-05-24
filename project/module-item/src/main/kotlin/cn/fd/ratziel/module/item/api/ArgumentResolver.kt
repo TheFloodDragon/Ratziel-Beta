@@ -1,8 +1,7 @@
-package cn.fd.ratziel.module.item.api.common
+package cn.fd.ratziel.module.item.api
 
 import cn.fd.ratziel.function.argument.ArgumentFactory
 import cn.fd.ratziel.function.argument.DefaultArgumentFactory
-import cn.fd.ratziel.module.item.api.Resolver
 
 /**
  * ArgumentResolver
@@ -18,7 +17,7 @@ interface ArgumentResolver<E, T> : Resolver<E, T> {
     fun resolve(element: E, arguments: ArgumentFactory): T
 
     /**
-     * 解析元素 (带空参数)
+     * 解析元素 (不带参数)
      */
     override fun resolve(element: E): T = resolve(element, DefaultArgumentFactory())
 

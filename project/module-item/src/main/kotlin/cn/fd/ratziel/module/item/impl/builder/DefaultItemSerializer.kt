@@ -1,9 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.serialization.elementAlias
-import cn.fd.ratziel.core.serialization.get
-import cn.fd.ratziel.core.serialization.getElementNames
-import cn.fd.ratziel.core.serialization.handle
+import cn.fd.ratziel.core.serialization.*
+import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.common.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.part.VItemDisplay
@@ -29,7 +27,7 @@ import java.util.concurrent.CompletableFuture
  * @author TheFloodDragon
  * @since 2024/4/4 19:58
  */
-class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
+class DefaultItemSerializer(rawJson: Json = baseJson) : ItemKSerializer<VItemMeta> {
 
     val json = Json(rawJson) {
         serializersModule += SerializersModule {
@@ -52,9 +50,9 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
         if (isStructured(element)) return json.decodeFromJsonElement(VItemMeta.serializer(), element)
         // 异步方法
         fun <T> asyncDecode(deserializer: DeserializationStrategy<T>, from: JsonElement = element) =
-            CompletableFuture.supplyAsync {
+            CompletableFuture.supplyAsync({
                 json.decodeFromJsonElement(deserializer, from)
-            }.exceptionally { it.printStackTrace();null }
+            }, ItemElement.executor).exceptionally { it.printStackTrace();null }
         // 一般解析
         val display = asyncDecode(VItemDisplay.serializer())
         val durability = asyncDecode(VItemDurability.serializer())
@@ -73,6 +71,9 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
 
     companion object {
 
+        /**
+         * 使用到的序列化器列表
+         */
         val serializers = arrayOf(
             VItemMeta.serializer(),
             VItemDisplay.serializer(),
@@ -80,12 +81,12 @@ class DefaultItemSerializer(rawJson: Json) : ItemKSerializer<VItemMeta> {
             VItemSundry.serializer(),
         )
 
-        val NODES_MATERIAL =  VItemMeta.serializer().descriptor.getElementNames(VItemMeta::material.name)
-
         /**
          * 占据的节点
          */
         val occupiedNodes = serializers.flatMap { it.descriptor.elementAlias }
+
+        val NODES_MATERIAL = VItemMeta.serializer().descriptor.getElementNames(VItemMeta::material.name)
 
         /**
          * 结构化解析

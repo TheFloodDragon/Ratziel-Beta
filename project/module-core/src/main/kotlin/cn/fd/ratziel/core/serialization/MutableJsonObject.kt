@@ -1,6 +1,5 @@
 package cn.fd.ratziel.core.serialization
 
-import cn.fd.ratziel.core.serialization.MutableJsonObject.MutableJsonObjectSerializer.JsonObjectSerializer
 import cn.fd.ratziel.function.util.uncheck
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -11,7 +10,7 @@ import kotlinx.serialization.json.JsonObject
 import taboolib.common.io.getInstance
 
 /**
- * MutableJsonObject
+ * MutableJsonObject - 可变的 [JsonObject]
  *
  * @author TheFloodDragon
  * @since 2024/5/22 22:09
@@ -22,8 +21,6 @@ open class MutableJsonObject(
 ) : MutableMap<String, JsonElement> by content {
 
     constructor() : this(mutableMapOf())
-
-    constructor(content: Map<String, JsonElement>) : this(content.toMutableMap())
 
     /**
      * [MutableJsonObject] 存储的不可变 [JsonObject] 实例
@@ -53,7 +50,7 @@ open class MutableJsonObject(
 
     /**
      * [MutableJsonObject] 的序列化器
-     * 使用 [JsonObjectSerializer] 进行序列化/反序列化
+     * 使用 [MutableJsonObjectSerializer.JsonObjectSerializer] 进行序列化/反序列化
      */
     object MutableJsonObjectSerializer : KSerializer<MutableJsonObject> {
 
@@ -65,7 +62,7 @@ open class MutableJsonObject(
 
         override val descriptor = JsonObjectSerializer.descriptor
 
-        override fun deserialize(decoder: Decoder) = MutableJsonObject(JsonObjectSerializer.deserialize(decoder))
+        override fun deserialize(decoder: Decoder) = MutableJsonObject(JsonObjectSerializer.deserialize(decoder).toMutableMap())
 
         override fun serialize(encoder: Encoder, value: MutableJsonObject) = JsonObjectSerializer.serialize(encoder, value.asImmutable())
 

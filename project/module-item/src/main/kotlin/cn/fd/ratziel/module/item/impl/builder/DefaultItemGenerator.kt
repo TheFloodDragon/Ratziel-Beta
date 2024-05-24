@@ -2,11 +2,11 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.core.util.priority
 import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.argument.ArgumentFactory
+import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
@@ -14,12 +14,10 @@ import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.impl.RatzielItem
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.Executors
 
 /**
  * DefaultItemGenerator
@@ -27,26 +25,28 @@ import java.util.concurrent.Executors
  * @author TheFloodDragon
  * @since 2024/4/13 17:34
  */
-class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
-
-    val json: Json by lazy {
-        Json(baseJson) {}
-    }
-
-    val executor by lazy {
-        Executors.newFixedThreadPool(8)
-    }
+class DefaultItemGenerator(
+    /**
+     * 原始物品配置 (元素)
+     */
+    val origin: Element
+) : ItemGenerator {
 
     /**
      * 物品序列化器
      * 注意: 序列化没有优先, 序列化器的优先级会传递到物品转换阶段
      */
-    val serializers: MutableSet<Priority<ItemSerializer<*>>> = CopyOnWriteArraySet(listOf(DefaultItemSerializer(json).priority()))
+    val serializers: MutableSet<Priority<ItemSerializer<*>>> =
+        CopyOnWriteArraySet(listOf(DefaultItemSerializer().priority()))
 
     /**
      * 物品解析器
      */
-    val resolvers: MutableSet<Priority<ItemResolver>> = CopyOnWriteArraySet(listOf(DefaultItemResolver.priority()))
+    val resolvers: MutableSet<Priority<ItemResolver>> =
+        CopyOnWriteArraySet(listOf(
+            BasicItemResolver.priority(),
+            BasicItemResolver.CleanUp priority Byte.MAX_VALUE // 最后清除
+        ))
 
     /**
      * 解析
@@ -70,7 +70,7 @@ class DefaultItemGenerator(override val origin: Element) : ItemGenerator {
      */
     fun serialize(element: JsonElement): FutureFactory<Priority<ItemComponent>?> = FutureFactory {
         for (serializer in serializers) {
-            submitAsync(executor) {
+            submitAsync(ItemElement.executor) {
                 try {
                     serializer.value.deserialize(element) priority serializer.priority
                 } catch (ex: Exception) {

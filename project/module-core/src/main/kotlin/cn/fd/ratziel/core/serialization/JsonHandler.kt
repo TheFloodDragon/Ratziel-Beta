@@ -24,7 +24,7 @@ object JsonHandler {
             if (targetValue is JsonObject) {
                 // 判断当前值类型 (若非复合类型,则替换,此时目标值是复合类型的)
                 val value: JsonObject? = ownValue as? JsonObject
-                map[key] = JsonObject(merge((value ?: emptyJson()), targetValue, replace))
+                map[key] = JsonObject(merge((value ?: emptyJsonObject()), targetValue, replace))
             } else map[key] = targetValue
         }
     }

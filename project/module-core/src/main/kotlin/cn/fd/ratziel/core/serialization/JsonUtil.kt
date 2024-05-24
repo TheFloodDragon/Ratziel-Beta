@@ -1,10 +1,12 @@
 @file:OptIn(ExperimentalSerializationApi::class)
-@file:Suppress("NOTHING_TO_INLINE")
 
 package cn.fd.ratziel.core.serialization
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import java.util.function.Function
 
 val baseJson by lazy {
@@ -15,6 +17,8 @@ val baseJson by lazy {
         ignoreUnknownKeys = true
         // 隐式空值
         explicitNulls = false
+        // 数据修正
+        coerceInputValues = true
         // 美观的打印方式
         prettyPrint = true
         // 枚举类不区分大小写
@@ -35,7 +39,12 @@ operator fun JsonObject.get(names: Iterable<String>): JsonElement? {
 /**
  * 可变化
  */
-inline fun Map<String, JsonElement>.asMutable(): MutableJsonObject = MutableJsonObject(this)
+fun Map<String, JsonElement>.asMutable(): MutableJsonObject =
+    when (this) {
+        is MutableJsonObject -> this
+        is MutableMap<*, *> -> MutableJsonObject(this as MutableMap<String, JsonElement>)
+        else -> MutableJsonObject(this.toMutableMap())
+    }
 
 /**
  * 处理 [JsonObject]
@@ -57,24 +66,11 @@ fun JsonElement.handlePrimitives(action: Function<JsonPrimitive, JsonElement>): 
 fun JsonObject.merge(target: JsonObject, replace: Boolean = true): MutableJsonObject = JsonHandler.merge(this, target, replace)
 
 /**
- * 构造一个空的[JsonObject]
+ * 构造一个空的 [JsonObject]
  */
-inline fun emptyJson() = JsonObject(emptyMap())
+fun emptyJsonObject() = JsonObject(emptyMap())
 
 /**
- * 简易的[JsonObject]检查
+ * 简易的 [JsonObject] 检查
  */
 fun String.isJsonObject(): Boolean = startsWith('{') && endsWith('}')
-
-/**
- * [JsonPrimitive]类型的判断
- */
-fun JsonPrimitive.isInt() = !this.isString && this.intOrNull != null
-
-fun JsonPrimitive.isLong() = !this.isString && this.longOrNull != null
-
-fun JsonPrimitive.isBoolean() = !this.isString && this.booleanOrNull != null
-
-fun JsonPrimitive.isDouble() = !this.isString && this.doubleOrNull != null
-
-fun JsonPrimitive.isFloat() = !this.isString && this.floatOrNull != null

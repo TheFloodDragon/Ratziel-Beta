@@ -1,23 +1,17 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.function.argument.ArgumentFactory
 import cn.fd.ratziel.function.argument.DefaultArgumentFactory
 import cn.fd.ratziel.module.item.api.NeoItem
 import java.util.concurrent.CompletableFuture
 
 /**
- * ItemGenerator
+ * ItemGenerator - 物品构生成器
  *
  * @author TheFloodDragon
  * @since 2023/10/28 12:20
  */
 interface ItemGenerator {
-
-    /**
-     * 原始物品配置 (元素)
-     */
-    val origin: Element
 
     /**
      * 构建物品
