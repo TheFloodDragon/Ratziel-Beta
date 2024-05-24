@@ -1,9 +1,11 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.serialization.*
+import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.common.ItemKSerializer
+import cn.fd.ratziel.module.item.api.part.HideFlag
 import cn.fd.ratziel.module.item.impl.part.VItemDisplay
 import cn.fd.ratziel.module.item.impl.part.VItemDurability
 import cn.fd.ratziel.module.item.impl.part.VItemMeta
@@ -18,7 +20,7 @@ import kotlinx.serialization.modules.plus
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.inventory.ItemFlag
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -31,12 +33,14 @@ class DefaultItemSerializer(rawJson: Json = baseJson) : ItemKSerializer<VItemMet
 
     val json = Json(rawJson) {
         serializersModule += SerializersModule {
+            // Basic Serializers
+            contextual(UUID::class, UUIDSerializer)
             // Common Serializers
             contextual(NBTData::class, NBTSerializer)
             contextual(ItemMaterial::class, ItemMaterialSerializer)
             // Bukkit Serializers
             contextual(Enchantment::class, EnchantmentSerializer)
-            contextual(ItemFlag::class, HideFlagSerializer)
+            contextual(HideFlag::class, HideFlagSerializer)
             contextual(Attribute::class, AttributeSerializer)
             contextual(AttributeModifier::class, AttributeModifierSerializer)
         }

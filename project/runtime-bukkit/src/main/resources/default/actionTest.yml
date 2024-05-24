@@ -1,3 +1,0 @@
-testAction: #元素名称
-  action: #元素类型
-    - 'tell "我操你妈"'

@@ -62,7 +62,7 @@ open class MutableJsonObject(
 
         override val descriptor = JsonObjectSerializer.descriptor
 
-        override fun deserialize(decoder: Decoder) = MutableJsonObject(JsonObjectSerializer.deserialize(decoder).toMutableMap())
+        override fun deserialize(decoder: Decoder) = JsonObjectSerializer.deserialize(decoder).asMutable()
 
         override fun serialize(encoder: Encoder, value: MutableJsonObject) = JsonObjectSerializer.serialize(encoder, value.asImmutable())
 

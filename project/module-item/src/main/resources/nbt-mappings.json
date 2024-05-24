@@ -43,9 +43,6 @@
   "FOOD": {
     "12005": "food"
   },
-  "ITEM_NAME": {
-    "12005": "item_name"
-  },
   "RARITY": {
     "12005": "rarity"
   },
@@ -64,7 +61,7 @@
   },
   "DISPLAY_LOCAL_NAME": {
     "0": "LocName",
-    "12005": null
+    "12005": "item_name"
   },
   "HIDE_FLAG": {
     "0": "HideFlags",

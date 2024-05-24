@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalSerializationApi::class)
+@file:Suppress("NOTHING_TO_INLINE")
 
 package cn.fd.ratziel.core.serialization
 
@@ -23,8 +24,6 @@ val baseJson by lazy {
         prettyPrint = true
         // 枚举类不区分大小写
         decodeEnumsCaseInsensitive = true
-        // 默认序列化模组
-        serializersModule = baseSerializers
     }
 }
 
@@ -51,26 +50,21 @@ fun Map<String, JsonElement>.asMutable(): MutableJsonObject =
  * @action 处理动作, 会接受原来的 [JsonObject]
  * @return 一个新的 [JsonObject]
  */
-fun JsonObject.handle(action: MutableJsonObject.(JsonObject) -> Unit): JsonObject = JsonObject(this.asMutable().also { action(it, this) })
+inline fun JsonObject.handle(action: MutableJsonObject.(JsonObject) -> Unit): JsonObject = JsonObject(this.asMutable().also { action(it, this) })
 
 /**
  * 处理[JsonPrimitive]
  * @see [JsonHandler.handlePrimitives]
  */
-fun JsonElement.handlePrimitives(action: Function<JsonPrimitive, JsonElement>): JsonElement = JsonHandler.handlePrimitives(this, action)
+inline fun JsonElement.handlePrimitives(action: Function<JsonPrimitive, JsonElement>): JsonElement = JsonHandler.handlePrimitives(this, action)
 
 /**
  * 合并目标
  * @see [JsonHandler.merge]
  */
-fun JsonObject.merge(target: JsonObject, replace: Boolean = true): MutableJsonObject = JsonHandler.merge(this, target, replace)
-
-/**
- * 构造一个空的 [JsonObject]
- */
-fun emptyJsonObject() = JsonObject(emptyMap())
+inline fun JsonObject.merge(target: JsonObject, replace: Boolean = true): JsonObject = JsonHandler.merge(this.asMutable(), target, replace).asImmutable()
 
 /**
  * 简易的 [JsonObject] 检查
  */
-fun String.isJsonObject(): Boolean = startsWith('{') && endsWith('}')
+fun String.isJsonObject(): Boolean = this.startsWith('{') && this.endsWith('}')

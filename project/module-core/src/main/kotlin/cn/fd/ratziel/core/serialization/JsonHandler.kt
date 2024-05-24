@@ -15,7 +15,7 @@ object JsonHandler {
      * 合并目标
      * @param replace 是否替换原有的
      */
-    fun merge(source: JsonObject, target: JsonObject, replace: Boolean = true): MutableJsonObject = source.asMutable().also { map ->
+    fun merge(source: MutableJsonObject, target: JsonObject, replace: Boolean = true): MutableJsonObject = source.also { map ->
         target.forEach { (key, targetValue) ->
             val ownValue = map[key]
             // 如果当前中存在, 且不允许替换, 则直接跳出循环
@@ -24,7 +24,7 @@ object JsonHandler {
             if (targetValue is JsonObject) {
                 // 判断当前值类型 (若非复合类型,则替换,此时目标值是复合类型的)
                 val value: JsonObject? = ownValue as? JsonObject
-                map[key] = JsonObject(merge((value ?: emptyJsonObject()), targetValue, replace))
+                map[key] = JsonObject(merge((value?.asMutable() ?: MutableJsonObject()), targetValue, replace))
             } else map[key] = targetValue
         }
     }

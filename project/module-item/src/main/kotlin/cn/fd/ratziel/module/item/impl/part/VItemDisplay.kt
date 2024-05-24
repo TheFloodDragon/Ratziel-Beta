@@ -53,7 +53,7 @@ data class VItemDisplay(
         source.tag.addAll(
             ItemSheet.DISPLAY_NAME to componentToData(this.name),
             ItemSheet.DISPLAY_LORE to this.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) },
-            itemNameNode to componentToData(this.localizedName)
+            ItemSheet.DISPLAY_LOCAL_NAME to componentToData(this.localizedName)
         )
     }
 
@@ -65,7 +65,7 @@ data class VItemDisplay(
         target.tag[ItemSheet.DISPLAY_LORE].castThen<NBTList> {
             this.setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content })
         }
-        target.tag[itemNameNode].castThen<NBTString> {
+        target.tag[ItemSheet.DISPLAY_LOCAL_NAME].castThen<NBTString> {
             this.setLocalizedName(it.content)
         }
     }
@@ -74,10 +74,6 @@ data class VItemDisplay(
 
         internal val node by lazy {
             if (MinecraftVersion.majorLegacy >= 12005) OccupyNode.APEX_NODE else OccupyNode(ItemSheet.DISPLAY, OccupyNode.APEX_NODE)
-        }
-
-        internal val itemNameNode by lazy {
-            if (MinecraftVersion.majorLegacy >= 12005) ItemSheet.ITEM_NAME else ItemSheet.DISPLAY_LOCAL_NAME
         }
 
         internal fun componentToData(component: Component?): NBTString? = component?.let { NBTString(transformComponent(it)) }

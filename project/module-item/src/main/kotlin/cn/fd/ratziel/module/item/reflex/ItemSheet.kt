@@ -18,6 +18,7 @@ object ItemSheet {
     val REPAIR_COST by mapping("REPAIR_COST")
     val DAMAGE by mapping("DAMAGE")
     val UNBREAKABLE by mapping("UNBREAKABLE")
+    val DISPLAY_LOCAL_NAME by mapping("DISPLAY_LOCAL_NAME") // Called "ItemName" on 1.20.5+
 
     // Custom Features And 1.20.5+
     val MAX_DAMAGE by mapping("MAX_DAMAGE")
@@ -25,7 +26,6 @@ object ItemSheet {
 
     // Only 1.20.5+
     val FOOD by mapping("FOOD")
-    val ITEM_NAME by mapping("ITEM_NAME")
     val RARITY by mapping("RARITY")
     val FIRE_RESISTANT by mapping("FIRE_RESISTANT")
     val ENCHANTMENT_GLINT_OVERRIDE by mapping("ENCHANTMENT_GLINT_OVERRIDE")
@@ -33,7 +33,6 @@ object ItemSheet {
 
     // Only 1.20.5-
     val DISPLAY by mapping("DISPLAY")
-    val DISPLAY_LOCAL_NAME by mapping("DISPLAY_LOCAL_NAME")
 
     // 1.20.5- But be retained by CraftBukkit
     val HIDE_FLAG by mapping("HIDE_FLAG")
