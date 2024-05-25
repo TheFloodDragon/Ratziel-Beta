@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.part.serializers
 
 import cn.fd.ratziel.module.item.api.part.HideFlag
-import cn.fd.ratziel.module.item.util.MetaMather
+import cn.fd.ratziel.module.item.util.MetaMatcher
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -18,7 +18,7 @@ object HideFlagSerializer : KSerializer<HideFlag> {
 
     override val descriptor = PrimitiveSerialDescriptor("bukkit.HideFlag", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): HideFlag = MetaMather.matchHideFlag(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): HideFlag = MetaMatcher.matchHideFlag(decoder.decodeString())
 
     override fun serialize(encoder: Encoder, value: HideFlag) = encoder.encodeString(value.name)
 

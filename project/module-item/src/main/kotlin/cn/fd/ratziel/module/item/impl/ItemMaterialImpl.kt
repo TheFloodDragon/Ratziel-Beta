@@ -26,32 +26,42 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
     /**
      * 材料标识符 (低版本)
      */
-    override val id: Int get() = getIdUnsafe(bukkitMaterial)
+    override val id: Int get() = getIdUnsafe(insBukkit)
 
     /**
      * 材料的默认最大堆叠数量
      */
-    override val maxStackSize: Int get() = bukkitMaterial.maxStackSize
+    override val maxStackSize: Int get() = insBukkit.maxStackSize
 
     /**
      * 材料的默认最大耐久度
      */
-    override val maxDurability: Int get() = bukkitMaterial.maxDurability.toInt()
+    override val maxDurability: Int get() = insBukkit.maxDurability.toInt()
 
     /**
      * 材料是否为空气材料
      */
-    fun isAir() = bukkitMaterial.isAir || ItemMaterial.isEmpty(this)
+    fun isAir() = insBukkit.isAir || ItemMaterial.isEmpty(this)
 
     /**
-     * [BukkitMaterial] 形式 (若获取不到则抛出异常)
+     * 获取 [BukkitMaterial] 形式 (若获取不到则抛出异常)
      */
-    val bukkitMaterial: BukkitMaterial by lazy { getBukkitMaterial(name) ?: throw UnknownMaterialException(name) }
+    fun getAsBukkit(): BukkitMaterial = insBukkit
 
     /**
-     * [XMaterial] 形式 (若获取不到则抛出异常)
+     * 获取 [XMaterial] 形式 (若获取不到则抛出异常)
      */
-    val xseriesMaterial: XMaterial by lazy { XMaterial.matchXMaterial(bukkitMaterial) }
+    fun getAsXSeries(): XMaterial = insXSeries
+
+    /**
+     * [BukkitMaterial] 形式
+     */
+    private val insBukkit: BukkitMaterial by lazy { getBukkitMaterial(name) ?: throw UnknownMaterialException(name) }
+
+    /**
+     * [XMaterial] 形式
+     */
+    private val insXSeries: XMaterial by lazy { XMaterial.matchXMaterial(insBukkit) }
 
     companion object {
 
@@ -72,7 +82,7 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
         }
 
         /**
-         * 通过反射获取 [id], 因为 [BukkitMaterial.getId] 不会获取老版物品的 [id]
+         * 通过反射获取 [id], 因为 [BukkitMaterial] 不会获取老版物品的 [id]
          */
         fun getIdUnsafe(material: BukkitMaterial) = bukkitIdField.get(material) as Int
 

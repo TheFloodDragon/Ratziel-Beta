@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.reflex
+package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.module.item.nbt.NMSUtil
 import net.minecraft.core.component.DataComponentPatch

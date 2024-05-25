@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item.command
 import cn.fd.ratziel.function.argument.DefaultArgumentFactory
 import cn.fd.ratziel.function.argument.PlayerArgument
 import cn.fd.ratziel.module.item.impl.ItemManager
-import cn.fd.ratziel.module.item.reflex.RefItemStack
+import cn.fd.ratziel.module.item.nms.RefItemStack
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.*

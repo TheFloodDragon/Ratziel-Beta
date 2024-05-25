@@ -11,7 +11,7 @@ import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.nbt.NBTList
 import cn.fd.ratziel.module.item.nbt.NBTString
 import cn.fd.ratziel.module.item.nbt.addAll
-import cn.fd.ratziel.module.item.reflex.ItemSheet
+import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.util.castThen
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable

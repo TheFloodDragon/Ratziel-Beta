@@ -8,8 +8,8 @@ import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.HideFlag
 import cn.fd.ratziel.module.item.api.part.ItemSundry
 import cn.fd.ratziel.module.item.nbt.NBTInt
-import cn.fd.ratziel.module.item.reflex.ItemSheet
-import cn.fd.ratziel.module.item.reflex.RefItemMeta
+import cn.fd.ratziel.module.item.nms.ItemSheet
+import cn.fd.ratziel.module.item.nms.RefItemMeta
 import cn.fd.ratziel.module.item.util.castThen
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi

@@ -1,8 +1,9 @@
-package cn.fd.ratziel.module.item.reflex
+package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.impl.BukkitMaterial
 import cn.fd.ratziel.module.item.impl.ItemMaterialImpl
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
@@ -11,7 +12,6 @@ import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
-import org.bukkit.Material as BukkitMaterial
 import org.bukkit.inventory.ItemStack as BukkitItemStack
 
 /**
@@ -190,7 +190,7 @@ class RefItemStack(raw: Any) {
          * private NBTTagCompound tag
          */
         val nmsTagField by lazy {
-            ReflexClass.of(RefItemStack.nmsClass).structure.getField(
+            ReflexClass.of(nmsClass).structure.getField(
                 if (MinecraftVersion.isUniversal) "A" else "tag"
             )
         }
@@ -201,7 +201,7 @@ class RefItemStack(raw: Any) {
          * public ItemStack s()
          */
         val nmsCloneMethod by lazy {
-            ReflexClass.of(RefItemStack.nmsClass).structure.getMethodByType(
+            ReflexClass.of(nmsClass).structure.getMethodByType(
                 if (MinecraftVersion.majorLegacy >= 12005) "s"
                 else if (MinecraftVersion.isUniversal) "p"
                 else "cloneItemStack"

@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.command.inferEquipmentSlot
 import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.reflex.RefItemStack
+import cn.fd.ratziel.module.item.nms.RefItemStack
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import java.util.function.Consumer

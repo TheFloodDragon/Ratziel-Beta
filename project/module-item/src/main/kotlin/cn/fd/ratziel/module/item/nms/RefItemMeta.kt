@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.reflex
+package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.nbt.NBTCompound
@@ -48,23 +48,6 @@ class RefItemMeta(raw: Any) {
         } else {
             InternalUtil.applyToItemMethod.invoke(handle, tag.getData())
         }
-    }
-
-    /**
-     * CraftMetaItem.ItemMetaKey
-     * 其他:
-     * 1.20.4-: static final ItemMetaKey
-     * 1.20.5+: static final ItemMetaKeyType<?>
-     *     static final class ItemMetaKeyType<T> extends ItemMetaKey
-     */
-    class RefItemMetaKey(val fieldName: String, val targetClass: Class<*> = obcClass) {
-
-        val obcData by lazy { targetClass.getProperty<Any>(fieldName, isStatic = true)!! }
-
-        val nmsName by lazy { obcData.getProperty<String>("NBT")!! }
-
-        val bukkitName by lazy { obcData.getProperty<String>("BUKKIT")!! }
-
     }
 
     companion object {

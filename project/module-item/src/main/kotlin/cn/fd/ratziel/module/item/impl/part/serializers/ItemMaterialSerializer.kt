@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.part.serializers
 
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.util.MetaMather
+import cn.fd.ratziel.module.item.util.MetaMatcher
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -18,7 +18,7 @@ object ItemMaterialSerializer : KSerializer<ItemMaterial> {
 
     override val descriptor = PrimitiveSerialDescriptor("item.ItemMaterial", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): ItemMaterial = MetaMather.matchMaterial(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): ItemMaterial = MetaMatcher.matchMaterial(decoder.decodeString())
 
     override fun serialize(encoder: Encoder, value: ItemMaterial) = encoder.encodeString(value.name)
 

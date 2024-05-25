@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.api.common
 
 import cn.fd.ratziel.module.item.api.ItemNode
-import cn.fd.ratziel.module.item.reflex.ItemSheet
+import cn.fd.ratziel.module.item.nms.ItemSheet
 
 /**
  * OccupyNode - [ItemNode] 实现

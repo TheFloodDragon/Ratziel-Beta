@@ -6,7 +6,9 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.module.item.impl.ItemManager
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
-import cn.fd.ratziel.module.item.reflex.RefItemStack
+import cn.fd.ratziel.module.item.nms.RefItemStack
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
@@ -31,6 +33,11 @@ object ItemElement : ElementHandler {
     val executor by lazy {
         Executors.newFixedThreadPool(8)
     }
+
+    /**
+     * 协程作用域
+     */
+    val scope = CoroutineScope(Dispatchers.Default)
 
     override fun handle(element: Element) {
 
