@@ -14,7 +14,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.TheItemData
-import cn.fd.ratziel.module.item.impl.component.VItemDisplay
+import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import cn.fd.ratziel.module.item.util.toApexDataUncheck
 import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
@@ -46,7 +46,7 @@ object DefaultItemGenerator : ItemGenerator {
      * 物品转换器
      */
     val transformers = HashMap<Class<*>, Priority<ItemTransformer<*>>>().apply {
-        put(VItemDisplay::class.java, VItemDisplay.priority())
+        put(ItemDisplay::class.java, ItemDisplay.priority())
     }
 
 //    /**

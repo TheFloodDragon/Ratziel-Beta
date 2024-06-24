@@ -4,12 +4,8 @@ import cn.fd.ratziel.core.serialization.*
 import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.api.part.HideFlag
 import cn.fd.ratziel.module.item.impl.ItemKSerializer
-import cn.fd.ratziel.module.item.impl.component.VItemDisplay
-import cn.fd.ratziel.module.item.impl.component.VItemDurability
-import cn.fd.ratziel.module.item.impl.component.VItemMeta
-import cn.fd.ratziel.module.item.impl.component.VItemSundry
+import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.nbt.NBTData
 import cn.fd.ratziel.module.item.nbt.NBTSerializer
@@ -29,7 +25,7 @@ import java.util.concurrent.CompletableFuture
  * @author TheFloodDragon
  * @since 2024/4/4 19:58
  */
-object DefaultItemSerializer : ItemKSerializer<VItemMeta> {
+object DefaultItemSerializer : ItemKSerializer<ItemMeta> {
 
     val json = Json(baseJson) {
         serializersModule += SerializersModule {
@@ -50,45 +46,45 @@ object DefaultItemSerializer : ItemKSerializer<VItemMeta> {
      * 使用到的序列化器列表
      */
     val serializers = arrayOf(
-        VItemMeta.serializer(),
-        VItemDisplay.serializer(),
-        VItemDurability.serializer(),
-        VItemSundry.serializer(),
+        ItemMeta.serializer(),
+        ItemDisplay.serializer(),
+        ItemDurability.serializer(),
+        ItemSundry.serializer(),
     )
 
-    override val descriptor = VItemMeta.serializer().descriptor
+    override val descriptor = ItemMeta.serializer().descriptor
 
     /**
      * 反序列化 (检查结构化解析)
      */
-    override fun deserialize(element: JsonElement): VItemMeta {
+    override fun deserialize(element: JsonElement): ItemMeta {
         // 结构化解析
-        if (isStructured(element)) return json.decodeFromJsonElement(VItemMeta.serializer(), element)
+        if (isStructured(element)) return json.decodeFromJsonElement(ItemMeta.serializer(), element)
         // 异步方法
         fun <T> asyncDecode(deserializer: DeserializationStrategy<T>, from: JsonElement = element) =
             CompletableFuture.supplyAsync({
                 json.decodeFromJsonElement(deserializer, from)
             }, ItemElement.executor).exceptionally { it.printStackTrace();null }
         // 一般解析
-        val display = asyncDecode(VItemDisplay.serializer())
-        val durability = asyncDecode(VItemDurability.serializer())
-        val sundry = asyncDecode(VItemSundry.serializer())
+        val display = asyncDecode(ItemDisplay.serializer())
+        val durability = asyncDecode(ItemDurability.serializer())
+        val sundry = asyncDecode(ItemSundry.serializer())
         val material = (element as? JsonObject)?.get(NODES_MATERIAL)
             ?.let { asyncDecode(ItemMaterialSerializer, it) } ?: CompletableFuture.completedFuture(ItemMaterial.EMPTY)
-        return VItemMeta(material.get(), display.get(), durability.get(), sundry.get())
+        return ItemMeta(material.get(), display.get(), durability.get(), sundry.get())
     }
 
     /**
      * 序列化 (强制开启结构化解析)
      */
-    override fun serialize(component: VItemMeta) = forceStructured(json.encodeToJsonElement(VItemMeta.serializer(), component))
+    override fun serialize(component: ItemMeta) = forceStructured(json.encodeToJsonElement(ItemMeta.serializer(), component))
 
     /**
      * 占据的节点
      */
     val occupiedNodes = serializers.flatMap { it.descriptor.elementAlias }
 
-    val NODES_MATERIAL = VItemMeta.serializer().descriptor.getElementNames(VItemMeta::material.name)
+    val NODES_MATERIAL = ItemMeta.serializer().descriptor.getElementNames(ItemMeta::material.name)
 
     /**
      * 结构化解析

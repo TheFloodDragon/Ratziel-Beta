@@ -53,7 +53,7 @@ object ItemElement : ElementHandler {
         println(test.getData())
 
         // 注册
-        ItemManager.registry[element.name] = DefaultItemGenerator
+        ItemManager.registry[element.name] = element
     }
 
     @SubscribeEvent

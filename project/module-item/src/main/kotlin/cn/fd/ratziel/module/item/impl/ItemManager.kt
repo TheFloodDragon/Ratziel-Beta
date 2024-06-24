@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl
 
-import cn.fd.ratziel.module.item.api.builder.ItemGenerator
+import cn.fd.ratziel.core.element.Element
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -13,8 +13,7 @@ object ItemManager {
 
     /**
      * 物品注册表
-     * 物品标识符:物品生成器
      */
-    val registry: MutableMap<String, ItemGenerator> = ConcurrentHashMap()
+    val registry: MutableMap<String, Element> = ConcurrentHashMap()
 
 }

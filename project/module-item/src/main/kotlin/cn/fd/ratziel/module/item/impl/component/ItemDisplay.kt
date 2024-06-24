@@ -9,11 +9,9 @@ import cn.fd.ratziel.core.util.putNonNull
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.OccupyNode
-import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.nbt.NBTList
 import cn.fd.ratziel.module.item.nbt.NBTString
-import cn.fd.ratziel.module.item.nbt.addAll
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.util.castThen
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -23,54 +21,31 @@ import net.kyori.adventure.text.Component
 import taboolib.module.nms.MinecraftVersion
 
 /**
- * VItemDisplay
+ * ItemDisplay
  *
  * @author TheFloodDragon
  * @since 2024/3/16 11:27
  */
 @Serializable
-data class VItemDisplay(
+data class ItemDisplay(
     @JsonNames("name", "display-name", "displayName")
-    override var name: MessageComponent? = null,
+    var name: MessageComponent? = null,
     @JsonNames("loc-name", "locName", "local-name", "localName")
-    override var localizedName: MessageComponent? = null,
+    var localizedName: MessageComponent? = null,
     @JsonNames("lores")
-    override var lore: EnhancedList<MessageComponent>? = null,
-) : ItemDisplay {
+    var lore: EnhancedList<MessageComponent>? = null,
+) {
 
-    override fun setName(name: String) {
+    fun setName(name: String) {
         this.name = Message.buildMessage(name)
     }
 
-    override fun setLore(lore: Iterable<String>) {
+    fun setLore(lore: Iterable<String>) {
         this.lore = lore.map { Message.buildMessage(it) }
     }
 
-    override fun setLocalizedName(localizedName: String) {
+    fun setLocalizedName(localizedName: String) {
         this.localizedName = Message.buildMessage(localizedName)
-    }
-
-    override fun getNode() = node
-
-    override fun transform(source: ItemData) {
-        source.tag.addAll(
-            ItemSheet.DISPLAY_NAME to componentToData(this.name),
-            ItemSheet.DISPLAY_LORE to this.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) },
-            ItemSheet.DISPLAY_LOCAL_NAME to componentToData(this.localizedName)
-        )
-    }
-
-    override fun detransform(target: ItemData) {
-        // Universal
-        target.tag[ItemSheet.DISPLAY_NAME].castThen<NBTString> {
-            this.setName(it.content)
-        }
-        target.tag[ItemSheet.DISPLAY_LORE].castThen<NBTList> {
-            this.setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content })
-        }
-        target.tag[ItemSheet.DISPLAY_LOCAL_NAME].castThen<NBTString> {
-            this.setLocalizedName(it.content)
-        }
     }
 
     companion object : ItemTransformer<ItemDisplay> {
@@ -98,7 +73,7 @@ data class VItemDisplay(
             tag.putNonNull(ItemSheet.DISPLAY_LOCAL_NAME, componentToData(component.localizedName))
         }
 
-        override fun detransform(data: ItemData): ItemDisplay = VItemDisplay().apply {
+        override fun detransform(data: ItemData): ItemDisplay = ItemDisplay().apply {
             data.castThen<NBTString>(ItemSheet.DISPLAY_NAME) { this.setName(it.content) }
             data.castThen<NBTList>(ItemSheet.DISPLAY_LORE) {
                 this.setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content })

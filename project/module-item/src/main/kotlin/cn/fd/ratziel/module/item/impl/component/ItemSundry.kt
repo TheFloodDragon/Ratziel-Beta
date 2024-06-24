@@ -6,8 +6,6 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.OccupyNode
-import cn.fd.ratziel.module.item.api.part.HideFlag
-import cn.fd.ratziel.module.item.api.part.ItemSundry
 import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.nms.ItemSheet
@@ -22,6 +20,8 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.EquipmentSlot
 import taboolib.module.nms.MinecraftVersion
 
+typealias HideFlag = org.bukkit.inventory.ItemFlag
+
 /**
  * VItemSundry
  *
@@ -29,14 +29,14 @@ import taboolib.module.nms.MinecraftVersion
  * @since 2024/5/3 21:06
  */
 @Serializable
-data class VItemSundry(
+data class ItemSundry(
     @JsonNames("custom-model-data")
-    override var customModelData: Int? = null,
+    var customModelData: Int? = null,
     @JsonNames("hideflag", "hideflags", "hideFlag")
-    override var hideFlags: MutableSet<@Contextual HideFlag>? = null,
+    var hideFlags: MutableSet<@Contextual HideFlag>? = null,
     @JsonNames("attribute-modifiers", "attributeModifiers", "bukkit-attributes")
-    override var bukkitAttributes: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null
-) : ItemSundry {
+    var bukkitAttributes: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null
+) {
 
     /**
      * 添加物品隐藏标签
@@ -66,44 +66,6 @@ data class VItemSundry(
     fun removeAttributeModifiers(slot: EquipmentSlot) =
         bukkitAttributes?.forEach { (key, value) -> value.forEach { if (it.slot == slot) bukkitAttributes?.get(key)?.remove(it) } }
 
-    override fun getNode() = OccupyNode.APEX_NODE
-
-    override fun transform(source: ItemData) {
-        val itemMeta = RefItemMeta()
-        // HideFlags
-        itemMeta.handle.addItemFlags(*fetchHideFlags().toTypedArray())
-        // BukkitAttributes
-        fetchBukkitAttributes().forEach { (key, value) ->
-            value.forEach { itemMeta.handle.addAttributeModifier(key, it) }
-        }
-        // Merge
-        itemMeta.applyToTag(source.tag)
-        // CustomModelData (1.14+)
-        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-            source.tag[ItemSheet.CUSTOM_MODEL_DATA] = customModelData?.let { NBTInt(it) }
-        }
-    }
-
-    override fun detransform(target: ItemData) {
-        val itemMeta = RefItemMeta(target.tag)
-        // HideFlags
-        val hideFlags = itemMeta.handle.itemFlags
-        if (hideFlags.isNotEmpty()) {
-            addHideFlags(*hideFlags.toTypedArray())
-        }
-        // BukkitAttributes
-        val bukkitAttributes = itemMeta.handle.attributeModifiers
-        if (bukkitAttributes != null && !bukkitAttributes.isEmpty) {
-            bukkitAttributes.forEach { key, value -> addAttributeModifiers(key, value) }
-        }
-        // CustomModelData (1.14+)
-        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-            target.tag[ItemSheet.CUSTOM_MODEL_DATA].castThen<NBTInt> {
-                customModelData = it.content
-            }
-        }
-    }
-
     /**
      * 空->默认值处理
      */
@@ -112,11 +74,11 @@ data class VItemSundry(
 
     private fun fetchBukkitAttributes() = bukkitAttributes ?: HashMap<Attribute, MutableList<AttributeModifier>>().also { bukkitAttributes = it }
 
-    companion object : ItemTransformer<VItemSundry> {
+    companion object : ItemTransformer<ItemSundry> {
 
         override val node = OccupyNode.APEX_NODE
 
-        override fun transform(component: VItemSundry): ItemData = TheItemData().apply {
+        override fun transform(component: ItemSundry): ItemData = TheItemData().apply {
             val itemMeta = RefItemMeta()
             // HideFlags
             itemMeta.handle.addItemFlags(*component.fetchHideFlags().toTypedArray())
@@ -132,7 +94,7 @@ data class VItemSundry(
             }
         }
 
-        override fun detransform(data: ItemData): VItemSundry = VItemSundry().apply {
+        override fun detransform(data: ItemData): ItemSundry = ItemSundry().apply {
             val itemMeta = RefItemMeta(data.tag)
             // HideFlags
             val hideFlags = itemMeta.handle.itemFlags
@@ -151,6 +113,7 @@ data class VItemSundry(
                 }
             }
         }
+
     }
 
 }

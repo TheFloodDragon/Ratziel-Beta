@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.component.serializers
 
-import cn.fd.ratziel.module.item.api.part.HideFlag
+import cn.fd.ratziel.module.item.impl.component.HideFlag
 import cn.fd.ratziel.module.item.util.MetaMatcher
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
