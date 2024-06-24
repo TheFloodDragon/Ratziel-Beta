@@ -1,7 +1,8 @@
 package cn.fd.ratziel.module.item.impl
 
+import cn.fd.ratziel.Identifier
+import cn.fd.ratziel.core.TheIdentifier
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.ItemIdentifier
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
 
@@ -13,19 +14,19 @@ import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
  */
 open class RatzielItem : NeoItem {
 
-    constructor(identifier: ItemIdentifier, data: ItemData) {
+    constructor(identifier: Identifier, data: ItemData) {
         this.identifier = identifier
         this.data = data
     }
 
-    constructor(data: ItemData) : this(ItemIdentifierImpl.random(), data)
+    constructor(data: ItemData) : this(TheIdentifier(), data)
 
     constructor() : this(ItemDataImpl())
 
     /**
      * 物品唯一标识符
      */
-    val identifier: ItemIdentifier
+    val identifier: Identifier
 
     /**
      * 物品数据

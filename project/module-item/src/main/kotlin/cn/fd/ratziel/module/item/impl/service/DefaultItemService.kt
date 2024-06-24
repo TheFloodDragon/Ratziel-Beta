@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.service
 
-import cn.fd.ratziel.module.item.api.ItemIdentifier
+import cn.fd.ratziel.Identifier
 import cn.fd.ratziel.module.item.api.service.ItemService
 import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
 
@@ -10,7 +10,7 @@ import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
  * @author TheFloodDragon
  * @since 2024/5/4 10:52
  */
-open class DefaultItemService(val identifier: ItemIdentifier) : ItemService {
+open class DefaultItemService(val identifier: Identifier) : ItemService {
 
     override fun <T> getServiceBy(type: Class<T>, registry: ItemServiceRegistry): T? {
         return registry.getter(type)?.apply(identifier)

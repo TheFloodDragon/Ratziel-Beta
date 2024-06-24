@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.item.impl.service
 
-import cn.fd.ratziel.module.item.api.ItemIdentifier
+import cn.fd.ratziel.Identifier
+import cn.fd.ratziel.core.TheIdentifier
 import cn.fd.ratziel.module.item.api.service.ItemService
 import cn.fd.ratziel.module.item.api.service.ItemServiceManager
-import cn.fd.ratziel.module.item.impl.ItemIdentifierImpl
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -18,28 +18,28 @@ object GlobalServiceManager : ItemServiceManager {
     /**
      * 物品服务组
      */
-    val groups: MutableMap<ItemIdentifier, ItemService> = ConcurrentHashMap()
+    val groups: MutableMap<Identifier, ItemService> = ConcurrentHashMap()
 
     /**
      * 获取物品的服务
      */
-    override fun get(identifier: ItemIdentifier): ItemService {
+    override fun get(identifier: Identifier): ItemService {
         return groups.computeIfAbsent(identifier) { DefaultItemService(it) }
     }
 
     /**
      * 设置物品的服务
      */
-    override fun set(identifier: ItemIdentifier, value: ItemService) {
+    override fun set(identifier: Identifier, value: ItemService) {
         groups[identifier] = value
     }
 
-    operator fun get(identifier: String) = get(ItemIdentifierImpl(identifier))
+    operator fun get(identifier: String) = get(TheIdentifier(identifier))
 
-    operator fun get(identifier: UUID) = get(ItemIdentifierImpl(identifier))
+    operator fun get(identifier: UUID) = get(TheIdentifier(identifier))
 
-    operator fun set(identifier: String, value: ItemService) = set(ItemIdentifierImpl(identifier), value)
+    operator fun set(identifier: String, value: ItemService) = set(TheIdentifier(identifier), value)
 
-    operator fun set(identifier: UUID, value: ItemService) = set(ItemIdentifierImpl(identifier), value)
+    operator fun set(identifier: UUID, value: ItemService) = set(TheIdentifier(identifier), value)
 
 }

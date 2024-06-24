@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.api.service
 
-import cn.fd.ratziel.module.item.api.ItemIdentifier
+import cn.fd.ratziel.Identifier
+
 
 /**
  * ItemServiceManager - 物品服务管理器
@@ -13,11 +14,11 @@ interface ItemServiceManager {
     /**
      * 获取物品的服务
      */
-    operator fun get(identifier: ItemIdentifier): ItemService
+    operator fun get(identifier: Identifier): ItemService
 
     /**
      * 设置物品的服务
      */
-    operator fun set(identifier: ItemIdentifier, value: ItemService)
+    operator fun set(identifier: Identifier, value: ItemService)
 
 }

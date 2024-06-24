@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api.service
 
-import cn.fd.ratziel.module.item.api.ItemIdentifier
+import cn.fd.ratziel.Identifier
 import java.util.function.BiConsumer
 import java.util.function.Function
 
@@ -21,7 +21,7 @@ open class ItemServiceFunction<T>(
  * @author TheFloodDragon
  * @since 2024/5/4 11:05
  */
-fun interface ItemServiceGetter<T> : Function<ItemIdentifier, T?>
+fun interface ItemServiceGetter<T> : Function<Identifier, T?>
 
 /**
  * ItemServiceSetter - 物品服务设置函数
@@ -29,4 +29,4 @@ fun interface ItemServiceGetter<T> : Function<ItemIdentifier, T?>
  * @author TheFloodDragon
  * @since 2024/5/4 12:16
  */
-fun interface ItemServiceSetter<T> : BiConsumer<ItemIdentifier, T>
+fun interface ItemServiceSetter<T> : BiConsumer<Identifier, T>
