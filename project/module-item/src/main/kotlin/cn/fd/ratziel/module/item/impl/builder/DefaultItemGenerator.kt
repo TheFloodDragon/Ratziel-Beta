@@ -2,8 +2,11 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.core.util.priority
+import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.argument.ArgumentFactory
+import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
@@ -11,6 +14,9 @@ import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.TheItemData
+import cn.fd.ratziel.module.item.impl.component.VItemDisplay
+import cn.fd.ratziel.module.item.util.toApexDataUncheck
+import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -20,12 +26,7 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @author TheFloodDragon
  * @since 2024/4/13 17:34
  */
-class DefaultItemGenerator(
-    /**
-     * 原始物品配置 (元素)
-     */
-    val origin: Element
-) : ItemGenerator {
+object DefaultItemGenerator : ItemGenerator {
 
     /**
      * 物品序列化器
@@ -44,7 +45,8 @@ class DefaultItemGenerator(
     /**
      * 物品转换器
      */
-    val transformers = CopyOnWriteArraySet<Priority<ItemTransformer<*>>>().apply {
+    val transformers = HashMap<Class<*>, Priority<ItemTransformer<*>>>().apply {
+        put(VItemDisplay::class.java, VItemDisplay.priority())
     }
 
 //    /**
@@ -97,19 +99,47 @@ class DefaultItemGenerator(
 //        }
 //    }
 
-    fun build(data: ItemData, arguments: ArgumentFactory): CompletableFuture<RatzielItem> {
-//        // 解析成 JsonElement
-//        val element = resolve(origin.property, arguments)
-//        // 并行序列化并收集结果
-//        val serializeTask = serialize(element)
-//        // 合成最终产物
-//        return serializeTask.thenApply { components ->
-//            transform(data, components.mapNotNull { it })
-//            RatzielItem(data)
-//        }
-        TODO()
+    fun build(origin: Element, data: ItemData, arguments: ArgumentFactory): CompletableFuture<RatzielItem> {
+        var element = origin.property
+        // Resolve
+        for (resolver in resolvers.sortPriority()) {
+            try {
+                element = resolver.resolve(element, arguments)
+            } catch (ex: Exception) {
+                severe("Failed to resolve element by $resolver!")
+                ex.printStackTrace()
+            }
+        }
+        // S
+        val serializeFactory = FutureFactory<Any?>()
+        val transformFactory = FutureFactory<ItemData?>()
+
+        for (serializer in serializers) {
+            val serializeTask = serializeFactory.submitAsync(ItemElement.executor) {
+                try {
+                    serializer.deserialize(element)
+                } catch (ex: Exception) {
+                    severe("Failed to deserialize element by $serializer!")
+                    ex.printStackTrace(); null
+                }
+            }
+            //
+            val transformTask = serializeTask.thenApply {
+                if (it == null) return@thenApply null
+                val transformer = (transformers[it::class.java] ?: return@thenApply null).value
+                transformer.toApexDataUncheck(it)
+            }
+            transformFactory.submitTask(transformTask)
+        }
+
+        return transformFactory.thenApply { list ->
+            list.forEach {
+                if (it != null) TheItemData.mergeShallow(data, it, true)
+            }
+            RatzielItem(data)
+        }
     }
 
-    override fun build(arguments: ArgumentFactory) = build(TheItemData(), arguments)
+    override fun build(origin: Element, arguments: ArgumentFactory) = build(origin, TheItemData(), arguments)
 
 }

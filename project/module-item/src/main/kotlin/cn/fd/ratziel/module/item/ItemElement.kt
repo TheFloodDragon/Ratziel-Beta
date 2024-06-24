@@ -41,9 +41,7 @@ object ItemElement : ElementHandler {
 
     override fun handle(element: Element) {
 
-        val generator = DefaultItemGenerator(element)
-
-        val item = generator.build().get()
+        val item = DefaultItemGenerator.build(element).get()
 
         println(item.data)
 
@@ -55,7 +53,7 @@ object ItemElement : ElementHandler {
         println(test.getData())
 
         // 注册
-        ItemManager.registry[element.name] = generator
+        ItemManager.registry[element.name] = DefaultItemGenerator
     }
 
     @SubscribeEvent
