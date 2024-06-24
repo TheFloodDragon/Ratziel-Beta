@@ -4,7 +4,7 @@ import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.ItemNode
-import cn.fd.ratziel.module.item.impl.ItemDataImpl
+import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTData
 import java.util.function.Consumer
@@ -17,6 +17,8 @@ fun <T : ItemComponent> T.accept(data: ItemData) = this.apply { ComponentUtil.ac
  * 转换[NBTData], 若成功转换(不为空), 则执行 [action]
  */
 inline fun <reified T : NBTData> NBTData?.castThen(action: Consumer<T>) = (this as? T)?.let { action.accept(it) }
+
+inline fun <reified T : NBTData> ItemData?.castThen(node: String, action: Consumer<T>) = this?.tag?.get(node)?.castThen<T>(action)
 
 /**
  * ComponentUtil
@@ -60,7 +62,7 @@ object ComponentUtil {
      */
     fun accept(component: ItemComponent, data: ItemData) {
         val find = findByNode(data.tag, component.getNode())
-        component.detransform(ItemDataImpl(data.material, find, data.amount))
+        component.detransform(TheItemData(data.material, find, data.amount))
     }
 
     fun findByNode(source: NBTCompound, tailNode: ItemNode) = findByNode(source, fold(tailNode))

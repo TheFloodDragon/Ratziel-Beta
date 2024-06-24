@@ -1,4 +1,4 @@
-package cn.fd.ratziel
+package cn.fd.ratziel.core
 
 /**
  * Identifier

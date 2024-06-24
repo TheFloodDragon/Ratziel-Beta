@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.module.item.impl.ItemDataImpl
+import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 
 /**
@@ -26,6 +26,6 @@ interface ItemComponent : Transformable<ItemData> {
      * 正向转化 - 输出型转化
      * 重写并调用 [transform] 方法, 默认使用空的 [NBTCompound] 作为源数据
      */
-    override fun transform(): ItemData = ItemDataImpl().also { transform(it) }
+    override fun transform(): ItemData = TheItemData().also { transform(it) }
 
 }

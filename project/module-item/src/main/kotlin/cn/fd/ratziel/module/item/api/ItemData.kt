@@ -18,7 +18,7 @@ interface ItemData {
     /**
      * 物品NBT
      */
-    var tag: NBTCompound
+    val tag: NBTCompound
 
     /**
      * 物品数量

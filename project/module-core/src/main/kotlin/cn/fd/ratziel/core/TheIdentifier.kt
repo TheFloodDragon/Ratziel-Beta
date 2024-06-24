@@ -1,6 +1,5 @@
 package cn.fd.ratziel.core
 
-import cn.fd.ratziel.Identifier
 import java.util.*
 
 /**

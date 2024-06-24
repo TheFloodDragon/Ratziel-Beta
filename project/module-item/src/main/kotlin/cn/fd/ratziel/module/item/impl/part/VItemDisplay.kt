@@ -5,9 +5,12 @@ package cn.fd.ratziel.module.item.impl.part
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
 import cn.fd.ratziel.core.serialization.EnhancedList
+import cn.fd.ratziel.core.util.putNonNull
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
+import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.nbt.NBTList
 import cn.fd.ratziel.module.item.nbt.NBTString
 import cn.fd.ratziel.module.item.nbt.addAll
@@ -70,11 +73,11 @@ data class VItemDisplay(
         }
     }
 
-    companion object {
+    companion object : ItemTransformer<ItemDisplay> {
 
-        internal val node by lazy {
-            if (MinecraftVersion.majorLegacy >= 12005) OccupyNode.APEX_NODE else OccupyNode(ItemSheet.DISPLAY, OccupyNode.APEX_NODE)
-        }
+        override val node =
+            if (MinecraftVersion.majorLegacy >= 12005) OccupyNode.APEX_NODE
+            else OccupyNode(ItemSheet.DISPLAY, OccupyNode.APEX_NODE)
 
         internal fun componentToData(component: Component?): NBTString? = component?.let { NBTString(transformComponent(it)) }
 
@@ -87,6 +90,21 @@ data class VItemDisplay(
             if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
                 Message.wrapper.legacyBuilder.serialize(component)
             } else Message.transformToJson(component)
+
+
+        override fun transform(component: ItemDisplay) = TheItemData().apply {
+            tag.putNonNull(ItemSheet.DISPLAY_NAME, componentToData(component.name))
+            tag.putNonNull(ItemSheet.DISPLAY_LORE, component.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) })
+            tag.putNonNull(ItemSheet.DISPLAY_LOCAL_NAME, componentToData(component.localizedName))
+        }
+
+        override fun detransform(data: ItemData): ItemDisplay = VItemDisplay().apply {
+            data.castThen<NBTString>(ItemSheet.DISPLAY_NAME) { this.setName(it.content) }
+            data.castThen<NBTList>(ItemSheet.DISPLAY_LORE) {
+                this.setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content })
+            }
+            data.castThen<NBTString>(ItemSheet.DISPLAY_LOCAL_NAME) { this.setLocalizedName(it.content) }
+        }
 
     }
 

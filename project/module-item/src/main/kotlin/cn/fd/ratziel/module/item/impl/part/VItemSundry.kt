@@ -1,12 +1,14 @@
 @file:OptIn(ExperimentalSerializationApi::class)
-@file:Suppress( "DEPRECATION")
+@file:Suppress("DEPRECATION")
 
 package cn.fd.ratziel.module.item.impl.part
 
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.api.common.OccupyNode
 import cn.fd.ratziel.module.item.api.part.HideFlag
 import cn.fd.ratziel.module.item.api.part.ItemSundry
+import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemMeta
@@ -109,5 +111,46 @@ data class VItemSundry(
     private fun fetchHideFlags() = hideFlags ?: HashSet<HideFlag>().also { hideFlags = it }
 
     private fun fetchBukkitAttributes() = bukkitAttributes ?: HashMap<Attribute, MutableList<AttributeModifier>>().also { bukkitAttributes = it }
+
+    companion object : ItemTransformer<VItemSundry> {
+
+        override val node = OccupyNode.APEX_NODE
+
+        override fun transform(component: VItemSundry): ItemData = TheItemData().apply {
+            val itemMeta = RefItemMeta()
+            // HideFlags
+            itemMeta.handle.addItemFlags(*component.fetchHideFlags().toTypedArray())
+            // BukkitAttributes
+            component.fetchBukkitAttributes().forEach { (key, value) ->
+                value.forEach { itemMeta.handle.addAttributeModifier(key, it) }
+            }
+            // Merge
+            itemMeta.applyToTag(tag)
+            // CustomModelData (1.14+)
+            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
+                tag[ItemSheet.CUSTOM_MODEL_DATA] = component.customModelData?.let { NBTInt(it) }
+            }
+        }
+
+        override fun detransform(data: ItemData): VItemSundry = VItemSundry().apply {
+            val itemMeta = RefItemMeta(data.tag)
+            // HideFlags
+            val hideFlags = itemMeta.handle.itemFlags
+            if (hideFlags.isNotEmpty()) {
+                addHideFlags(*hideFlags.toTypedArray())
+            }
+            // BukkitAttributes
+            val bukkitAttributes = itemMeta.handle.attributeModifiers
+            if (bukkitAttributes != null && !bukkitAttributes.isEmpty) {
+                bukkitAttributes.forEach { key, value -> addAttributeModifiers(key, value) }
+            }
+            // CustomModelData (1.14+)
+            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
+                data.tag[ItemSheet.CUSTOM_MODEL_DATA].castThen<NBTInt> {
+                    customModelData = it.content
+                }
+            }
+        }
+    }
 
 }

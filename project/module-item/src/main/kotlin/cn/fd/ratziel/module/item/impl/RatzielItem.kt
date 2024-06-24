@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl
 
-import cn.fd.ratziel.Identifier
+import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.TheIdentifier
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
@@ -21,7 +21,7 @@ open class RatzielItem : NeoItem {
 
     constructor(data: ItemData) : this(TheIdentifier(), data)
 
-    constructor() : this(ItemDataImpl())
+    constructor() : this(TheItemData())
 
     /**
      * 物品唯一标识符

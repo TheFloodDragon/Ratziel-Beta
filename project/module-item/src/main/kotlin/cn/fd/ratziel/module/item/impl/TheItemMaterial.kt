@@ -6,14 +6,14 @@ import taboolib.library.reflex.ReflexClass
 import taboolib.library.xseries.XMaterial
 
 /**
- * ItemMaterialImpl
+ * TheItemMaterial
  *
  * 由于不可抗力的影响(我不会), 仅支持 [BukkitMaterial], 即仅支持原版物品
  *
  * @author TheFloodDragon
  * @since 2024/4/5 13:26
  */
-data class ItemMaterialImpl(override val name: String) : ItemMaterial {
+data class TheItemMaterial(override val name: String) : ItemMaterial {
 
     constructor(mat: XMaterial) : this(mat.name)
 
@@ -77,7 +77,7 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
          */
         val materialsMap by lazy {
             HashMap<String, ItemMaterial>().apply {
-                BukkitMaterial.entries.forEach { put(it.name, ItemMaterialImpl(it)) }
+                BukkitMaterial.entries.forEach { put(it.name, TheItemMaterial(it)) }
             }
         }
 

@@ -12,7 +12,7 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
-import cn.fd.ratziel.module.item.impl.ItemDataImpl
+import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
@@ -107,6 +107,6 @@ class DefaultItemGenerator(
         }
     }
 
-    override fun build(arguments: ArgumentFactory) = build(ItemDataImpl(), arguments)
+    override fun build(arguments: ArgumentFactory) = build(TheItemData(), arguments)
 
 }

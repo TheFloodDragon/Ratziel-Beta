@@ -1,12 +1,7 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package cn.fd.ratziel.core.util
 
-/**
- * 双重遍历
- */
-fun <T> Iterable<Iterable<T>>.forEachDually(action: (T) -> Unit) {
-    for (parent in this) {
-        for (child in parent) {
-            action(child)
-        }
-    }
+inline fun <K, V> MutableMap<K, V>.putNonNull(key: K, value: V?): MutableMap<K, V> = this.apply {
+    if (value != null) this[key] = value
 }

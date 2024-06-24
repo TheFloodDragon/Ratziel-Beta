@@ -22,6 +22,7 @@ import kotlinx.serialization.json.JsonNames
  * @since 2024/4/4 20:10
  */
 @Serializable
+@Deprecated("操你妈给我滚")
 data class VItemMeta(
     @JsonNames("mat")
     override var material: ItemMaterial = ItemMaterial.EMPTY,

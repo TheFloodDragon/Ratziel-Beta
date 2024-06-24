@@ -4,7 +4,7 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
-import cn.fd.ratziel.module.item.impl.ItemMaterialImpl
+import cn.fd.ratziel.module.item.impl.TheItemMaterial
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
@@ -62,7 +62,7 @@ class RefItemStack(raw: Any) {
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
             InternalUtil.obcGetMaterialMethod.invoke(handle)!! as BukkitMaterial
         } else {
-            ItemMaterialImpl.getBukkitMaterial(InternalUtil.obcGetMaterialMethodLegacy.invoke(handle)!! as Int)!!
+            TheItemMaterial.getBukkitMaterial(InternalUtil.obcGetMaterialMethodLegacy.invoke(handle)!! as Int)!!
         }
 
     /**
@@ -72,12 +72,12 @@ class RefItemStack(raw: Any) {
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
             InternalUtil.obcSetMaterialMethod.invoke(handle, material)
         } else {
-            InternalUtil.obcSetMaterialMethodLegacy.invoke(handle, ItemMaterialImpl.getIdUnsafe(material))
+            InternalUtil.obcSetMaterialMethodLegacy.invoke(handle, TheItemMaterial.getIdUnsafe(material))
         }
     }
 
     fun setMaterial(material: ItemMaterial) {
-        ItemMaterialImpl.getBukkitMaterial(material.name)?.let { setMaterial(it) }
+        TheItemMaterial.getBukkitMaterial(material.name)?.let { setMaterial(it) }
     }
 
     /**

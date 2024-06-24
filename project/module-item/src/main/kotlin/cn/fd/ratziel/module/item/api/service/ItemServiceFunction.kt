@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api.service
 
-import cn.fd.ratziel.Identifier
+import cn.fd.ratziel.core.Identifier
 import java.util.function.BiConsumer
 import java.util.function.Function
 

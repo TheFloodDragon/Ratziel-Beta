@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.service
 
-import cn.fd.ratziel.Identifier
+import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.TheIdentifier
 import cn.fd.ratziel.module.item.api.service.ItemService
 import cn.fd.ratziel.module.item.api.service.ItemServiceManager
