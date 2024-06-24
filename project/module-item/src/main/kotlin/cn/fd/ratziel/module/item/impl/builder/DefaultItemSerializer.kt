@@ -4,13 +4,13 @@ import cn.fd.ratziel.core.serialization.*
 import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.api.common.ItemKSerializer
 import cn.fd.ratziel.module.item.api.part.HideFlag
-import cn.fd.ratziel.module.item.impl.part.VItemDisplay
-import cn.fd.ratziel.module.item.impl.part.VItemDurability
-import cn.fd.ratziel.module.item.impl.part.VItemMeta
-import cn.fd.ratziel.module.item.impl.part.VItemSundry
-import cn.fd.ratziel.module.item.impl.part.serializers.*
+import cn.fd.ratziel.module.item.impl.ItemKSerializer
+import cn.fd.ratziel.module.item.impl.component.VItemDisplay
+import cn.fd.ratziel.module.item.impl.component.VItemDurability
+import cn.fd.ratziel.module.item.impl.component.VItemMeta
+import cn.fd.ratziel.module.item.impl.component.VItemSundry
+import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.nbt.NBTData
 import cn.fd.ratziel.module.item.nbt.NBTSerializer
 import kotlinx.serialization.DeserializationStrategy
@@ -29,9 +29,9 @@ import java.util.concurrent.CompletableFuture
  * @author TheFloodDragon
  * @since 2024/4/4 19:58
  */
-class DefaultItemSerializer(rawJson: Json = baseJson) : ItemKSerializer<VItemMeta> {
+object DefaultItemSerializer : ItemKSerializer<VItemMeta> {
 
-    val json = Json(rawJson) {
+    val json = Json(baseJson) {
         serializersModule += SerializersModule {
             // Basic Serializers
             contextual(UUID::class, UUIDSerializer)
@@ -45,6 +45,18 @@ class DefaultItemSerializer(rawJson: Json = baseJson) : ItemKSerializer<VItemMet
             contextual(AttributeModifier::class, AttributeModifierSerializer)
         }
     }
+
+    /**
+     * 使用到的序列化器列表
+     */
+    val serializers = arrayOf(
+        VItemMeta.serializer(),
+        VItemDisplay.serializer(),
+        VItemDurability.serializer(),
+        VItemSundry.serializer(),
+    )
+
+    override val descriptor = VItemMeta.serializer().descriptor
 
     /**
      * 反序列化 (检查结构化解析)
@@ -71,45 +83,28 @@ class DefaultItemSerializer(rawJson: Json = baseJson) : ItemKSerializer<VItemMet
      */
     override fun serialize(component: VItemMeta) = forceStructured(json.encodeToJsonElement(VItemMeta.serializer(), component))
 
-    override val descriptor = VItemMeta.serializer().descriptor
+    /**
+     * 占据的节点
+     */
+    val occupiedNodes = serializers.flatMap { it.descriptor.elementAlias }
 
-    companion object {
+    val NODES_MATERIAL = VItemMeta.serializer().descriptor.getElementNames(VItemMeta::material.name)
 
-        /**
-         * 使用到的序列化器列表
-         */
-        val serializers = arrayOf(
-            VItemMeta.serializer(),
-            VItemDisplay.serializer(),
-            VItemDurability.serializer(),
-            VItemSundry.serializer(),
-        )
+    /**
+     * 结构化解析
+     */
+    const val NODE_STRUCTURED = "structured"
 
-        /**
-         * 占据的节点
-         */
-        val occupiedNodes = serializers.flatMap { it.descriptor.elementAlias }
-
-        val NODES_MATERIAL = VItemMeta.serializer().descriptor.getElementNames(VItemMeta::material.name)
-
-        /**
-         * 结构化解析
-         */
-        const val NODE_STRUCTURED = "structured"
-
-        internal fun isStructured(element: JsonElement): Boolean = try {
-            element.jsonObject[NODE_STRUCTURED]!!.jsonPrimitive.boolean
-        } catch (_: Exception) {
-            false
-        }
-
-        internal fun forceStructured(element: JsonElement): JsonElement = try {
-            element.jsonObject.handle { put(NODE_STRUCTURED, JsonPrimitive(true)) }
-        } catch (_: Exception) {
-            element
-        }
-
+    internal fun isStructured(element: JsonElement): Boolean = try {
+        element.jsonObject[NODE_STRUCTURED]!!.jsonPrimitive.boolean
+    } catch (_: Exception) {
+        false
     }
 
+    internal fun forceStructured(element: JsonElement): JsonElement = try {
+        element.jsonObject.handle { put(NODE_STRUCTURED, JsonPrimitive(true)) }
+    } catch (_: Exception) {
+        element
+    }
 
 }

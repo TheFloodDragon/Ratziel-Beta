@@ -1,7 +1,6 @@
-package cn.fd.ratziel.module.item.api.common
+package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.encoding.Decoder
@@ -16,7 +15,7 @@ import kotlinx.serialization.json.JsonEncoder
  * @author TheFloodDragon
  * @since 2024/4/4 20:00
  */
-interface ItemKSerializer<T : ItemComponent> : ItemSerializer<T>, KSerializer<T> {
+interface ItemKSerializer<T> : ItemSerializer<T>, KSerializer<T> {
 
     /**
      * 重写 [KSerializer] 的 [serialize] 方法

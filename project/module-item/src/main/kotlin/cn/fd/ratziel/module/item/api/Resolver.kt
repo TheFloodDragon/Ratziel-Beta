@@ -6,6 +6,7 @@ package cn.fd.ratziel.module.item.api
  * @author TheFloodDragon
  * @since 2024/4/19 20:57
  */
+@Deprecated("")
 interface Resolver<E, T> {
 
     /**

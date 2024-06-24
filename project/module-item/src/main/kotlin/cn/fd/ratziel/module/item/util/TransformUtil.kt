@@ -1,17 +1,16 @@
 package cn.fd.ratziel.module.item.util
 
-import cn.fd.ratziel.module.item.api.ItemComponent
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.ItemNode
+import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTData
 import java.util.function.Consumer
 
-fun <T : ItemComponent> T.transfer(data: ItemData) = this.apply { ComponentUtil.transfer(this, data) }
+fun <T> ItemTransformer<T>.toApexData(component: T): ItemData = ComponentUtil.toData(component, this)
 
-fun <T : ItemComponent> T.accept(data: ItemData) = this.apply { ComponentUtil.accept(this, data) }
+fun <T> ItemTransformer<T>.toApexComponent(data: ItemData): T = ComponentUtil.toComponent(data, this)
 
 /**
  * 转换[NBTData], 若成功转换(不为空), 则执行 [action]
@@ -29,40 +28,21 @@ inline fun <reified T : NBTData> ItemData?.castThen(node: String, action: Consum
 object ComponentUtil {
 
     /**
-     * 将 [ItemComponent] 的数据转换并转移到 [data]
+     * 通过 [transformer] 将 [component] 转化成 [ItemData]
      */
-    fun transfer(component: ItemComponent, data: ItemData) {
-        // 获取数据
-        val find = findByNode(data.tag, component.getNode())
-        // 创建供物品组件使用的数据
-        val transmittedData = object : ItemData {
-            override var material: ItemMaterial
-                get() = data.material
-                set(value) {
-                    data.material = value
-                }
-            override var tag: NBTCompound = find
-                set(value) {
-                    field = value
-                    setByNode(data.tag, component.getNode(), value)
-                }
-            override var amount: Int
-                get() = data.amount
-                set(value) {
-                    data.amount = value
-                }
-        }
-        // 应用
-        component.transform(transmittedData)
+    fun <T> toData(component: T, transformer: ItemTransformer<T>): ItemData {
+        val data = transformer.transform(component) // 获取底层数据
+        val newTag = NBTCompound() // 创建新NBT
+        setByNode(newTag, transformer.node, data.tag) // 设置新NBT
+        return TheItemData(data.material, newTag, data.amount)
     }
 
     /**
-     * 从 [data] 的中接受数据并应用到 [component]
-     * 禁止改写 [data]
+     * 通过 [transformer] 将 [data] 转化成 物品组件
      */
-    fun accept(component: ItemComponent, data: ItemData) {
-        val find = findByNode(data.tag, component.getNode())
-        component.detransform(TheItemData(data.material, find, data.amount))
+    fun <T> toComponent(data: ItemData, transformer: ItemTransformer<T>): T {
+        val find = findByNode(data.tag, transformer.node)
+        return transformer.detransform(TheItemData(data.material, find, data.amount))
     }
 
     fun findByNode(source: NBTCompound, tailNode: ItemNode) = findByNode(source, fold(tailNode))

@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.module.item.api.ItemComponent
 import kotlinx.serialization.json.JsonElement
 
 /**
@@ -9,7 +8,7 @@ import kotlinx.serialization.json.JsonElement
  * @author TheFloodDragon
  * @since 2024/4/4 19:50
  */
-interface ItemSerializer<T : ItemComponent> {
+interface ItemSerializer<T> {
 
     /**
      * 序列化 - 组件[T]到[JsonElement]

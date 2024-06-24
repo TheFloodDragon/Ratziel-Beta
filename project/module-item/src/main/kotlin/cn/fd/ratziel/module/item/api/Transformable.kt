@@ -6,6 +6,7 @@ package cn.fd.ratziel.module.item.api
  * @author TheFloodDragon
  * @since 2024/4/20 09:11
  */
+@Deprecated("")
 interface Transformable<T> {
 
     /**

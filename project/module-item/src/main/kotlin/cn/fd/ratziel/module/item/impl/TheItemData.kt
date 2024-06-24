@@ -18,9 +18,33 @@ data class TheItemData(
     /**
      * 物品NBT
      */
-    override var tag: NBTCompound = NBTCompound(),
+    override val tag: NBTCompound = NBTCompound(),
     /**
      * 物品数量
      */
     override var amount: Int = 1
-) : ItemData
+) : ItemData {
+
+    companion object {
+
+        val EMPTY = TheItemData()
+
+        /**
+         * 将 [target] 合并到 [source] 中 (不合并[tag])
+         */
+        fun mergeWithoutTag(source: ItemData, target: ItemData) {
+            if (target.material != EMPTY.material) source.material = target.material
+            if (target.amount != EMPTY.amount) source.amount = target.amount
+        }
+
+        /**
+         * 将 [target] 合并到 [source] 中 (浅合并)
+         */
+        fun mergeShallow(source: ItemData, target: ItemData, replace: Boolean = true) {
+            mergeWithoutTag(source, target)
+            source.tag.mergeShallow(target.tag, replace)
+        }
+
+    }
+
+}

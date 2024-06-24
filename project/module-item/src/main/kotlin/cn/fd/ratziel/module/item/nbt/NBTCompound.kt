@@ -64,6 +64,19 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), Mutab
         }
     }
 
+    /**
+     * 合并目标数据 (浅合并)
+     * @param replace 是否替换原有的标签
+     */
+    open fun mergeShallow(target: NBTCompound, replace: Boolean = true): NBTCompound = this.apply {
+        target.sourceMap.forEach { (key, value) ->
+            // 如果当前NBT数据中存在, 且不允许替换, 则直接跳出循环
+            if (this.sourceMap.containsKey(key) && !replace) return@forEach
+            // 反则设置值
+            this.sourceMap[key] = value
+        }
+    }
+
     companion object {
 
         @JvmStatic

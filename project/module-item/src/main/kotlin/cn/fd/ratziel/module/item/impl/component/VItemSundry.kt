@@ -1,11 +1,11 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 @file:Suppress("DEPRECATION")
 
-package cn.fd.ratziel.module.item.impl.part
+package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.api.common.OccupyNode
+import cn.fd.ratziel.module.item.impl.OccupyNode
 import cn.fd.ratziel.module.item.api.part.HideFlag
 import cn.fd.ratziel.module.item.api.part.ItemSundry
 import cn.fd.ratziel.module.item.impl.TheItemData

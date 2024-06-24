@@ -1,7 +1,7 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 @file:Suppress("DEPRECATION")
 
-package cn.fd.ratziel.module.item.impl.part.serializers
+package cn.fd.ratziel.module.item.impl.component.serializers
 
 import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer
 import kotlinx.serialization.ExperimentalSerializationApi

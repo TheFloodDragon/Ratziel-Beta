@@ -9,6 +9,7 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
  * @author TheFloodDragon
  * @since 2024/4/20 9:14
  */
+@Deprecated("")
 interface ItemComponent : Transformable<ItemData> {
 
     /**

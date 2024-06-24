@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package cn.fd.ratziel.module.item.impl.part
+package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
@@ -8,7 +8,7 @@ import cn.fd.ratziel.core.serialization.EnhancedList
 import cn.fd.ratziel.core.util.putNonNull
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.api.common.OccupyNode
+import cn.fd.ratziel.module.item.impl.OccupyNode
 import cn.fd.ratziel.module.item.api.part.ItemDisplay
 import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.nbt.NBTList
