@@ -4,13 +4,7 @@ import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.module.item.impl.builder.BasicItemResolver
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
-import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
-import cn.fd.ratziel.module.item.impl.component.ItemDisplay
-import cn.fd.ratziel.module.item.impl.component.ItemDurability
-import cn.fd.ratziel.module.item.impl.component.ItemMetadata
-import cn.fd.ratziel.module.item.impl.component.ItemSundry
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +38,11 @@ object ItemElement : ElementHandler {
      */
     val scope = CoroutineScope(Dispatchers.Default)
 
+    init {
+        // 注册默认的东西
+        ItemRegistry.registerDefault()
+    }
+
     override fun handle(element: Element) {
 
         val generator = DefaultItemGenerator(element)
@@ -67,19 +66,6 @@ object ItemElement : ElementHandler {
     fun onLoadStart(event: WorkspaceLoadEvent.Start) {
         // 清除注册的物品
         ItemManager.registry.clear()
-    }
-
-    init {
-        // 注册默认序列化器
-        ItemRegistry.Serializer.register(DefaultItemSerializer)
-        // 注册默认转换器
-        ItemRegistry.Component.register(ItemDisplay::class.java, ItemDisplay)
-        ItemRegistry.Component.register(ItemDurability::class.java, ItemDurability)
-        ItemRegistry.Component.register(ItemSundry::class.java, ItemSundry)
-        ItemRegistry.Component.register(ItemMetadata::class.java, ItemMetadata)
-        // 注册默认物品解析器
-        ItemRegistry.Resolver.register(BasicItemResolver, 0)
-        ItemRegistry.Resolver.register(BasicItemResolver.CleanUp, Byte.MAX_VALUE)// 最后清除
     }
 
 }

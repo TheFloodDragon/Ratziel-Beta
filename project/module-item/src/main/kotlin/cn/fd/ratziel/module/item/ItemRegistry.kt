@@ -9,6 +9,12 @@ import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.api.registry.ComponentRegistry
 import cn.fd.ratziel.module.item.api.registry.ResolverRegistry
 import cn.fd.ratziel.module.item.api.registry.SerializerRegistry
+import cn.fd.ratziel.module.item.impl.builder.BasicItemResolver
+import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
+import cn.fd.ratziel.module.item.impl.component.ItemDisplay
+import cn.fd.ratziel.module.item.impl.component.ItemDurability
+import cn.fd.ratziel.module.item.impl.component.ItemMetadata
+import cn.fd.ratziel.module.item.impl.component.ItemSundry
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -20,6 +26,22 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 object ItemRegistry {
 
+    /**
+     * 注册默认的东西
+     */
+    internal fun registerDefault() {
+        // 注册默认序列化器
+        Serializer.register(DefaultItemSerializer)
+        // 注册默认转换器
+        Component.register(ItemDisplay::class.java, ItemDisplay)
+        Component.register(ItemDurability::class.java, ItemDurability)
+        Component.register(ItemSundry::class.java, ItemSundry)
+        Component.register(ItemMetadata::class.java, ItemMetadata)
+        // 注册默认物品解析器
+        Resolver.register(BasicItemResolver, 0)
+        Resolver.register(BasicItemResolver.CleanUp, Byte.MAX_VALUE)// 最后清除
+    }
+
     object Component : ComponentRegistry {
 
         /**
@@ -27,7 +49,7 @@ object ItemRegistry {
          */
         internal val registry: MutableMap<Class<*>, ItemTransformer<*>> = ConcurrentHashMap()
 
-        override fun <T> register(type: Class<T>, transformer: ItemTransformer<T>) {
+        override fun <T> register(type: Class<T>, transformer: ItemTransformer<out T>) {
             registry[type] = transformer
         }
 
@@ -35,7 +57,7 @@ object ItemRegistry {
             registry.remove(type)
         }
 
-        override fun <T> getTransformer(type: Class<T>): ItemTransformer<T>? = uncheck(registry[type])
+        override fun <T> get(type: Class<T>): ItemTransformer<out T>? = uncheck(registry[type])
 
         override fun isRegistered(type: Class<*>) = registry.containsKey(type)
 

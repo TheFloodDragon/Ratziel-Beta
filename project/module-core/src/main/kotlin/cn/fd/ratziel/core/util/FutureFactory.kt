@@ -28,6 +28,16 @@ open class FutureFactory<T>(
     constructor() : this(ConcurrentLinkedQueue())
 
     /**
+     * 获取 [FutureFactory] 保存的所有任务
+     */
+    open fun getTasks(): Collection<CompletableFuture<T>> = tasks
+
+    /**
+     * 清空[FutureFactory] 保存的所有任务
+     */
+    open fun clearTasks() = tasks.clear()
+
+    /**
      * 提交任务
      */
     open fun submitTask(task: CompletableFuture<T>) = task.also { tasks += it }
@@ -35,9 +45,9 @@ open class FutureFactory<T>(
     /**
      * 创建异步任务并提交
      */
-    fun submitAsync(function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function))
+    open fun submitAsync(function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function))
 
-    fun submitAsync(executor: Executor, function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function, executor))
+    open fun submitAsync(executor: Executor, function: Supplier<T>) = submitTask(CompletableFuture.supplyAsync(function, executor))
 
     /**
      * 当所有任务完成时 (非阻塞)
@@ -46,7 +56,6 @@ open class FutureFactory<T>(
      */
     open fun <R> thenApply(action: Function<List<T>, R>): CompletableFuture<R> = tasks.toTypedArray().let { futures ->
         CompletableFuture.allOf(*futures).thenApply {
-            tasks.clear() // 清除任务
             val results = futures.map { it.get() } // 获取异步结果
             action.apply(results) // 处理结果
         }
@@ -61,7 +70,6 @@ open class FutureFactory<T>(
      */
     open fun waitAll() {
         val future = CompletableFuture.allOf(*tasks.toTypedArray())
-        tasks.clear() // 清除任务
         future.join() // 阻塞等待完成
     }
 

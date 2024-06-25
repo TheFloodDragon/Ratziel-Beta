@@ -7,9 +7,12 @@ import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
+import cn.fd.ratziel.module.item.api.builder.ItemResolver
+import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.util.toApexDataUncheck
+import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
 
@@ -26,89 +29,25 @@ class DefaultItemGenerator(
     val origin: Element
 ) : ItemGenerator {
 
-//    /**
-//     * 解析
-//     */
-//    fun resolve(element: JsonElement, arguments: ArgumentFactory): JsonElement {
-//        var result = element
-//        for (resolver in resolvers.sortPriority()) {
-//            try {
-//                result = resolver.resolve(result, arguments)
-//            } catch (ex: Exception) {
-//                severe("Failed to resolve element by $resolver!")
-//                ex.printStackTrace()
-//            }
-//        }
-//        return result
-//    }
-//
-//    /**
-//     * 序列化 (并行)
-//     * 传递优先级至 [transform] 阶段
-//     */
-//    fun serialize(element: JsonElement)= FutureFactory<List<Any>> {
-//        for (serializer in serializers) {
-//            submitAsync(ItemElement.executor) {
-//                try {
-//                    serializer.deserialize(element)
-//                } catch (ex: Exception) {
-//                    severe("Failed to deserialize element by $serializer!")
-//                    ex.printStackTrace(); null
-//                }
-//            }
-//        }
-//    }
-//
-//    /**
-//     * 转换
-//     */
-//    fun transform( components: Iterable<Any>) = FutureFactory<List<ItemData>> {
-//        for (transformer in transformers) {
-//            val component = components.find { it::class.java.isAssignableFrom(transformer.value.type) }
-//            try {
-//                if (component != null) {
-//                    transformer.value.transform(uncheck(component))
-//                }
-//            } catch (ex: Exception) {
-//                severe("Failed to transform component: $component!")
-//                ex.printStackTrace()
-//            }
-//        }
-//    }
-
     fun build(data: ItemData, arguments: ArgumentFactory): CompletableFuture<RatzielItem> {
-        var element = origin.property
-        // Resolve
-        for (resolver in ItemRegistry.Resolver.getResolversSorted()) {
-            try {
-                element = resolver.resolve(element, arguments)
-            } catch (ex: Exception) {
-                severe("Failed to resolve element by $resolver!")
-                ex.printStackTrace()
-            }
-        }
-        // S
+        // Step1: Resolve (with priorities)
+        val element = resolve(origin.property, arguments, ItemRegistry.Resolver.getResolversSorted())
+        // Step2: serialize (async)
         val serializeFactory = FutureFactory<Any?>()
+        // Step3: transform (async)
         val transformFactory = FutureFactory<ItemData?>()
 
+        // 遍历所有注册的序列化器
         for (serializer in ItemRegistry.Serializer.getSerializers()) {
-            val serializeTask = serializeFactory.submitAsync(ItemElement.executor) {
-                try {
-                    serializer.deserialize(element)
-                } catch (ex: Exception) {
-                    severe("Failed to deserialize element by $serializer!")
-                    ex.printStackTrace(); null
-                }
-            }
-            //
-            val transformTask = serializeTask.thenApply {
-                if (it == null) return@thenApply null
-                val transformer = (ItemRegistry.Component.getMap()[it::class.java] ?: return@thenApply null)
-                transformer.toApexDataUncheck(it)
-            }
-            transformFactory.submitTask(transformTask)
+            // 创建序列化任务 (提交至serializeFactory)
+            val serializeTask = createSerializeTask(element, serializer)
+                .also { serializeFactory.submitTask(it) } // 提交序列化任务
+            // 创建转换任务 (在序列化任务完成时执行)
+            createTransformTask(serializeTask)
+                .also { transformFactory.submitTask(it) } // 提交转换任务
         }
 
+        // 合并所有数据 TODO 。
         return transformFactory.thenApply { list ->
             list.forEach {
                 if (it != null) TheItemData.mergeShallow(data, it, true)
@@ -118,5 +57,47 @@ class DefaultItemGenerator(
     }
 
     override fun build(arguments: ArgumentFactory) = build(TheItemData(), arguments)
+
+    private fun resolve(element: JsonElement, arguments: ArgumentFactory, resolvers: List<ItemResolver>): JsonElement {
+        var result = element
+        for (resolver in resolvers) {
+            try {
+                result = resolver.resolve(result, arguments)
+            } catch (ex: Exception) {
+                severe("Failed to resolve element by $resolver!")
+                ex.printStackTrace()
+            }
+        }
+        return result
+    }
+
+    private fun createSerializeTask(element: JsonElement, serializer: ItemSerializer<*>): CompletableFuture<Any?> =
+        CompletableFuture.supplyAsync({
+            try {
+                serializer.deserialize(element)
+            } catch (ex: Exception) {
+                severe("Failed to deserialize element by \"$serializer!\"! Target element: $element")
+                ex.printStackTrace(); null
+            }
+        }, ItemElement.executor)
+
+    private fun createTransformTask(serializeTask: CompletableFuture<Any?>): CompletableFuture<ItemData?> =
+        serializeTask.thenApplyAsync({ component ->
+            // 若组件未空, 则不进行转换
+            if (component == null) return@thenApplyAsync null
+            // 获取转换器
+            val transformer = ItemRegistry.Component.get(component::class.java)
+            if (transformer == null) {
+                severe("Cannot find transformer for component \"$component\"!")
+                return@thenApplyAsync null
+            }
+            // 转换成以顶级节点为根节点的数据
+            try {
+                transformer.toApexDataUncheck(component)
+            } catch (ex: Exception) {
+                severe("Failed to transform component by \"$transformer\"! Target component: $component")
+                ex.printStackTrace(); null
+            }
+        }, ItemElement.executor)
 
 }
