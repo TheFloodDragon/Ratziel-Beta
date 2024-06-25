@@ -38,12 +38,7 @@ operator fun JsonObject.get(names: Iterable<String>): JsonElement? {
 /**
  * 可变化
  */
-fun Map<String, JsonElement>.asMutable(): MutableJsonObject =
-    when (this) {
-        is MutableJsonObject -> this
-        is MutableMap<*, *> -> MutableJsonObject(this as MutableMap<String, JsonElement>)
-        else -> MutableJsonObject(this.toMutableMap())
-    }
+fun Map<String, JsonElement>.asMutable(): MutableJsonObject = if (this is MutableJsonObject) this else MutableJsonObject(this.toMutableMap())
 
 /**
  * 处理 [JsonObject]

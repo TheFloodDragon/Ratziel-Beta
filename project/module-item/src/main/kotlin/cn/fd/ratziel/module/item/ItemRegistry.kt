@@ -9,8 +9,8 @@ import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.api.registry.ComponentRegistry
 import cn.fd.ratziel.module.item.api.registry.ResolverRegistry
 import cn.fd.ratziel.module.item.api.registry.SerializerRegistry
-import cn.fd.ratziel.module.item.impl.builder.BasicItemResolver
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
+import cn.fd.ratziel.module.item.impl.builder.resolver.BasicItemResolver
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import cn.fd.ratziel.module.item.impl.component.ItemDurability
 import cn.fd.ratziel.module.item.impl.component.ItemMetadata
@@ -38,8 +38,7 @@ object ItemRegistry {
         Component.register(ItemSundry::class.java, ItemSundry)
         Component.register(ItemMetadata::class.java, ItemMetadata)
         // 注册默认物品解析器
-        Resolver.register(BasicItemResolver, 0)
-        Resolver.register(BasicItemResolver.CleanUp, Byte.MAX_VALUE)// 最后清除
+        Resolver.register(BasicItemResolver)
     }
 
     object Component : ComponentRegistry {

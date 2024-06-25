@@ -1,7 +1,7 @@
-package cn.fd.ratziel.module.item.impl.builder.tagResolvers
+package cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers
 
 import cn.fd.ratziel.function.argument.ArgumentFactory
-import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
+import cn.fd.ratziel.module.item.impl.builder.resolver.SectionTagResolver
 import taboolib.common.util.random
 
 /**
@@ -10,7 +10,7 @@ import taboolib.common.util.random
  * @author TheFloodDragon
  * @since 2024/5/18 16:22
  */
-object RandomResolver : ItemSectionResolver.TagResolver {
+object RandomResolver : SectionTagResolver {
 
     override val name = "random"
 
