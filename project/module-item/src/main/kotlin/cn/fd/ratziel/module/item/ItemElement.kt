@@ -4,7 +4,6 @@ import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.module.item.impl.ItemManager
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import kotlinx.coroutines.CoroutineScope
@@ -41,7 +40,9 @@ object ItemElement : ElementHandler {
 
     override fun handle(element: Element) {
 
-        val item = DefaultItemGenerator.build(element).get()
+        val generator = DefaultItemGenerator(element)
+
+        val item = generator.build().get()
 
         println(item.data)
 
@@ -53,7 +54,7 @@ object ItemElement : ElementHandler {
         println(test.getData())
 
         // 注册
-        ItemManager.registry[element.name] = element
+        ItemManager.registry[element.identifier] = generator
     }
 
     @SubscribeEvent

@@ -3,9 +3,9 @@
 package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.api.part.HideFlag
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
 import cn.fd.ratziel.module.item.impl.TheItemMaterial
+import cn.fd.ratziel.module.item.impl.component.HideFlag
 import org.bukkit.attribute.AttributeModifier
 import taboolib.common.util.Strings
 import taboolib.library.xseries.XEnchantment

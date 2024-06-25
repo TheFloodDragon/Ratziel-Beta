@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.function.argument.ArgumentFactory
 import cn.fd.ratziel.function.argument.DefaultArgumentFactory
 import cn.fd.ratziel.module.item.api.NeoItem
@@ -18,12 +17,12 @@ interface ItemGenerator {
      * 构建物品
      * @return [CompletableFuture] - [NeoItem]
      */
-    fun build(origin: Element): CompletableFuture<out NeoItem> = build(origin, DefaultArgumentFactory())
+    fun build(): CompletableFuture<out NeoItem> = build(DefaultArgumentFactory())
 
     /**
      * 构建物品 (带参数)
      * @return [CompletableFuture] - [NeoItem]
      */
-    fun build(origin: Element, arguments: ArgumentFactory): CompletableFuture<out NeoItem>
+    fun build(arguments: ArgumentFactory): CompletableFuture<out NeoItem>
 
 }
