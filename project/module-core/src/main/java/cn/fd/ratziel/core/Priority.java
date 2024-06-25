@@ -1,5 +1,7 @@
 package cn.fd.ratziel.core;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 /**
@@ -10,32 +12,34 @@ import java.util.Objects;
  */
 public class Priority<T> {
 
-    public Priority(Byte priority, T value) {
+    public Priority(@NotNull Byte priority, @NotNull T value) {
         this.priority = priority;
         this.value = value;
     }
 
+    @NotNull
     private Byte priority;
+    @NotNull
     private final T value;
 
     /**
      * 获取优先级
      */
-    public Byte getPriority() {
+    public @NotNull Byte getPriority() {
         return priority;
     }
 
     /**
      * 设置优先级
      */
-    public Byte setPriority(Byte priority) {
-        return this.priority = priority;
+    public void setPriority(@NotNull Byte priority) {
+        this.priority = priority;
     }
 
     /**
      * 获取值
      */
-    public T getValue() {
+    public @NotNull T getValue() {
         return value;
     }
 

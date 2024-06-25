@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture
  * @author TheFloodDragon
  * @since 2024/4/4 19:58
  */
-object DefaultItemSerializer : ItemKSerializer<ItemMeta> {
+object DefaultItemSerializer : ItemKSerializer<ItemMetadata> {
 
     val json = Json(baseJson) {
         serializersModule += SerializersModule {
@@ -46,20 +46,20 @@ object DefaultItemSerializer : ItemKSerializer<ItemMeta> {
      * 使用到的序列化器列表
      */
     val serializers = arrayOf(
-        ItemMeta.serializer(),
+        ItemMetadata.serializer(),
         ItemDisplay.serializer(),
         ItemDurability.serializer(),
         ItemSundry.serializer(),
     )
 
-    override val descriptor = ItemMeta.serializer().descriptor
+    override val descriptor = ItemMetadata.serializer().descriptor
 
     /**
      * 反序列化 (检查结构化解析)
      */
-    override fun deserialize(element: JsonElement): ItemMeta {
+    override fun deserialize(element: JsonElement): ItemMetadata {
         // 结构化解析
-        if (isStructured(element)) return json.decodeFromJsonElement(ItemMeta.serializer(), element)
+        if (isStructured(element)) return json.decodeFromJsonElement(ItemMetadata.serializer(), element)
         // 异步方法
         fun <T> asyncDecode(deserializer: DeserializationStrategy<T>, from: JsonElement = element) =
             CompletableFuture.supplyAsync({
@@ -71,20 +71,20 @@ object DefaultItemSerializer : ItemKSerializer<ItemMeta> {
         val sundry = asyncDecode(ItemSundry.serializer())
         val material = (element as? JsonObject)?.get(NODES_MATERIAL)
             ?.let { asyncDecode(ItemMaterialSerializer, it) } ?: CompletableFuture.completedFuture(ItemMaterial.EMPTY)
-        return ItemMeta(material.get(), display.get(), durability.get(), sundry.get())
+        return ItemMetadata(material.get(), display.get(), durability.get(), sundry.get())
     }
 
     /**
      * 序列化 (强制开启结构化解析)
      */
-    override fun serialize(component: ItemMeta) = forceStructured(json.encodeToJsonElement(ItemMeta.serializer(), component))
+    override fun serialize(component: ItemMetadata) = forceStructured(json.encodeToJsonElement(ItemMetadata.serializer(), component))
 
     /**
      * 占据的节点
      */
     val occupiedNodes = serializers.flatMap { it.descriptor.elementAlias }
 
-    val NODES_MATERIAL = ItemMeta.serializer().descriptor.getElementNames(ItemMeta::material.name)
+    val NODES_MATERIAL = ItemMetadata.serializer().descriptor.getElementNames(ItemMetadata::material.name)
 
     /**
      * 结构化解析

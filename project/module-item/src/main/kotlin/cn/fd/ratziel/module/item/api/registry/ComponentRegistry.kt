@@ -15,7 +15,7 @@ interface ComponentRegistry {
      * @param type 组件类型 (组件类)
      * @param transformer 绑定到组件上的物品转换器
      */
-    fun register(type: Class<*>, transformer: ItemTransformer<*>)
+    fun <T> register(type: Class<T>, transformer: ItemTransformer<T>)
 
     /**
      * 取消注册组件以及其转换器
@@ -24,17 +24,17 @@ interface ComponentRegistry {
     fun unregister(type: Class<*>)
 
     /**
-     * 判断此组件是否被注册过
-     * @param type 组件类型 (组件类)
-     */
-    fun isRegistered(type: Class<*>): Boolean
-
-    /**
      * 获取对应组件类型的转化器
      * @param type 组件类型 (组件类)
      * @return 对应组件类型的转化器, 当该组件未注册时, 返回空
      */
     fun <T> getTransformer(type: Class<T>): ItemTransformer<T>?
+
+    /**
+     * 判断此组件是否被注册过
+     * @param type 组件类型 (组件类)
+     */
+    fun isRegistered(type: Class<*>): Boolean
 
     /**
      * 获取注册表的 [Map] 形式

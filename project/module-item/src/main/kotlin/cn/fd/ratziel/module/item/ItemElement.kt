@@ -4,12 +4,12 @@ import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.module.item.api.ItemTransformer
+import cn.fd.ratziel.module.item.impl.builder.BasicItemResolver
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import cn.fd.ratziel.module.item.impl.component.ItemDurability
-import cn.fd.ratziel.module.item.impl.component.ItemMeta
+import cn.fd.ratziel.module.item.impl.component.ItemMetadata
 import cn.fd.ratziel.module.item.impl.component.ItemSundry
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import kotlinx.coroutines.CoroutineScope
@@ -17,8 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
-import taboolib.common.LifeCycle
-import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.Executors
 
@@ -71,22 +69,17 @@ object ItemElement : ElementHandler {
         ItemManager.registry.clear()
     }
 
-    private val defaultComponents = arrayOf<ItemTransformer<*>>(
-        ItemDisplay, ItemDurability, ItemSundry, ItemMeta
-    )
-
-    /**
-     * 注册默认序列化器、组件和组件转换器
-     */
-    @Awake(LifeCycle.ENABLE)
-    fun register() {
+    init {
         // 注册默认序列化器
         ItemRegistry.Serializer.register(DefaultItemSerializer)
         // 注册默认转换器
-        println(defaultComponents)
-        for (component in defaultComponents) {
-            ItemRegistry.Component.register(component::class.java, component)
-        }
+        ItemRegistry.Component.register(ItemDisplay::class.java, ItemDisplay)
+        ItemRegistry.Component.register(ItemDurability::class.java, ItemDurability)
+        ItemRegistry.Component.register(ItemSundry::class.java, ItemSundry)
+        ItemRegistry.Component.register(ItemMetadata::class.java, ItemMetadata)
+        // 注册默认物品解析器
+        ItemRegistry.Resolver.register(BasicItemResolver, 0)
+        ItemRegistry.Resolver.register(BasicItemResolver.CleanUp, Byte.MAX_VALUE)// 最后清除
     }
 
 }

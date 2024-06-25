@@ -1,22 +1,17 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.FutureFactory
-import cn.fd.ratziel.core.util.priority
-import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.argument.ArgumentFactory
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
-import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.util.toApexDataUncheck
 import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * DefaultItemGenerator
@@ -30,14 +25,6 @@ class DefaultItemGenerator(
      */
     val origin: Element
 ) : ItemGenerator {
-
-    /**
-     * 物品解析器
-     */
-    val resolvers = CopyOnWriteArraySet<Priority<ItemResolver>>().apply {
-        add(BasicItemResolver.priority())
-        add(BasicItemResolver.CleanUp priority Byte.MAX_VALUE)// 最后清除
-    }
 
 //    /**
 //     * 解析
@@ -92,7 +79,7 @@ class DefaultItemGenerator(
     fun build(data: ItemData, arguments: ArgumentFactory): CompletableFuture<RatzielItem> {
         var element = origin.property
         // Resolve
-        for (resolver in resolvers.sortPriority()) {
+        for (resolver in ItemRegistry.Resolver.getResolversSorted()) {
             try {
                 element = resolver.resolve(element, arguments)
             } catch (ex: Exception) {

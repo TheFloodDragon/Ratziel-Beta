@@ -29,6 +29,11 @@ interface SerializerRegistry {
     fun unregister(serializer: ItemSerializer<*>)
 
     /**
+     * 获取指定类型的序列化器
+     */
+    fun <T : ItemSerializer<*>> get(type: Class<T>): T?
+
+    /**
      * 判断指定类型的序列化器是否被注册过
      * @param type 序列化器类型
      */

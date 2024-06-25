@@ -14,13 +14,13 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 
 /**
- * ItemMeta
+ * ItemMetadata
  *
  * @author TheFloodDragon
  * @since 2024/4/4 20:10
  */
 @Serializable
-data class ItemMeta(
+data class ItemMetadata(
     @JsonNames("mat", "mats", "materials")
     var material: ItemMaterial = ItemMaterial.EMPTY,
     var display: ItemDisplay = ItemDisplay(),
@@ -28,18 +28,18 @@ data class ItemMeta(
     var sundry: ItemSundry = ItemSundry()
 ) {
 
-    companion object : ItemTransformer<ItemMeta> {
+    companion object : ItemTransformer<ItemMetadata> {
 
         override val node = OccupyNode.APEX_NODE
 
-        override fun detransform(data: ItemData) = ItemMeta(
+        override fun detransform(data: ItemData) = ItemMetadata(
             material = data.material,
             display = ItemDisplay.toApexComponent(data),
             durability = ItemDurability.toApexComponent(data),
             sundry = ItemSundry.toApexComponent(data),
         )
 
-        override fun transform(component: ItemMeta): ItemData {
+        override fun transform(component: ItemMetadata): ItemData {
             val data = TheItemData()
             data.material = component.material
             TheItemData.mergeShallow(data, ItemDisplay.toApexData(component.display))
