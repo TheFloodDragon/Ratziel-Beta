@@ -30,12 +30,12 @@ open class FutureFactory<T>(
     /**
      * 获取 [FutureFactory] 保存的所有任务
      */
-    open fun getTasks(): Collection<CompletableFuture<T>> = tasks
+    open fun getAllTasks(): Collection<CompletableFuture<T>> = tasks
 
     /**
      * 清空[FutureFactory] 保存的所有任务
      */
-    open fun clearTasks() = tasks.clear()
+    open fun clearAllTasks() = tasks.clear()
 
     /**
      * 提交任务
