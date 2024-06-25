@@ -6,7 +6,7 @@ import cn.fd.ratziel.core.util.putNonNull
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.OccupyNode
-import cn.fd.ratziel.module.item.impl.TheItemData
+import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.nbt.NBTByte
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTInt
@@ -46,7 +46,7 @@ data class ItemDurability(
             else if (unsure != null) this.unbreakable = NBTByte.adapt((unsure as NBTByte).content)
         }
 
-        override fun transform(component: ItemDurability): ItemData = TheItemData().apply {
+        override fun transform(component: ItemDurability): ItemData = ItemDataImpl().apply {
             tag.putNonNull(ItemSheet.REPAIR_COST, component.repairCost?.let { NBTInt(it) })
             tag.putNonNull(ItemSheet.MAX_DAMAGE, component.maxDurability?.let { NBTInt(it) })
             // 无法破坏部分的特殊处理

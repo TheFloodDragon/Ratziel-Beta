@@ -1,7 +1,9 @@
 package cn.fd.ratziel.module.item.impl.builder
 
+import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.FutureFactory
+import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.argument.ArgumentFactory
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
@@ -9,8 +11,8 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
+import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.impl.RatzielItem
-import cn.fd.ratziel.module.item.impl.TheItemData
 import cn.fd.ratziel.module.item.util.toApexDataUncheck
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
@@ -29,13 +31,13 @@ class DefaultItemGenerator(
     val origin: Element
 ) : ItemGenerator {
 
-    fun build(data: ItemData, arguments: ArgumentFactory): CompletableFuture<RatzielItem> {
+    fun build(sourceData: ItemData, arguments: ArgumentFactory): CompletableFuture<RatzielItem> {
         // Step1: Resolve (with priorities)
         val element = resolve(origin.property, arguments, ItemRegistry.Resolver.getResolversSorted())
-        // Step2: serialize (async)
+        // Step2: Serialize (async)
         val serializeFactory = FutureFactory<Any?>()
-        // Step3: transform (async)
-        val transformFactory = FutureFactory<ItemData?>()
+        // Step3: Transform (async)
+        val transformFactory = FutureFactory<Priority<ItemData>?>()
 
         // 遍历所有注册的序列化器
         for (serializer in ItemRegistry.Serializer.getSerializers()) {
@@ -47,16 +49,18 @@ class DefaultItemGenerator(
                 .also { transformFactory.submitTask(it) } // 提交转换任务
         }
 
-        // 合并所有数据 TODO 。
-        return transformFactory.thenApply { list ->
-            list.forEach {
-                if (it != null) TheItemData.mergeShallow(data, it, true)
+        // Step4: Merge all (sync 串行)
+        return transformFactory.thenApply { results ->
+            println(results)
+            // 优先级排列 (优先级低的在前面)
+            for (data in results.mapNotNull { it }.sortPriority().reversed()) {
+                ItemDataImpl.merge(sourceData, data, true) // 合并数据
             }
-            RatzielItem(data)
+            RatzielItem(sourceData) // 合成最终结果
         }
     }
 
-    override fun build(arguments: ArgumentFactory) = build(TheItemData(), arguments)
+    override fun build(arguments: ArgumentFactory) = build(ItemDataImpl(), arguments)
 
     private fun resolve(element: JsonElement, arguments: ArgumentFactory, resolvers: List<ItemResolver>): JsonElement {
         var result = element
@@ -81,19 +85,20 @@ class DefaultItemGenerator(
             }
         }, ItemElement.executor)
 
-    private fun createTransformTask(serializeTask: CompletableFuture<Any?>): CompletableFuture<ItemData?> =
+    private fun createTransformTask(serializeTask: CompletableFuture<Any?>): CompletableFuture<Priority<ItemData>?> =
         serializeTask.thenApplyAsync({ component ->
             // 若组件未空, 则不进行转换
             if (component == null) return@thenApplyAsync null
             // 获取转换器
-            val transformer = ItemRegistry.Component.get(component::class.java)
+            val prt = ItemRegistry.Component.getPriority(component::class.java) // 用于传递优先级
+            val transformer = prt?.value
             if (transformer == null) {
                 severe("Cannot find transformer for component \"$component\"!")
                 return@thenApplyAsync null
             }
             // 转换成以顶级节点为根节点的数据
             try {
-                transformer.toApexDataUncheck(component)
+                Priority(prt.priority, transformer.toApexDataUncheck(component)) // 封装成优先级对象后传递给合并阶段
             } catch (ex: Exception) {
                 severe("Failed to transform component by \"$transformer\"! Target component: $component")
                 ex.printStackTrace(); null

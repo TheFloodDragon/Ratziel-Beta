@@ -3,12 +3,12 @@ package cn.fd.ratziel.core
 import java.util.*
 
 /**
- * TheIdentifier
+ * IdentifierImpl
  *
  * @author TheFloodDragon
  * @since 2024/6/24 13:47
  */
-open class TheIdentifier(val unique: String) : Identifier {
+open class IdentifierImpl(val unique: String) : Identifier {
 
     constructor(uuid: UUID) : this(uuid.toString())
 

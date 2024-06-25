@@ -47,21 +47,25 @@ object ItemRegistry {
         /**
          * 物品组件注册表
          */
-        internal val registry: MutableMap<Class<*>, ItemTransformer<*>> = ConcurrentHashMap()
+        internal val registry: MutableMap<Class<*>, Priority<ItemTransformer<*>>> = ConcurrentHashMap()
 
-        override fun <T> register(type: Class<T>, transformer: ItemTransformer<out T>) {
-            registry[type] = transformer
+        override fun <T> register(type: Class<T>, transformer: ItemTransformer<out T>, priority: Byte) {
+            registry[type] = Priority(priority, transformer)
         }
 
         override fun unregister(type: Class<*>) {
             registry.remove(type)
         }
 
-        override fun <T> get(type: Class<T>): ItemTransformer<out T>? = uncheck(registry[type])
+        override fun <T> getPriority(type: Class<T>): Priority<ItemTransformer<out T>>? = uncheck(registry[type])
 
         override fun isRegistered(type: Class<*>) = registry.containsKey(type)
 
-        override fun getMap(): Map<Class<*>, ItemTransformer<*>> = registry
+        override fun getRegistry(): Map<Class<*>, ItemTransformer<*>> = buildMap {
+            getRegistryPriority().forEach { (k, p) -> put(k, p.value) }
+        }
+
+        override fun getRegistryPriority(): Map<Class<*>, Priority<ItemTransformer<*>>> = registry
 
     }
 
@@ -107,8 +111,6 @@ object ItemRegistry {
             registry.add(Priority(priority, resolver))
         }
 
-        fun register(resolver: ItemResolver) = register(resolver, 0)
-
         override fun unregister(type: Class<out ItemResolver>) {
             for (element in registry) {
                 if (element.value::class.java == type) registry.remove(element)
@@ -121,9 +123,7 @@ object ItemRegistry {
             }
         }
 
-        override fun <T : ItemResolver> get(type: Class<T>): T? = getWithPriority(type)?.value
-
-        fun <T : ItemResolver> getWithPriority(type: Class<T>): Priority<T>? = uncheck(registry.find { it::class.java == type })
+        override fun <T : ItemResolver> getPriority(type: Class<T>): Priority<T>? = uncheck(registry.find { it::class.java == type })
 
         override fun isRegistered(type: Class<out ItemResolver>) = registry.find { it.value::class.java == type } != null
 
@@ -131,9 +131,9 @@ object ItemRegistry {
 
         override fun getResolvers() = registry.map { it.value }
 
-        fun getResolversSorted(): List<ItemResolver> {
-            return registry.sortPriority()
-        }
+        override fun getResolversPriority(): Collection<Priority<ItemResolver>> = registry
+
+        fun getResolversSorted(): List<ItemResolver> = registry.sortPriority()
 
     }
 

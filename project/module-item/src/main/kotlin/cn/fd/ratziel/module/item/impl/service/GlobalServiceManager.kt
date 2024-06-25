@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.service
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.TheIdentifier
+import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.module.item.api.service.ItemService
 import cn.fd.ratziel.module.item.api.service.ItemServiceManager
 import java.util.*
@@ -34,12 +34,12 @@ object GlobalServiceManager : ItemServiceManager {
         groups[identifier] = value
     }
 
-    operator fun get(identifier: String) = get(TheIdentifier(identifier))
+    operator fun get(identifier: String) = get(IdentifierImpl(identifier))
 
-    operator fun get(identifier: UUID) = get(TheIdentifier(identifier))
+    operator fun get(identifier: UUID) = get(IdentifierImpl(identifier))
 
-    operator fun set(identifier: String, value: ItemService) = set(TheIdentifier(identifier), value)
+    operator fun set(identifier: String, value: ItemService) = set(IdentifierImpl(identifier), value)
 
-    operator fun set(identifier: UUID, value: ItemService) = set(TheIdentifier(identifier), value)
+    operator fun set(identifier: UUID, value: ItemService) = set(IdentifierImpl(identifier), value)
 
 }

@@ -5,12 +5,12 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 
 /**
- * TheItemData
+ * ItemDataImpl
  *
  * @author TheFloodDragon
  * @since 2024/5/5 13:33
  */
-data class TheItemData(
+data class ItemDataImpl(
     /**
      * 物品材料
      */
@@ -27,7 +27,15 @@ data class TheItemData(
 
     companion object {
 
-        val EMPTY = TheItemData()
+        val EMPTY = ItemDataImpl()
+
+        /**
+         * 将 [target] 合并到 [source] 中
+         */
+        fun merge(source: ItemData, target: ItemData, replace: Boolean = true) {
+            mergeWithoutTag(source, target)
+            source.tag.merge(target.tag, replace)
+        }
 
         /**
          * 将 [target] 合并到 [source] 中 (不合并[tag])

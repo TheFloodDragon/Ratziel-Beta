@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.api.registry
 
+import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 
 /**
@@ -12,10 +13,16 @@ interface ResolverRegistry {
 
     /**
      * 注册物品解析器
-     * @param priority 优先级
      * @param resolver 物品解析器
+     * @param priority 优先级
      */
     fun register(resolver: ItemResolver, priority: Byte)
+
+    /**
+     * 注册物品解析器
+     * @param resolver 物品解析器
+     */
+    fun register(resolver: ItemResolver) = register(resolver, Priority.DEFAULT_PRIORITY)
 
     /**
      * 取消注册指定类型的解析器
@@ -32,7 +39,12 @@ interface ResolverRegistry {
     /**
      * 获取指定类型的物品解析器
      */
-    fun <T : ItemResolver> get(type: Class<T>): T?
+    fun <T : ItemResolver> get(type: Class<T>): T? = getPriority(type)?.value
+
+    /**
+     * 获取指定类型的物品解析器 - [Priority]
+     */
+    fun <T : ItemResolver> getPriority(type: Class<T>): Priority<T>?
 
     /**
      * 判断指定类型的解析器是否被注册过
@@ -50,5 +62,10 @@ interface ResolverRegistry {
      * 获取所有注册的解析器
      */
     fun getResolvers(): Collection<ItemResolver>
+
+    /**
+     * 获取所有注册的解析器 - [Priority]
+     */
+    fun getResolversPriority(): Collection<Priority<ItemResolver>>
 
 }

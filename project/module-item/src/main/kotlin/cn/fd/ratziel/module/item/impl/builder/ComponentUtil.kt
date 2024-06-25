@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.impl.TheItemData
+import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTData
 
@@ -22,7 +22,7 @@ object ComponentUtil {
         val data = transformer.transform(component) // 获取底层数据
         val newTag = NBTCompound() // 创建新NBT
         setByNode(newTag, transformer.node, data.tag) // 设置新NBT
-        return TheItemData(data.material, newTag, data.amount)
+        return ItemDataImpl(data.material, newTag, data.amount)
     }
 
     /**
@@ -30,7 +30,7 @@ object ComponentUtil {
      */
     fun <T> toComponent(data: ItemData, transformer: ItemTransformer<T>): T {
         val find = findByNode(data.tag, transformer.node)
-        return transformer.detransform(TheItemData(data.material, find, data.amount))
+        return transformer.detransform(ItemDataImpl(data.material, find, data.amount))
     }
 
     fun findByNode(source: NBTCompound, tailNode: ItemNode) = findByNode(source, fold(tailNode))

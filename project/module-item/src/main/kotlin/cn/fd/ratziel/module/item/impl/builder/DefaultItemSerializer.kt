@@ -4,7 +4,7 @@ import cn.fd.ratziel.core.serialization.*
 import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.impl.ItemKSerializer
+import cn.fd.ratziel.module.item.api.builder.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.nbt.NBTData

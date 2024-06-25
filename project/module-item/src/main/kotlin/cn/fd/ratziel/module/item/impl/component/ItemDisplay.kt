@@ -9,7 +9,7 @@ import cn.fd.ratziel.core.util.putNonNull
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.OccupyNode
-import cn.fd.ratziel.module.item.impl.TheItemData
+import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.nbt.NBTList
 import cn.fd.ratziel.module.item.nbt.NBTString
 import cn.fd.ratziel.module.item.nms.ItemSheet
@@ -67,7 +67,7 @@ data class ItemDisplay(
             } else Message.transformToJson(component)
 
 
-        override fun transform(component: ItemDisplay) = TheItemData().apply {
+        override fun transform(component: ItemDisplay) = ItemDataImpl().apply {
             tag.putNonNull(ItemSheet.DISPLAY_NAME, componentToData(component.name))
             tag.putNonNull(ItemSheet.DISPLAY_LORE, component.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) })
             tag.putNonNull(ItemSheet.DISPLAY_LOCAL_NAME, componentToData(component.localizedName))

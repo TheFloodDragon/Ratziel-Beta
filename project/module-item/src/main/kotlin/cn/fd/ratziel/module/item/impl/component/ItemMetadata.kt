@@ -6,7 +6,7 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.OccupyNode
-import cn.fd.ratziel.module.item.impl.TheItemData
+import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.util.toApexComponent
 import cn.fd.ratziel.module.item.util.toApexData
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -40,11 +40,11 @@ data class ItemMetadata(
         )
 
         override fun transform(component: ItemMetadata): ItemData {
-            val data = TheItemData()
+            val data = ItemDataImpl()
             data.material = component.material
-            TheItemData.mergeShallow(data, ItemDisplay.toApexData(component.display))
-            TheItemData.mergeShallow(data, ItemDurability.toApexData(component.durability))
-            TheItemData.mergeShallow(data, ItemSundry.toApexData(component.sundry))
+            ItemDataImpl.mergeShallow(data, ItemDisplay.toApexData(component.display))
+            ItemDataImpl.mergeShallow(data, ItemDurability.toApexData(component.durability))
+            ItemDataImpl.mergeShallow(data, ItemSundry.toApexData(component.sundry))
             return data
         }
 

@@ -17,6 +17,8 @@ public class Priority<T> {
         this.value = value;
     }
 
+    public static final Byte DEFAULT_PRIORITY = 0;
+
     @NotNull
     private Byte priority;
     @NotNull
