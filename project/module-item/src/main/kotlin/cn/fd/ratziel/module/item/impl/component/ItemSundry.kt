@@ -23,7 +23,7 @@ import taboolib.module.nms.MinecraftVersion
 typealias HideFlag = org.bukkit.inventory.ItemFlag
 
 /**
- * VItemSundry
+ * ItemSundry
  *
  * @author TheFloodDragon
  * @since 2024/5/3 21:06

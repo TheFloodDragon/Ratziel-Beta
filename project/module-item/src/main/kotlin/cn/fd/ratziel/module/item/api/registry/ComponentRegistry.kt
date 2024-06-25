@@ -15,7 +15,7 @@ interface ComponentRegistry {
      * @param type 组件类型 (组件类)
      * @param transformer 绑定到组件上的物品转换器
      */
-    fun <T> register(type: Class<T>, transformer: ItemTransformer<T>)
+    fun register(type: Class<*>, transformer: ItemTransformer<*>)
 
     /**
      * 取消注册组件以及其转换器

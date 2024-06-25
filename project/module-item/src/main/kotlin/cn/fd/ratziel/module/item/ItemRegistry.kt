@@ -22,8 +22,7 @@ object ItemRegistry {
          */
         internal val componentRegistry: MutableMap<Class<*>, ItemTransformer<*>> = ConcurrentHashMap()
 
-
-        override fun <T> register(type: Class<T>, transformer: ItemTransformer<T>) {
+        override fun register(type: Class<*>, transformer: ItemTransformer<*>) {
             componentRegistry[type] = transformer
         }
 

@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 
 /**
- * VItemMeta
+ * ItemMeta
  *
  * @author TheFloodDragon
  * @since 2024/4/4 20:10
