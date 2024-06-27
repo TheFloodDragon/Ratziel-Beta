@@ -20,10 +20,8 @@ object ComponentUtil {
      */
     fun <T> toData(component: T, transformer: ItemTransformer<T>): ItemData {
         val data = transformer.transform(component) // 获取底层数据
-        println(data)
         val newTag = NBTCompound() // 创建新NBT
         setByNode(newTag, transformer.node, data.tag) // 设置新NBT
-        println(newTag)
         return ItemDataImpl(data.material, newTag, data.amount)
     }
 
@@ -46,15 +44,20 @@ object ComponentUtil {
     }
 
     fun setByNode(source: NBTCompound, tailNode: ItemNode, data: NBTData) {
-        val node = tailNode.parent // 去掉最后一层节点
-        if(node== ItemNode.ROOT) return // 若为尾节点顶级节点, 则直接返回
-        val find = findByNode(source, node) // 寻找节点
-        find[tailNode.name] = data // 设置最后一层
+        // 根节点处理
+        if(tailNode == ItemNode.ROOT) {
+            // 若同为复合类型, 则进行浅合并 (替换)
+            if(data is NBTCompound) source.mergeShallow(data, true)
+        } else {
+            val node = tailNode.parent // 去掉最后一层节点
+            val find = findByNode(source, node) // 寻找节点
+            find[tailNode.name] = data // 设置最后一层
+        }
     }
 
     fun fold(tailNode: ItemNode) = buildList {
         var node: ItemNode = tailNode
-        while (node.parent != ItemNode.ROOT) {
+        while (node != ItemNode.ROOT) {
             add(node)
             node = node.parent
         }
