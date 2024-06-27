@@ -14,8 +14,20 @@ interface ItemNode {
     val name: String
 
     /**
-     * 上级节点 (空代表最高级)
+     * 父节点
      */
-    val parent: ItemNode?
+    val parent: ItemNode
+
+    companion object {
+
+        /**
+         * 根节点
+         */
+        val ROOT: ItemNode = object : ItemNode {
+            override val name = "\$R\$O\$O\$T\$"
+            override val parent: ItemNode = this
+        }
+
+    }
 
 }

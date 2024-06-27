@@ -51,7 +51,6 @@ class DefaultItemGenerator(
 
         // Step4: Merge all (sync 串行)
         return transformFactory.thenApply { results ->
-            println(results)
             // 优先级排列 (优先级低的在前面)
             for (data in results.mapNotNull { it }.sortPriority().reversed()) {
                 ItemDataImpl.merge(sourceData, data, true) // 合并数据

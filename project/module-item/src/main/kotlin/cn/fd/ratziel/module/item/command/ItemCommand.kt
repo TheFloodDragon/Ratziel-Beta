@@ -19,7 +19,7 @@ import taboolib.platform.util.giveItem
  */
 @CommandHeader(
     name = "r-item",
-    aliases = [],
+    aliases = ["ri"],
     permission = "ratziel.command.item",
     description = "物品管理命令"
 )
@@ -30,7 +30,7 @@ object ItemCommand {
 
     /**
      * 命令 - 给予物品
-     * 用法: /r-item give <id> (player) (amount)
+     * 用法: /r-item give <id> [player] [amount]
      */
     @CommandBody
     val give = subCommand {
@@ -41,7 +41,7 @@ object ItemCommand {
                     execute<ProxyPlayer> { sender, ctx, _ ->
                         val id = ctx["id"]
                         val amount = ctx.intOrNull("amount") ?: 1
-                        val players = ctx.players("player")
+                        val players = ctx.playersOrNull("player") ?: listOf(sender)
                         players.forEach { player ->
                             val generator = ItemManager.getByName(id) ?: TODO("ERROR")
                             val args = DefaultArgumentFactory().apply {

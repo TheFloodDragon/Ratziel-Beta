@@ -30,8 +30,6 @@ interface ItemMaterial {
 
     companion object {
 
-        private const val EMPTY_ID = -10086
-
         /**
          * 空材料
          */
@@ -39,13 +37,13 @@ interface ItemMaterial {
             override val name = "AIR"
             override val maxStackSize = 0
             override val maxDurability = 0
-            override val id = EMPTY_ID
+            override val id = -10086
         }
 
         /**
          * 判断材料是否为空
          */
-        fun isEmpty(material: ItemMaterial) = material.id == EMPTY_ID
+        fun isEmpty(material: ItemMaterial) = material.id == EMPTY.id
 
     }
 

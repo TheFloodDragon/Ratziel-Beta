@@ -4,8 +4,8 @@
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.impl.OccupyNode
 import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.nms.ItemSheet
@@ -76,7 +76,7 @@ data class ItemSundry(
 
     companion object : ItemTransformer<ItemSundry> {
 
-        override val node = OccupyNode.APEX_NODE
+        override val node = ItemNode.ROOT
 
         override fun transform(component: ItemSundry): ItemData = ItemDataImpl().apply {
             val itemMeta = RefItemMeta()

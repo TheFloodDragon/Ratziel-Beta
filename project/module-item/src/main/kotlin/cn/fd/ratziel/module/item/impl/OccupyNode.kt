@@ -11,17 +11,17 @@ import cn.fd.ratziel.module.item.nms.ItemSheet
  */
 data class OccupyNode(
     override val name: String,
-    override val parent: ItemNode?
+    override val parent: ItemNode
 ) : ItemNode {
+
+    constructor(name: String) : this(name, ItemNode.ROOT)
 
     companion object {
 
         /**
-         * 一些默认节点
+         * 默认节点 - [CUSTOM_NODE]
          */
-        val APEX_NODE = OccupyNode("!", null)
-
-        val CUSTOM_NODE = OccupyNode(ItemSheet.CUSTOM_DATA, APEX_NODE)
+        val CUSTOM_NODE = OccupyNode(ItemSheet.CUSTOM_DATA)
 
     }
 

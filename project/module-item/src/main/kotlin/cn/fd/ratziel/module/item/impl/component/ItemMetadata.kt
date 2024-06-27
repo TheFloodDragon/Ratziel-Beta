@@ -4,8 +4,8 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.impl.OccupyNode
 import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.util.toApexComponent
 import cn.fd.ratziel.module.item.util.toApexData
@@ -30,7 +30,7 @@ data class ItemMetadata(
 
     companion object : ItemTransformer<ItemMetadata> {
 
-        override val node = OccupyNode.APEX_NODE
+        override val node = ItemNode.ROOT
 
         override fun detransform(data: ItemData) = ItemMetadata(
             material = data.material,

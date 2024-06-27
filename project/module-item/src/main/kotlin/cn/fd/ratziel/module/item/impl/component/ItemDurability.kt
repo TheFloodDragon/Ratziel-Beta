@@ -4,8 +4,8 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.core.util.putNonNull
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.impl.OccupyNode
 import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.nbt.NBTByte
 import cn.fd.ratziel.module.item.nbt.NBTCompound
@@ -35,7 +35,7 @@ data class ItemDurability(
 
     companion object : ItemTransformer<ItemDurability> {
 
-        override val node = OccupyNode.APEX_NODE
+        override val node = ItemNode.ROOT
 
         override fun detransform(data: ItemData): ItemDurability = ItemDurability().apply {
             data.castThen<NBTInt>(ItemSheet.REPAIR_COST) { this.repairCost = it.content }
