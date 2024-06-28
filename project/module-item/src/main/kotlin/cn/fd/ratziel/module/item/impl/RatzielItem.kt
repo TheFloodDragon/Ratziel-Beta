@@ -14,14 +14,14 @@ import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
  */
 open class RatzielItem : NeoItem {
 
+    constructor(data: ItemData) : this(IdentifierImpl(), data)
+
+    constructor() : this(ItemDataImpl())
+
     constructor(identifier: Identifier, data: ItemData) {
         this.identifier = identifier
         this.data = data
     }
-
-    constructor(data: ItemData) : this(IdentifierImpl(), data)
-
-    constructor() : this(ItemDataImpl())
 
     /**
      * 物品唯一标识符

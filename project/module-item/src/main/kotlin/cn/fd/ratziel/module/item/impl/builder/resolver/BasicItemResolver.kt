@@ -5,7 +5,7 @@ import cn.fd.ratziel.core.serialization.handlePrimitives
 import cn.fd.ratziel.core.util.priority
 import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.core.util.splitNonEscaped
-import cn.fd.ratziel.function.argument.ArgumentFactory
+import cn.fd.ratziel.function.argument.ContextArgument
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers.PapiResolver
@@ -34,14 +34,14 @@ object BasicItemResolver : ItemResolver {
         BasicTagResolver priority 99,
     )
 
-    override fun resolve(element: JsonElement, arguments: ArgumentFactory): JsonElement =
+    override fun resolve(element: JsonElement, arguments: ContextArgument): JsonElement =
         // 过滤节点
         CleanUpUtil.handleOnFilter(element, accessibleNodes) { filtered ->
             // 处理 JsonPrimitive
             filtered.value.handlePrimitives { resolvePrimitive(it, arguments) }
         }
 
-    fun resolvePrimitive(element: JsonPrimitive, arguments: ArgumentFactory): JsonElement {
+    fun resolvePrimitive(element: JsonPrimitive, arguments: ContextArgument): JsonElement {
         var handle = element.content
         // 遍历字符串解析器处理
         for (resolver in resolvers.sortPriority()) {
@@ -69,7 +69,7 @@ object BasicItemResolver : ItemResolver {
          */
         val reader = VariableReader("{", "}")
 
-        override fun resolve(element: String, arguments: ArgumentFactory): String =
+        override fun resolve(element: String, arguments: ContextArgument): String =
             reader.readToFlatten(element).joinToString("") {
                 // 如果是标签, 则通过标签解析器解析
                 if (it.isVariable) {
@@ -80,7 +80,7 @@ object BasicItemResolver : ItemResolver {
         /**
          * 寻找 [SectionTagResolver] 并处理
          */
-        fun handle(source: String, arguments: ArgumentFactory): String {
+        fun handle(source: String, arguments: ContextArgument): String {
             // 分割
             val split = source.splitNonEscaped(ARGUMENT_SEPRATION_SIGN)
             // 获取名称

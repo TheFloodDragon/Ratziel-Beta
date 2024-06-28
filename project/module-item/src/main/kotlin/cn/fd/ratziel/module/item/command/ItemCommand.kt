@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.command
 
-import cn.fd.ratziel.function.argument.DefaultArgumentFactory
-import cn.fd.ratziel.function.argument.PlayerArgument
+import cn.fd.ratziel.function.argument.DefaultContextArgument
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import org.bukkit.entity.Player
@@ -62,9 +61,7 @@ object ItemCommand {
         // 获取物品生成器
         val generator = ItemManager.getByName(id)!!
         // 参数
-        val args = DefaultArgumentFactory().apply {
-            add(PlayerArgument(player))
-        }
+        val args = DefaultContextArgument().apply { add(player) }
         // 开始生成物品
         generator.build(args).thenAccept {
             // 将生成结果打包成 BukkitItemStack

@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.function.argument.ArgumentFactory
-import cn.fd.ratziel.function.argument.DefaultArgumentFactory
+import cn.fd.ratziel.function.argument.ContextArgument
+import cn.fd.ratziel.function.argument.DefaultContextArgument
 
 /**
  * ArgumentResolver
@@ -14,11 +14,11 @@ interface ArgumentResolver<E, T> {
     /**
      * 解析元素 (带参数)
      */
-    fun resolve(element: E, arguments: ArgumentFactory): T
+    fun resolve(element: E, arguments: ContextArgument): T
 
     /**
      * 解析元素 (不带参数)
      */
-    fun resolve(element: E): T = resolve(element, DefaultArgumentFactory())
+    fun resolve(element: E): T = resolve(element, DefaultContextArgument())
 
 }

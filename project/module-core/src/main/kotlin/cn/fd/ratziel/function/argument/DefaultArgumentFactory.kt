@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @author TheFloodDragon
  * @since 2024/5/1 13:55
  */
+@Deprecated("Use DefaultContextArgument", ReplaceWith("DefaultContextArgument"))
 open class DefaultArgumentFactory(
     protected open val list: CopyOnWriteArrayList<Argument<*>>
 ) : ArgumentFactory, MutableList<Argument<*>> by list {

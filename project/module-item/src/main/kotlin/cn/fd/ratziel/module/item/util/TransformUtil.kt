@@ -5,7 +5,6 @@ package cn.fd.ratziel.module.item.util
 import cn.fd.ratziel.function.util.uncheck
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.impl.builder.ComponentUtil
 import cn.fd.ratziel.module.item.nbt.NBTData
 import java.util.function.Consumer
 

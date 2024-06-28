@@ -48,3 +48,11 @@ inline fun <reified T : Any, R, V : Any> Argument<V>.ascertain(
     onTrue: Function<Argument<T>, R>,
     onFalse: Function<Argument<V>, R>
 ): R = this.ascertain(T::class.java, onTrue, onFalse)
+
+inline fun <reified T> ContextArgument.pop() = pop(T::class.java)
+
+inline fun <reified T> ContextArgument.popAll() = popAll(T::class.java)
+
+inline fun <reified T> ContextArgument.popOr(default: T) = popOr(T::class.java, default)
+
+inline fun <reified T> ContextArgument.popOrNull() = popOrNull(T::class.java)

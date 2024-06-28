@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl.builder
+package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemNode
@@ -43,11 +43,21 @@ object ComponentUtil {
         return find
     }
 
+    fun findByNodeOrNull(source: NBTCompound, nodes: Iterable<ItemNode>): NBTCompound? {
+        var find = source
+        for (node in nodes) {
+            find = (find[node.name] as? NBTCompound) ?: return null
+        }
+        return find
+    }
+
+    fun findByNodeOrNull(source: NBTCompound, tailNode: ItemNode): NBTCompound? = findByNodeOrNull(source, fold(tailNode))
+
     fun setByNode(source: NBTCompound, tailNode: ItemNode, data: NBTData) {
         // 根节点处理
-        if(tailNode == ItemNode.ROOT) {
+        if (tailNode == ItemNode.ROOT) {
             // 若同为复合类型, 则进行浅合并 (替换)
-            if(data is NBTCompound) source.mergeShallow(data, true)
+            if (data is NBTCompound) source.mergeShallow(data, true)
         } else {
             val node = tailNode.parent // 去掉最后一层节点
             val find = findByNode(source, node) // 寻找节点
