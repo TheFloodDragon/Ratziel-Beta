@@ -5,11 +5,15 @@ import cn.fd.ratziel.function.argument.PlayerArgument
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.*
 import taboolib.common.platform.function.submit
 import taboolib.expansion.createHelper
+import taboolib.module.lang.sendLang
 import taboolib.platform.util.giveItem
+import java.util.concurrent.CompletableFuture
 
 /**
  * ItemCommand
@@ -30,34 +34,61 @@ object ItemCommand {
 
     /**
      * 命令 - 给予物品
-     * 用法: /r-item give <id> [player] [amount]
+     * 用法: /r-item give <id> [<player>] [<amount>]
      */
     @CommandBody
     val give = subCommand {
         dynamic("id") {
             suggest { ItemManager.registry.keys.map { it.name } }
+            execute<ProxyPlayer> { sender, ctx, _ ->
+                cmdGive(sender, listOf(sender), ctx["id"], 1)
+            }
             player(optional = true) {
+                execute<ProxyCommandSender> { sender, ctx, _ ->
+                    cmdGive(sender, ctx.players("player"), ctx["id"], 1)
+                }
                 int("amount", optional = true) {
                     execute<ProxyPlayer> { sender, ctx, _ ->
-                        val id = ctx["id"]
-                        val amount = ctx.intOrNull("amount") ?: 1
-                        val players = ctx.playersOrNull("player") ?: listOf(sender)
-                        players.forEach { player ->
-                            val generator = ItemManager.getByName(id) ?: TODO("ERROR")
-                            val args = DefaultArgumentFactory().apply {
-                                add(PlayerArgument(player))
-                            }
-                            generator.build(args).thenAccept {
-                                val item = RefItemStack(it.data).getAsBukkit().apply { setAmount(amount) }
-                                println(item)
-                                submit {
-                                    player.cast<Player>().giveItem(item)
-                                }
-                            }
-                        }
+                        cmdGive(sender, ctx.players("player"), ctx["id"], ctx.int("amount"))
                     }
                 }
             }
+        }
+    }
+
+
+    private fun giveById(player: Player, id: String, amount: Int): CompletableFuture<ItemStack> {
+        val future = CompletableFuture<ItemStack>()
+        // 获取物品生成器
+        val generator = ItemManager.getByName(id)!!
+        // 参数
+        val args = DefaultArgumentFactory().apply {
+            add(PlayerArgument(player))
+        }
+        // 开始生成物品
+        generator.build(args).thenAccept {
+            // 将生成结果打包成 BukkitItemStack
+            val item = RefItemStack(it.data).getAsBukkit().apply { setAmount(amount) }
+            submit {
+                // 给予物品
+                player.giveItem(item)
+                future.complete(item)
+            }
+        }
+        return future
+    }
+
+    private fun cmdGive(sender: ProxyCommandSender, players: List<ProxyPlayer>, id: String, amount: Int) {
+        if (players.size == 1) {
+            val player = players[0].cast<Player>()
+            giveById(player, id, amount)
+                .thenRun { sender.sendLang("Item-Give", player.name, id, amount) }
+        } else {
+            val futures = players.map { player ->
+                giveById(player.cast(), id, amount)
+            }
+            CompletableFuture.allOf(*futures.toTypedArray())
+                .thenRun { sender.sendLang("Item-Give-All", id, amount) }
         }
     }
 

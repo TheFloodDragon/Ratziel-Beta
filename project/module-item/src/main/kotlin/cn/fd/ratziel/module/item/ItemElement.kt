@@ -8,9 +8,6 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import org.bukkit.Material
-import org.bukkit.enchantments.Enchantment
-import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.Executors
 
@@ -51,12 +48,10 @@ object ItemElement : ElementHandler {
 
         println(item.data)
 
-        val test = RefItemStack(ItemStack(Material.BOW).apply { addUnsafeEnchantment(Enchantment.EFFICIENCY, 1) })
-        println(test)
-        println(test.getData())
-        test.setData(item.data.tag)
-        println(test)
-        println(test.getData())
+        val ri =  RefItemStack(item.data)
+        println(ri)
+        val bi = ri.getAsBukkit()
+        println(bi)
 
         // 注册
         ItemManager.registry[element.identifier] = generator

@@ -4,10 +4,12 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
+import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.impl.ItemMaterialImpl
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
+import taboolib.library.reflex.Reflex.Companion.unsafeInstance
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
@@ -25,9 +27,7 @@ class RefItemStack(raw: Any) {
     constructor() : this(newObc())
 
     constructor(data: ItemData) : this() {
-        setMaterial(data.material)
-        setData(data.tag)
-        setAmount(data.amount)
+        setData(data)
     }
 
     /**
@@ -37,23 +37,43 @@ class RefItemStack(raw: Any) {
     private var handle: Any = when {
         isObcClass(raw::class.java) -> raw // CraftItemStack
         isNmsClass(raw::class.java) -> newObc(raw) // net.minecraft.world.item.ItemStack
-        /*
-        烦人玩意 - an impl of interface BukkitItemStack
-        用构造函数和asCraftCopy时handle都可能会null(它不会转换信息), 只有用asNMSCopy将其转换成NMS的ItemStack才能保留其信息
-         */
-        BukkitItemStack::class.java.isAssignableFrom(raw::class.java) -> newObc(asNMSCopy(raw))
+        BukkitItemStack::class.java.isAssignableFrom(raw::class.java) -> newObc(raw) // an impl of interface BukkitItemStack
         else -> throw UnsupportedTypeException(raw) // Unsupported Type
     }
 
     /**
-     * 获取物品NBT数据
+     * 获取物品NBT [NBTCompound]
      */
-    fun getData(): NBTCompound? = NMSItem.INSTANCE.getItemNBT(getAsNms())
+    fun getTag(): NBTCompound? {
+        return NMSItem.INSTANCE.getItemNBT(getAsNms() ?: return null)
+    }
 
     /**
-     * 设置物品NBT数据
+     * 设置物品NBT标签 [NBTCompound]
      */
-    fun setData(data: NBTCompound) = NMSItem.INSTANCE.setItemNBT(getAsNms(), data)
+    fun setTag(data: NBTCompound) {
+        NMSItem.INSTANCE.setItemNBT(getAsNms() ?: return, data)
+    }
+
+    /**
+     * 获取物品数据
+     */
+    fun getData(): ItemData? {
+        return ItemDataImpl(
+            material = ItemMaterialImpl(getMaterial()),
+            tag = getTag() ?: return null,
+            amount = getAmount()
+        )
+    }
+
+    /**
+     * 设置物品数据 [ItemData]
+     */
+    fun setData(data: ItemData) {
+        setMaterial(data.material)
+        setTag(data.tag)
+        setAmount(data.amount)
+    }
 
     /**
      * 获取物品材料
@@ -114,7 +134,7 @@ class RefItemStack(raw: Any) {
     /**
      * 获取NMS形式实例 (net.minecraft.world.ItemStack)
      */
-    fun getAsNms(): Any = InternalUtil.obcHandleField.get(handle)!!
+    fun getAsNms(): Any? = InternalUtil.obcHandleField.get(handle)
 
     /**
      * 获取CraftBukkit形式实例 (CraftItemStack)
@@ -148,7 +168,14 @@ class RefItemStack(raw: Any) {
          */
         val obcClass by lazy { obcClass("inventory.CraftItemStack") }
 
-        fun newObc() = obcClass.invokeConstructor()
+        /**
+         * private CraftItemStack(net.minecraft.world.item.ItemStack item) {
+         *     this.handle = item;
+         * }
+         * 而在 [BukkitMaterial] 为 AIR 时, handle 为 null,
+         * 所以直接通过 [unsafeInstance] 构造了
+         */
+        fun newObc() = obcClass.unsafeInstance()
 
         /**
          * private CraftItemStack(net.minecraft.world.item.ItemStack item)
@@ -210,22 +237,22 @@ class RefItemStack(raw: Any) {
 
         // net.minecraft.world.item.ItemStack handle;
         val obcHandleField by lazy {
-            ReflexClass.of(obcClass).getField("handle")
+            ReflexClass.of(obcClass).structure.getField("handle")
         }
 
         // public CraftItemStack clone()
         val obcCloneMethod by lazy {
-            ReflexClass.of(obcClass).getMethod("clone")
+            ReflexClass.of(obcClass).structure.getMethod("clone")
         }
 
         // public Material getType()
         // public int getTypeId()
         val obcGetMaterialMethod by lazy {
-            ReflexClass.of(obcClass).getMethod("getType")
+            ReflexClass.of(obcClass).structure.getMethod("getType")
         }
 
         val obcGetMaterialMethodLegacy by lazy {
-            ReflexClass.of(obcClass).getMethod("getTypeId")
+            ReflexClass.of(obcClass).structure.getMethod("getTypeId")
         }
 
         // public void setType(Material type)
@@ -240,7 +267,7 @@ class RefItemStack(raw: Any) {
 
         // public int getAmount()
         val obcGetAmountMethod by lazy {
-            ReflexClass.of(obcClass).getMethod("getAmount")
+            ReflexClass.of(obcClass).structure.getMethod("getAmount")
         }
 
         // public void setAmount(int var1)
@@ -250,12 +277,12 @@ class RefItemStack(raw: Any) {
 
         // public int getMaxStackSize()
         val obcGetMaxStackSizeMethod by lazy {
-            ReflexClass.of(obcClass).getMethod("getMaxStackSize")
+            ReflexClass.of(obcClass).structure.getMethod("getMaxStackSize")
         }
 
         // public short getDurability()
         val obcGetDamageMethod by lazy {
-            ReflexClass.of(obcClass).getMethod("getDurability")
+            ReflexClass.of(obcClass).structure.getMethod("getDurability")
         }
 
         // public void setDurability(short var1)

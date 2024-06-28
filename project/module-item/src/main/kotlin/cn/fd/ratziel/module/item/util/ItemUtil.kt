@@ -19,8 +19,8 @@ fun PlayerInventory.getItemBySlot(slot: String): ItemStack? = inferEquipmentSlot
  */
 fun PlayerInventory.handleItemTag(slot: String, action: Consumer<NBTCompound>): NBTCompound? {
     val item = RefItemStack(getItemBySlot(slot) ?: return null)
-    val tag = item.getData() ?: return null
+    val tag = item.getTag() ?: return null
     action.accept(tag)
-    item.setData(tag)
+    item.setTag(tag)
     return tag
 }

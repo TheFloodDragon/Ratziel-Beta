@@ -1,3 +1,7 @@
+# Item Command
+Item-Give: '&8[&6R&8] &7Successfully give player &e{0} &7a item &e{1}&a×{2} &7!'
+Item-Give-All: '&8[&6R&8] &7Successfully give all player the item &e{0}&a×{1} &7!'
+
 # NBT Tags
 NBTFormat-Entry-Key:
   type: json
