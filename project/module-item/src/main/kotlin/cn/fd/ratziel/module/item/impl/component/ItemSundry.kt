@@ -41,22 +41,24 @@ data class ItemSundry(
     /**
      * 添加物品隐藏标签
      */
-    fun addHideFlags(vararg flags: HideFlag) = fetchHideFlags().addAll(flags)
+    fun addHideFlags(vararg flags: HideFlag) = (hideFlags ?: HashSet<HideFlag>().also { hideFlags = it }).addAll(flags)
 
     /**
      * 删除物品隐藏标签
      */
-    fun removeHideFlags(vararg flags: HideFlag) = fetchHideFlags().removeAll(flags.toSet())
+    fun removeHideFlags(vararg flags: HideFlag) = hideFlags?.removeAll(flags.toSet())
 
     /**
      * 获取属性修饰符
      */
-    fun getAttributeModifier(attribute: Attribute) = fetchBukkitAttributes().computeIfAbsent(attribute) { mutableListOf() }
+    fun getAttributeModifier(attribute: Attribute) = bukkitAttributes?.get(attribute)
 
     /**
      * 添加属性修饰符
      */
-    fun addAttributeModifiers(attribute: Attribute, vararg modifiers: AttributeModifier) = getAttributeModifier(attribute).addAll(modifiers)
+    fun addAttributeModifiers(attribute: Attribute, vararg modifiers: AttributeModifier) = 
+        (bukkitAttributes ?: HashMap<Attribute, MutableList<AttributeModifier>>().also { bukkitAttributes = it })
+            .computeIfAbsent(attribute) { mutableListOf() }.addAll(modifiers)
 
     /**
      * 删除属性修饰符
@@ -66,14 +68,6 @@ data class ItemSundry(
     fun removeAttributeModifiers(slot: EquipmentSlot) =
         bukkitAttributes?.forEach { (key, value) -> value.forEach { if (it.slot == slot) bukkitAttributes?.get(key)?.remove(it) } }
 
-    /**
-     * 空->默认值处理
-     */
-
-    private fun fetchHideFlags() = hideFlags ?: HashSet<HideFlag>().also { hideFlags = it }
-
-    private fun fetchBukkitAttributes() = bukkitAttributes ?: HashMap<Attribute, MutableList<AttributeModifier>>().also { bukkitAttributes = it }
-
     companion object : ItemTransformer<ItemSundry> {
 
         override val node = ItemNode.ROOT
@@ -81,9 +75,10 @@ data class ItemSundry(
         override fun transform(component: ItemSundry): ItemData = ItemDataImpl().apply {
             val itemMeta = RefItemMeta()
             // HideFlags
-            itemMeta.handle.addItemFlags(*component.fetchHideFlags().toTypedArray())
+            val flags = component.hideFlags?.toTypedArray()
+            if (flags != null) itemMeta.handle.addItemFlags(*flags)
             // BukkitAttributes
-            component.fetchBukkitAttributes().forEach { (key, value) ->
+            component.bukkitAttributes?.forEach { (key, value) ->
                 value.forEach { itemMeta.handle.addAttributeModifier(key, it) }
             }
             // Merge

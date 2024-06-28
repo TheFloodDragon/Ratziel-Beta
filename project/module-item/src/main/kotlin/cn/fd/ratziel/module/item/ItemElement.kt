@@ -48,8 +48,8 @@ object ItemElement : ElementHandler {
 
         println(item.data)
 
-        val ri =  RefItemStack(item.data)
-        println(ri)
+        val ri = RefItemStack(item.data)
+        println(ri.getTag())
         val bi = ri.getAsBukkit()
         println(bi)
 

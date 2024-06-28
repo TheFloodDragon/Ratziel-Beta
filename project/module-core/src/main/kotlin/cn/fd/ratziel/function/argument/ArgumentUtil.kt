@@ -34,14 +34,6 @@ fun <T : Any, R, V : Any> Argument<V>.ascertain(
 
 inline fun <reified T : Any> ArgumentSupplier.supplyOrNull(): Argument<T>? = supplyOrNull(T::class.java)
 
-inline fun <reified T : Any> ArgumentFactory.pop() = pop(T::class.java)
-
-inline fun <reified T : Any> ArgumentFactory.popAll() = popAll(T::class.java)
-
-inline fun <reified T : Any> ArgumentFactory.popOr(default: T): Argument<T> = popOr(T::class.java, default)
-
-inline fun <reified T : Any> ArgumentFactory.popOrNull(): Argument<T>? = popOrNull(T::class.java)
-
 inline fun <reified T> Argument<*>.instanceof(): Boolean = this.instanceof(T::class.java)
 
 inline fun <reified T : Any, R, V : Any> Argument<V>.ascertain(

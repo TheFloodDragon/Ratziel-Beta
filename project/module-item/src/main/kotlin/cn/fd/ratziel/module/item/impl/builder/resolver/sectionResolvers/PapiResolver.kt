@@ -17,7 +17,6 @@ object PapiResolver : SectionStringResolver {
     override fun resolve(element: String, arguments: ContextArgument): String {
         // 获取玩家
         val player = arguments.popOrNull<OfflinePlayer>() ?: return element // 没玩家处理啥？
-        println(player)
         // 处理Papi变量
         return element.replacePlaceholder(player)
     }
