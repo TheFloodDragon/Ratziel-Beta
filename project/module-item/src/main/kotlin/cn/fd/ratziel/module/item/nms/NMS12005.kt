@@ -99,12 +99,9 @@ class NMS12005Impl : NMS12005() {
     val access by lazy { (Bukkit.getServer() as CraftServer).server.registryAccess() }
 
     val method by lazy {
-        val ref = ReflexClass.of(access::class.java, false)
-        try {
-            ref.getMethod("a")
-        } catch (_: NoSuchFieldException) {
-            ref.getMethod("createSerializationContext")
-        }
+        val ref = ReflexClass.of(net.minecraft.core.HolderLookup.a::class.java, false)
+        ref.structure.getMethodByTypeSilently("a", DynamicOps::class.java)
+            ?: ref.structure.getMethodByType("createSerializationContext", DynamicOps::class.java)
     }
 
     fun <V> createSerializationContext(dynamicOps: DynamicOps<V>): RegistryOps<V> = uncheck(method.invoke(access, dynamicOps)!!)
