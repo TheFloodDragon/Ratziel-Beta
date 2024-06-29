@@ -59,7 +59,7 @@ public class Priority<T> {
 
     @Override
     public String toString() {
-        return "(" + priority + ", " + value.toString() + ")";
+        return "(" + priority + ", " + value + ")";
     }
 
 }

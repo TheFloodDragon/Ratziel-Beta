@@ -18,8 +18,6 @@ import taboolib.module.nms.obcClass
  */
 class RefItemMeta(raw: Any) {
 
-    constructor() : this(metaClass)
-
     constructor(clazz: Class<*>) : this(clazz, NBTCompound())
 
     constructor(clazz: Class<*>, tag: NBTCompound) : this(new(clazz, tag))

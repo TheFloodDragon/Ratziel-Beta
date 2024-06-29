@@ -50,6 +50,7 @@ object DefaultItemSerializer : ItemKSerializer<ItemMetadata> {
         ItemDisplay.serializer(),
         ItemDurability.serializer(),
         ItemSundry.serializer(),
+        ItemCharacteristic.serializer(),
     )
 
     override val descriptor = ItemMetadata.serializer().descriptor

@@ -21,7 +21,7 @@ abstract class NBTData(
 
     init {
         // 数据检验
-        if (NMSUtil.inferUtil(type).isOwnClass(data::class.java)) throw UnsupportedTypeException(data)
+        if (!NMSUtil.inferUtil(type).isOwnClass(data::class.java)) throw UnsupportedTypeException(data)
     }
 
     /**

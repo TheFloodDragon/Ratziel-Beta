@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
@@ -7,7 +9,9 @@ import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.util.toApexComponent
 import cn.fd.ratziel.module.item.util.toApexData
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 
 /**
  * ItemMetadata
@@ -20,6 +24,7 @@ data class ItemMetadata(
     /**
      * 物品材料
      */
+    @JsonNames("mat", "mats", "materials")
     var material: ItemMaterial = ItemMaterial.EMPTY,
     /**
      * 物品耐久部分

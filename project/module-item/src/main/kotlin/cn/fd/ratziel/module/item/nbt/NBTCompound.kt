@@ -48,29 +48,27 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), Mutab
 
     /**
      * 合并目标数据
-     * @param replace 是否替换原有的数据
+     * @param replace 是否替换原有的数据 (false时不会 替换/删除 任何一个节点)
      */
     open fun merge(target: NBTCompound, replace: Boolean = true): NBTCompound = this.apply {
         target.sourceMap.forEach { (key, targetValue) ->
             // 获取自身的数据
             val ownValue = this.sourceMap[key]
-            // 如果当前NBT数据中存在, 且不允许替换, 则直接跳出循环
-            if (ownValue != null && !replace) return@forEach
-            // 反则可以设置值
+            // 如果自身数据不存在, 或者允许替换, 则直接替换, 反则跳出循环
             this.sourceMap[key] = when {
                 // 目标值为 Compound 类型
                 NMSUtil.NtCompound.isOwnClass(targetValue::class.java) -> ownValue
                     ?.takeIf { NMSUtil.NtCompound.isOwnClass(it::class.java) } // 若自身为 Compound 类型
-                    ?.let { NBTCompound(it).merge(NBTCompound(targetValue), true) } // 同类型合并
-                    ?.getData() ?: targetValue
+                    ?.let { NBTCompound(it).merge(NBTCompound(targetValue), replace) }// 同类型合并
+                    ?.getData()
                 // 目标值为 List 类型
                 NMSUtil.NtList.isOwnClass(targetValue::class.java) -> ownValue
                     ?.takeIf { NMSUtil.NtList.isOwnClass(it::class.java) } // 若自身为 List 类型
-                    ?.let { NBTList(it).merge(NBTList(targetValue)) } // 同类型合并
-                    ?.getData() ?: targetValue
-                // 目标值为基础类型, 直接替换
-                else -> targetValue
-            }
+                    ?.let { NBTList(it).merge(NBTList(targetValue)) }// 同类型合并
+                    ?.getData()
+                // 目标值为基础类型
+                else -> null
+            } ?: if (ownValue == null || replace) targetValue else return@forEach
         }
     }
 

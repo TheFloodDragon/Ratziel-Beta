@@ -17,15 +17,18 @@ object JsonHandler {
      */
     fun merge(source: MutableJsonObject, target: JsonObject, replace: Boolean = true): MutableJsonObject = source.also { map ->
         target.forEach { (key, targetValue) ->
+            // 获取自身的数据
             val ownValue = map[key]
-            // 如果当前中存在, 且不允许替换, 则直接跳出循环
-            if (ownValue != null && !replace) return@forEach
-            // 反则设置值 (复合类型时递归)
-            if (targetValue is JsonObject) {
-                // 判断当前值类型 (若非复合类型,则替换,此时目标值是复合类型的)
-                val value: JsonObject? = ownValue as? JsonObject
-                map[key] = JsonObject(merge((value?.asMutable() ?: MutableJsonObject()), targetValue, replace))
-            } else map[key] = targetValue
+            // 如果自身数据不存在, 或者允许替换, 则直接替换, 反则跳出循环
+            map[key] = when (targetValue) {
+                // 目标值为 Compound 类型
+                is JsonObject -> (ownValue as? JsonObject)?.asMutable()
+                    ?.let { merge(it, targetValue, replace) }?.asImmutable() // 同类型合并
+                is JsonArray -> (ownValue as? JsonArray)
+                    ?.plus(targetValue)?.let { JsonArray(it) }  // 同类型合并
+                // 目标值为基础类型
+                else -> null
+            } ?: if (ownValue == null || replace) targetValue else return@forEach
         }
     }
 
