@@ -37,7 +37,7 @@ import taboolib.common.env.RuntimeDependency;
 })
 public class AdventureEnv {
 
-    public final static String ADVENTURE_VERSION = "4.16.0";
-    public final static String ADVENTURE_PLATFORM_VERSION = "4.3.2";
+    public final static String ADVENTURE_VERSION = "4.17.0";
+    public final static String ADVENTURE_PLATFORM_VERSION = "4.3.3";
 
 }

@@ -36,12 +36,6 @@ abstract class NMSItem {
      * 1.20.5+
      * 通过合并部分物品默认组件的方式, 增强兼容性
      */
-    open fun getTagHandled(nmsItem: Any): NBTCompound? = getTag(nmsItem)
-
-    /**
-     * 1.20.5+
-     * 通过合并部分物品默认组件的方式, 增强兼容性
-     */
     open fun setTagHandled(nmsItem: Any, tag: NBTCompound) = setTag(nmsItem, tag)
 
     /**
@@ -104,61 +98,6 @@ class NMSItemImpl2 : NMSItem() {
 
     override fun copyItem(nmsItem: Any): Any {
         return (nmsItem as NMSItemStack).copy()
-    }
-
-    override fun getTagHandled(nmsItem: Any): NBTCompound {
-        // 获取未处理的标签
-        val handle = getTag(nmsItem)
-        // 获取默认标签
-        val default = NBTCompound(getDefaultTag(nmsItem))
-        // 如果为空物品则返回默认标签
-        if (handle == null) return default
-        // 遍历并合并 NBTCompound
-        merge(handle, default)
-        return handle // 返回结果
-    }
-
-    override fun setTagHandled(nmsItem: Any, tag: NBTCompound) {
-        // 获取未处理的标签 (并克隆)
-        val handle = tag.clone()
-        // 获取默认标签
-        val default = NBTCompound(getDefaultTag(nmsItem))
-        // 遍历并合并 NBTCompound
-        merge(handle, default)
-        // 设置NBT标签
-        setTag(nmsItem, handle)
-    }
-
-    fun merge(handle: NBTCompound, default: NBTCompound) {
-        val defaultNodes = default.keys
-        // 遍历并合并 NBTCompound
-        for (entry in handle) {
-            if (defaultNodes.contains(entry.key)) {
-                val defaultValue = default[entry.key] as? NBTCompound ?: continue
-                val handleValue = entry.value as? NBTCompound ?: continue
-                handleValue.merge(defaultValue, false)
-            }
-        }
-    }
-
-    /**
-     * 物品默认组件转化成NBT后的缓存
-     */
-    val cache: MutableMap<Int, NBTTagCompound> = ConcurrentHashMap()
-
-    /**
-     * 获取物品默认NBT标签 (经过缓存)
-     */
-    fun getDefaultTag(nmsItem: Any): NBTTagCompound {
-        val type = (nmsItem as NMSItemStack).item // 获取物品类型
-        val id = NMSItemType.getId(type) // 获取物品ID
-        // 尝试通过缓存获取
-        val result = cache[id]
-        if (result != null) return result
-        // 缓存中不存在时, 生成并加入到缓存
-        val tag = NMS12005.INSTANCE.saveMap(type.components()) as NBTTagCompound
-        cache[id] = tag // 加入缓存
-        return tag // 返回结果
     }
 
 }

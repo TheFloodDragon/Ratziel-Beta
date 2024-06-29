@@ -11,11 +11,11 @@ const val taboolibPluginVersion = "2.0.11"
 const val taboolibVersion = "6.1.2-beta10"
 
 val adventureModules = setOf(
-    "net.kyori:adventure-api:4.16.0",
-    "net.kyori:adventure-text-serializer-gson:4.16.0",
-    "net.kyori:adventure-text-minimessage:4.16.0",
-    "net.kyori:adventure-text-serializer-legacy:4.16.0",
-    "net.kyori:adventure-platform-bukkit:4.3.2",
+    "net.kyori:adventure-api:4.17.0",
+    "net.kyori:adventure-text-serializer-gson:4.17.0",
+    "net.kyori:adventure-text-minimessage:4.17.0",
+    "net.kyori:adventure-text-serializer-legacy:4.17.0",
+    "net.kyori:adventure-platform-bukkit:4.3.3",
 )
 
 /**

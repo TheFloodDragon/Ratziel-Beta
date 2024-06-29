@@ -61,12 +61,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), Mutab
                     ?.takeIf { NMSUtil.NtCompound.isOwnClass(it::class.java) } // 若自身为 Compound 类型
                     ?.let { NBTCompound(it).merge(NBTCompound(targetValue), replace) }// 同类型合并
                     ?.getData()
-                // 目标值为 List 类型
-                NMSUtil.NtList.isOwnClass(targetValue::class.java) -> ownValue
-                    ?.takeIf { NMSUtil.NtList.isOwnClass(it::class.java) } // 若自身为 List 类型
-                    ?.let { NBTList(it).merge(NBTList(targetValue)) }// 同类型合并
-                    ?.getData()
-                // 目标值为基础类型
+                // 目标值为基础类型, 或者 List 类型
                 else -> null
             } ?: if (ownValue == null || replace) targetValue else return@forEach
         }

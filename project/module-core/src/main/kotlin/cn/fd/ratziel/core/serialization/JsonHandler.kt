@@ -24,9 +24,7 @@ object JsonHandler {
                 // 目标值为 Compound 类型
                 is JsonObject -> (ownValue as? JsonObject)?.asMutable()
                     ?.let { merge(it, targetValue, replace) }?.asImmutable() // 同类型合并
-                is JsonArray -> (ownValue as? JsonArray)
-                    ?.plus(targetValue)?.let { JsonArray(it) }  // 同类型合并
-                // 目标值为基础类型
+                // 目标值为基础类型, 或者 List 类型
                 else -> null
             } ?: if (ownValue == null || replace) targetValue else return@forEach
         }

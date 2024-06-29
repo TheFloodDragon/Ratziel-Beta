@@ -56,13 +56,6 @@ open class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<N
      */
     open fun clone() = this.apply { data = NMSUtil.NtList.methodClone.invoke(data)!! }
 
-    /**
-     * 合并目标数据
-     */
-    fun merge(target: NBTList): NBTList = this.apply {
-        this.sourceList.addAll(target.sourceList)
-    }
-
     companion object {
 
         fun new() = new(ArrayList())
