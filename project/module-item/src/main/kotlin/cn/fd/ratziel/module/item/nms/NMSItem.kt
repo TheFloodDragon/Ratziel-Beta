@@ -4,11 +4,13 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.PatchedDataComponentMap
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.NBTTagCompound
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
 import java.util.concurrent.ConcurrentHashMap
+import net.minecraft.world.item.Item as NMSItemType
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
 /**
@@ -23,27 +25,25 @@ abstract class NMSItem {
      * 获取 [NMSItemStack]的 NBT (克隆)
      * @return [NBTCompound]
      */
-    abstract fun getItemTag(nmsItem: Any): NBTCompound?
+    abstract fun getTag(nmsItem: Any): NBTCompound?
 
     /**
      * 设置 [NMSItemStack]的 NBT (克隆)
-     * @param nbt [NBTTagCompound]
+     * @param tag [NBTTagCompound]
      */
-    abstract fun setItemTag(nmsItem: Any, nbt: NBTCompound)
+    abstract fun setTag(nmsItem: Any, tag: NBTCompound)
 
     /**
      * 1.20.5+
-     * [getItemTag] 是忽略掉默认值的
-     * 而 [getItemTagWithDefault] 会带上默认值
+     * 通过合并部分物品默认组件的方式, 增强兼容性
      */
-    open fun getItemTagWithDefault(nmsItem: Any): NBTCompound? = getItemTag(nmsItem)
+    open fun getTagHandled(nmsItem: Any): NBTCompound? = getTag(nmsItem)
 
     /**
      * 1.20.5+
-     * [setItemTag] 是忽略掉默认值的
-     * 而 [setItemTagWithDefault] 会带上默认值
+     * 通过合并部分物品默认组件的方式, 增强兼容性
      */
-    open fun setItemTagWithDefault(nmsItem: Any, nbt: NBTCompound) = setItemTag(nmsItem, nbt)
+    open fun setTagHandled(nmsItem: Any, tag: NBTCompound) = setTag(nmsItem, tag)
 
     /**
      * 克隆 [NMSItemStack]
@@ -65,11 +65,11 @@ abstract class NMSItem {
  */
 object NMSItemImpl1 : NMSItem() {
 
-    override fun getItemTag(nmsItem: Any): NBTCompound? =
+    override fun getTag(nmsItem: Any): NBTCompound? =
         RefItemStack.InternalUtil.nmsTagField.get(nmsItem)?.let { NBTCompound(it).clone() }
 
-    override fun setItemTag(nmsItem: Any, nbt: NBTCompound) =
-        RefItemStack.InternalUtil.nmsTagField.set(nmsItem, nbt.clone().getData())
+    override fun setTag(nmsItem: Any, tag: NBTCompound) =
+        RefItemStack.InternalUtil.nmsTagField.set(nmsItem, tag.clone().getData())
 
     override fun copyItem(nmsItem: Any): Any =
         RefItemStack.InternalUtil.nmsCloneMethod.invoke(nmsItem)!!
@@ -86,13 +86,13 @@ class NMSItemImpl2 : NMSItem() {
         ReflexClass.of(RefItemStack.nmsClass).getField("components", remap = true)
     }
 
-    override fun getItemTag(nmsItem: Any): NBTCompound? {
+    override fun getTag(nmsItem: Any): NBTCompound? {
         val dcp = (nmsItem as NMSItemStack).componentsPatch
         return NMS12005.INSTANCE.savePatch(dcp)?.let { NBTCompound(it) }
     }
 
-    override fun setItemTag(nmsItem: Any, nbt: NBTCompound) {
-        val dcp = NMS12005.INSTANCE.parsePatch(nbt.getData() as NBTTagCompound) as? DataComponentPatch
+    override fun setTag(nmsItem: Any, tag: NBTCompound) {
+        val dcp = NMS12005.INSTANCE.parsePatch(tag.getData() as NBTTagCompound) as? DataComponentPatch
         val components = componentsField.get(nmsItem) as? PatchedDataComponentMap
         if (components != null) {
             components.restorePatch(dcp)
@@ -107,33 +107,64 @@ class NMSItemImpl2 : NMSItem() {
         return (nmsItem as NMSItemStack).copy()
     }
 
-    override fun getItemTagWithDefault(nmsItem: Any): NBTCompound? {
-        val tag = getItemTag(nmsItem)
-        val default = getItemBasicNBT(nmsItem) ?: return tag
-        return tag?.merge(NBTCompound(default), false)
+    override fun getTagHandled(nmsItem: Any): NBTCompound {
+        // 获取未处理的标签
+        val handle = getTag(nmsItem)
+        // 获取默认标签
+        val default = NBTCompound(getDefaultTag(nmsItem))
+        // 如果为空物品则返回默认标签
+        if (handle == null) return default
+        // 遍历默认节点合并 NBTCompound
+        merge(handle, default)
+        return handle // 返回结果
     }
 
-    override fun setItemTagWithDefault(nmsItem: Any, nbt: NBTCompound) {
-        var tag = nbt
-        val default = getItemBasicNBT(nmsItem)
-        if (default != null) tag = NBTCompound(default).merge(nbt, true)
-        setItemTag(nmsItem, tag)
+    override fun setTagHandled(nmsItem: Any, tag: NBTCompound) {
+        // 获取未处理的标签 (并克隆)
+        val handle = tag.clone()
+        // 获取默认标签
+        val default = NBTCompound(getDefaultTag(nmsItem))
+        // 遍历默认节点合并 NBTCompound
+        merge(handle, default)
+        // 设置NBT标签
+        setTag(nmsItem, handle)
     }
 
+    fun merge(handle: NBTCompound, default: NBTCompound) {
+        // 遍历默认节点合并 NBTCompound
+        for (node in defaultNodes) {
+            val u = handle[node] ?: continue
+            val d = default[node] ?: continue
+            if (u is NBTCompound && d is NBTCompound) u.merge(d, false)
+        }
+    }
+
+    /**
+     * 默认节点 (形式为 "<namespace>:<path>>")
+     * @see net.minecraft.resources.MinecraftKey.toString
+     */
+    val defaultNodes by lazy {
+        BuiltInRegistries.DATA_COMPONENT_TYPE.keySet().map { it.toString() }
+    }
+
+    /**
+     * 物品默认组件转化成NBT后的缓存
+     */
     val cache: MutableMap<Int, NBTTagCompound> = ConcurrentHashMap()
 
-    fun getItemBasicNBT(nmsItem: Any): NBTTagCompound? {
-        val item = (nmsItem as NMSItemStack).item // 获取物品类
-        val id = net.minecraft.world.item.Item.getId(item) // 获取物品ID
-        val result = cache[id] // 尝试通过缓存
+    /**
+     * 获取物品默认NBT标签 (经过缓存)
+     */
+    fun getDefaultTag(nmsItem: Any): NBTTagCompound {
+        val type = (nmsItem as NMSItemStack).item // 获取物品类型
+        val id = NMSItemType.getId(type) // 获取物品ID
+        // 尝试通过缓存获取
+        val result = cache[id]
         if (result != null) return result
-        // 生成并加入到缓存
-        val nbt = NMS12005.INSTANCE.saveMap(item.components()) as? NBTTagCompound
-        if (nbt != null) {
-            cache[id] = nbt
-            return nbt
-        }
-        return null
+        // 缓存中不存在时, 生成并加入到缓存
+        val tag = NMS12005.INSTANCE.saveMap(type.components()) as NBTTagCompound
+        cache[id] = tag // 加入缓存
+        return tag // 返回结果
     }
 
 }
