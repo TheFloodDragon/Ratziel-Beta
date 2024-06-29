@@ -11,10 +11,7 @@ import cn.fd.ratziel.module.item.api.registry.ResolverRegistry
 import cn.fd.ratziel.module.item.api.registry.SerializerRegistry
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.item.impl.builder.resolver.BasicItemResolver
-import cn.fd.ratziel.module.item.impl.component.ItemDisplay
-import cn.fd.ratziel.module.item.impl.component.ItemDurability
-import cn.fd.ratziel.module.item.impl.component.ItemMetadata
-import cn.fd.ratziel.module.item.impl.component.ItemSundry
+import cn.fd.ratziel.module.item.impl.component.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -37,6 +34,7 @@ object ItemRegistry {
         Component.register(ItemDurability::class.java, ItemDurability)
         Component.register(ItemSundry::class.java, ItemSundry)
         Component.register(ItemMetadata::class.java, ItemMetadata)
+        Component.register(ItemCharacteristic::class.java, ItemCharacteristic)
         // 注册默认物品解析器
         Resolver.register(BasicItemResolver)
     }

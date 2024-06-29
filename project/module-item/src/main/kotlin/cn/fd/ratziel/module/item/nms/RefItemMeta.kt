@@ -5,6 +5,7 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
+import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.obcClass
@@ -17,17 +18,16 @@ import taboolib.module.nms.obcClass
  */
 class RefItemMeta(raw: Any) {
 
-    constructor() : this(new())
+    constructor() : this(metaClass)
 
-    constructor(tag: NBTCompound) : this(new(tag))
+    constructor(clazz: Class<*>) : this(clazz, NBTCompound())
+
+    constructor(clazz: Class<*>, tag: NBTCompound) : this(new(clazz, tag))
 
     /**
-     * ItemMeta的CraftMetaItem处理对象
+     * ItemMeta子类的CraftMetaItem处理对象
      */
-    var handle: ItemMeta = when {
-        obcClass.isAssignableFrom(raw::class.java) -> raw as ItemMeta // CraftMetaItem
-        else -> throw UnsupportedTypeException(raw) // Unsupported Type
-    }
+    var handle: ItemMeta = raw as? ItemMeta ?: throw UnsupportedTypeException(raw)
 
     /**
      * 将 [ItemMeta] 应用到 [NBTCompound]
@@ -41,12 +41,12 @@ class RefItemMeta(raw: Any) {
             }
              */
             val applicator = InternalUtil.applicatorConstructor.instance()!! // new Applicator
-            InternalUtil.applyToItemMethod.invoke(handle, applicator) // Apply to the applicator
+            handle.invokeMethod<Any>("applyToItem", applicator) // Apply to the applicator
             val dcp = InternalUtil.applicatorToDcp(applicator) // Applicator to DataComponentPatch
             val newTag = NMS12005.INSTANCE.savePatch(dcp) // DataComponentPatch save to NBT
-            if (newTag != null) tag.putAll(NBTCompound(newTag))
+            if (newTag != null) tag.merge(NBTCompound(newTag), true)
         } else {
-            InternalUtil.applyToItemMethod.invoke(handle, tag.getData())
+            handle.invokeMethod<Any>("applyToItem", tag.getData())
         }
     }
 
@@ -55,35 +55,26 @@ class RefItemMeta(raw: Any) {
         /**
          * inventory.CraftMetaItem
          */
-        val obcClass by lazy { obcClass("inventory.CraftMetaItem") }
+        val metaClass by lazy { obcClass("inventory.CraftMetaItem") }
+
+        val skullClass by lazy { obcClass("inventory.CraftMetaSkull") }
 
         /**
          * CraftMetaItem#constructor(NBTTagCompound)
          * CraftMetaItem(DataComponentPatch tag)
          * @return CraftMetaItem
          */
-        fun new(nbt: NBTCompound): Any {
+        fun new(clazz: Class<*>, nbt: NBTCompound): Any {
             val handledTag =
                 if (MinecraftVersion.majorLegacy >= 12005)
                     InternalUtil.nbtToDcp(nbt.getData())
                 else nbt
-            return obcClass.invokeConstructor(handledTag)
+            return clazz.invokeConstructor(handledTag)
         }
-
-        fun new() = new(NBTCompound())
 
     }
 
     internal object InternalUtil {
-
-        /**
-         * CraftMetaItem#applyToItem(NBTTagCompound)
-         * void applyToItem(Applicator itemTag)
-         */
-        val applyToItemMethod by lazy {
-            ReflexClass.of(obcClass).structure.methods.firstOrNull { it.name == "applyToItem" }
-                ?: throw NoSuchMethodException("${obcClass.name}#applyToItem")
-        }
 
         /**
          * 处理1.20.5的CraftMetaItem.Applicator
@@ -111,7 +102,7 @@ class RefItemMeta(raw: Any) {
             )!!
 
         val customDataKey by lazy {
-            obcClass.getProperty<Any>("CUSTOM_DATA", isStatic = true)
+            metaClass.getProperty<Any>("CUSTOM_DATA", isStatic = true)
         }
 
         val applicatorConstructor by lazy {

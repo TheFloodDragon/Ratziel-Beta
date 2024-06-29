@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
@@ -9,9 +7,7 @@ import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.util.toApexComponent
 import cn.fd.ratziel.module.item.util.toApexData
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * ItemMetadata
@@ -21,11 +17,26 @@ import kotlinx.serialization.json.JsonNames
  */
 @Serializable
 data class ItemMetadata(
-    @JsonNames("mat", "mats", "materials")
+    /**
+     * 物品材料
+     */
     var material: ItemMaterial = ItemMaterial.EMPTY,
+    /**
+     * 物品耐久部分
+     */
     var display: ItemDisplay = ItemDisplay(),
+    /**
+     * 物品耐久部分
+     */
     var durability: ItemDurability = ItemDurability(),
-    var sundry: ItemSundry = ItemSundry()
+    /**
+     * 物品杂项部分
+     */
+    var sundry: ItemSundry = ItemSundry(),
+    /**
+     * 物品特征部分
+     */
+    var characteristic: ItemCharacteristic = ItemCharacteristic()
 ) {
 
     companion object : ItemTransformer<ItemMetadata> {
@@ -37,6 +48,7 @@ data class ItemMetadata(
             display = ItemDisplay.toApexComponent(data),
             durability = ItemDurability.toApexComponent(data),
             sundry = ItemSundry.toApexComponent(data),
+            characteristic = ItemCharacteristic.toApexComponent(data),
         )
 
         override fun transform(component: ItemMetadata): ItemData {
@@ -45,6 +57,7 @@ data class ItemMetadata(
             ItemDataImpl.mergeShallow(data, ItemDisplay.toApexData(component.display))
             ItemDataImpl.mergeShallow(data, ItemDurability.toApexData(component.durability))
             ItemDataImpl.mergeShallow(data, ItemSundry.toApexData(component.sundry))
+            ItemDataImpl.mergeShallow(data, ItemCharacteristic.toApexData(component.characteristic))
             return data
         }
 

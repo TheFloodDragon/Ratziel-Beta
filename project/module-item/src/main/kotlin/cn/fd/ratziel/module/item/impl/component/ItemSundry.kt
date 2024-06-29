@@ -23,17 +23,26 @@ import taboolib.module.nms.MinecraftVersion
 typealias HideFlag = org.bukkit.inventory.ItemFlag
 
 /**
- * ItemSundry
+ * ItemSundry - 物品杂项
  *
  * @author TheFloodDragon
  * @since 2024/5/3 21:06
  */
 @Serializable
 data class ItemSundry(
+    /**
+     * 物品自定义模型数据 (1.14+)
+     */
     @JsonNames("custom-model-data")
     var customModelData: Int? = null,
+    /**
+     * 物品隐藏标签 (1.20.5- 但仍能通过BukkitAPI使用)
+     */
     @JsonNames("hideflag", "hideflags", "hideFlag")
     var hideFlags: MutableSet<@Contextual HideFlag>? = null,
+    /**
+     * 物品属性修饰符
+     */
     @JsonNames("attribute-modifiers", "attributeModifiers", "bukkit-attributes")
     var bukkitAttributes: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null
 ) {
@@ -56,7 +65,7 @@ data class ItemSundry(
     /**
      * 添加属性修饰符
      */
-    fun addAttributeModifiers(attribute: Attribute, vararg modifiers: AttributeModifier) = 
+    fun addAttributeModifiers(attribute: Attribute, vararg modifiers: AttributeModifier) =
         (bukkitAttributes ?: HashMap<Attribute, MutableList<AttributeModifier>>().also { bukkitAttributes = it })
             .computeIfAbsent(attribute) { mutableListOf() }.addAll(modifiers)
 
@@ -73,7 +82,7 @@ data class ItemSundry(
         override val node = ItemNode.ROOT
 
         override fun transform(component: ItemSundry): ItemData = ItemDataImpl().apply {
-            val itemMeta = RefItemMeta()
+            val itemMeta = RefItemMeta(RefItemMeta.metaClass)
             // HideFlags
             val flags = component.hideFlags?.toTypedArray()
             if (flags != null) itemMeta.handle.addItemFlags(*flags)
