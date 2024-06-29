@@ -33,12 +33,6 @@ abstract class NMSItem {
     abstract fun setTag(nmsItem: Any, tag: NBTCompound)
 
     /**
-     * 1.20.5+
-     * 通过合并部分物品默认组件的方式, 增强兼容性
-     */
-    open fun setTagHandled(nmsItem: Any, tag: NBTCompound) = setTag(nmsItem, tag)
-
-    /**
      * 克隆 [NMSItemStack]
      */
     abstract fun copyItem(nmsItem: Any): Any

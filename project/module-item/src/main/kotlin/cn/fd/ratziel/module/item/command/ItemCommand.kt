@@ -55,7 +55,6 @@ object ItemCommand {
         }
     }
 
-
     private fun giveById(player: Player, id: String, amount: Int): CompletableFuture<ItemStack> {
         val future = CompletableFuture<ItemStack>()
         // 获取物品生成器
@@ -77,12 +76,19 @@ object ItemCommand {
 
     private fun cmdGive(sender: ProxyCommandSender, players: List<ProxyPlayer>, id: String, amount: Int) {
         if (players.size == 1) {
-            val player = players[0].cast<Player>()
-            giveById(player, id, amount)
-                .thenRun { sender.sendLang("Item-Give", player.name, id, amount) }
+            val player = players[0]
+            giveById(player.cast(), id, amount).thenRun {
+                // 发送给命名发送者
+                sender.sendLang("Item-Give", player.name, id, amount)
+                // 发送给物品接收者
+                if (sender.origin != player.origin) player.sendLang("Item-Get", id, amount)
+            }
         } else {
             val futures = players.map { player ->
-                giveById(player.cast(), id, amount)
+                giveById(player.cast(), id, amount).thenRun {
+                    // 发送给物品接收者
+                    if (sender.origin != player.origin) player.sendLang("Item-Get", id, amount)
+                }
             }
             CompletableFuture.allOf(*futures.toTypedArray())
                 .thenRun { sender.sendLang("Item-Give-All", id, amount) }
