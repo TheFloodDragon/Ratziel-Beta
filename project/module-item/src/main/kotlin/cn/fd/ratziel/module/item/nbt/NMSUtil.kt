@@ -26,6 +26,8 @@ internal sealed class NMSUtil {
 
     val reflexClass by lazy { ReflexClass.of(nmsClass, false) }
 
+    fun isOwnClass(clazz: Class<*>): Boolean = nmsClass.isAssignableFrom(clazz)
+
     object NtCompound : NMSUtil() {
         /**
          * net.minecraft.nbt.NBTTagCompound

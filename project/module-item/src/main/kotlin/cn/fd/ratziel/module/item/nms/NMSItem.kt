@@ -4,7 +4,6 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.PatchedDataComponentMap
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.NBTTagCompound
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
@@ -114,7 +113,7 @@ class NMSItemImpl2 : NMSItem() {
         val default = NBTCompound(getDefaultTag(nmsItem))
         // 如果为空物品则返回默认标签
         if (handle == null) return default
-        // 遍历默认节点合并 NBTCompound
+        // 遍历并合并 NBTCompound
         merge(handle, default)
         return handle // 返回结果
     }
@@ -124,27 +123,22 @@ class NMSItemImpl2 : NMSItem() {
         val handle = tag.clone()
         // 获取默认标签
         val default = NBTCompound(getDefaultTag(nmsItem))
-        // 遍历默认节点合并 NBTCompound
+        // 遍历并合并 NBTCompound
         merge(handle, default)
         // 设置NBT标签
         setTag(nmsItem, handle)
     }
 
     fun merge(handle: NBTCompound, default: NBTCompound) {
-        // 遍历默认节点合并 NBTCompound
-        for (node in defaultNodes) {
-            val u = handle[node] ?: continue
-            val d = default[node] ?: continue
-            if (u is NBTCompound && d is NBTCompound) u.merge(d, false)
+        val defaultNodes = default.keys
+        // 遍历并合并 NBTCompound
+        for (entry in handle) {
+            if (defaultNodes.contains(entry.key)) {
+                val defaultValue = default[entry.key] as? NBTCompound ?: continue
+                val handleValue = entry.value as? NBTCompound ?: continue
+                handleValue.merge(defaultValue, false)
+            }
         }
-    }
-
-    /**
-     * 默认节点 (形式为 "<namespace>:<path>>")
-     * @see net.minecraft.resources.MinecraftKey.toString
-     */
-    val defaultNodes by lazy {
-        BuiltInRegistries.DATA_COMPONENT_TYPE.keySet().map { it.toString() }
     }
 
     /**

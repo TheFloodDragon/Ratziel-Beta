@@ -88,7 +88,7 @@ object BasicItemResolver : ItemResolver {
             // 获取解析器
             val resolver = resolvers.find { it.name == name || it.alias.contains(name) }
             // 解析并返回
-            return resolver?.resolve(split.drop(1), arguments) ?: source
+            return resolver?.resolve(split.drop(1), arguments) ?: (reader.start + source + reader.end)
         }
 
     }
