@@ -42,7 +42,9 @@ public abstract class EnginedScriptLanguage implements ScriptLanguage {
     }
 
     public ScriptEngine newEngine() {
-        return new ScriptEngineManager().getEngineByName(ENGINE_NAME);
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        ScriptEngine engine = new ScriptEngineManager(classLoader).getEngineByName(ENGINE_NAME);
+        if (engine != null) return engine; else throw new NullPointerException("Cannot get ScriptEngine by name: " + ENGINE_NAME + " !");
     }
 
     @Override

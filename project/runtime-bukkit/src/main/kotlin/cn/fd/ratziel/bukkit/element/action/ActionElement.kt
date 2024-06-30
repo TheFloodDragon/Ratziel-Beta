@@ -25,11 +25,9 @@ object ActionElement : ElementHandler {
 
     override fun handle(element: Element) {
         element.property.let { json ->
-            val lang = KetherLang
-            val env = SimpleScriptEnv()
-            val block = ScriptBlockBuilder.build(json.toBasic(), lang, env)
+            val block = ScriptBlockBuilder.build(json.toBasic())
             println(block)
-            val result = block.evaluate(lang, env)
+            val result = block.evaluate(KetherLang, SimpleScriptEnv())
             println(result)
         }
     }

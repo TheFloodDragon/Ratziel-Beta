@@ -9,12 +9,12 @@ package cn.fd.ratziel.script
  */
 object ScriptBlockBuilder {
 
-    fun build(section: Any, baseLang: ScriptLanguage, env: ScriptEnvironment): Block {
+    fun build(section: Any): Block {
         when (section) {
             // ScriptBlock
             is String -> return ScriptBlock(RawScript(section))
             // ListBlock
-            is Iterable<*> -> return ListBlock(section.mapNotNull { l -> l?.let { build(it, baseLang, env) } })
+            is Iterable<*> -> return ListBlock(section.mapNotNull { l -> l?.let { build(it) } })
             is Map<*, *> -> {
                 // ConditionBlock
                 val ifValue = section["if"] ?: section["condition"]
@@ -22,9 +22,9 @@ object ScriptBlockBuilder {
                     val thenValue = section["then"]
                     val elseValue = section["else"]
                     return ConditionBlock(
-                        build(ifValue, baseLang, env),
-                        thenValue?.let { build(it, baseLang, env) },
-                        elseValue?.let { build(it, baseLang, env) }
+                        build(ifValue),
+                        thenValue?.let { build(it) },
+                        elseValue?.let { build(it) }
                     )
                 } else {
                     // ToggleLangBlock
@@ -33,7 +33,7 @@ object ScriptBlockBuilder {
                         if (key.startsWith(MARK_TOGGLE)) {
                             val lang = ScriptRunner.findLang(key.drop(MARK_TOGGLE.length))
                             val value = e.value
-                            if (value != null) return ToggleLangBlock(lang, build(value, lang, env))
+                            if (value != null) return ToggleLangBlock(lang, build(value))
                         }
                     }
                 }
