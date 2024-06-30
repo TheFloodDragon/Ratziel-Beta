@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
