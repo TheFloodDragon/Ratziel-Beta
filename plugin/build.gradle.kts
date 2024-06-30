@@ -21,6 +21,8 @@ subprojects {
 
         // 模块环境设置
         env {
+            // 镜像中央仓库
+            repoCentral = "https://repo.huaweicloud.com/repository/maven/"
             // Debug Mode
             debug = true
             // Isolated Mode

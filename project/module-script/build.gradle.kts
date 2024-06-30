@@ -1,6 +1,6 @@
 dependencies {
     // Script
-    shadowModule("module-script-core")
-    shadowModule("module-script-js")
-    shadowModule("module-script-kether")
+    installModule("module-script-core")
+    installModule("module-script-js")
+    installModule("module-script-kether")
 }

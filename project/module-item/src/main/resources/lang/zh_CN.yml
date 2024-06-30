@@ -18,7 +18,7 @@ NBTFormat-Entry-Value: # 0-值 1-精确转换后的值
       hover: '点击复制'
 NBTFormat-Retract: '  '
 NBTFormat-Retract-List: '&f- '
-NBTFormat-List-Empty: '&f[ ]'
+NBTFormat-List-Empty: '&f[]'
 NBTFormat-Type-Byte: ' &8(&7Byte&8)'
 NBTFormat-Type-Short: ' &8(&7Short&8)'
 NBTFormat-Type-Int: ' &8(&7Int&8)'

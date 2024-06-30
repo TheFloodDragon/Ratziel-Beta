@@ -20,7 +20,7 @@ dependencies {
 
 taboolib {
     env {
-        install(BUKKIT_ALL, KETHER, EXPANSION_PLAYER_FAKE_OP, "module-nms", "module-nms-util-stable")
+        install(BUKKIT_ALL, KETHER, EXPANSION_PLAYER_FAKE_OP, "module-nms", "module-nms-util-stable", "expansion-javascript")
     }
     description {
         dependencies {
