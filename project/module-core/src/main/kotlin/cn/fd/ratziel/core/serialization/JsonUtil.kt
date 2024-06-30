@@ -48,6 +48,12 @@ fun Map<String, JsonElement>.asMutable(): MutableJsonObject = if (this is Mutabl
 inline fun JsonObject.handle(action: MutableJsonObject.(JsonObject) -> Unit): JsonObject = JsonObject(this.asMutable().also { action(it, this) })
 
 /**
+ * 将 [JsonElement] 转为为纯原生对象形式
+ * @see [JsonHandler.toBasic]
+ */
+inline fun JsonElement.toBasic(): Any = JsonHandler.toBasic(this)
+
+/**
  * 处理[JsonPrimitive]
  * @see [JsonHandler.handlePrimitives]
  */

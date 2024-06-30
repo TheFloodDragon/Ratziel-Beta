@@ -4,9 +4,10 @@ import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.kether.KetherCompiler
-import cn.fd.ratziel.script.RawScript
-import cn.fd.ratziel.script.ScriptRunner
+import cn.fd.ratziel.core.serialization.toBasic
+import cn.fd.ratziel.script.KetherLang
+import cn.fd.ratziel.script.ScriptBlockBuilder
+import cn.fd.ratziel.script.SimpleScriptEnv
 import taboolib.common.LifeCycle
 
 /**
@@ -24,9 +25,12 @@ object ActionElement : ElementHandler {
 
     override fun handle(element: Element) {
         element.property.let { json ->
-            KetherCompiler.buildSection(json).toString().let {
-                ScriptRunner.eval(RawScript(it))
-            }
+            val lang = KetherLang
+            val env = SimpleScriptEnv()
+            val block = ScriptBlockBuilder.build(json.toBasic(), lang, env)
+            println(block)
+            val result = block.evaluate(lang, env)
+            println(result)
         }
     }
 

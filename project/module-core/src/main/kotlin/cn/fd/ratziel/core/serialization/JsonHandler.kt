@@ -12,6 +12,15 @@ import java.util.function.Function
 object JsonHandler {
 
     /**
+     * 将 [JsonElement] 转为为纯原生对象形式
+     */
+    fun toBasic(element: JsonElement): Any = when (element) {
+        is JsonObject -> buildMap { element.forEach { put(it.key, toBasic(it.value)) } }
+        is JsonArray -> element.map { toBasic(it) }
+        is JsonPrimitive -> element.content
+    }
+
+    /**
      * 合并目标
      * @param replace 是否替换原有的
      */

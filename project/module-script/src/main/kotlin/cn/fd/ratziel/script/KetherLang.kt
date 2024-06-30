@@ -1,8 +1,5 @@
-package cn.fd.ratziel.script.kether
+package cn.fd.ratziel.script
 
-import cn.fd.ratziel.script.ScriptEnvironment
-import cn.fd.ratziel.script.ScriptLanguage
-import cn.fd.ratziel.script.ScriptStorage
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptOptions
 
@@ -14,16 +11,16 @@ import taboolib.module.kether.ScriptOptions
  */
 object KetherLang : ScriptLanguage {
 
-    private const val name = "kether"
+    private const val NAME = "kether"
 
-    private val alias = arrayOf("Kether", "ke", "ks")
-
-    override fun getName() = name
-
-    override fun getAlias() = alias
+    private val ALIAS = arrayOf("Kether", "ke", "ks")
 
     override fun eval(script: ScriptStorage, environment: ScriptEnvironment): Any {
         return KetherShell.eval(script.content, ScriptOptions.new { vars(environment.scriptBindings) })
     }
+
+    override fun getName() = NAME
+
+    override fun getAlias() = ALIAS
 
 }
