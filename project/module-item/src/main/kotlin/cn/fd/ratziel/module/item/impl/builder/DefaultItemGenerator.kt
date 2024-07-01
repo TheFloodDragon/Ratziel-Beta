@@ -98,7 +98,7 @@ class DefaultItemGenerator(
             }
             // 转换成以顶级节点为根节点的数据
             try {
-                Priority(prt.priority, transformer.toApexDataUncheck(component)) // 封装成优先级对象后传递给合并阶段
+                Priority(prt.priority, transformer.toApexDataUncheck(component, ItemDataImpl())) // 封装成优先级对象后传递给合并阶段
             } catch (ex: Exception) {
                 severe("Failed to transform component by \"$transformer\"! Target component: $component")
                 ex.printStackTrace(); null

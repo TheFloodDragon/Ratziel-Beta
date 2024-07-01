@@ -14,12 +14,12 @@ interface ItemTransformer<T> {
     val node: ItemNode
 
     /**
-     * 正向转化 - 输出型转换
+     * 正向转化 - 将 [component] 的内容合并到 [data] 中
      */
-    fun transform(component: T): ItemData
+    fun transform(data: ItemData, component: T)
 
     /**
-     * 反向转化 - 应用型转换
+     * 反向转化 - 通过 [data] 构造组件
      */
     fun detransform(data: ItemData): T
 

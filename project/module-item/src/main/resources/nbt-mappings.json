@@ -42,6 +42,10 @@
     "0": "display.color",
     "12005": "dyed_color.rgb"
   },
+  "POTION_COLOR": {
+    "0": "CustomPotionColor",
+    "12005": "potion_contents.custom_color"
+  },
   "MAX_DAMAGE": {
     "0": "max_damage"
   },

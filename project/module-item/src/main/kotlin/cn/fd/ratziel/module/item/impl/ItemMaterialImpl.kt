@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.module.item.api.ItemMaterial
@@ -41,7 +43,7 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
     /**
      * 材料是否为空气材料
      */
-    fun isAir() = insBukkit.isAir || ItemMaterial.isEmpty(this)
+    fun isAir() = insBukkit.isAir || this.isEmpty()
 
     /**
      * 获取 [BukkitMaterial] 形式 (若获取不到则抛出异常)
@@ -63,7 +65,16 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
      */
     private val insXSeries: XMaterial by lazy { XMaterial.matchXMaterial(insBukkit) }
 
+    override fun hashCode() = id.hashCode()
+
+    override fun equals(other: Any?) = equal(this, other)
+
     companion object {
+
+        fun equal(material: ItemMaterial, other: Any?) = material === other
+                || (other as? ItemMaterial)?.id == material.id
+                || (other as? BukkitMaterial)?.id == material.id
+                || (other as? XMaterial)?.id == material.id
 
         /**
          * 获取 [BukkitMaterial] 形式的物品材料
@@ -89,9 +100,26 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
         /**
          * private final int id
          */
-        internal val bukkitIdField by lazy {
+        private val bukkitIdField by lazy {
             ReflexClass.of(BukkitMaterial::class.java, false).structure.getField("id")
         }
+
+        /**
+         * 类型判断
+         */
+
+        fun isPotion(material: ItemMaterial) = material.name.contains("POTION", true)
+
+        private val leatherArmors by lazy {
+            arrayOf(
+                BukkitMaterial.LEATHER_HELMET.name,
+                BukkitMaterial.LEATHER_CHESTPLATE.name,
+                BukkitMaterial.LEATHER_LEGGINGS.name,
+                BukkitMaterial.LEATHER_BOOTS.name
+            )
+        }
+
+        fun isLeatherArmor(material: ItemMaterial) = leatherArmors.contains(material.name.uppercase())
 
     }
 

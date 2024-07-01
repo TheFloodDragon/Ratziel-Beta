@@ -6,7 +6,6 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.nbt.read
 import cn.fd.ratziel.module.item.nms.ItemSheet
@@ -81,7 +80,7 @@ data class ItemSundry(
 
         override val node = ItemNode.ROOT
 
-        override fun transform(component: ItemSundry): ItemData = ItemDataImpl().apply {
+        override fun transform(data: ItemData, component: ItemSundry) {
             val itemMeta = RefItemMeta(RefItemMeta.metaClass)
             // HideFlags
             val flags = component.hideFlags?.toTypedArray()
@@ -91,10 +90,10 @@ data class ItemSundry(
                 value.forEach { itemMeta.handle.addAttributeModifier(key, it) }
             }
             // Merge
-            itemMeta.applyToTag(tag)
+            itemMeta.applyToTag(data.tag)
             // CustomModelData (1.14+)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                tag[ItemSheet.CUSTOM_MODEL_DATA] = component.customModelData?.let { NBTInt(it) }
+                data.tag[ItemSheet.CUSTOM_MODEL_DATA] = component.customModelData?.let { NBTInt(it) }
             }
         }
 

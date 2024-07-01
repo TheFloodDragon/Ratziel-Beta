@@ -28,6 +28,11 @@ interface ItemMaterial {
      */
     val maxDurability: Int
 
+    /**
+     * 判断材料是否为空
+     */
+    fun isEmpty() = this.id == EMPTY.id
+
     companion object {
 
         /**
@@ -39,11 +44,6 @@ interface ItemMaterial {
             override val maxDurability = 0
             override val id = -10086
         }
-
-        /**
-         * 判断材料是否为空
-         */
-        fun isEmpty(material: ItemMaterial) = material.id == EMPTY.id
 
     }
 

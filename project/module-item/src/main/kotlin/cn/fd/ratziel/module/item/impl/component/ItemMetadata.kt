@@ -6,7 +6,6 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.util.toApexComponent
 import cn.fd.ratziel.module.item.util.toApexData
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -48,6 +47,14 @@ data class ItemMetadata(
 
         override val node = ItemNode.ROOT
 
+        override fun transform(data: ItemData, component: ItemMetadata) {
+            data.material = component.material
+            ItemDisplay.toApexData(component.display, data)
+            ItemDurability.toApexData(component.durability, data)
+            ItemSundry.toApexData(component.sundry, data)
+            ItemCharacteristic.toApexData(component.characteristic, data)
+        }
+
         override fun detransform(data: ItemData) = ItemMetadata(
             material = data.material,
             display = ItemDisplay.toApexComponent(data),
@@ -55,16 +62,6 @@ data class ItemMetadata(
             sundry = ItemSundry.toApexComponent(data),
             characteristic = ItemCharacteristic.toApexComponent(data),
         )
-
-        override fun transform(component: ItemMetadata): ItemData {
-            val data = ItemDataImpl()
-            data.material = component.material
-            ItemDataImpl.mergeShallow(data, ItemDisplay.toApexData(component.display))
-            ItemDataImpl.mergeShallow(data, ItemDurability.toApexData(component.durability))
-            ItemDataImpl.mergeShallow(data, ItemSundry.toApexData(component.sundry))
-            ItemDataImpl.mergeShallow(data, ItemCharacteristic.toApexData(component.characteristic))
-            return data
-        }
 
     }
 

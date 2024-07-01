@@ -24,6 +24,7 @@ object ItemSheet {
     val UNBREAKABLE by mapping("UNBREAKABLE")
     val DISPLAY_LOCAL_NAME by mapping("DISPLAY_LOCAL_NAME") // Called "ITEM_NAME" on 1.20.5+
     val DYED_COLOR by mapping("DYED_COLOR")
+    val POTION_COLOR by mapping("POTION_COLOR")
 
     // Custom Features And 1.20.5+
     val MAX_DAMAGE by mapping("MAX_DAMAGE")

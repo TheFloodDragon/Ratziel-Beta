@@ -8,7 +8,6 @@ import cn.fd.ratziel.core.serialization.EnhancedList
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
-import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.nbt.NBTList
 import cn.fd.ratziel.module.item.nbt.NBTString
 import cn.fd.ratziel.module.item.nbt.read
@@ -70,10 +69,10 @@ data class ItemDisplay(
 
         override val node = ItemNode.ROOT
 
-        override fun transform(component: ItemDisplay) = ItemDataImpl().apply {
-            tag.write(ItemSheet.DISPLAY_NAME, componentToData(component.name))
-            tag.write(ItemSheet.DISPLAY_LORE, component.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) })
-            tag.write(ItemSheet.DISPLAY_LOCAL_NAME, componentToData(component.localizedName))
+        override fun transform(data: ItemData, component: ItemDisplay) {
+            data.tag.write(ItemSheet.DISPLAY_NAME, componentToData(component.name))
+            data.tag.write(ItemSheet.DISPLAY_LORE, component.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) })
+            data.tag.write(ItemSheet.DISPLAY_LOCAL_NAME, componentToData(component.localizedName))
         }
 
         override fun detransform(data: ItemData): ItemDisplay = ItemDisplay().apply {
