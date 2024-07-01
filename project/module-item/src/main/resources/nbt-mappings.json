@@ -3,11 +3,11 @@
     "0": "custom_data"
   },
   "DISPLAY_NAME": {
-    "0": "Name",
+    "0": "display.Name",
     "12005": "custom_name"
   },
   "DISPLAY_LORE": {
-    "0": "Lore",
+    "0": "display.Lore",
     "12005": "lore"
   },
   "ENCHANTMENTS": {
@@ -34,6 +34,14 @@
     "0": "Unbreakable",
     "12005": "unbreakable"
   },
+  "DISPLAY_LOCAL_NAME": {
+    "0": "display.LocName",
+    "12005": "item_name"
+  },
+  "DYED_COLOR": {
+    "0": "display.color",
+    "12005": "dyed_color.rgb"
+  },
   "MAX_DAMAGE": {
     "0": "max_damage"
   },
@@ -54,14 +62,6 @@
   },
   "HIDE_TOOLTIP": {
     "12005": "hide_tool_tip"
-  },
-  "DISPLAY": {
-    "0": "display",
-    "12005": null
-  },
-  "DISPLAY_LOCAL_NAME": {
-    "0": "LocName",
-    "12005": "item_name"
   },
   "HIDE_FLAG": {
     "0": "HideFlags",

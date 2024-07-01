@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalSerializationApi::class)
-@file:Suppress("DEPRECATION")
+@file:Suppress("DEPRECATION", "SpellCheckingInspection")
 
 package cn.fd.ratziel.module.item.impl.component
 
@@ -8,9 +8,9 @@ import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.nbt.NBTInt
+import cn.fd.ratziel.module.item.nbt.read
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemMeta
-import cn.fd.ratziel.module.item.util.castThen
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -112,7 +112,7 @@ data class ItemSundry(
             }
             // CustomModelData (1.14+)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                data.tag[ItemSheet.CUSTOM_MODEL_DATA].castThen<NBTInt> {
+                data.tag.read<NBTInt>(ItemSheet.CUSTOM_MODEL_DATA) {
                     customModelData = it.content
                 }
             }

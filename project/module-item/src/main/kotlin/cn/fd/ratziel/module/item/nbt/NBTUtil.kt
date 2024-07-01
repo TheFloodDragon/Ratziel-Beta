@@ -1,24 +1,30 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package cn.fd.ratziel.module.item.nbt
+
+import java.util.function.Consumer
 
 /**
  * [DeepVisitor] 系列方法
  */
-fun NBTCompound.getDeep(node: String) = DeepVisitor.getDeep(this, node)
-fun NBTCompound.putDeep(node: String, value: NBTData, checkList: Boolean = true) = DeepVisitor.putDeep(this, node, value, checkList)
-fun NBTCompound.removeDeep(node: String) = DeepVisitor.removeDeep(this, node)
+inline fun NBTCompound.getDeep(node: String) = DeepVisitor.getDeep(this, node)
+inline fun NBTCompound.putDeep(node: String, value: NBTData, checkList: Boolean = true) = DeepVisitor.putDeep(this, node, value, checkList)
+inline fun NBTCompound.removeDeep(node: String) = DeepVisitor.removeDeep(this, node)
 
-fun NBTCompound.addAll(vararg pairs: Pair<String, NBTData?>) = this.apply { pairs.forEach { it.second?.let { value -> put(it.first, value) } } }
+/**
+ * 读取指定类型的数据
+ */
+inline fun <reified T : NBTData> NBTCompound.read(nodes: String, action: Consumer<T>) = (this.read(nodes) as? T)?.let { action.accept(it) }
 
-fun NBTList.setSafely(index: Int, value: NBTData) {
-    if (index == size) add(value) else set(index, value)
-}
+/**
+ * 读取数据
+ */
+inline fun NBTCompound.read(nodes: String): NBTData? = DeepVisitor.read(this, nodes)
 
-// 开启类型检查, 列表不为空情况下的类型不匹配
-fun NBTList.setSafely(index: Int, value: NBTData, typeCheck: Boolean) {
-    if (typeCheck && !isEmpty() && get(0).type != value.type)
-        error("It's not allowed to set a ${value.type} data in this list.")
-    else setSafely(index, value)
-}
+/**
+ * 写入数据
+ */
+inline fun NBTCompound.write(nodes: String, value: NBTData?) = value?.let { DeepVisitor.write(this, nodes, it) }
 
 /**
  * 深度获取NBT数据
@@ -36,6 +42,46 @@ object DeepVisitor {
     const val LIST_INDEX_START = "["
 
     const val LIST_INDEX_END = "]"
+
+    fun write(data: NBTCompound, nodes: String, value: NBTData) {
+        if (nodes.contains(DEEP_SEPARATION)) {
+            write(data, nodes.split(DEEP_SEPARATION).iterator(), value)
+        } else data[nodes] = value
+    }
+
+    fun read(data: NBTCompound, nodes: String): NBTData? {
+        return if (nodes.contains(DEEP_SEPARATION)) {
+            read(data, nodes.split(DEEP_SEPARATION))
+        } else data[nodes]
+    }
+
+    fun write(data: NBTCompound, nodes: Iterator<String>, value: NBTData) {
+        var find = data
+        while (nodes.hasNext()) {
+            val node = nodes.next()
+            if (nodes.hasNext()) {
+                find = find.computeIfAbsent(node) { NBTCompound() } as? NBTCompound ?: return
+            } else find[node] = value
+        }
+    }
+
+    fun read(data: NBTData, nodes: Iterable<String>): NBTData? {
+        var find: NBTData = data
+        for (n in nodes) {
+            find = (data as? NBTCompound)?.get(n) ?: return null
+        }
+        return find
+    }
+
+    fun setSafely(data: NBTList, index: Int, value: NBTData) {
+        if (index == data.size) data.add(value) else data.set(index, value)
+    }
+
+    // 开启类型检查, 列表不为空情况下的类型不匹配
+    fun setSafely(data: NBTList, index: Int, value: NBTData, typeCheck: Boolean) {
+        if (typeCheck && !data.isEmpty() && data[0].type != value.type) error("It's not allowed to set a ${value.type} data in this list.")
+        else setSafely(data, index, value)
+    }
 
     /**
      * 深度获取
@@ -56,7 +102,7 @@ object DeepVisitor {
         getDeepWith(this, node, true) { cpd ->
             supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
                 if (index == null) cpd[nodeName] = value
-                else ((cpd[nodeName] ?: NBTList().also { cpd[nodeName] = it }) as? NBTList)?.apply { setSafely(index, value, checkList) }
+                else ((cpd[nodeName] ?: NBTList().also { cpd[nodeName] = it }) as? NBTList)?.also { setSafely(it, index, value, checkList) }
             }
         }
     }
