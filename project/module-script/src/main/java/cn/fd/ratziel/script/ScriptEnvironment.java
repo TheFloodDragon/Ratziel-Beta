@@ -1,5 +1,6 @@
 package cn.fd.ratziel.script;
 
+import cn.fd.ratziel.function.argument.ArgumentContext;
 import org.jetbrains.annotations.NotNull;
 
 import javax.script.Bindings;
@@ -20,6 +21,14 @@ public interface ScriptEnvironment {
      */
     @NotNull
     ScriptContext getScriptContext();
+
+    /**
+     * 获取环境中的参数上下文
+     *
+     * @return 脚本上下文, 不能为空
+     */
+    @NotNull
+    ArgumentContext getArgumentContext();
 
     /**
      * 获取环境中脚本上下文的绑定键 (在引擎域中)

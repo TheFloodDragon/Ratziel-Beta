@@ -3,13 +3,13 @@ package cn.fd.ratziel.module.item.nms
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.PatchedDataComponentMap
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.world.item.component.CustomData
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
-import java.util.concurrent.ConcurrentHashMap
-import net.minecraft.world.item.Item as NMSItemType
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
 /**
@@ -33,6 +33,18 @@ abstract class NMSItem {
     abstract fun setTag(nmsItem: Any, tag: NBTCompound)
 
     /**
+     * 获取 [NMSItemStack]的自定义 NBT (克隆)
+     * @return [NBTCompound]
+     */
+    abstract fun getCustomTag(nmsItem: Any): NBTCompound?
+
+    /**
+     * 设置 [NMSItemStack]的自定义 NBT (克隆)
+     * @param tag [NBTTagCompound]
+     */
+    abstract fun setCustomTag(nmsItem: Any, tag: NBTCompound)
+
+    /**
      * 克隆 [NMSItemStack]
      */
     abstract fun copyItem(nmsItem: Any): Any
@@ -52,14 +64,25 @@ abstract class NMSItem {
  */
 object NMSItemImpl1 : NMSItem() {
 
-    override fun getTag(nmsItem: Any): NBTCompound? =
-        RefItemStack.InternalUtil.nmsTagField.get(nmsItem)?.let { NBTCompound(it).clone() }
+    override fun getTag(nmsItem: Any): NBTCompound? {
+        return RefItemStack.InternalUtil.nmsTagField.get(nmsItem)?.let { NBTCompound(it).clone() }
+    }
 
-    override fun setTag(nmsItem: Any, tag: NBTCompound) =
+    override fun setTag(nmsItem: Any, tag: NBTCompound) {
         RefItemStack.InternalUtil.nmsTagField.set(nmsItem, tag.clone().getData())
+    }
 
-    override fun copyItem(nmsItem: Any): Any =
-        RefItemStack.InternalUtil.nmsCloneMethod.invoke(nmsItem)!!
+    override fun getCustomTag(nmsItem: Any): NBTCompound? {
+        return getTag(nmsItem)?.get(ItemSheet.CUSTOM_DATA) as? NBTCompound
+    }
+
+    override fun setCustomTag(nmsItem: Any, tag: NBTCompound) {
+        getTag(nmsItem)?.put(ItemSheet.CUSTOM_DATA, tag)
+    }
+
+    override fun copyItem(nmsItem: Any): Any {
+        return RefItemStack.InternalUtil.nmsCloneMethod.invoke(nmsItem)!!
+    }
 
 }
 
@@ -88,6 +111,16 @@ class NMSItemImpl2 : NMSItem() {
             newComponents.restorePatch(dcp)
             componentsField.set(nmsItem, newComponents)
         }
+    }
+
+    override fun getCustomTag(nmsItem: Any): NBTCompound? {
+        val customData = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
+        return customData?.copyTag()?.let { NBTCompound(it) }
+    }
+
+    override fun setCustomTag(nmsItem: Any, tag: NBTCompound) {
+        val customData = CustomData.of(tag.getData() as NBTTagCompound)
+        (nmsItem as NMSItemStack).set(DataComponents.CUSTOM_DATA, customData)
     }
 
     override fun copyItem(nmsItem: Any): Any {

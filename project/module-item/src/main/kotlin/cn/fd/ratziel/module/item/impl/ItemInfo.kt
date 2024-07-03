@@ -5,7 +5,9 @@ import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.nbt.NBTLong
 import cn.fd.ratziel.module.item.nbt.NBTString
+import cn.fd.ratziel.module.item.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.ComponentUtil
+import org.bukkit.inventory.ItemStack
 
 /**
  * ItemInfo
@@ -58,6 +60,15 @@ data class ItemInfo(
                 identifier = IdentifierImpl(id.content),
                 built_date = date.content,
             )
+        }
+
+        /**
+         * 判断
+         */
+        fun isRatziel(item: ItemStack): Boolean {
+            val ref = RefItemStack(item)
+            val custom = ref.getCustomTag() ?: return false
+            return custom.containsKey(OccupyNode.RATZIEL_NODE.name)
         }
 
     }

@@ -27,7 +27,7 @@ val baseJson by lazy {
     }
 }
 
-operator fun JsonObject.get(names: Iterable<String>): JsonElement? {
+fun JsonObject.getBy(names: Iterable<String>): JsonElement? {
     for (name in names) {
         val find = this[name]
         if (find != null) return find

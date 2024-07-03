@@ -6,8 +6,10 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
+import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.util.toApexComponent
 import cn.fd.ratziel.module.item.util.toApexData
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -40,7 +42,11 @@ data class ItemMetadata(
     /**
      * 物品特征部分
      */
-    var characteristic: ItemCharacteristic = ItemCharacteristic()
+    var characteristic: ItemCharacteristic = ItemCharacteristic(),
+    /**
+     * 物品数据标签
+     */
+    var tag: @Contextual NBTCompound? = null
 ) {
 
     companion object : ItemTransformer<ItemMetadata> {
@@ -53,6 +59,8 @@ data class ItemMetadata(
             ItemDurability.toApexData(component.durability, data)
             ItemSundry.toApexData(component.sundry, data)
             ItemCharacteristic.toApexData(component.characteristic, data)
+            val newTag = component.tag
+            if (newTag != null) data.tag.merge(newTag, true)
         }
 
         override fun detransform(data: ItemData) = ItemMetadata(
@@ -61,6 +69,7 @@ data class ItemMetadata(
             durability = ItemDurability.toApexComponent(data),
             sundry = ItemSundry.toApexComponent(data),
             characteristic = ItemCharacteristic.toApexComponent(data),
+            tag = data.tag
         )
 
     }

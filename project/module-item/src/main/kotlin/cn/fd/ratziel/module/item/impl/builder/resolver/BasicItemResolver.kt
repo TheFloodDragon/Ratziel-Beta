@@ -5,7 +5,7 @@ import cn.fd.ratziel.core.serialization.handlePrimitives
 import cn.fd.ratziel.core.util.priority
 import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.core.util.splitNonEscaped
-import cn.fd.ratziel.function.argument.ContextArgument
+import cn.fd.ratziel.function.argument.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers.PapiResolver
@@ -34,18 +34,18 @@ object BasicItemResolver : ItemResolver {
         BasicTagResolver priority 99,
     )
 
-    override fun resolve(element: JsonElement, arguments: ContextArgument): JsonElement =
+    override fun resolve(element: JsonElement, context: ArgumentContext): JsonElement =
         // 过滤节点
         CleanUpUtil.handleOnFilter(element, accessibleNodes) { filtered ->
             // 处理 JsonPrimitive
-            filtered.value.handlePrimitives { resolvePrimitive(it, arguments) }
+            filtered.value.handlePrimitives { resolvePrimitive(it, context) }
         }
 
-    fun resolvePrimitive(element: JsonPrimitive, arguments: ContextArgument): JsonElement {
+    fun resolvePrimitive(element: JsonPrimitive, context: ArgumentContext): JsonElement {
         var handle = element.content
         // 遍历字符串解析器处理
         for (resolver in resolvers.sortPriority()) {
-            handle = resolver.resolve(handle, arguments)
+            handle = resolver.resolve(handle, context)
         }
         return JsonPrimitive(handle)
     }
@@ -69,18 +69,18 @@ object BasicItemResolver : ItemResolver {
          */
         val reader = VariableReader("{", "}")
 
-        override fun resolve(element: String, arguments: ContextArgument): String =
+        override fun resolve(element: String, context: ArgumentContext): String =
             reader.readToFlatten(element).joinToString("") {
                 // 如果是标签, 则通过标签解析器解析
                 if (it.isVariable) {
-                    handle(it.text, arguments)
+                    handle(it.text, context)
                 } else it.text // 不然就是它本身
             } // 拼接结果成字符串并返回
 
         /**
          * 寻找 [SectionTagResolver] 并处理
          */
-        fun handle(source: String, arguments: ContextArgument): String {
+        fun handle(source: String, context: ArgumentContext): String {
             // 分割
             val split = source.splitNonEscaped(ARGUMENT_SEPRATION_SIGN)
             // 获取名称
@@ -88,7 +88,7 @@ object BasicItemResolver : ItemResolver {
             // 获取解析器
             val resolver = resolvers.find { it.name == name || it.alias.contains(name) }
             // 解析并返回
-            return resolver?.resolve(split.drop(1), arguments) ?: (reader.start + source + reader.end)
+            return resolver?.resolve(split.drop(1), context) ?: (reader.start + source + reader.end)
         }
 
     }

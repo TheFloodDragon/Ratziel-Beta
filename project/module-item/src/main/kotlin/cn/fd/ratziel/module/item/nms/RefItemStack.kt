@@ -42,7 +42,7 @@ class RefItemStack(raw: Any) {
     }
 
     /**
-     * 获取物品NBT [NBTCompound]
+     * 获取物品NBT标签 [NBTCompound]
      * @see NMSItem.getTag
      */
     fun getTag(): NBTCompound? {
@@ -55,6 +55,22 @@ class RefItemStack(raw: Any) {
      */
     fun setTag(data: NBTCompound) {
         NMSItem.INSTANCE.setTag(getAsNms() ?: return, data)
+    }
+
+    /**
+     * 获取物品自定义NBT标签 [NBTCompound]
+     * @see NMSItem.getCustomTag
+     */
+    fun getCustomTag(): NBTCompound? {
+        return NMSItem.INSTANCE.getCustomTag(getAsNms() ?: return null)
+    }
+
+    /**
+     * 设置物品自定义NBT标签 [NBTCompound]
+     * @see NMSItem.setCustomTag
+     */
+    fun setCustomTag(data: NBTCompound) {
+        NMSItem.INSTANCE.setCustomTag(getAsNms() ?: return, data)
     }
 
     /**

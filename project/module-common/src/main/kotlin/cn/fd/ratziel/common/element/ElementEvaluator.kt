@@ -5,8 +5,8 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.util.FutureFactory
-import cn.fd.ratziel.function.argument.ContextArgument
-import cn.fd.ratziel.function.argument.DefaultContextArgument
+import cn.fd.ratziel.function.argument.ArgumentContext
+import cn.fd.ratziel.function.argument.DefaultArgumentContext
 import cn.fd.ratziel.function.argument.popOrNull
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
@@ -104,7 +104,7 @@ class ElementEvaluator(val executor: Executor) {
     fun submitWith(element: Element) {
         // 注册到处理器表
         for (handler in ElementRegistry.getHandlersByType(element.type)) {
-            val args = DefaultContextArgument(findConfig(handler))
+            val args = DefaultArgumentContext(findConfig(handler))
             submitTask(EvaluationTask(element, handler, args))
         }
     }
@@ -112,14 +112,14 @@ class ElementEvaluator(val executor: Executor) {
     /**
      * 评估任务
      */
-    class EvaluationTask(val element: Element, val handler: ElementHandler, val args: ContextArgument)
+    class EvaluationTask(val element: Element, val handler: ElementHandler, val args: ArgumentContext)
 
     companion object {
 
         /**
          * 弹出 [ElementConfig]
          */
-        fun popConfig(args: ContextArgument): ElementConfig = args.popOrNull<ElementConfig>() ?: ElementConfig()
+        fun popConfig(args: ArgumentContext): ElementConfig = args.popOrNull<ElementConfig>() ?: ElementConfig()
 
         /**
          * 获取[ElementHandler]的[ElementConfig]

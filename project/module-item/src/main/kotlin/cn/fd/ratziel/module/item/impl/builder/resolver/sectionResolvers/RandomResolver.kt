@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers
 
-import cn.fd.ratziel.function.argument.ContextArgument
+import cn.fd.ratziel.function.argument.ArgumentContext
 import cn.fd.ratziel.module.item.impl.builder.resolver.SectionTagResolver
 import taboolib.common.util.random
 
@@ -17,7 +17,7 @@ object RandomResolver : SectionTagResolver {
     override val alias = arrayOf("ran", "rd")
 
     // TODO 写完这个
-    override fun resolve(element: Iterable<String>, arguments: ContextArgument): String {
+    override fun resolve(element: Iterable<String>, context: ArgumentContext): String {
         return random().nextInt().toString()
     }
 

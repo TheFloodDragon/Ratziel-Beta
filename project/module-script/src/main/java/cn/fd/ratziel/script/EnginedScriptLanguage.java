@@ -10,18 +10,13 @@ import javax.script.*;
  * @author TheFloodDragon
  * @since 2024/6/30 16:39
  */
-public abstract class EnginedScriptLanguage implements ScriptLanguage {
+public abstract class EnginedScriptLanguage extends ReleasableScriptLanguage {
 
-    public EnginedScriptLanguage(@NotNull String engine, @NotNull String name, String... alias) {
-        this.NAME = name;
-        this.ALIAS = alias;
+    public EnginedScriptLanguage(@NotNull String engine, @NotNull String... names) {
+        super(names);
         this.ENGINE_NAME = engine;
     }
 
-    @NotNull
-    private final String NAME;
-    @NotNull
-    private final String[] ALIAS;
     @NotNull
     private final String ENGINE_NAME;
 
@@ -44,17 +39,8 @@ public abstract class EnginedScriptLanguage implements ScriptLanguage {
     public ScriptEngine newEngine() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         ScriptEngine engine = new ScriptEngineManager(classLoader).getEngineByName(ENGINE_NAME);
-        if (engine != null) return engine; else throw new NullPointerException("Cannot get ScriptEngine by name: " + ENGINE_NAME + " !");
-    }
-
-    @Override
-    public @NotNull String getName() {
-        return NAME;
-    }
-
-    @Override
-    public @NotNull String[] getAlias() {
-        return ALIAS;
+        if (engine != null) return engine;
+        else throw new NullPointerException("Cannot get ScriptEngine by name: " + ENGINE_NAME + " !");
     }
 
 }

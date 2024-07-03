@@ -4,7 +4,6 @@ import cn.fd.ratziel.module.item.api.service.ItemServiceFunction
 import cn.fd.ratziel.module.item.api.service.ItemServiceGetter
 import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
 import cn.fd.ratziel.module.item.api.service.ItemServiceSetter
-import taboolib.common.platform.function.severe
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -45,7 +44,7 @@ object GlobalServiceRegistry : ItemServiceRegistry {
      * 不支持, 我总不能给所有的都注册一遍吧
      */
     override fun <T> register(type: Class<T>, function: ItemServiceFunction<T>) {
-        severe("GlobalServiceRegistry don't support register! Please use \"GlobalServiceRegistry.registries.{VALUE}.register\"")
+        throw UnsupportedOperationException("GlobalServiceRegistry don't allow to register any service in any way!")
     }
 
 }

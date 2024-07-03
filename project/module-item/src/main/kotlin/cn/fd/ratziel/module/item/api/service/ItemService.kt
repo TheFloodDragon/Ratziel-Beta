@@ -1,5 +1,7 @@
 package cn.fd.ratziel.module.item.api.service
 
+import cn.fd.ratziel.core.Identifier
+
 /**
  * ItemService - 物品服务
  *
@@ -9,47 +11,32 @@ package cn.fd.ratziel.module.item.api.service
 interface ItemService {
 
     /**
-     * 获取服务
+     * 物品唯一标识符
      */
-    fun <T> getService(type: Class<T>): T?
+    val identifier: Identifier
 
     /**
-     * 获取服务 (通过指定服务注册表)
+     * 获取
      */
-    fun <T> getServiceBy(type: Class<T>, registry: ItemServiceRegistry): T?
+    operator fun <T> get(type: Class<T>): T?
 
     /**
-     * 设置服务
+     * 设置
      */
-    fun <T> setService(type: Class<T>, value: T)
+    operator fun <T> set(type: Class<T>, value: T)
 
     /**
-     * 设置服务 (通过指定服务注册表)
+     * 获取 (通过指定服务注册表)
      */
-    fun <T> setServiceBy(type: Class<T>, registry: ItemServiceRegistry, value: T)
+    operator fun <T> get(type: Class<T>, registry: ItemServiceRegistry): T? {
+        return registry.getter(type)?.apply(identifier)
+    }
 
     /**
-     * Kotlin 操作符优化
-     * @see [getService]
+     * 设置 (通过指定服务注册表)
      */
-    operator fun <T> get(type: Class<T>) = getService(type)
-
-    /**
-     * Kotlin 操作符优化
-     * @see [getServiceBy]
-     */
-    operator fun <T> get(type: Class<T>, registry: ItemServiceRegistry) = getServiceBy(type, registry)
-
-    /**
-     * Kotlin 操作符优化
-     * @see [setService]
-     */
-    operator fun <T> set(type: Class<T>, value: T) = setService(type, value)
-
-    /**
-     * Kotlin 操作符优化
-     * @see [setServiceBy]
-     */
-    operator fun <T> set(type: Class<T>, registry: ItemServiceRegistry, value: T) = setServiceBy(type, registry, value)
+    operator fun <T> set(type: Class<T>, registry: ItemServiceRegistry, value: T) {
+        registry.setter(type)?.accept(identifier, value)
+    }
 
 }

@@ -71,7 +71,7 @@ object DefaultItemSerializer : ItemKSerializer<ItemMetadata> {
         val durability = asyncDecode(ItemDurability.serializer())
         val sundry = asyncDecode(ItemSundry.serializer())
         val characteristic = asyncDecode(ItemCharacteristic.serializer())
-        val material = (element as? JsonObject)?.get(NODES_MATERIAL)
+        val material = (element as? JsonObject)?.getBy(NODES_MATERIAL)
             ?.let { asyncDecode(ItemMaterialSerializer, it) }
             ?: CompletableFuture.completedFuture(ItemMaterial.EMPTY)
         return ItemMetadata(material.get(), display.get(), durability.get(), sundry.get(), characteristic.get())

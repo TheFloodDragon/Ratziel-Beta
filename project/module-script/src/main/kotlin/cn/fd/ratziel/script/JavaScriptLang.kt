@@ -8,6 +8,5 @@ package cn.fd.ratziel.script
  */
 object JavaScriptLang : EnginedScriptLanguage(
     "nashorn", // 引擎名称
-    "js", // 语言名称
-    "JavaScript", "javascript", "java-script", "JS" // 语言别名
+    "js", "JavaScript", "javascript", "java-script", "JS" // 语言名称
 )

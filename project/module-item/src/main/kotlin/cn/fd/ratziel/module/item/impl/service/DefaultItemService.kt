@@ -10,21 +10,16 @@ import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
  * @author TheFloodDragon
  * @since 2024/5/4 10:52
  */
-open class DefaultItemService(val identifier: Identifier) : ItemService {
-
-    override fun <T> getServiceBy(type: Class<T>, registry: ItemServiceRegistry): T? {
-        return registry.getter(type)?.apply(identifier)
-    }
-
-    override fun <T> setServiceBy(type: Class<T>, registry: ItemServiceRegistry, value: T) {
-        registry.setter(type)?.accept(identifier, value)
-    }
+open class DefaultItemService(
+    override val identifier: Identifier,
+    val registry: ItemServiceRegistry = GlobalServiceRegistry
+) : ItemService {
 
     /**
-     * 默认使用 [GlobalServiceRegistry]
+     * 使用 [registry]
      */
-    override fun <T> getService(type: Class<T>): T? = getServiceBy(type, GlobalServiceRegistry)
+    override fun <T> get(type: Class<T>): T? = get(type, registry)
 
-    override fun <T> setService(type: Class<T>, value: T) = setServiceBy(type, GlobalServiceRegistry, value)
+    override fun <T> set(type: Class<T>, value: T) = set(type, registry, value)
 
 }

@@ -3,14 +3,14 @@ package cn.fd.ratziel.function.argument
 import cn.fd.ratziel.function.argument.exception.ArgumentNotFoundException
 
 /**
- * ContextArgument - 上下文参数
+ * ArgumentContext - 参数上下文
  *
  * 本质为一个参数容器
  *
  * @author TheFloodDragon
  * @since 2024/6/28 16:14
  */
-interface ContextArgument {
+interface ArgumentContext {
 
     /**
      * 弹出第一个指定类型的参数

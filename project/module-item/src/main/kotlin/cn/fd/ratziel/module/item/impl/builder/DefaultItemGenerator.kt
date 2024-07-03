@@ -6,13 +6,15 @@ import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.core.util.sortPriority
-import cn.fd.ratziel.function.argument.ContextArgument
+import cn.fd.ratziel.function.argument.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
+import cn.fd.ratziel.module.item.event.ItemBuildEvent
+import cn.fd.ratziel.module.item.event.ItemResolvedEvent
 import cn.fd.ratziel.module.item.impl.ItemDataImpl
 import cn.fd.ratziel.module.item.impl.ItemInfo
 import cn.fd.ratziel.module.item.impl.RatzielItem
@@ -34,11 +36,21 @@ class DefaultItemGenerator(
     val origin: Element
 ) : ItemGenerator {
 
-    fun build(sourceData: ItemData, arguments: ContextArgument): CompletableFuture<RatzielItem> {
+    fun build(sourceData: ItemData, context: ArgumentContext): CompletableFuture<RatzielItem> {
+        // 生成物品唯一标识符
+        val identifier = IdentifierImpl()
+
+        // PreEvent
+        ItemBuildEvent.Pre(identifier, this, context).call()
+
         // Step1: Resolve (with priorities)
-        val element = resolve(origin.property, arguments, ItemRegistry.Resolver.getResolversSorted())
+        val element = resolve(origin.property, context, ItemRegistry.Resolver.getResolversSorted())
+        // ResolvedEvent
+        ItemResolvedEvent(identifier, element, context).call()
+
         // Step2: Serialize (async)
         val serializeFactory = FutureFactory<Any?>()
+
         // Step3: Transform (async)
         val transformFactory = FutureFactory<Priority<ItemData>?>()
 
@@ -57,17 +69,20 @@ class DefaultItemGenerator(
                 ItemDataImpl.merge(sourceData, data, true) // 合并数据
             }
             // 合成最终结果
-            createRatzielItem(data = sourceData)
+            createRatzielItem(sourceData, identifier).also { item ->
+                // PostEvent
+                ItemBuildEvent.Post(item.identifier, this, item, context).call()
+            }
         }
     }
 
-    override fun build(arguments: ContextArgument) = build(ItemDataImpl(), arguments)
+    override fun build(context: ArgumentContext) = build(ItemDataImpl(), context)
 
-    private fun resolve(element: JsonElement, arguments: ContextArgument, resolvers: List<ItemResolver>): JsonElement {
+    private fun resolve(element: JsonElement, context: ArgumentContext, resolvers: List<ItemResolver>): JsonElement {
         var result = element
         for (resolver in resolvers) {
             try {
-                result = resolver.resolve(result, arguments)
+                result = resolver.resolve(result, context)
             } catch (ex: Exception) {
                 severe("Failed to resolve element by $resolver!")
                 ex.printStackTrace()
@@ -107,7 +122,7 @@ class DefaultItemGenerator(
 
     fun createRatzielItem(
         data: ItemData,
-        identifier: Identifier = IdentifierImpl(),
+        identifier: Identifier,
         date: Long = System.currentTimeMillis()
     ): RatzielItem = RatzielItem(identifier, data).also {
         // 写入物品信息

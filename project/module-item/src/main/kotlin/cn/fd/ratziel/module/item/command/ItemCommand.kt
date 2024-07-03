@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.command
 
-import cn.fd.ratziel.function.argument.DefaultContextArgument
+import cn.fd.ratziel.function.argument.DefaultArgumentContext
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import org.bukkit.entity.Player
@@ -55,19 +55,19 @@ object ItemCommand {
         }
     }
 
-    private fun giveById(player: Player, id: String, amount: Int): CompletableFuture<ItemStack> {
+    private fun giveById(player: ProxyPlayer, id: String, amount: Int): CompletableFuture<ItemStack> {
         val future = CompletableFuture<ItemStack>()
         // 获取物品生成器
         val generator = ItemManager.getByName(id)!!
-        // 参数
-        val args = DefaultContextArgument().apply { add(player) }
+        // 上下文参数
+        val args = DefaultArgumentContext().apply { add(player) }
         // 开始生成物品
         generator.build(args).thenAccept {
             // 将生成结果打包成 BukkitItemStack
             val item = RefItemStack(it.data).getAsBukkit().apply { setAmount(amount) }
             submit {
                 // 给予物品
-                player.giveItem(item)
+                player.cast<Player>().giveItem(item)
                 future.complete(item)
             }
         }
@@ -77,17 +77,17 @@ object ItemCommand {
     private fun cmdGive(sender: ProxyCommandSender, players: List<ProxyPlayer>, id: String, amount: Int) {
         if (players.size == 1) {
             val player = players[0]
-            giveById(player.cast(), id, amount).thenRun {
+            giveById(player, id, amount).thenRun {
                 // 发送给命名发送者
                 sender.sendLang("Item-Give", player.name, id, amount)
                 // 发送给物品接收者
-                if (sender.origin != player.origin) player.sendLang("Item-Get", id, amount)
+                if (sender.name != player.name) player.sendLang("Item-Get", id, amount)
             }
         } else {
             val futures = players.map { player ->
-                giveById(player.cast(), id, amount).thenRun {
+                giveById(player, id, amount).thenRun {
                     // 发送给物品接收者
-                    if (sender.origin != player.origin) player.sendLang("Item-Get", id, amount)
+                    if (sender.name != player.name) player.sendLang("Item-Get", id, amount)
                 }
             }
             CompletableFuture.allOf(*futures.toTypedArray())

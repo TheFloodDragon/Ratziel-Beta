@@ -49,14 +49,14 @@ data class ItemCharacteristic(
         override val node = ItemNode.ROOT
 
         override fun transform(data: ItemData, component: ItemCharacteristic) {
-            // 头颅处理
-            val headTag = component.headMeta?.let { HeadUtil.getHeadTag(it) }
-            // 当源数据的材料为空或者是PLAYER_HEAD时, 才设置头颅相关
-            if (headTag != null && (data.material.isEmpty() || ItemMaterialImpl.equal(data.material, BukkitMaterial.PLAYER_HEAD))) {
-                // 设置新材质
-                data.material = ItemMaterialImpl(BukkitMaterial.PLAYER_HEAD)
-                // 应用标签
-                data.tag.merge(headTag, true)
+            // 头颅处理 (当源数据的材料为空或者是PLAYER_HEAD时, 才处理相关)
+            if (data.material.isEmpty() || ItemMaterialImpl.equal(data.material, BukkitMaterial.PLAYER_HEAD)) {
+                component.headMeta?.let { HeadUtil.getHeadTag(it) }?.let {
+                    // 设置材质
+                    data.material = ItemMaterialImpl(BukkitMaterial.PLAYER_HEAD)
+                    // 应用标签
+                    data.tag.merge(it, true)
+                }
             }
             // 颜色处理
             val node = when {

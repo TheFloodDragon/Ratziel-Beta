@@ -19,9 +19,17 @@ object NBTSerializer : KSerializer<NBTData> {
 
     override val descriptor = PrimitiveSerialDescriptor("nbt.NBTData", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): NBTData = Converter.deserializeFromString(decoder.decodeString())
+    override fun serialize(encoder: Encoder, value: NBTData) {
+        if (encoder is JsonEncoder)
+            encoder.encodeJsonElement(Converter.serializeToJson(value))
+        else throw UnsupportedTypeException(encoder)
+    }
 
-    override fun serialize(encoder: Encoder, value: NBTData) = encoder.encodeString(Converter.serializeToString(value))
+    override fun deserialize(decoder: Decoder): NBTData {
+        if (decoder is JsonDecoder)
+            return Converter.deserializeFromString(decoder.decodeString())
+        else throw UnsupportedTypeException(decoder)
+    }
 
     object Converter {
 
@@ -50,13 +58,13 @@ object NBTSerializer : KSerializer<NBTData> {
         /**
          * 将 [NBTData] 序列化成 [JsonElement]
          */
-        fun serializeToJson(target: NBTData): JsonElement =
+        fun serializeToJson(target: NBTData): JsonElement = when (target) {
             // 特殊类型序列化
-            when (target) {
-                is NBTCompound -> serializeToJsonObject(target)
-                is NBTList -> serializeToJsonArray(target)
-                else -> null
-            } ?: JsonPrimitive(serializeToString(target)) // 基础类型序列化
+            is NBTCompound -> serializeToJsonObject(target)
+            is NBTList -> serializeToJsonArray(target)
+            // 基础类型序列化
+            else -> JsonPrimitive(serializeToString(target))
+        }
 
         /**
          * 序列化精确类型

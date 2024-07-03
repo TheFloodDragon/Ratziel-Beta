@@ -31,7 +31,7 @@ object ScriptBlockBuilder {
                     for (e in section) {
                         val key = e.key.toString().trim()
                         if (key.startsWith(MARK_TOGGLE)) {
-                            val lang = ScriptRunner.findLang(key.drop(MARK_TOGGLE.length))
+                            val lang = ScriptManager.findLang(key.drop(MARK_TOGGLE.length))
                             val value = e.value
                             if (value != null) return ToggleLangBlock(lang, build(value))
                         }
@@ -55,7 +55,7 @@ object ScriptBlockBuilder {
     }
 
     data class ScriptBlock(val raw: ScriptStorage) : Block {
-        override fun evaluate(lang: ScriptLanguage, env: ScriptEnvironment): Any? = lang.eval(raw, env)
+        override fun evaluate(lang: ScriptLanguage, env: ScriptEnvironment): Any? = lang.evaluate(raw, env)
     }
 
     data class ListBlock(val list: Iterable<Block>) : Block {

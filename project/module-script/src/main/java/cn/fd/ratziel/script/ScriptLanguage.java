@@ -13,16 +13,10 @@ import javax.script.ScriptException;
 public interface ScriptLanguage {
 
     /**
-     * 获取脚本名称
+     * 获取脚本的所有名称
      */
     @NotNull
-    String getName();
-
-    /**
-     * 获取脚本名称的别名
-     */
-    @NotNull
-    String[] getAlias();
+    String[] getNames();
 
     /**
      * 评估脚本
@@ -31,6 +25,6 @@ public interface ScriptLanguage {
      * @param environment 脚本环境
      * @throws ScriptException 当脚本评估中产生错误时抛出
      */
-    Object eval(@NotNull ScriptStorage script, @NotNull ScriptEnvironment environment) throws ScriptException;
+    Object evaluate(@NotNull ScriptStorage script, @NotNull ScriptEnvironment environment) throws ScriptException;
 
 }

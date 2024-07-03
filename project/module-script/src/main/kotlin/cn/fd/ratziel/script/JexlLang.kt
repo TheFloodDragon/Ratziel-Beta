@@ -8,6 +8,5 @@ package cn.fd.ratziel.script
  */
 object JexlLang : EnginedScriptLanguage(
     "Jexl", // 引擎名称
-    "jexl", // 语言名称
-    "Jexl", "Jexl3", "jexl3" // 语言别名
+    "jexl", "Jexl", "Jexl3", "jexl3" // 语言名称
 )
