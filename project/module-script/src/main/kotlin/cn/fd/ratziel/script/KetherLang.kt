@@ -15,13 +15,13 @@ object KetherLang : ReleasableScriptLanguage(
 ) {
 
     override fun eval(script: ScriptStorage, environment: ScriptEnvironment): Any {
-        return KetherShell.eval(script.content, ScriptOptions.new { vars(environment.scriptBindings) })
+        return KetherShell.eval(script.content, ScriptOptions.new { vars(environment.bindings) })
     }
 
     init {
         addReleaser { env ->
-            val sender = env.argumentContext.popOrNull(ProxyCommandSender::class.java)
-            env.scriptBindings.apply {
+            val sender = env.context.popOrNull(ProxyCommandSender::class.java)
+            env.bindings.apply {
                 put("@Sender", sender)
             }
         }

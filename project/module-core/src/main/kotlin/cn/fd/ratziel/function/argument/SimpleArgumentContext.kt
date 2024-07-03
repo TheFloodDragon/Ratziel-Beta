@@ -4,12 +4,12 @@ import cn.fd.ratziel.function.argument.exception.ArgumentNotFoundException
 import cn.fd.ratziel.function.util.uncheck
 
 /**
- * DefaultArgumentContext
+ * SimpleArgumentContext
  *
  * @author TheFloodDragon
  * @since 2024/6/28 16:19
  */
-open class DefaultArgumentContext(
+open class SimpleArgumentContext(
     val collection: MutableCollection<Any>
 ) : ArgumentContext, MutableCollection<Any> by collection {
 

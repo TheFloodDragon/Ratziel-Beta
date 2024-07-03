@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.api
 
 import cn.fd.ratziel.function.argument.ArgumentContext
-import cn.fd.ratziel.function.argument.DefaultArgumentContext
+import cn.fd.ratziel.function.argument.SimpleArgumentContext
 
 /**
  * ArgumentResolver
@@ -19,6 +19,6 @@ interface ArgumentResolver<E, T> {
     /**
      * 解析元素 (不带参数)
      */
-    fun resolve(element: E): T = resolve(element, DefaultArgumentContext())
+    fun resolve(element: E): T = resolve(element, SimpleArgumentContext())
 
 }

@@ -5,6 +5,10 @@ import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
+import cn.fd.ratziel.module.item.nbt.NBTString
+import cn.fd.ratziel.module.item.nms.RefItemStack
+import cn.fd.ratziel.module.item.util.ComponentUtil
+import org.bukkit.inventory.ItemStack
 
 /**
  * RatzielItem
@@ -38,5 +42,30 @@ open class RatzielItem : NeoItem {
      * 物品服务
      */
     override val service get() = GlobalServiceManager[identifier]
+
+    companion object {
+
+        /**
+         * 将目标 [ItemStack] 转为 [RatzielItem]
+         */
+        fun of(item: ItemStack): RatzielItem? {
+            val ref = RefItemStack(item)
+            // 获取物品数据
+            val data = ref.getData() ?: return null
+            // 获取物品信息
+            val identifier = ComponentUtil.findByNode(data.tag, OccupyNode.RATZIEL_NODE)[OccupyNode.RATZIEL_IDENTIFIER_NODE.name] as? NBTString ?: return null
+            return RatzielItem(IdentifierImpl(identifier.content), data)
+        }
+
+        /**
+         * 判断目标 [ItemStack] 是否为 [RatzielItem]
+         */
+        fun isRatzielItem(item: ItemStack): Boolean {
+            val ref = RefItemStack(item)
+            val custom = ref.getCustomTag() ?: return false
+            return custom.containsKey(OccupyNode.RATZIEL_NODE.name)
+        }
+
+    }
 
 }

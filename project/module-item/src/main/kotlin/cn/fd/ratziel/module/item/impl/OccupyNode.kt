@@ -29,6 +29,11 @@ data class OccupyNode(
          */
         val RATZIEL_NODE = OccupyNode("Ratziel", CUSTOM_DATA_NODE)
 
+        /**
+         * [RatzielItem] 物品标识符节点
+         */
+        val RATZIEL_IDENTIFIER_NODE = OccupyNode("Identifier", RATZIEL_NODE)
+
     }
 
 }

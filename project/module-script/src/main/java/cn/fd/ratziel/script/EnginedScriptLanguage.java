@@ -33,7 +33,7 @@ public abstract class EnginedScriptLanguage extends ReleasableScriptLanguage {
             compiled = newCompiled;
         }
         // 评估脚本
-        return compiled.eval(environment.getScriptContext());
+        return compiled.eval(environment.getBindings());
     }
 
     public ScriptEngine newEngine() {

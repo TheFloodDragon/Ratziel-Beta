@@ -6,7 +6,7 @@ import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.function.argument.ArgumentContext
-import cn.fd.ratziel.function.argument.DefaultArgumentContext
+import cn.fd.ratziel.function.argument.SimpleArgumentContext
 import cn.fd.ratziel.function.argument.popOrNull
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
@@ -104,7 +104,7 @@ class ElementEvaluator(val executor: Executor) {
     fun submitWith(element: Element) {
         // 注册到处理器表
         for (handler in ElementRegistry.getHandlersByType(element.type)) {
-            val args = DefaultArgumentContext(findConfig(handler))
+            val args = SimpleArgumentContext(findConfig(handler))
             submitTask(EvaluationTask(element, handler, args))
         }
     }

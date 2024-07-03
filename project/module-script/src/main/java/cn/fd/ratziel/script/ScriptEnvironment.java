@@ -15,27 +15,15 @@ import javax.script.ScriptContext;
 public interface ScriptEnvironment {
 
     /**
-     * 获取环境中的脚本上下文
-     *
-     * @return 脚本上下文, 不能为空
+     * 获取环境中的绑定键
      */
     @NotNull
-    ScriptContext getScriptContext();
+    Bindings getBindings();
 
     /**
      * 获取环境中的参数上下文
-     *
-     * @return 脚本上下文, 不能为空
      */
     @NotNull
-    ArgumentContext getArgumentContext();
-
-    /**
-     * 获取环境中脚本上下文的绑定键 (在引擎域中)
-     */
-    @NotNull
-    default Bindings getScriptBindings() {
-        return getScriptContext().getBindings(ScriptContext.ENGINE_SCOPE);
-    }
+    ArgumentContext getContext();
 
 }

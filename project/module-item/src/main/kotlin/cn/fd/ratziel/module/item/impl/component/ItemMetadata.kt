@@ -25,7 +25,8 @@ data class ItemMetadata(
     /**
      * 物品材料
      */
-    @JsonNames("mat", "mats", "materials")
+    
+     @JsonNames("mat", "mats", "materials")
     var material: ItemMaterial = ItemMaterial.EMPTY,
     /**
      * 物品耐久部分
@@ -46,6 +47,7 @@ data class ItemMetadata(
     /**
      * 物品数据标签
      */
+    @JsonNames("nbt", "nbt-data", "nbt-tag")
     var tag: @Contextual NBTCompound? = null
 ) {
 

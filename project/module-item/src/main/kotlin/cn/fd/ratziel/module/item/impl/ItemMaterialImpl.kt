@@ -73,7 +73,7 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
 
         fun equal(material: ItemMaterial, other: Any?) = material === other
                 || (other as? ItemMaterial)?.id == material.id
-                || (other as? BukkitMaterial)?.id == material.id
+                || (other as? BukkitMaterial)?.let { getIdUnsafe(it) } == material.id
                 || (other as? XMaterial)?.id == material.id
 
         /**

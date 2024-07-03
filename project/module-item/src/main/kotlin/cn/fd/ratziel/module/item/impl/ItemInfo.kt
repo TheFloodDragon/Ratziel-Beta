@@ -5,9 +5,7 @@ import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.nbt.NBTLong
 import cn.fd.ratziel.module.item.nbt.NBTString
-import cn.fd.ratziel.module.item.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.ComponentUtil
-import org.bukkit.inventory.ItemStack
 
 /**
  * ItemInfo
@@ -29,10 +27,6 @@ data class ItemInfo(
 
     companion object {
 
-        val INFO_NODE = OccupyNode("info", OccupyNode.RATZIEL_NODE)
-
-        val NODE_ID = "identifier"
-
         val NODE_BUILT_DATE = "built_date"
 
         /**
@@ -40,9 +34,9 @@ data class ItemInfo(
          */
         fun write(info: ItemInfo, item: NeoItem) {
             // 寻找标签: custom_data.Ratziel.info
-            val tag = ComponentUtil.findByNode(item.data.tag, INFO_NODE)
+            val tag = ComponentUtil.findByNode(item.data.tag, OccupyNode.RATZIEL_NODE)
             // 写入数据
-            tag[NODE_ID] = NBTString(info.identifier.toString())
+            tag[OccupyNode.RATZIEL_IDENTIFIER_NODE.name] = NBTString(info.identifier.toString())
             tag[NODE_BUILT_DATE] = NBTLong(info.built_date)
         }
 
@@ -51,24 +45,15 @@ data class ItemInfo(
          */
         fun read(item: NeoItem): ItemInfo? {
             // 寻找标签: custom_data.Ratziel.info
-            val tag = ComponentUtil.findByNodeOrNull(item.data.tag, INFO_NODE) ?: return null
+            val tag = ComponentUtil.findByNodeOrNull(item.data.tag, OccupyNode.RATZIEL_NODE) ?: return null
             // 读取数据
-            val id = tag[NODE_ID] as? NBTString ?: return null
+            val id = tag[OccupyNode.RATZIEL_IDENTIFIER_NODE.name] as? NBTString ?: return null
             val date = tag[NODE_BUILT_DATE] as? NBTLong ?: return null
             // 合成结果
             return ItemInfo(
                 identifier = IdentifierImpl(id.content),
                 built_date = date.content,
             )
-        }
-
-        /**
-         * 判断
-         */
-        fun isRatziel(item: ItemStack): Boolean {
-            val ref = RefItemStack(item)
-            val custom = ref.getCustomTag() ?: return false
-            return custom.containsKey(OccupyNode.RATZIEL_NODE.name)
         }
 
     }

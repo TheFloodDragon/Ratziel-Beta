@@ -43,11 +43,11 @@ public abstract class ReleasableScriptLanguage implements ScriptLanguage {
         return eval(script, environment);
     }
 
-    public void addReleaser(ScriptEnvReleaser releaser) {
+    public void addReleaser(@NotNull ScriptEnvReleaser releaser) {
         releasers.add(releaser);
     }
 
-    public void removeReleaser(ScriptEnvReleaser releaser) {
+    public void removeReleaser(@NotNull ScriptEnvReleaser releaser) {
         releasers.remove(releaser);
     }
 

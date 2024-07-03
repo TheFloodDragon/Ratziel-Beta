@@ -1,11 +1,11 @@
 package cn.fd.ratziel.script;
 
 import cn.fd.ratziel.function.argument.ArgumentContext;
-import cn.fd.ratziel.function.argument.DefaultArgumentContext;
+import cn.fd.ratziel.function.argument.SimpleArgumentContext;
 import org.jetbrains.annotations.NotNull;
 
-import javax.script.ScriptContext;
-import javax.script.SimpleScriptContext;
+import javax.script.Bindings;
+import javax.script.SimpleBindings;
 
 /**
  * SimpleScriptEnv
@@ -16,31 +16,31 @@ import javax.script.SimpleScriptContext;
 public class SimpleScriptEnv implements ScriptEnvironment {
 
     public SimpleScriptEnv() {
-        this(new SimpleScriptContext());
+        this(new SimpleBindings());
     }
 
-    public SimpleScriptEnv(@NotNull ScriptContext scriptContext) {
-        this(scriptContext, new DefaultArgumentContext());
+    public SimpleScriptEnv(@NotNull Bindings bindings) {
+        this(bindings, new SimpleArgumentContext());
     }
 
-    public SimpleScriptEnv(@NotNull ScriptContext scriptContext, @NotNull ArgumentContext argumentContext) {
-        this.scriptContext = scriptContext;
-        this.argumentContext = argumentContext;
+    public SimpleScriptEnv(@NotNull Bindings bindings, @NotNull ArgumentContext argumentContext) {
+        this.bindings = bindings;
+        this.context = argumentContext;
     }
 
     @NotNull
-    private final ScriptContext scriptContext;
+    private final Bindings bindings;
     @NotNull
-    private final ArgumentContext argumentContext;
+    private final ArgumentContext context;
 
     @Override
-    public @NotNull ScriptContext getScriptContext() {
-        return scriptContext;
+    public @NotNull Bindings getBindings() {
+        return bindings;
     }
 
     @Override
-    public @NotNull ArgumentContext getArgumentContext() {
-        return argumentContext;
+    public @NotNull ArgumentContext getContext() {
+        return context;
     }
 
 }
