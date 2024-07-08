@@ -27,7 +27,7 @@ object NBTSerializer : KSerializer<NBTData> {
 
     override fun deserialize(decoder: Decoder): NBTData {
         if (decoder is JsonDecoder)
-            return Converter.deserializeFromString(decoder.decodeString())
+            return Converter.deserializeFromJson(decoder.decodeJsonElement())
         else throw UnsupportedTypeException(decoder)
     }
 
