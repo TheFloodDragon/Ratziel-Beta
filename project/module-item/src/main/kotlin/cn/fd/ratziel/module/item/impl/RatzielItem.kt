@@ -1,13 +1,10 @@
 package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
-import cn.fd.ratziel.module.item.nbt.NBTString
 import cn.fd.ratziel.module.item.nms.RefItemStack
-import cn.fd.ratziel.module.item.util.ComponentUtil
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -18,19 +15,25 @@ import org.bukkit.inventory.ItemStack
  */
 open class RatzielItem : NeoItem {
 
-    constructor(data: ItemData) : this(IdentifierImpl(), data)
+    constructor(info: ItemInfo) : this(info, ItemDataImpl())
 
-    constructor() : this(ItemDataImpl())
-
-    constructor(identifier: Identifier, data: ItemData) {
-        this.identifier = identifier
+    constructor(info: ItemInfo, data: ItemData) {
+        // 写入数据
+        ItemInfo.write(info, data.tag)
+        // 设置值
+        this.info = info
         this.data = data
     }
 
     /**
+     * 物品信息
+     */
+    val info: ItemInfo
+
+    /**
      * 物品唯一标识符
      */
-    val identifier: Identifier
+    val identifier: Identifier get() = info.id
 
     /**
      * 物品数据
@@ -53,8 +56,8 @@ open class RatzielItem : NeoItem {
             // 获取物品数据
             val data = ref.getData() ?: return null
             // 获取物品信息
-            val identifier = ComponentUtil.findByNode(data.tag, OccupyNode.RATZIEL_NODE)[OccupyNode.RATZIEL_IDENTIFIER_NODE.name] as? NBTString ?: return null
-            return RatzielItem(IdentifierImpl(identifier.content), data)
+            val info = ItemInfo.read(data.tag) ?: return null
+            return RatzielItem(info, data)
         }
 
         /**
@@ -63,7 +66,7 @@ open class RatzielItem : NeoItem {
         fun isRatzielItem(item: ItemStack): Boolean {
             val ref = RefItemStack(item)
             val custom = ref.getCustomTag() ?: return false
-            return custom.containsKey(OccupyNode.RATZIEL_NODE.name)
+            return custom.containsKey(ItemInfo.RATZIEL_NODE.name)
         }
 
     }

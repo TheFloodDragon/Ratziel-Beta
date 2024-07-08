@@ -70,7 +70,7 @@ class DefaultItemGenerator(
                 ItemDataImpl.merge(sourceData, data, true) // 合并数据
             }
             // 合成最终结果
-            createRatzielItem(sourceData, identifier).let { item ->
+            createRatzielItem(origin, sourceData, identifier).let { item ->
                 // PostEvent
                 val event = ItemBuildEvent.Post(item.identifier, this, item, context)
                 event.call()
@@ -124,13 +124,13 @@ class DefaultItemGenerator(
         }, ItemElement.executor)
 
     fun createRatzielItem(
+        element: Element,
         data: ItemData,
         identifier: Identifier,
-        date: Long = System.currentTimeMillis()
-    ): RatzielItem = RatzielItem(identifier, data).also {
-        // 写入物品信息
-        val info = ItemInfo(it.identifier, date)
-        ItemInfo.write(info, it)
+    ): RatzielItem {
+        // 物品信息
+        val info = ItemInfo(identifier, element.name, element.property.hashCode())
+        return RatzielItem(info, data)
     }
 
 }

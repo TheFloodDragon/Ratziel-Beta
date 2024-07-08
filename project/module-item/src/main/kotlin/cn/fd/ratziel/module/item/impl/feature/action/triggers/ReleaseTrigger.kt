@@ -27,8 +27,6 @@ internal object ReleaseTrigger : ItemTrigger {
             set("event", event)
             set("item", item)
             set("neoItem", neoItem)
-            set("args", event.context)
-            set("generator", event.generator)
         }
     }
 

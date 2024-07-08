@@ -3,7 +3,8 @@ package cn.fd.ratziel.module.item.impl
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.module.item.api.NeoItem
-import cn.fd.ratziel.module.item.nbt.NBTLong
+import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.nbt.NBTString
 import cn.fd.ratziel.module.item.util.ComponentUtil
 
@@ -17,44 +18,73 @@ data class ItemInfo(
     /**
      * 物品唯一标识符 [Identifier]
      */
-    val identifier: Identifier,
+    val id: Identifier,
     /**
-     * 物品构建(完成)的时间
+     * 物品元素名称
      */
-    val built_date: Long,
+    val name: String,
+    /**
+     * 物品元素内容的哈希值
+     */
+    val hash: Int,
 ) {
-
 
     companion object {
 
-        val NODE_BUILT_DATE = "built_date"
+        /**
+         * [RatzielItem] 物品数据节点
+         */
+        val RATZIEL_NODE = OccupyNode("Ratziel", OccupyNode.CUSTOM_DATA_NODE)
+
+        /**
+         * [RatzielItem] 物品标识符
+         */
+        val RATZIEL_IDENTIFIER_NODE = OccupyNode("Identifier", RATZIEL_NODE)
+
+        /**
+         * [RatzielItem] 物品元素名称
+         */
+        val RATZIEL_ELEMENT_NODE = OccupyNode("Element", RATZIEL_NODE)
+
+        /**
+         * [RatzielItem] 物品元素内容哈希值
+         */
+        val RATZIEL_HASH_NODE = OccupyNode("Hash", RATZIEL_NODE)
+
+        /**
+         * 向 [NBTCompound] 中写入 [ItemInfo]
+         */
+        fun write(info: ItemInfo, tag: NBTCompound) {
+            // 寻找数据: custom_data.Ratziel.info
+            val data = ComponentUtil.findByNode(tag, RATZIEL_NODE)
+            // 写入数据
+            data[RATZIEL_IDENTIFIER_NODE.name] = NBTString(info.id.toString())
+            data[RATZIEL_ELEMENT_NODE.name] = NBTString(info.name)
+            data[RATZIEL_HASH_NODE.name] = NBTInt(info.hash)
+        }
+
+        /**
+         * 从 [NBTCompound] 中读取 [ItemInfo]
+         */
+        fun read(tag: NBTCompound): ItemInfo? {
+            // 寻找数据: custom_data.Ratziel.info
+            val data = ComponentUtil.findByNodeOrNull(tag, RATZIEL_NODE) ?: return null
+            // 读取数据
+            val id = data[RATZIEL_IDENTIFIER_NODE.name] as? NBTString ?: return null
+            val name = data[RATZIEL_ELEMENT_NODE.name] as? NBTString ?: return null
+            val hash = data[RATZIEL_HASH_NODE.name] as? NBTInt ?: return null
+            // 合成结果
+            return ItemInfo(
+                id = IdentifierImpl(id.content),
+                name = name.content,
+                hash = hash.content,
+            )
+        }
 
         /**
          * 向 [NeoItem] 中写入 [ItemInfo]
          */
-        fun write(info: ItemInfo, item: NeoItem) {
-            // 寻找标签: custom_data.Ratziel.info
-            val tag = ComponentUtil.findByNode(item.data.tag, OccupyNode.RATZIEL_NODE)
-            // 写入数据
-            tag[OccupyNode.RATZIEL_IDENTIFIER_NODE.name] = NBTString(info.identifier.toString())
-            tag[NODE_BUILT_DATE] = NBTLong(info.built_date)
-        }
-
-        /**
-         * 从 [NeoItem] 中读取 [ItemInfo]
-         */
-        fun read(item: NeoItem): ItemInfo? {
-            // 寻找标签: custom_data.Ratziel.info
-            val tag = ComponentUtil.findByNodeOrNull(item.data.tag, OccupyNode.RATZIEL_NODE) ?: return null
-            // 读取数据
-            val id = tag[OccupyNode.RATZIEL_IDENTIFIER_NODE.name] as? NBTString ?: return null
-            val date = tag[NODE_BUILT_DATE] as? NBTLong ?: return null
-            // 合成结果
-            return ItemInfo(
-                identifier = IdentifierImpl(id.content),
-                built_date = date.content,
-            )
-        }
+        fun write(info: ItemInfo, item: NeoItem) = write(info, item.data.tag)
 
     }
 

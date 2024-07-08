@@ -38,7 +38,7 @@ object ItemCommand {
     @CommandBody
     val give = subCommand {
         dynamic("id") {
-            suggest { ItemManager.registry.keys.map { it.name } }
+            suggest { ItemManager.registry.map { it.key } }
             execute<ProxyPlayer> { sender, ctx, _ ->
                 cmdGive(sender, listOf(sender), ctx["id"], 1)
             }
@@ -55,10 +55,10 @@ object ItemCommand {
         }
     }
 
-    private fun giveById(player: ProxyPlayer, id: String, amount: Int): CompletableFuture<ItemStack> {
-        val future = CompletableFuture<ItemStack>()
+    private fun giveById(player: ProxyPlayer, id: String, amount: Int): CompletableFuture<ItemStack?> {
+        val future = CompletableFuture<ItemStack?>()
         // 获取物品生成器
-        val generator = ItemManager.getByName(id)!!
+        val generator = ItemManager.registry[id] ?: return CompletableFuture.completedFuture(null)
         // 上下文参数
         val args = SimpleArgumentContext().apply { add(player) }
         // 开始生成物品
