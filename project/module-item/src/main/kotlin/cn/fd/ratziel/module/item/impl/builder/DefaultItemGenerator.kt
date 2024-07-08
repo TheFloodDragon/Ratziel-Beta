@@ -10,6 +10,7 @@ import cn.fd.ratziel.function.argument.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
@@ -36,7 +37,7 @@ class DefaultItemGenerator(
     val origin: Element
 ) : ItemGenerator {
 
-    fun build(sourceData: ItemData, context: ArgumentContext): CompletableFuture<RatzielItem> {
+    fun build(sourceData: ItemData, context: ArgumentContext): CompletableFuture<NeoItem> {
         // 生成物品唯一标识符
         val identifier = IdentifierImpl()
 
@@ -69,9 +70,11 @@ class DefaultItemGenerator(
                 ItemDataImpl.merge(sourceData, data, true) // 合并数据
             }
             // 合成最终结果
-            createRatzielItem(sourceData, identifier).also { item ->
+            createRatzielItem(sourceData, identifier).let { item ->
                 // PostEvent
-                ItemBuildEvent.Post(item.identifier, this, item, context).call()
+                val event = ItemBuildEvent.Post(item.identifier, this, item, context)
+                event.call()
+                event.item
             }
         }
     }

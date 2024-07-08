@@ -6,9 +6,7 @@ import cn.fd.ratziel.script.ScriptBlockBuilder
 import cn.fd.ratziel.script.ScriptManager
 import cn.fd.ratziel.script.SimpleScriptEnv
 import javax.script.Bindings
-import javax.script.ScriptContext
 import javax.script.SimpleBindings
-import javax.script.SimpleScriptContext
 
 /**
  * ScriptedAction
@@ -24,19 +22,10 @@ open class ScriptedAction(
 ) : ItemAction {
 
     override fun execute(context: ArgumentContext) {
-        // 尝试获取绑定键
-        var bindings: Bindings? = null
-        for (arg in context.args()) {
-            bindings = when (arg) {
-                is Bindings -> arg
-                is SimpleScriptEnv -> arg.bindings
-                is ScriptContext -> arg.getBindings(SimpleScriptContext.ENGINE_SCOPE)
-                else -> null
-            }
-            if (bindings != null) break
-        }
+        // 获取绑定键
+        val bindings: Bindings = context.popOr(Bindings::class.java, SimpleBindings())
         // 环境
-        val env = SimpleScriptEnv(bindings ?: SimpleBindings(), context)
+        val env = SimpleScriptEnv(bindings, context)
         // 执行
         script.evaluate(ScriptManager.defaultLang, env)
     }

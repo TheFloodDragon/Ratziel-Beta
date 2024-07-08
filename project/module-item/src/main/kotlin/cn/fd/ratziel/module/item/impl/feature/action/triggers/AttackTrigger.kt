@@ -5,6 +5,7 @@ import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.feature.action.ActionManager
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.util.attacker
 import taboolib.platform.util.isAir
@@ -27,15 +28,19 @@ internal object AttackTrigger : ItemTrigger {
         if (attacker !is Player) return
         // 获取攻击时的物品
         val item = attacker.inventory.itemInMainHand
-        if (item.isAir()) return
-        val neoItem = RatzielItem.of(item) ?: return
+        val neoItem = asNeo(item) ?: return
         // 触发触发器 (参数: 事件(EntityDamageByEntityEvent), 攻击者(Player), ItemStack, RatzielItem)
         ActionManager.trigger(neoItem.identifier, this) {
-            add(event)
-            add(attacker)
-            add(item)
-            add(neoItem)
+            set("event", event)
+            set("attacker", attacker)
+            set("item", item)
+            set("neoItem", neoItem)
         }
+    }
+
+    fun asNeo(item: ItemStack): RatzielItem? {
+        if (item.isAir()) return null
+        return RatzielItem.of(item)
     }
 
 }

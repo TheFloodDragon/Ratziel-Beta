@@ -2,6 +2,7 @@ package cn.fd.ratziel.function.argument
 
 import cn.fd.ratziel.function.argument.exception.ArgumentNotFoundException
 import cn.fd.ratziel.function.util.uncheck
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * SimpleArgumentContext
@@ -13,7 +14,7 @@ open class SimpleArgumentContext(
     val collection: MutableCollection<Any>
 ) : ArgumentContext, MutableCollection<Any> by collection {
 
-    constructor(vararg values: Any) : this(values.toMutableList())
+    constructor(vararg values: Any) : this(CopyOnWriteArraySet<Any>().apply { values.forEach { add(it) } })
 
     override fun <T> popOrNull(type: Class<T>): T? {
         return uncheck(collection.find { type.isAssignableFrom(it::class.java) })

@@ -46,7 +46,7 @@ class ItemBuildEvent {
         /**
          * 构建出的成品
          */
-        val item: NeoItem,
+        var item: NeoItem,
         /**
          * 构建时的参数列表
          */

@@ -4,7 +4,6 @@ import cn.fd.ratziel.function.argument.ArgumentContext;
 import org.jetbrains.annotations.NotNull;
 
 import javax.script.Bindings;
-import javax.script.ScriptContext;
 
 /**
  * ScriptEnvironment - 脚本环境
@@ -25,5 +24,12 @@ public interface ScriptEnvironment {
      */
     @NotNull
     ArgumentContext getContext();
+
+    /**
+     * 设置绑定内容
+     */
+    default void set(String key, Object value) {
+        getBindings().put(key, value);
+    }
 
 }
