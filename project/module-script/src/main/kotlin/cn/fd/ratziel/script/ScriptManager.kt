@@ -10,7 +10,7 @@ object ScriptManager {
 
     /**
      * 使用的脚本语言
-     * |- Kether, JavaScript, Jexl3
+     * |- Kether, JavaScript, Jexl3, Kotlin Script
      */
     @JvmStatic
     var scriptLanguages: Array<ScriptLanguage> = arrayOf(KetherLang, JavaScriptLang, JexlLang, KotlinScriptLang)

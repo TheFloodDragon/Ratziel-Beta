@@ -12,27 +12,45 @@ import taboolib.common.env.RuntimeDependency;
 @RuntimeDependencies({
         // Kotlin Script
         @RuntimeDependency(
+                value = "!org.jetbrains.kotlin:kotlin-reflect:" + CoreEnv.KOTLIN_VERSION,
+                test = "!kotlin.reflect.jvm.ReflectLambdaKt",
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!org.jetbrains.kotlin:kotlin-compiler-embeddable:" + CoreEnv.KOTLIN_VERSION,
+                transitive = false
+        ),
+        @RuntimeDependency(
                 value = "!org.jetbrains.kotlin:kotlin-script-runtime:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-script-common:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-scripting-common:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-script-jvm:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-scripting-jvm:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-script-jvm-host:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-scripting-jvm-host:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-script-compiler:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-script-jsr233:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:" + CoreEnv.KOTLIN_VERSION,
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!org.jetbrains.kotlin:kotlin-scripting-jsr223:" + CoreEnv.KOTLIN_VERSION,
+                transitive = false
+        ),
+        @RuntimeDependency(
+                value = "!org.jetbrains.intellij.deps:trove4j:1.0.20200330",
+                test = "!gnu.trove.TObjectHashingStrategy",
                 transitive = false
         ),
         // JavaScript
@@ -43,8 +61,9 @@ import taboolib.common.env.RuntimeDependency;
         // Jexl
         @RuntimeDependency(
                 value = "!org.apache.commons:commons-jexl3:3.4.0",
-                test = "!org.apache.commons.jexl3.JexlEngine"
-        )}
-)
+                test = "!org.apache.commons.jexl3.JexlEngine",
+                transitive = false
+        )
+})
 public class ScriptEnv {
 }

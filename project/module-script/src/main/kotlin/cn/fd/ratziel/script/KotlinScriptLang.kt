@@ -7,6 +7,6 @@ package cn.fd.ratziel.script
  * @since 2024/7/14 15:40
  */
 object KotlinScriptLang : EnginedScriptLanguage(
-    "kts", // 引擎名称
-    "kts", "KTS", "KotlinScript", "kotlin-script", "KotlinScripting", "kotlin-scripting" // 语言名称
+    "kotlin", // 引擎名称
+    "Kotlin", "kotlin", "kts", "KTS" // 语言名称
 )
