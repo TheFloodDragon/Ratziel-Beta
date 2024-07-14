@@ -13,7 +13,7 @@ object ScriptManager {
      * |- Kether, JavaScript, Jexl3
      */
     @JvmStatic
-    var scriptLanguages: Array<ScriptLanguage> = arrayOf(KetherLang, JavaScriptLang, JexlLang)
+    var scriptLanguages: Array<ScriptLanguage> = arrayOf(KetherLang, JavaScriptLang, JexlLang, KotlinScriptLang)
         private set
 
     /**
