@@ -4,6 +4,7 @@ dependencies {
     compileOnly(kotlin("scripting-jvm"))
     compileOnly(kotlin("scripting-jvm-host"))
     compileOnly(kotlin("scripting-compiler"))
+    compileOnly(kotlin("compiler"))
     // Kether: Taboolib
     compileTaboo("module-kether")
     // JavaScript: Nashorn Engine

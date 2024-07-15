@@ -17,8 +17,8 @@ object ScriptBlockBuilder {
 
     fun build(section: Any): ScriptBlock {
         when (section) {
-            // Block
-            is String -> return Block(SimpleScript(section))
+            // BasicBlock
+            is String -> return BasicBlock(section)
             // ListBlock
             is Iterable<*> -> return ListBlock(section.mapNotNull { l -> l?.let { build(it) } })
             is Map<*, *> -> {
@@ -54,8 +54,11 @@ object ScriptBlockBuilder {
 
     interface ScriptBlock : EvaluableScript
 
-    data class Block(val content: ScriptContent) : ScriptBlock {
-        override fun evaluate(executor: ScriptExecutor, env: ScriptEnvironment): Any? = executor.evaluate(content, env)
+    data class BasicBlock(val script: ScriptContent) : ScriptBlock {
+        constructor(content: String) : this(SimpleScript(content))
+
+        override fun evaluate(executor: ScriptExecutor, env: ScriptEnvironment): Any? =
+            if (script is EvaluableScript) script.evaluate(executor, env) else executor.evaluate(script, env)
     }
 
     data class PrimitiveBlock(val value: Any?) : ScriptBlock {
@@ -63,12 +66,39 @@ object ScriptBlockBuilder {
     }
 
     data class ListBlock(val list: Iterable<ScriptBlock>) : ScriptBlock {
-        override fun evaluate(executor: ScriptExecutor, env: ScriptEnvironment): Any? {
-            var result: Any? = null
-            for (raw in list) {
-                result = raw.evaluate(executor, env)
+        val handled = buildList {
+            var combined = mutableListOf<String>()
+            fun combine() {
+                if (combined.isEmpty()) return
+                // 将脚本列表通过换行符合并成单个脚本字符串
+                val lined = combined.joinToString("\n")
+                // 清空
+                combined = mutableListOf()
+                // 然后添加基础代码块
+                add(BasicBlock(lined))
             }
-            return result
+            for (block in list) {
+                if (block is BasicBlock) {
+                    combined.add(block.script.content)
+                } else {
+                    // 非基础代码块检查合并一次
+                    combine()
+                    // 加入代码块
+                    add(block)
+                }
+            }
+            // 尾处理: 检查合并一次
+            combine()
+        }.toTypedArray()
+
+        override fun evaluate(executor: ScriptExecutor, env: ScriptEnvironment): Any? {
+            val iterator = handled.iterator()
+            while (iterator.hasNext()) {
+                val result = iterator.next().evaluate(executor, env)
+                // 在没有下一个元素(最后一个脚本执行完后), 返回结果
+                if (!iterator.hasNext()) return result
+            }
+            return null
         }
     }
 

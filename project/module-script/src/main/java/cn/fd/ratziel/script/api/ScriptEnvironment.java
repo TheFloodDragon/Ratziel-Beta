@@ -1,5 +1,6 @@
 package cn.fd.ratziel.script.api;
 
+import cn.fd.ratziel.function.argument.ArgumentContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,5 +34,16 @@ public interface ScriptEnvironment {
     default void set(@NotNull String key, @Nullable Object value) {
         getBindings().put(key, value);
     }
+
+    /**
+     * 获取脚本参数上下文
+     */
+    @NotNull
+    ArgumentContext getContext();
+
+    /**
+     * 设置脚本参数上下文
+     */
+    void setContext(@NotNull ArgumentContext context);
 
 }

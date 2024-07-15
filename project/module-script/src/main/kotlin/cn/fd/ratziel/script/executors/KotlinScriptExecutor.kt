@@ -16,17 +16,15 @@ import javax.script.ScriptEngineManager
  */
 object KotlinScriptExecutor : CompilableScriptExecutor {
 
-    override fun compile(script: String?): CompiledScript {
-        return (engine as Compilable).compile(script)
+    override fun compile(script: String): CompiledScript {
+        return (newEngine() as Compilable).compile(script)
     }
 
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
-        return engine.eval(script.content, environment.bindings)
+        return newEngine().eval(script.content, environment.bindings)
     }
 
-    val engine: ScriptEngine by lazy {
+    fun newEngine(): ScriptEngine =
         ScriptEngineManager(this::class.java.classLoader).getEngineByName("kotlin")
-            ?: throw NullPointerException("Cannot find ScriptEngine for KotlinScriptExecutor")
-    }
 
 }

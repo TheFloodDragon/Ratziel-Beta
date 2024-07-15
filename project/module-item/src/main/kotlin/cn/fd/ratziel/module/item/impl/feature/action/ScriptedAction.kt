@@ -15,16 +15,14 @@ import cn.fd.ratziel.script.impl.SimpleScriptEnvironment
  */
 open class ScriptedAction(
     /**
-     * 脚本动作块
+     * 可执行脚本
      */
     val script: EvaluableScript,
 ) : ItemAction {
 
     override fun execute(context: ArgumentContext) {
-        // 环境
-        val env = context.popOr(ScriptEnvironment::class.java, SimpleScriptEnvironment())
-        // 评估
-        script.evaluate(ScriptTypes.KETHER.executor, env)
+        val environment = context.popOr(ScriptEnvironment::class.java, SimpleScriptEnvironment(context))
+        script.evaluate(ScriptTypes.KETHER.executor, environment)
     }
 
 }

@@ -45,10 +45,6 @@ import taboolib.common.env.RuntimeDependency;
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:" + CoreEnv.KOTLIN_VERSION,
-                transitive = false
-        ),
-        @RuntimeDependency(
                 value = "!org.jetbrains.intellij.deps:trove4j:1.0.20200330",
                 test = "!gnu.trove.TObjectHashingStrategy",
                 transitive = false
