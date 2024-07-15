@@ -5,9 +5,9 @@ import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.toBasic
-import cn.fd.ratziel.script.KetherLang
 import cn.fd.ratziel.script.ScriptBlockBuilder
-import cn.fd.ratziel.script.SimpleScriptEnv
+import cn.fd.ratziel.script.ScriptTypes
+import cn.fd.ratziel.script.impl.SimpleScriptEnvironment
 import taboolib.common.LifeCycle
 
 /**
@@ -27,7 +27,7 @@ object ActionElement : ElementHandler {
         element.property.let { json ->
             val block = ScriptBlockBuilder.build(json.toBasic())
             println(block)
-            val result = block.evaluate(KetherLang, SimpleScriptEnv())
+            val result = block.evaluate(ScriptTypes.KETHER.executor, SimpleScriptEnvironment())
             println(result)
         }
     }

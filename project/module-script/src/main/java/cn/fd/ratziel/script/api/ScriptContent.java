@@ -1,5 +1,7 @@
 package cn.fd.ratziel.script.api;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * ScriptContent
  *
@@ -11,6 +13,7 @@ public interface ScriptContent {
     /**
      * 获取脚本原始内容
      */
+    @NotNull
     String getContent();
 
 }
