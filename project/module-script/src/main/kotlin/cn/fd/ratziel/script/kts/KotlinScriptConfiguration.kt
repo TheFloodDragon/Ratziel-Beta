@@ -3,7 +3,6 @@ package cn.fd.ratziel.script.kts
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.jvm.JvmDependencyFromClassLoader
 import kotlin.script.experimental.jvm.jvm
-import kotlin.script.experimental.jvm.jvmTarget
 import kotlin.script.experimental.jvmhost.jsr223.configureProvidedPropertiesFromJsr223Context
 import kotlin.script.experimental.jvmhost.jsr223.importAllBindings
 import kotlin.script.experimental.jvmhost.jsr223.jsr223
@@ -19,13 +18,12 @@ object KotlinScriptConfiguration {
     /**
      * [ScriptCompilationConfiguration]
      */
-    val compilation = ScriptCompilationConfiguration {
+    object Compilation : ScriptCompilationConfiguration({
         refineConfiguration {
             beforeCompiling(::configureProvidedPropertiesFromJsr223Context)
         }
         jvm {
             dependencies(JvmDependencyFromClassLoader { this::class.java.classLoader })
-            jvmTarget(System.getProperty("java.specification.version") ?: "1.8")
         }
         jsr223 {
             importAllBindings(true)
@@ -33,13 +31,17 @@ object KotlinScriptConfiguration {
         ide {
             acceptedLocations(ScriptAcceptedLocation.Everywhere)
         }
+    }) {
+        private fun readResolve(): Any = Compilation
     }
 
     /**
      * [ScriptEvaluationConfiguration]
      */
-    val evaluation = ScriptEvaluationConfiguration {
+    object Evaluation : ScriptEvaluationConfiguration({
         refineConfigurationBeforeEvaluate(::configureProvidedPropertiesFromJsr223Context)
+    }) {
+        private fun readResolve(): Any = Evaluation
     }
 
 }
