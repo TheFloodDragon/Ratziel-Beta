@@ -17,7 +17,7 @@ import taboolib.common.env.RuntimeDependency;
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-compiler-embeddable:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-compiler:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(
@@ -33,19 +33,19 @@ import taboolib.common.env.RuntimeDependency;
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-scripting-jvm-host:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-scripting-jvm-host-unshaded:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-scripting-compiler:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-scripting-compiler-impl:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(
-                value = "!org.jetbrains.kotlin:kotlin-scripting-jsr223:" + CoreEnv.KOTLIN_VERSION,
+                value = "!org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:" + CoreEnv.KOTLIN_VERSION,
                 transitive = false
         ),
         @RuntimeDependency(

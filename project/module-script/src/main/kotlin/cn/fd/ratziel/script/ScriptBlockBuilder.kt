@@ -1,5 +1,11 @@
 package cn.fd.ratziel.script
 
+import cn.fd.ratziel.script.api.EvaluableScript
+import cn.fd.ratziel.script.api.ScriptContent
+import cn.fd.ratziel.script.api.ScriptEnvironment
+import cn.fd.ratziel.script.api.ScriptExecutor
+import cn.fd.ratziel.script.impl.SimpleScript
+
 
 /**
  * ScriptBlockBuilder
@@ -9,10 +15,10 @@ package cn.fd.ratziel.script
  */
 object ScriptBlockBuilder {
 
-    fun build(section: Any): Block {
+    fun build(section: Any): ScriptBlock {
         when (section) {
-            // ScriptBlock
-            is String -> return ScriptBlock(RawScript(section))
+            // Block
+            is String -> return Block(SimpleScript(section))
             // ListBlock
             is Iterable<*> -> return ListBlock(section.mapNotNull { l -> l?.let { build(it) } })
             is Map<*, *> -> {
@@ -27,13 +33,13 @@ object ScriptBlockBuilder {
                         elseValue?.let { build(it) }
                     )
                 } else {
-                    // ToggleLangBlock
+                    // OverrideExecutorBlock
                     for (e in section) {
                         val key = e.key.toString().trim()
                         if (key.startsWith(MARK_TOGGLE)) {
-                            val lang = ScriptManager.findLang(key.drop(MARK_TOGGLE.length))
+                            val type = ScriptTypes.matchOrThrow(key.drop(MARK_TOGGLE.length))
                             val value = e.value
-                            if (value != null) return ToggleLangBlock(lang, build(value))
+                            if (value != null) return OverrideExecutorBlock(type.executor, build(value))
                         }
                     }
                 }
@@ -46,39 +52,38 @@ object ScriptBlockBuilder {
 
     const val MARK_TOGGLE = "\$"
 
-    interface Block {
-        fun evaluate(lang: ScriptLanguage, env: ScriptEnvironment): Any?
+    interface ScriptBlock : EvaluableScript
+
+    data class Block(val content: ScriptContent) : ScriptBlock {
+        override fun evaluate(executor: ScriptExecutor, env: ScriptEnvironment): Any? = executor.evaluate(content, env)
     }
 
-    data class PrimitiveBlock(val value: Any?) : Block {
-        override fun evaluate(lang: ScriptLanguage, env: ScriptEnvironment) = value
+    data class PrimitiveBlock(val value: Any?) : ScriptBlock {
+        override fun evaluate(executor: ScriptExecutor, env: ScriptEnvironment) = value
     }
 
-    data class ScriptBlock(val raw: ScriptStorage) : Block {
-        override fun evaluate(lang: ScriptLanguage, env: ScriptEnvironment): Any? = lang.evaluate(raw, env)
-    }
-
-    data class ListBlock(val list: Iterable<Block>) : Block {
-        override fun evaluate(lang: ScriptLanguage, env: ScriptEnvironment): Any? {
+    data class ListBlock(val list: Iterable<ScriptBlock>) : ScriptBlock {
+        override fun evaluate(executor: ScriptExecutor, env: ScriptEnvironment): Any? {
             var result: Any? = null
             for (raw in list) {
-                result = raw.evaluate(lang, env)
+                result = raw.evaluate(executor, env)
             }
             return result
         }
     }
 
-    data class ToggleLangBlock(val newLang: ScriptLanguage, val block: Block) : Block {
-        override fun evaluate(lang: ScriptLanguage, env: ScriptEnvironment): Any? = block.evaluate(newLang, env)
+    data class OverrideExecutorBlock(val newExecutor: ScriptExecutor, val block: ScriptBlock) : ScriptBlock {
+        override fun evaluate(executor: ScriptExecutor, env: ScriptEnvironment): Any? = evaluate(env)
+        fun evaluate(env: ScriptEnvironment): Any? = block.evaluate(newExecutor, env)
     }
 
     data class ConditionBlock(
-        val ifBlock: Block,
-        val thenBlock: Block?,
-        val elseBlock: Block?
-    ) : Block {
-        override fun evaluate(lang: ScriptLanguage, env: ScriptEnvironment): Any? {
-            return if (ifBlock.evaluate(lang, env) == true) thenBlock?.evaluate(lang, env) else elseBlock?.evaluate(lang, env)
+        val ifBlock: ScriptBlock,
+        val thenBlock: ScriptBlock?,
+        val elseBlock: ScriptBlock?
+    ) : ScriptBlock {
+        override fun evaluate(executor: ScriptExecutor, env: ScriptEnvironment): Any? {
+            return if (ifBlock.evaluate(executor, env) == true) thenBlock?.evaluate(executor, env) else elseBlock?.evaluate(executor, env)
         }
     }
 

@@ -1,6 +1,5 @@
 dependencies {
     // Kotlin Script
-    compileOnly(kotlin("main-kts"))
     compileOnly(kotlin("scripting-common"))
     compileOnly(kotlin("scripting-jvm"))
     compileOnly(kotlin("scripting-jvm-host"))

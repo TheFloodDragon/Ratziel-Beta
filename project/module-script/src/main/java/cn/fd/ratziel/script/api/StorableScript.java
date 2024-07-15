@@ -1,4 +1,4 @@
-package cn.fd.ratziel.script;
+package cn.fd.ratziel.script.api;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -6,23 +6,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.script.CompiledScript;
 
 /**
- * ScriptStorage - 脚本
+ * StorableScript
  *
  * @author TheFloodDragon
- * @since 2024/6/30 08:14
+ * @since 2024/7/15 13:18
  */
-public interface ScriptStorage {
+public interface StorableScript {
 
     /**
-     * 获取脚本内容
-     *
-     * @return 脚本的字符串形式
-     */
-    @NotNull
-    String getContent();
-
-    /**
-     * 编译过后的脚本
+     * 获取编译过后的脚本
      *
      * @return 如果此脚本不能被编译, 则返回空
      */

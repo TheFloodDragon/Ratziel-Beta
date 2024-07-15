@@ -1,11 +1,12 @@
 package cn.fd.ratziel.module.item.impl.feature.action
 
 import cn.fd.ratziel.core.Identifier
+import cn.fd.ratziel.function.argument.SimpleArgumentContext
 import cn.fd.ratziel.module.item.api.feature.ItemTrigger
 import cn.fd.ratziel.module.item.impl.feature.action.triggers.*
 import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
-import cn.fd.ratziel.script.ScriptEnvironment
-import cn.fd.ratziel.script.SimpleScriptEnv
+import cn.fd.ratziel.script.api.ScriptEnvironment
+import cn.fd.ratziel.script.impl.SimpleScriptEnvironment
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -42,15 +43,17 @@ object ActionManager {
     fun trigger(identifier: Identifier, trigger: ItemTrigger, environment: ScriptEnvironment) {
         // 获取物品动作
         val action = actionMap[identifier]?.get(trigger)
-        // 设置绑定键
-        environment.context.add(environment.bindings)
+//        // 设置绑定键
+//        environment.context.add(environment.bindings)
+//        // 执行物品动作
+//        action?.execute(environment.context)//
         // 执行物品动作
-        action?.execute(environment.context)
+        action?.execute(SimpleArgumentContext(environment))
     }
 
     @JvmStatic
     fun trigger(identifier: Identifier, trigger: ItemTrigger, function: ScriptEnvironment.() -> Unit) =
-        trigger(identifier, trigger, SimpleScriptEnv().apply(function))
+        trigger(identifier, trigger, SimpleScriptEnvironment().apply(function))
 
     /**
      * 匹配 [TriggerMap]
