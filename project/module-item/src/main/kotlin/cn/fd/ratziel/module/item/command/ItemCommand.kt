@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.command
 
-import cn.fd.ratziel.function.argument.SimpleArgumentContext
+import cn.fd.ratziel.function.SimpleArgumentContext
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import org.bukkit.entity.Player

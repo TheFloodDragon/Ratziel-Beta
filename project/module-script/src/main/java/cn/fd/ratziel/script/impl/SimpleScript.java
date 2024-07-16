@@ -16,27 +16,34 @@ import javax.script.ScriptException;
  */
 public class SimpleScript implements EvaluableScript, StorableScript, ScriptContent {
 
-    public SimpleScript(@NotNull String content) {
+    public SimpleScript(@NotNull String content, @NotNull ScriptExecutor executor) {
         this.content = content;
+        this.executor = executor;
     }
 
     private final String content;
+    private final ScriptExecutor executor;
     private CompiledScript compiledScript = null;
 
     @Override
-    public @Nullable Object evaluate(@NotNull ScriptExecutor executor, @NotNull ScriptEnvironment environment) throws ScriptException {
-        // 若脚本没经过编译, 并且该脚本执行器可以编译此脚本
-        if (compiledScript == null && executor instanceof Compilable) {
-            // 编译脚本
-            CompiledScript compiled = ((Compilable) executor).compile(getContent());
-            // 存储编译后的脚本
-            setCompiled(compiled);
-            // 直接评估脚本
-            return compiled.eval(environment.getBindings());
+    public @Nullable Object evaluate(@NotNull ScriptEnvironment environment) throws ScriptException {
+        // 已存在编译过的脚本, 或者脚本可被编译(已通过compile方法编译)
+        if (compiledScript != null || compile(getExecutor())) {
+            // 直接用编译后的脚本评估
+            return compiledScript.eval(environment.getBindings());
         } else {
             // 通过执行器评估脚本
-            return executor.evaluate(this, environment);
+            return getExecutor().evaluate(this, environment);
         }
+    }
+
+    @Override
+    public boolean compile(@NotNull ScriptExecutor executor) throws ScriptException {
+        if (executor instanceof Compilable) {
+            // 编译脚本
+            this.compiledScript = ((Compilable) executor).compile(getContent());
+            return true;
+        } else return false;
     }
 
     @Override
@@ -44,13 +51,14 @@ public class SimpleScript implements EvaluableScript, StorableScript, ScriptCont
         return compiledScript;
     }
 
+
     @Override
-    public void setCompiled(@NotNull CompiledScript compiled) {
-        this.compiledScript = compiled;
+    public @NotNull ScriptExecutor getExecutor() {
+        return executor;
     }
 
     @Override
-    public String getContent() {
+    public @NotNull String getContent() {
         return content;
     }
 

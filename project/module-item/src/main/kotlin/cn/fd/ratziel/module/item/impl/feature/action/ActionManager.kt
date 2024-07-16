@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.feature.action
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.function.argument.SimpleArgumentContext
+import cn.fd.ratziel.function.SimpleArgumentContext
 import cn.fd.ratziel.module.item.api.feature.ItemTrigger
 import cn.fd.ratziel.module.item.impl.feature.action.triggers.*
 import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry

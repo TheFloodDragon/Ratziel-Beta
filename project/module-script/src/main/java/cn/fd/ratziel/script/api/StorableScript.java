@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.script.CompiledScript;
+import javax.script.ScriptException;
 
 /**
  * StorableScript
@@ -22,8 +23,14 @@ public interface StorableScript {
     CompiledScript getCompiled();
 
     /**
-     * 设置编译后的脚本内容
+     * 编译脚本
+     *
+     * @param executor 脚本执行器
+     * @return 脚本是否可编译
+     * @throws ScriptException 编译过程中出现异常时抛出
      */
-    void setCompiled(@NotNull CompiledScript compiled);
+    default boolean compile(@NotNull ScriptExecutor executor) throws ScriptException {
+        return false;
+    }
 
 }

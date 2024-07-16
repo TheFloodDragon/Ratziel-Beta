@@ -1,6 +1,5 @@
-package cn.fd.ratziel.function.argument
+package cn.fd.ratziel.function
 
-import cn.fd.ratziel.function.argument.exception.ArgumentNotFoundException
 import cn.fd.ratziel.function.util.uncheck
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -16,24 +15,16 @@ open class SimpleArgumentContext(
 
     constructor(vararg values: Any) : this(CopyOnWriteArraySet<Any>().apply { values.forEach { add(it) } })
 
-    override fun <T> popOrNull(type: Class<T>): T? {
+    override fun <T : Any> popOrNull(type: Class<T>): T? {
         return uncheck(collection.find { type.isAssignableFrom(it::class.java) })
     }
 
-    override fun <T> popAll(type: Class<T>): Iterable<T> {
+    override fun <T : Any> popAll(type: Class<T>): Iterable<T> {
         return uncheck(collection.filter { type.isAssignableFrom(it::class.java) })
     }
 
     override fun args(): Collection<Any> {
         return collection
-    }
-
-    override fun <T> pop(type: Class<T>): T {
-        return popOrNull(type) ?: throw ArgumentNotFoundException(type)
-    }
-
-    override fun <T> popOr(type: Class<T>, default: T): T {
-        return popOrNull(type) ?: default
     }
 
 }

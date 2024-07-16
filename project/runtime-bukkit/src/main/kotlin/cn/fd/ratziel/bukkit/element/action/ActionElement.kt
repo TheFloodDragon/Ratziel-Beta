@@ -6,7 +6,7 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.toBasic
 import cn.fd.ratziel.script.ScriptBlockBuilder
-import cn.fd.ratziel.script.ScriptTypes
+import cn.fd.ratziel.script.ScriptManager
 import cn.fd.ratziel.script.impl.SimpleScriptEnvironment
 import taboolib.common.LifeCycle
 
@@ -25,9 +25,9 @@ object ActionElement : ElementHandler {
 
     override fun handle(element: Element) {
         element.property.let { json ->
-            val block = ScriptBlockBuilder.build(json.toBasic())
+            val block = ScriptBlockBuilder.build(json.toBasic(), ScriptManager.defaultScriptLanguage.executor)
             println(block)
-            val result = block.evaluate(ScriptTypes.KETHER.executor, SimpleScriptEnvironment())
+            val result = block.evaluate(SimpleScriptEnvironment())
             println(result)
         }
     }

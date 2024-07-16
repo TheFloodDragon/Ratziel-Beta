@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers
 
-import cn.fd.ratziel.function.argument.ArgumentContext
-import cn.fd.ratziel.function.argument.popOrNull
+import cn.fd.ratziel.function.ArgumentContext
+import cn.fd.ratziel.function.popOrNull
 import cn.fd.ratziel.module.item.impl.builder.resolver.SectionResolver
 import org.bukkit.OfflinePlayer
 import taboolib.common.platform.ProxyPlayer

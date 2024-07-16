@@ -17,11 +17,18 @@ public interface EvaluableScript {
     /**
      * 评估脚本
      *
-     * @param executor    覆写的脚本执行器
      * @param environment 覆写的的脚本环境
      * @throws ScriptException 当脚本评估中产生错误时抛出
      */
     @Nullable
-    Object evaluate(@NotNull ScriptExecutor executor, @NotNull ScriptEnvironment environment) throws ScriptException;
+    Object evaluate(@NotNull ScriptEnvironment environment) throws ScriptException;
+
+    /**
+     * 获取脚本执行器
+     *
+     * @return 覆写的脚本执行器
+     */
+    @NotNull
+    ScriptExecutor getExecutor();
 
 }

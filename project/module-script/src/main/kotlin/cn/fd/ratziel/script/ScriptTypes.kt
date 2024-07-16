@@ -1,11 +1,13 @@
 package cn.fd.ratziel.script
 
+import cn.fd.ratziel.script.api.ScriptEnvironment
 import cn.fd.ratziel.script.api.ScriptExecutor
 import cn.fd.ratziel.script.api.ScriptType
 import cn.fd.ratziel.script.executors.JavaScriptExecutor
 import cn.fd.ratziel.script.executors.JexlExecutor
 import cn.fd.ratziel.script.executors.KetherExecutor
 import cn.fd.ratziel.script.executors.KotlinScriptExecutor
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * ScriptTypes
@@ -13,7 +15,20 @@ import cn.fd.ratziel.script.executors.KotlinScriptExecutor
  * @author TheFloodDragon
  * @since 2024/7/14 21:35
  */
-enum class ScriptTypes(private val executor: ScriptExecutor, private vararg val names: String) : ScriptType {
+enum class ScriptTypes(
+    /**
+     * 执行器
+     */
+    private val executor: ScriptExecutor,
+    /**
+     * 名称
+     */
+    private vararg val names: String,
+    /**
+     * [ScriptEnvironment.Applier]
+     */
+    val appliers: MutableList<ScriptEnvironment.Applier> = CopyOnWriteArrayList()
+) : ScriptType {
 
     JAVASCRIPT(JavaScriptExecutor, "js", "JavaScript", "javascript", "java-script", "JS"),
     KETHER(KetherExecutor, "Kether", "kether", "ke", "ks"),

@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.event
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.function.argument.ArgumentContext
+import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 

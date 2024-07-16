@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.resolver
 
 import cn.fd.ratziel.core.util.splitNonEscaped
-import cn.fd.ratziel.function.argument.ArgumentContext
+import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers.PapiResolver
 import cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers.RandomResolver
 import taboolib.common.util.VariableReader

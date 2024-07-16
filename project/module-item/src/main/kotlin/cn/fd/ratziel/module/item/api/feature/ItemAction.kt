@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api.feature
 
-import cn.fd.ratziel.function.argument.ArgumentContext
+import cn.fd.ratziel.script.api.ScriptEnvironment
 
 /**
  * ItemAction - 物品动作
@@ -13,6 +13,6 @@ interface ItemAction {
     /**
      * 执行物品动作
      */
-    fun execute(context: ArgumentContext)
+    fun execute(context: ScriptEnvironment)
 
 }

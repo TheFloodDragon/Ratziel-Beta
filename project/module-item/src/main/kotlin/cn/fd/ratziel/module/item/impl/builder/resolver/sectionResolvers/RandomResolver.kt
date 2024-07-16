@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers
 
-import cn.fd.ratziel.function.argument.ArgumentContext
+import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.impl.builder.resolver.SectionResolver
 import taboolib.common.util.random
 

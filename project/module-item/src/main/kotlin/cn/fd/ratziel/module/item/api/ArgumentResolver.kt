@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.function.argument.ArgumentContext
-import cn.fd.ratziel.function.argument.SimpleArgumentContext
+import cn.fd.ratziel.function.ArgumentContext
+import cn.fd.ratziel.function.SimpleArgumentContext
 
 /**
  * ArgumentResolver

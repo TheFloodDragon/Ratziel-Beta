@@ -1,5 +1,7 @@
-package cn.fd.ratziel.function.argument
+package cn.fd.ratziel.function
 
+import cn.fd.ratziel.function.argument.Argument
+import cn.fd.ratziel.function.argument.ArgumentSupplier
 import cn.fd.ratziel.function.argument.exception.ArgumentException
 import cn.fd.ratziel.function.util.uncheck
 import java.util.function.Function
@@ -41,10 +43,10 @@ inline fun <reified T : Any, R, V : Any> Argument<V>.ascertain(
     onFalse: Function<Argument<V>, R>
 ): R = this.ascertain(T::class.java, onTrue, onFalse)
 
-inline fun <reified T> ArgumentContext.pop() = pop(T::class.java)
+inline fun <reified T : Any> ArgumentContext.pop() = pop(T::class.java)
 
-inline fun <reified T> ArgumentContext.popAll() = popAll(T::class.java)
+inline fun <reified T : Any> ArgumentContext.popAll() = popAll(T::class.java)
 
-inline fun <reified T> ArgumentContext.popOr(default: T) = popOr(T::class.java, default)
+inline fun <reified T : Any> ArgumentContext.popOr(default: T) = popOr(T::class.java, default)
 
-inline fun <reified T> ArgumentContext.popOrNull() = popOrNull(T::class.java)
+inline fun <reified T : Any> ArgumentContext.popOrNull() = popOrNull(T::class.java)

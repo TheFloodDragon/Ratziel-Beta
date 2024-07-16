@@ -5,9 +5,9 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.util.FutureFactory
-import cn.fd.ratziel.function.argument.ArgumentContext
-import cn.fd.ratziel.function.argument.SimpleArgumentContext
-import cn.fd.ratziel.function.argument.popOrNull
+import cn.fd.ratziel.function.ArgumentContext
+import cn.fd.ratziel.function.SimpleArgumentContext
+import cn.fd.ratziel.function.popOrNull
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.function.severe

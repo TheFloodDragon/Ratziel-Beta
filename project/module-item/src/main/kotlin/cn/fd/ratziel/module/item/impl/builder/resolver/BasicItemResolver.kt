@@ -5,7 +5,7 @@ import cn.fd.ratziel.core.serialization.asMutable
 import cn.fd.ratziel.core.serialization.handlePrimitives
 import cn.fd.ratziel.core.util.priority
 import cn.fd.ratziel.core.util.sortPriority
-import cn.fd.ratziel.function.argument.ArgumentContext
+import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers.PapiResolver

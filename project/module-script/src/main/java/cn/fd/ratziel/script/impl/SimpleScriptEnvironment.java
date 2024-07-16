@@ -1,7 +1,7 @@
 package cn.fd.ratziel.script.impl;
 
-import cn.fd.ratziel.function.argument.ArgumentContext;
-import cn.fd.ratziel.function.argument.SimpleArgumentContext;
+import cn.fd.ratziel.function.ArgumentContext;
+import cn.fd.ratziel.function.SimpleArgumentContext;
 import cn.fd.ratziel.script.api.ScriptEnvironment;
 import org.jetbrains.annotations.NotNull;
 

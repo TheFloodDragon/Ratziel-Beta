@@ -1,10 +1,11 @@
 package cn.fd.ratziel.script.api;
 
-import cn.fd.ratziel.function.argument.ArgumentContext;
+import cn.fd.ratziel.function.ArgumentContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.script.Bindings;
+import java.util.function.Consumer;
 
 /**
  * ScriptEnvironment - 脚本环境
@@ -45,5 +46,14 @@ public interface ScriptEnvironment {
      * 设置脚本参数上下文
      */
     void setContext(@NotNull ArgumentContext context);
+
+    /**
+     * Applier - 环境信息转换和处理
+     *
+     * @author TheFloodDragon
+     * @since 2024/7/16 12:15
+     */
+    interface Applier extends Consumer<@NotNull ScriptEnvironment> {
+    }
 
 }
