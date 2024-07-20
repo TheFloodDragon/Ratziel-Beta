@@ -25,6 +25,10 @@ enum class ScriptTypes(
      */
     private vararg val names: String,
     /**
+     * 是否启用
+     */
+    var enabled: Boolean = true,
+    /**
      * [ScriptEnvironment.Applier]
      */
     val appliers: MutableList<ScriptEnvironment.Applier> = CopyOnWriteArrayList()
@@ -35,7 +39,7 @@ enum class ScriptTypes(
     JEXL(JexlExecutor, "Jexl", "jexl", "Jexl3", "jexl3"),
     KOTLIN_SCRIPTING(KotlinScriptExecutor, "Kotlin", "kotlin", "kts", "KTS");
 
-    override fun getExecutor() = executor
+    override fun getExecutor() = if (enabled) executor else throw IllegalStateException("Script $name is disabled!")
 
     override fun getNames() = names
 

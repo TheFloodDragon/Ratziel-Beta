@@ -3,7 +3,6 @@ dependencies {
     compileCore(12005)
     compileTaboo("platform-bukkit")
     compileTaboo("module-nms")
-    compileTaboo("module-kether")
     // Module
     compileModule("module-script")
     // PlaceholderAPI

@@ -72,7 +72,7 @@ data class ItemCharacteristic(
             when {
                 // 头颅处理 (需要对应材质为PLAYER_HEAD)
                 data.material.name == BukkitMaterial.PLAYER_HEAD.name -> {
-                    val skullMeta = RefItemMeta(RefItemMeta.skullClass, data.tag).handle as? SkullMeta
+                    val skullMeta = RefItemMeta.of(RefItemMeta.META_SKULL, data.tag).handle as? SkullMeta
                     impl.headMeta = skullMeta?.owner ?: skullMeta?.getSkullValue() ?: return impl
                 }
                 // 皮革颜色处理

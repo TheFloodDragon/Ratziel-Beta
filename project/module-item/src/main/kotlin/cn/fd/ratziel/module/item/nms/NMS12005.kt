@@ -56,6 +56,13 @@ abstract class NMS12005 {
         }
 
         /**
+         * [net.minecraft.core.component.DataComponentPatch]
+         */
+        val DATA_COMPONENT_PATCH_CLASS by lazy {
+            nmsClass("DataComponentPatch")
+        }
+
+        /**
          * [net.minecraft.world.item.component.CustomData]
          */
         val customDataClass by lazy {

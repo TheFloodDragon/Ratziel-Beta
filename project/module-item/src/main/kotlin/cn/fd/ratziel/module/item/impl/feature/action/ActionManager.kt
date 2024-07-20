@@ -48,7 +48,7 @@ object ActionManager {
 //        // 执行物品动作
 //        action?.execute(environment.context)//
         // 执行物品动作
-        action?.execute(SimpleArgumentContext(environment))
+        action?.execute(environment)
     }
 
     @JvmStatic

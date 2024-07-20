@@ -14,7 +14,7 @@ import taboolib.module.kether.ScriptOptions
  */
 object KetherExecutor : ScriptExecutor {
 
-    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any {
+    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
         return KetherShell.eval(script.content, ScriptOptions.new { vars(environment.bindings) })
     }
 

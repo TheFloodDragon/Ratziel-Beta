@@ -81,7 +81,7 @@ data class ItemSundry(
         override val node = ItemNode.ROOT
 
         override fun transform(data: ItemData, component: ItemSundry) {
-            val itemMeta = RefItemMeta(RefItemMeta.metaClass)
+            val itemMeta = RefItemMeta.of(RefItemMeta.META_ITEM)
             // HideFlags
             val flags = component.hideFlags?.toTypedArray()
             if (flags != null) itemMeta.handle.addItemFlags(*flags)
@@ -98,7 +98,7 @@ data class ItemSundry(
         }
 
         override fun detransform(data: ItemData): ItemSundry = ItemSundry().apply {
-            val itemMeta = RefItemMeta(data.tag)
+            val itemMeta = RefItemMeta.of(RefItemMeta.META_ITEM, data.tag)
             // HideFlags
             val hideFlags = itemMeta.handle.itemFlags
             if (hideFlags.isNotEmpty()) {

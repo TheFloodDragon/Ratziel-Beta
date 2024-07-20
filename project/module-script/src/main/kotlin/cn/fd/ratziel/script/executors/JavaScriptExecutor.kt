@@ -3,6 +3,7 @@ package cn.fd.ratziel.script.executors
 import cn.fd.ratziel.script.api.ScriptContent
 import cn.fd.ratziel.script.api.ScriptEnvironment
 import cn.fd.ratziel.script.impl.CompilableScriptExecutor
+import taboolib.common.env.RuntimeDependency
 import javax.script.Compilable
 import javax.script.CompiledScript
 import javax.script.ScriptEngine
@@ -14,6 +15,10 @@ import javax.script.ScriptEngineManager
  * @author TheFloodDragon
  * @since 2024/7/14 21:40
  */
+@RuntimeDependency(
+    value = "!org.openjdk.nashorn:nashorn-core:15.4",
+    test = "!org.openjdk.nashorn.api.scripting.NashornScriptEngine"
+)
 object JavaScriptExecutor : CompilableScriptExecutor {
 
     override fun compile(script: String?): CompiledScript {

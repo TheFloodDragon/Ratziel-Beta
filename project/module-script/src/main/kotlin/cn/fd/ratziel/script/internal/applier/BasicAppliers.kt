@@ -16,11 +16,11 @@ private object BasicAppliers {
 
     @Awake
     fun register() {
-        ScriptTypes.KETHER.appliers.addAll(arrayOf(
-            fetch<ProxyCommandSender> {
-                bindings["@Sender"] = it
-            }
-        ))
+        for (lang in ScriptTypes.entries) {
+            if (lang == ScriptTypes.KETHER) {
+                lang.appliers.add(fetch<ProxyCommandSender> { bindings["@Sender"] = it })
+            } else lang.appliers.add(fetch<ProxyCommandSender> { bindings["sender"] = it })
+        }
     }
 
     inline fun <reified T> fetch(noinline function: ScriptEnvironment.(T) -> Unit) = fetch(T::class.java, function)
