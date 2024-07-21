@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.function.util.uncheck
-import cn.fd.ratziel.module.item.nbt.NMSUtil
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DynamicOps
 import net.minecraft.core.IRegistryCustom
@@ -10,12 +9,10 @@ import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.resources.RegistryOps
-import net.minecraft.server.MinecraftServer
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.minecraftServerObject
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
 
@@ -61,22 +58,8 @@ abstract class NMS12005 {
         /**
          * [net.minecraft.core.component.DataComponentPatch]
          */
-        val DATA_COMPONENT_PATCH_CLASS by lazy {
+        val dataComponentPatchClass by lazy {
             nmsClass("DataComponentPatch")
-        }
-
-        /**
-         * [net.minecraft.world.item.component.CustomData]
-         */
-        val customDataClass by lazy {
-            nmsClass("CustomData")
-        }
-
-        /**
-         * private CustomData(NBTTagCompound var0)
-         */
-        val customDataConstructor by lazy {
-            ReflexClass.of(customDataClass).structure.getConstructorByType(NMSUtil.NtCompound.nmsClass)
         }
 
     }
@@ -106,7 +89,7 @@ class NMS12005Impl : NMS12005() {
 
     override fun saveMap(dcm: Any): Any? = save(DataComponentMap.CODEC, dcm as DataComponentMap)
 
-    val access: IRegistryCustom.Dimension by lazy { minecraftServerObject as MinecraftServer.registryAccess() }
+    val access: IRegistryCustom.Dimension by lazy { (Bukkit.getServer() as CraftServer).server.registryAccess() }
 
     val method by lazy {
         val ref = ReflexClass.of(net.minecraft.core.HolderLookup.a::class.java, false)

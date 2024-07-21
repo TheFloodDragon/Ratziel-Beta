@@ -25,10 +25,10 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
     var handle: T = raw as? T ?: throw UnsupportedTypeException(raw)
 
     /**
-     * [MetaType]
+     * [CraftMetaType]
      */
     val metaType by lazy {
-        MetaType.registry.find { it.clazz == handle::class.java } ?: MetaType(handle::class.java)
+        registry.find { it.craftClass.isAssignableFrom(handle::class.java) } ?: CraftMetaType(handle::class.java)
     }
 
     /**
@@ -43,37 +43,38 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
         /**
          * inventory.CraftMetaItem
          */
-        val META_ITEM: MetaType<ItemMeta> = MetaType("inventory.CraftMetaItem")
-        val META_SKULL: MetaType<SkullMeta> = MetaType("inventory.CraftMetaSkull")
+        val META_ITEM: CraftMetaType<ItemMeta> = CraftMetaType("inventory.CraftMetaItem")
+        val META_SKULL: CraftMetaType<SkullMeta> = CraftMetaType("inventory.CraftMetaSkull")
+
+        /**
+         * Registry for [CraftMetaType]
+         */
+        val registry: MutableSet<CraftMetaType<*>> = CopyOnWriteArraySet()
 
         /**
          * CraftMetaItem#constructor(NBTTagCompound)
          * CraftMetaItem(DataComponentPatch tag)
          * @return CraftMetaItem
          */
-        fun <T : ItemMeta> new(type: MetaType<T>, tag: NBTCompound): T = type.new(tag)
+        fun <T : ItemMeta> new(type: CraftMetaType<T>, tag: NBTCompound): T = type.new(tag)
 
         @JvmStatic
-        fun <T : ItemMeta> of(type: MetaType<T>) = of(type, NBTCompound())
+        fun <T : ItemMeta> of(type: CraftMetaType<T>) = of(type, NBTCompound())
 
         @JvmStatic
-        fun <T : ItemMeta> of(type: MetaType<T>, tag: NBTCompound) = RefItemMeta(new(type, tag))
+        fun <T : ItemMeta> of(type: CraftMetaType<T>, tag: NBTCompound) = RefItemMeta(new(type, tag))
 
     }
 
-    class MetaType<T : ItemMeta>(
-        val clazz: Class<in T>,
+    class CraftMetaType<T : ItemMeta>(
+        val craftClass: Class<T>,
     ) {
 
         init {
             registry.add(this)
         }
 
-        companion object {
-            val registry: MutableSet<MetaType<*>> = CopyOnWriteArraySet()
-        }
-
-        internal constructor(obcName: String) : this(uncheck<Class<in T>>(obcClass(obcName)))
+        internal constructor(obcName: String) : this(uncheck<Class<T>>(obcClass(obcName)))
 
         /**
          * CraftMetaItem#constructor(NBTTagCompound)
@@ -81,37 +82,33 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
          * @return CraftMetaItem
          */
         private val craftMetaConstructor by lazy {
-            ReflexClass.of(clazz, false).structure.getConstructorByType(
-                if (MinecraftVersion.majorLegacy >= 12005) NMS12005.DATA_COMPONENT_PATCH_CLASS else NMSUtil.NtCompound.nmsClass
+            ReflexClass.of(craftClass, false).structure.getConstructorByType(
+                if (MinecraftVersion.majorLegacy >= 12005) NMS12005.dataComponentPatchClass else NMSUtil.NtCompound.nmsClass
             )
         }
 
         private val applyToItemMethod by lazy {
-            ReflexClass.of(clazz, false).structure.getMethodByType(
+            ReflexClass.of(craftClass, false).structure.getMethodByType(
                 "applyToItem",
-                if (MinecraftVersion.majorLegacy >= 12005) InternalUtil.applicatorClass else NMSUtil.NtCompound.nmsClass
+                if (MinecraftVersion.majorLegacy >= 12005) applicatorClass else NMSUtil.NtCompound.nmsClass
             )
         }
 
         internal fun new(tag: NBTCompound): T {
-            val handled =
-                if (MinecraftVersion.majorLegacy >= 12005)
-                    NMS12005.INSTANCE.parsePatch(tag.getData())!!
-                else tag
+            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(tag.getData())!! else tag
             return uncheck(craftMetaConstructor.instance(handled)!!)
         }
 
         internal fun applyToItem(meta: ItemMeta, tag: NBTCompound) {
-            if (MinecraftVersion.majorLegacy >= 12005) {
-                /*
+            if (MinecraftVersion.majorLegacy >= 12005) {/*
                 1.20.5+ 巨tm坑:
                 if (this.customTag != null) {
                   itemTag.put(CUSTOM_DATA, CustomData.a(this.customTag));
                 }
                  */
-                val applicator = InternalUtil.applicatorConstructor.instance()!! // new Applicator
+                val applicator = applicatorConstructor.instance()!! // new Applicator
                 applyToItemMethod.invoke(meta, applicator) // Apply to the applicator
-                val dcp = InternalUtil.applicatorToDcp(applicator) // Applicator to DataComponentPatch
+                val dcp = applicatorBuildMethod.invoke(applicator)!! // Applicator to DataComponentPatch
                 val newTag = NMS12005.INSTANCE.savePatch(dcp) // DataComponentPatch save to NBT
                 if (newTag != null) tag.mergeShallow(NBTCompound(newTag), true)
             } else {
@@ -119,29 +116,27 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
             }
         }
 
-    }
+        companion object {
 
-    internal object InternalUtil {
+            /**
+             * 处理1.20.5的CraftMetaItem.Applicator
+             *
+             * Applicator(){}
+             * <T> Applicator put(ItemMetaKeyType<T> key, T value)
+             * DataComponentPatch build()
+             */
+            val applicatorClass by lazy {
+                obcClass("inventory.CraftMetaItem\$Applicator")
+            }
 
-        /**
-         * 处理1.20.5的CraftMetaItem.Applicator
-         *
-         * Applicator(){}
-         * <T> Applicator put(ItemMetaKeyType<T> key, T value)
-         * DataComponentPatch build()
-         */
-        val applicatorClass by lazy {
-            obcClass("inventory.CraftMetaItem\$Applicator")
-        }
+            val applicatorConstructor by lazy {
+                ReflexClass.of(applicatorClass, false).getConstructor()
+            }
 
-        fun applicatorToDcp(applicator: Any): Any = applicatorBuildMethod.invoke(applicator)!!
+            val applicatorBuildMethod by lazy {
+                ReflexClass.of(applicatorClass, false).getMethod("build")
+            }
 
-        val applicatorConstructor by lazy {
-            ReflexClass.of(applicatorClass, false).getConstructor()
-        }
-
-        val applicatorBuildMethod by lazy {
-            ReflexClass.of(applicatorClass, false).getMethod("build")
         }
 
     }

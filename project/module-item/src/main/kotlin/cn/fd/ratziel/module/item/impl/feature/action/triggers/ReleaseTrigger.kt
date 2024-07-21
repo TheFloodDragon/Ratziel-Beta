@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.feature.action.triggers
 
 import cn.fd.ratziel.module.item.api.feature.ItemTrigger
-import cn.fd.ratziel.module.item.event.ItemBuildEvent
+import cn.fd.ratziel.module.item.api.event.ItemBuildEvent
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.feature.action.ActionManager
 import cn.fd.ratziel.module.item.nms.RefItemStack

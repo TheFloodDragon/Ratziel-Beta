@@ -15,7 +15,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.api.event.ItemResolvedEvent
-import cn.fd.ratziel.module.item.event.ItemBuildEvent
+import cn.fd.ratziel.module.item.api.event.ItemBuildEvent
 import cn.fd.ratziel.module.item.impl.ItemInfo
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleItemData
