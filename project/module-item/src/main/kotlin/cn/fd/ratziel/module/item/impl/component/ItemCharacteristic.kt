@@ -7,7 +7,7 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
-import cn.fd.ratziel.module.item.impl.ItemMaterialImpl
+import cn.fd.ratziel.module.item.impl.SimpleItemMaterial
 import cn.fd.ratziel.module.item.impl.component.util.HeadUtil
 import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.nbt.read
@@ -50,18 +50,18 @@ data class ItemCharacteristic(
 
         override fun transform(data: ItemData, component: ItemCharacteristic) {
             // 头颅处理 (当源数据的材料为空或者是PLAYER_HEAD时, 才处理相关)
-            if (data.material.isEmpty() || ItemMaterialImpl.equal(data.material, BukkitMaterial.PLAYER_HEAD)) {
+            if (data.material.isEmpty() || SimpleItemMaterial.equal(data.material, BukkitMaterial.PLAYER_HEAD)) {
                 component.headMeta?.let { HeadUtil.getHeadTag(it) }?.let {
                     // 设置材质
-                    data.material = ItemMaterialImpl(BukkitMaterial.PLAYER_HEAD)
+                    data.material = SimpleItemMaterial(BukkitMaterial.PLAYER_HEAD)
                     // 应用标签
                     data.tag.merge(it, true)
                 }
             }
             // 颜色处理
             val node = when {
-                ItemMaterialImpl.isLeatherArmor(data.material) -> ItemSheet.DYED_COLOR
-                ItemMaterialImpl.isPotion(data.material) -> ItemSheet.POTION_COLOR
+                SimpleItemMaterial.isLeatherArmor(data.material) -> ItemSheet.DYED_COLOR
+                SimpleItemMaterial.isPotion(data.material) -> ItemSheet.POTION_COLOR
                 else -> return
             }
             data.tag.write(node, component.color?.let { parseColor(it) }?.let { NBTInt(it) })
@@ -76,10 +76,10 @@ data class ItemCharacteristic(
                     impl.headMeta = skullMeta?.owner ?: skullMeta?.getSkullValue() ?: return impl
                 }
                 // 皮革颜色处理
-                ItemMaterialImpl.isLeatherArmor(data.material) ->
+                SimpleItemMaterial.isLeatherArmor(data.material) ->
                     data.tag.read<NBTInt>(ItemSheet.DYED_COLOR) { impl.color = it.content.toString() }
                 // 药水颜色处理
-                ItemMaterialImpl.isPotion(data.material) ->
+                SimpleItemMaterial.isPotion(data.material) ->
                     data.tag.read<NBTInt>(ItemSheet.POTION_COLOR) { impl.color = it.content.toString() }
             }
             // 返回

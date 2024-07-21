@@ -20,9 +20,9 @@ data class ItemInfo(
      */
     val id: Identifier,
     /**
-     * 物品元素名称
+     * 物品类型 (物品元素名称)
      */
-    val name: String,
+    val type: String,
     /**
      * 物品元素内容的哈希值
      */
@@ -44,7 +44,7 @@ data class ItemInfo(
         /**
          * [RatzielItem] 物品元素名称
          */
-        val RATZIEL_ELEMENT_NODE = OccupyNode("Element", RATZIEL_NODE)
+        val RATZIEL_ELEMENT_NODE = OccupyNode("Type", RATZIEL_NODE)
 
         /**
          * [RatzielItem] 物品元素内容哈希值
@@ -59,7 +59,7 @@ data class ItemInfo(
             val data = ComponentUtil.findByNode(tag, RATZIEL_NODE)
             // 写入数据
             data[RATZIEL_IDENTIFIER_NODE.name] = NBTString(info.id.toString())
-            data[RATZIEL_ELEMENT_NODE.name] = NBTString(info.name)
+            data[RATZIEL_ELEMENT_NODE.name] = NBTString(info.type)
             data[RATZIEL_HASH_NODE.name] = NBTInt(info.hash)
         }
 
@@ -76,7 +76,7 @@ data class ItemInfo(
             // 合成结果
             return ItemInfo(
                 id = IdentifierImpl(id.content),
-                name = name.content,
+                type = name.content,
                 hash = hash.content,
             )
         }

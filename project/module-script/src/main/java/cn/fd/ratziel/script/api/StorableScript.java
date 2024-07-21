@@ -27,9 +27,8 @@ public interface StorableScript {
      *
      * @param executor 脚本执行器
      * @return 脚本是否可编译
-     * @throws ScriptException 编译过程中出现异常时抛出
      */
-    default boolean compile(@NotNull ScriptExecutor executor) throws ScriptException {
+    default boolean compile(@NotNull ScriptExecutor executor) {
         return false;
     }
 

@@ -5,12 +5,12 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 
 /**
- * ItemDataImpl
+ * SimpleItemData
  *
  * @author TheFloodDragon
  * @since 2024/5/5 13:33
  */
-data class ItemDataImpl(
+data class SimpleItemData(
     /**
      * 物品材料
      */
@@ -27,7 +27,7 @@ data class ItemDataImpl(
 
     companion object {
 
-        val EMPTY = ItemDataImpl()
+        val EMPTY = SimpleItemData()
 
         /**
          * 将 [target] 合并到 [source] 中

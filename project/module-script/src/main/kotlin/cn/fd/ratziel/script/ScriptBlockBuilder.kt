@@ -58,7 +58,7 @@ object ScriptBlockBuilder {
         constructor(content: String, executor: ScriptExecutor) : this(SimpleScript(content, executor), executor)
 
         init {
-            // 预编译
+            // 预编译 (SimpleScript#compile()为异步执行, 一般情况下这里也是异步的)
             if (script is StorableScript) script.compile(executor)
         }
 

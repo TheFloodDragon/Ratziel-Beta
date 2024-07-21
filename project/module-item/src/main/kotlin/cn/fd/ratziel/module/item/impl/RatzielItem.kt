@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
  */
 open class RatzielItem : NeoItem {
 
-    constructor(info: ItemInfo) : this(info, ItemDataImpl())
+    constructor(info: ItemInfo) : this(info, SimpleItemData())
 
     constructor(info: ItemInfo, data: ItemData) {
         // 写入数据

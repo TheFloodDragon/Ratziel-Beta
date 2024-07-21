@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * SimpleScript
@@ -23,34 +24,46 @@ public class SimpleScript implements EvaluableScript, StorableScript, ScriptCont
 
     private final String content;
     private final ScriptExecutor executor;
-    private CompiledScript compiledScript = null;
+    private CompletableFuture<CompiledScript> future = null;
 
     @Override
     public @Nullable Object evaluate(@NotNull ScriptEnvironment environment) throws ScriptException {
-        // 已存在编译过的脚本, 或者脚本可被编译(已通过compile方法编译)
-        if (compiledScript != null || compile(getExecutor())) {
+        CompiledScript compiled = getCompiled();
+        // 已存在编译过的脚本
+        if (compiled != null) {
             // 直接用编译后的脚本评估
-            return compiledScript.eval(environment.getBindings());
+            return compiled.eval(environment.getBindings());
         } else {
+            // 尝试编译脚本 (compile是异步执行的, 不然也不敢放在这)
+            compile(getExecutor());
             // 通过执行器评估脚本
             return getExecutor().evaluate(this, environment);
         }
     }
 
     @Override
-    public boolean compile(@NotNull ScriptExecutor executor) throws ScriptException {
+    public boolean compile(@NotNull ScriptExecutor executor) {
         if (executor instanceof Compilable) {
             // 编译脚本
-            this.compiledScript = ((Compilable) executor).compile(getContent());
+            future = CompletableFuture.supplyAsync(() -> {
+                try {
+                    return ((Compilable) executor).compile(getContent());
+                } catch (Exception e) {
+                    //noinspection CallToPrintStackTrace
+                    e.printStackTrace();
+                }
+                return null;
+            });
             return true;
         } else return false;
     }
 
     @Override
     public @Nullable CompiledScript getCompiled() {
-        return compiledScript;
+        if (future.isDone())
+            return future.getNow(null);
+        else return null;
     }
-
 
     @Override
     public @NotNull ScriptExecutor getExecutor() {

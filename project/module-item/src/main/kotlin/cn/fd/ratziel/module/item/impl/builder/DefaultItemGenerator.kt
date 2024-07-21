@@ -16,7 +16,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.event.ItemBuildEvent
 import cn.fd.ratziel.module.item.event.ItemResolvedEvent
-import cn.fd.ratziel.module.item.impl.ItemDataImpl
+import cn.fd.ratziel.module.item.impl.SimpleItemData
 import cn.fd.ratziel.module.item.impl.ItemInfo
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.util.toApexDataUncheck
@@ -67,7 +67,7 @@ class DefaultItemGenerator(
         return transformFactory.thenApply { results ->
             // 优先级排列 (优先级低的在前面)
             for (data in results.mapNotNull { it }.sortPriority().reversed()) {
-                ItemDataImpl.merge(sourceData, data, true) // 合并数据
+                SimpleItemData.merge(sourceData, data, true) // 合并数据
             }
             // 合成最终结果
             createRatzielItem(origin, sourceData, identifier).let { item ->
@@ -79,7 +79,7 @@ class DefaultItemGenerator(
         }
     }
 
-    override fun build(context: ArgumentContext) = build(ItemDataImpl(), context)
+    override fun build(context: ArgumentContext) = build(SimpleItemData(), context)
 
     private fun resolve(element: JsonElement, context: ArgumentContext, resolvers: List<ItemResolver>): JsonElement {
         var result = element
@@ -116,7 +116,7 @@ class DefaultItemGenerator(
             }
             // 转换成以顶级节点为根节点的数据
             try {
-                Priority(prt.priority, transformer.toApexDataUncheck(component, ItemDataImpl())) // 封装成优先级对象后传递给合并阶段
+                Priority(prt.priority, transformer.toApexDataUncheck(component, SimpleItemData())) // 封装成优先级对象后传递给合并阶段
             } catch (ex: Exception) {
                 severe("Failed to transform component by \"$transformer\"! Target component: $component")
                 ex.printStackTrace(); null

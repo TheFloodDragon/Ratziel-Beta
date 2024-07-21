@@ -1,80 +1,74 @@
-@file:Suppress("DEPRECATION")
-
 package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.exception.UnknownMaterialException
 import taboolib.library.reflex.ReflexClass
 import taboolib.library.xseries.XMaterial
 
 /**
- * ItemMaterialImpl
+ * SimpleItemMaterial
  *
  * 由于不可抗力的影响(我不会), 仅支持 [BukkitMaterial], 即仅支持原版物品
  *
  * @author TheFloodDragon
  * @since 2024/4/5 13:26
  */
-data class ItemMaterialImpl(override val name: String) : ItemMaterial {
+open class SimpleItemMaterial(private val ref: BukkitMaterial) : ItemMaterial {
+
+    constructor(name: String) : this(getBukkitMaterial(name) ?: BukkitMaterial.AIR)
+
+    constructor(id: Int) : this(getBukkitMaterial(id) ?: BukkitMaterial.AIR)
 
     constructor(mat: XMaterial) : this(mat.name)
 
-    constructor(mat: BukkitMaterial) : this(mat.name)
-
     constructor(mat: ItemMaterial) : this(mat.name)
-
-    constructor(id: Int) : this(getBukkitMaterial(id) ?: BukkitMaterial.AIR)
 
     /**
      * 材料标识符 (低版本)
      */
-    override val id: Int get() = getIdUnsafe(insBukkit)
+    override val id: Int get() = getIdUnsafe(ref)
+
+    /**
+     * 材料名称
+     */
+    override val name: String get() = ref.name
 
     /**
      * 材料的默认最大堆叠数量
      */
-    override val maxStackSize: Int get() = insBukkit.maxStackSize
+    override val maxStackSize: Int get() = ref.maxStackSize
 
     /**
      * 材料的默认最大耐久度
      */
-    override val maxDurability: Int get() = insBukkit.maxDurability.toInt()
+    override val maxDurability: Int get() = ref.maxDurability.toInt()
 
     /**
      * 材料是否为空气材料
      */
-    fun isAir() = insBukkit.isAir || this.isEmpty()
+    open fun isAir() = ref.isAir || this.isEmpty()
 
     /**
-     * 获取 [BukkitMaterial] 形式 (若获取不到则抛出异常)
+     * 获取 [BukkitMaterial] 形式
      */
-    fun getAsBukkit(): BukkitMaterial = insBukkit
+    open fun getAsBukkit(): BukkitMaterial = ref
 
     /**
-     * 获取 [XMaterial] 形式 (若获取不到则抛出异常)
+     * 获取 [XMaterial] 形式
      */
-    fun getAsXSeries(): XMaterial = insXSeries
+    open fun getAsXSeries(): XMaterial = XMaterial.matchXMaterial(ref)
 
-    /**
-     * [BukkitMaterial] 形式
-     */
-    private val insBukkit: BukkitMaterial by lazy { getBukkitMaterial(name) ?: throw UnknownMaterialException(name) }
+    override fun toString() = "SimpleItemMaterial(name=$name,id=$id)"
 
-    /**
-     * [XMaterial] 形式
-     */
-    private val insXSeries: XMaterial by lazy { XMaterial.matchXMaterial(insBukkit) }
-
-    override fun hashCode() = id.hashCode()
+    override fun hashCode() = name.hashCode()
 
     override fun equals(other: Any?) = equal(this, other)
 
     companion object {
 
         fun equal(material: ItemMaterial, other: Any?) = material === other
-                || (other as? ItemMaterial)?.id == material.id
-                || (other as? BukkitMaterial)?.let { getIdUnsafe(it) } == material.id
-                || (other as? XMaterial)?.id == material.id
+                || (other as? ItemMaterial)?.name == material.name
+                || (other as? BukkitMaterial)?.name == material.name
+                || (other as? XMaterial)?.name == material.name
 
         /**
          * 获取 [BukkitMaterial] 形式的物品材料
@@ -88,7 +82,7 @@ data class ItemMaterialImpl(override val name: String) : ItemMaterial {
          */
         val materialsMap by lazy {
             HashMap<String, ItemMaterial>().apply {
-                BukkitMaterial.entries.forEach { put(it.name, ItemMaterialImpl(it)) }
+                BukkitMaterial.entries.forEach { put(it.name, SimpleItemMaterial(it)) }
             }
         }
 
