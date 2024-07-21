@@ -34,8 +34,8 @@ public class SimpleScript implements EvaluableScript, StorableScript, ScriptCont
             // 直接用编译后的脚本评估
             return compiled.eval(environment.getBindings());
         } else {
-            // 尝试编译脚本 (compile是异步执行的, 不然也不敢放在这)
-            compile(getExecutor());
+            // 尝试编译脚本, 如果没有编译过的话 (compile是异步执行的, 不然也不敢放在这)
+            if (future == null) compile(getExecutor());
             // 通过执行器评估脚本
             return getExecutor().evaluate(this, environment);
         }

@@ -4,15 +4,18 @@ import cn.fd.ratziel.function.util.uncheck
 import cn.fd.ratziel.module.item.nbt.NMSUtil
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DynamicOps
+import net.minecraft.core.IRegistryCustom
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.resources.RegistryOps
+import net.minecraft.server.MinecraftServer
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.minecraftServerObject
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
 
@@ -103,7 +106,7 @@ class NMS12005Impl : NMS12005() {
 
     override fun saveMap(dcm: Any): Any? = save(DataComponentMap.CODEC, dcm as DataComponentMap)
 
-    val access by lazy { (Bukkit.getServer() as CraftServer).server.registryAccess() }
+    val access: IRegistryCustom.Dimension by lazy { minecraftServerObject as MinecraftServer.registryAccess() }
 
     val method by lazy {
         val ref = ReflexClass.of(net.minecraft.core.HolderLookup.a::class.java, false)

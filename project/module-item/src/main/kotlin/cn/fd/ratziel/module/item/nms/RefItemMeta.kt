@@ -6,7 +6,6 @@ import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NMSUtil
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
-import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.obcClass
@@ -81,7 +80,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
          * CraftMetaItem(DataComponentPatch tag)
          * @return CraftMetaItem
          */
-        private val constructor by lazy {
+        private val craftMetaConstructor by lazy {
             ReflexClass.of(clazz, false).structure.getConstructorByType(
                 if (MinecraftVersion.majorLegacy >= 12005) NMS12005.DATA_COMPONENT_PATCH_CLASS else NMSUtil.NtCompound.nmsClass
             )
@@ -99,7 +98,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
                 if (MinecraftVersion.majorLegacy >= 12005)
                     NMS12005.INSTANCE.parsePatch(tag.getData())!!
                 else tag
-            return uncheck(constructor.instance(handled)!!)
+            return uncheck(craftMetaConstructor.instance(handled)!!)
         }
 
         internal fun applyToItem(meta: ItemMeta, tag: NBTCompound) {
@@ -137,17 +136,8 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
 
         fun applicatorToDcp(applicator: Any): Any = applicatorBuildMethod.invoke(applicator)!!
 
-        val customDataKey by lazy {
-            ReflexClass.of(META_ITEM.clazz, false).getField("CUSTOM_DATA")
-        }
-
         val applicatorConstructor by lazy {
             ReflexClass.of(applicatorClass, false).getConstructor()
-        }
-
-        val applicatorPutMethod by lazy {
-            ReflexClass.of(applicatorClass, false).structure.methods.firstOrNull { it.name == "put" }
-                ?: throw NoSuchMethodException("${applicatorClass.name}#put")
         }
 
         val applicatorBuildMethod by lazy {

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.event
+package cn.fd.ratziel.module.item.api.event
 
 import cn.fd.ratziel.core.Identifier
 import taboolib.platform.type.BukkitProxyEvent
