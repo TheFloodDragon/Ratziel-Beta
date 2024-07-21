@@ -21,9 +21,10 @@ object ActionManager {
      */
     val triggers: MutableSet<ItemTrigger> = mutableSetOf(
         AttackTrigger, DamageTrigger, BreakTrigger,
-        InteractTrigger.LeftClick, InteractTrigger.RightClick,
         ReleaseTrigger,
-    )
+    ).apply {
+        addAll(InteractTrigger.Triggers.values())
+    }
 
     /**
      * 物品唯一标识符 - 触发器表 (存有物品触发器和物品动作)

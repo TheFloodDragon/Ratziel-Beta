@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl.builder.resolver
+package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.module.item.api.ArgumentResolver
 

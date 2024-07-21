@@ -11,6 +11,6 @@ interface ItemTrigger {
     /**
      * 触发器名称列表
      */
-    val names: Array<String>
+    val names: Array<out String>
 
 }

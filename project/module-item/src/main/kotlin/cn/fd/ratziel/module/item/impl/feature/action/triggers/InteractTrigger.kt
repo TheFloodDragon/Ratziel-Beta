@@ -1,7 +1,9 @@
 package cn.fd.ratziel.module.item.impl.feature.action.triggers
 
+import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.module.item.api.feature.ItemTrigger
 import cn.fd.ratziel.module.item.impl.feature.action.ActionManager
+import cn.fd.ratziel.script.api.ScriptEnvironment
 import cn.fd.ratziel.script.impl.SimpleScriptEnv
 import org.bukkit.event.block.Action.*
 import org.bukkit.event.player.PlayerInteractEvent
@@ -29,30 +31,44 @@ object InteractTrigger {
             set("event", event)
             set("item", item)
             set("neoItem", neoItem)
-            set("block", event.clickedBlock)
-            set("position", event.clickedPosition)
         }
         // 触发触发器
         when (event.action) {
-
-            // 左键
-            LEFT_CLICK_AIR, LEFT_CLICK_BLOCK ->
-                ActionManager.trigger(neoItem.identifier, LeftClick, env)
-
-            // 右键
-            RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK ->
-                ActionManager.trigger(neoItem.identifier, RightClick, env)
-
+            LEFT_CLICK_AIR -> Triggers.LEFT_CLICK_AIR.trigger(neoItem.identifier, env)
+            LEFT_CLICK_BLOCK -> Triggers.LEFT_CLICK_BLOCK.trigger(neoItem.identifier, env)
+            RIGHT_CLICK_AIR -> Triggers.RIGHT_CLICK_AIR.trigger(neoItem.identifier, env)
+            RIGHT_CLICK_BLOCK -> Triggers.RIGHT_CLICK_BLOCK.trigger(neoItem.identifier, env)
             else -> {}
         }
     }
 
-    object LeftClick : ItemTrigger {
-        override val names = arrayOf("onLeft", "left", "onLeftClick", "leftClick")
-    }
+    enum class Triggers(
+        override vararg val names: String,
+        val parent: ItemTrigger? = null
+    ) : ItemTrigger {
 
-    object RightClick : ItemTrigger {
-        override val names = arrayOf("onRight", "right", "onRightClick", "rightClick")
+        /**
+         * includes [LEFT_CLICK_AIR] [LEFT_CLICK_BLOCK]
+         */
+        LEFT_CLICK("onLeft", "left", "onLeftClick", "leftClick"),
+
+        /**
+         * includes [RIGHT_CLICK_AIR] [RIGHT_CLICK_BLOCK]
+         */
+        RIGHT_CLICK("onLeft", "left", "onLeftClick", "leftClick"),
+
+        LEFT_CLICK_AIR("onLeftClickedAir", "left-air", "left-click-air", parent = LEFT_CLICK),
+        LEFT_CLICK_BLOCK("onLeftClickedBlock", "left-block", "left-click-block", parent = LEFT_CLICK),
+        RIGHT_CLICK_AIR("onRightClickedAir", "right-air", "right-click-air", parent = RIGHT_CLICK),
+        RIGHT_CLICK_BLOCK("onRightClickedBlock", "right-block", "right-click-block", parent = RIGHT_CLICK);
+
+        fun trigger(identifier: Identifier, environment: ScriptEnvironment) {
+            // Trigger myself
+            ActionManager.trigger(identifier, this, environment)
+            // Trigger parent
+            if (parent != null) ActionManager.trigger(identifier, parent, environment)
+        }
+
     }
 
 }
