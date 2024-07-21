@@ -1,12 +1,11 @@
 package cn.fd.ratziel.module.item.impl.feature.action
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.function.SimpleArgumentContext
 import cn.fd.ratziel.module.item.api.feature.ItemTrigger
 import cn.fd.ratziel.module.item.impl.feature.action.triggers.*
 import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
 import cn.fd.ratziel.script.api.ScriptEnvironment
-import cn.fd.ratziel.script.impl.SimpleScriptEnvironment
+import cn.fd.ratziel.script.impl.SimpleScriptEnv
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -53,7 +52,7 @@ object ActionManager {
 
     @JvmStatic
     fun trigger(identifier: Identifier, trigger: ItemTrigger, function: ScriptEnvironment.() -> Unit) =
-        trigger(identifier, trigger, SimpleScriptEnvironment().apply(function))
+        trigger(identifier, trigger, SimpleScriptEnv().apply(function))
 
     /**
      * 匹配 [TriggerMap]

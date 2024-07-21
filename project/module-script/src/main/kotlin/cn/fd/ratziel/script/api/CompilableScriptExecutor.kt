@@ -1,6 +1,5 @@
-package cn.fd.ratziel.script.impl
+package cn.fd.ratziel.script.api
 
-import cn.fd.ratziel.script.api.ScriptExecutor
 import java.io.Reader
 import javax.script.Compilable
 import javax.script.CompiledScript

@@ -9,26 +9,26 @@ import javax.script.Bindings;
 import javax.script.SimpleBindings;
 
 /**
- * SimpleScriptEnvironment
+ * SimpleScriptEnv
  *
  * @author TheFloodDragon
  * @since 2024/7/15 13:41
  */
-public class SimpleScriptEnvironment implements ScriptEnvironment {
+public class SimpleScriptEnv implements ScriptEnvironment {
 
-    public SimpleScriptEnvironment() {
+    public SimpleScriptEnv() {
         this(new SimpleBindings());
     }
 
-    public SimpleScriptEnvironment(@NotNull Bindings bindings) {
+    public SimpleScriptEnv(@NotNull Bindings bindings) {
         this(bindings, new SimpleArgumentContext());
     }
 
-    public SimpleScriptEnvironment(@NotNull ArgumentContext context) {
+    public SimpleScriptEnv(@NotNull ArgumentContext context) {
         this(new SimpleBindings(), context);
     }
 
-    public SimpleScriptEnvironment(@NotNull Bindings bindings, @NotNull ArgumentContext context) {
+    public SimpleScriptEnv(@NotNull Bindings bindings, @NotNull ArgumentContext context) {
         this.bindings = bindings;
         this.context = context;
     }

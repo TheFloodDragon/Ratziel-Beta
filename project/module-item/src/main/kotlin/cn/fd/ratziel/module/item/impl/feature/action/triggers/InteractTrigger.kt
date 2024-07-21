@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.feature.action.triggers
 
 import cn.fd.ratziel.module.item.api.feature.ItemTrigger
 import cn.fd.ratziel.module.item.impl.feature.action.ActionManager
-import cn.fd.ratziel.script.impl.SimpleScriptEnvironment
+import cn.fd.ratziel.script.impl.SimpleScriptEnv
 import org.bukkit.event.block.Action.*
 import org.bukkit.event.player.PlayerInteractEvent
 import taboolib.common.platform.event.SubscribeEvent
@@ -25,7 +25,7 @@ object InteractTrigger {
         val item = event.item ?: return
         val neoItem = AttackTrigger.asNeo(item) ?: return
         // 环境
-        val env = SimpleScriptEnvironment().apply {
+        val env = SimpleScriptEnv().apply {
             set("event", event)
             set("item", item)
             set("neoItem", neoItem)

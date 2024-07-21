@@ -8,6 +8,8 @@ import taboolib.common.platform.ProxyCommandSender
 /**
  * BasicAppliers
  *
+ * 依托这设计
+ *
  * @author TheFloodDragon
  * @since 2024/7/16 12:21
  */
@@ -17,6 +19,15 @@ private object BasicAppliers {
     @Awake
     fun register() {
         for (lang in ScriptTypes.entries) {
+            // Sender from Bindings
+            lang.appliers.add(ScriptEnvironment.Applier {
+                val sender = it.context.popOrNull(ProxyCommandSender::class.java)
+                if (sender == null) {
+                    val newSender = it.bindings["player"] ?: it.bindings["sender"]
+                    if (newSender != null) it.context.add(newSender)
+                }
+            })
+            // Sender from Context
             if (lang == ScriptTypes.KETHER) {
                 lang.appliers.add(fetch<ProxyCommandSender> { bindings["@Sender"] = it })
             } else lang.appliers.add(fetch<ProxyCommandSender> { bindings["sender"] = it })

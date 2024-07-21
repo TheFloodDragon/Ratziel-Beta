@@ -97,7 +97,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
         internal fun new(tag: NBTCompound): T {
             val handled =
                 if (MinecraftVersion.majorLegacy >= 12005)
-                    InternalUtil.nbtToDcp(tag.getData())
+                    NMS12005.INSTANCE.parsePatch(tag.getData())!!
                 else tag
             return uncheck(constructor.instance(handled)!!)
         }
@@ -135,35 +135,23 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
             obcClass("inventory.CraftMetaItem\$Applicator")
         }
 
-        /**
-         * NBTTagCompound to DataComponentPatch
-         */
-        fun nbtToDcp(tag: Any): Any = applicatorToDcp(nbtToApplicator(tag))
-
         fun applicatorToDcp(applicator: Any): Any = applicatorBuildMethod.invoke(applicator)!!
 
-        fun nbtToApplicator(nbt: Any): Any =
-            applicatorPutMethod.invoke(
-                applicatorConstructor.instance()!!,
-                customDataKey,
-                NMS12005.customDataConstructor.instance(nbt)
-            )!!
-
         val customDataKey by lazy {
-            META_ITEM.getProperty<Any>("CUSTOM_DATA", isStatic = true)
+            ReflexClass.of(META_ITEM.clazz, false).getField("CUSTOM_DATA")
         }
 
         val applicatorConstructor by lazy {
-            ReflexClass.of(applicatorClass).getConstructor()
+            ReflexClass.of(applicatorClass, false).getConstructor()
         }
 
         val applicatorPutMethod by lazy {
-            ReflexClass.of(applicatorClass).structure.methods.firstOrNull { it.name == "put" }
+            ReflexClass.of(applicatorClass, false).structure.methods.firstOrNull { it.name == "put" }
                 ?: throw NoSuchMethodException("${applicatorClass.name}#put")
         }
 
         val applicatorBuildMethod by lazy {
-            ReflexClass.of(applicatorClass).getMethod("build")
+            ReflexClass.of(applicatorClass, false).getMethod("build")
         }
 
     }

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.script.executors
+package cn.fd.ratziel.script.kether
 
 import cn.fd.ratziel.script.api.ScriptContent
 import cn.fd.ratziel.script.api.ScriptEnvironment

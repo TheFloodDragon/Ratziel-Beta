@@ -1,11 +1,12 @@
-package cn.fd.ratziel.script.executors
+package cn.fd.ratziel.script.kts
 
 import cn.fd.ratziel.core.env.CoreEnv
+import cn.fd.ratziel.script.api.CompilableScriptExecutor
 import cn.fd.ratziel.script.api.ScriptContent
 import cn.fd.ratziel.script.api.ScriptEnvironment
-import cn.fd.ratziel.script.impl.CompilableScriptExecutor
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
+import taboolib.common.platform.Ghost
 import javax.script.Compilable
 import javax.script.CompiledScript
 import javax.script.ScriptEngine
@@ -17,6 +18,7 @@ import javax.script.ScriptEngineManager
  * @author TheFloodDragon
  * @since 2024/7/14 21:41
  */
+@Ghost // 避免依赖注入, 主动触发
 @RuntimeDependencies(
     RuntimeDependency(
         value = "!org.jetbrains.kotlin:kotlin-reflect:" + CoreEnv.KOTLIN_VERSION,

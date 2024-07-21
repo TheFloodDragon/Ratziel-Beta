@@ -11,5 +11,6 @@ dependencies {
     compileTaboo("module-bukkit-hook")
     compileModule("runtime-bukkit")
     compileModule("module-script")
+    compileModule("module-compat-core")
     compileOnly(fileTree("libs"))
 }

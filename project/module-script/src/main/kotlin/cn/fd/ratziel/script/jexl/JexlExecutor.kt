@@ -1,25 +1,28 @@
-package cn.fd.ratziel.script.executors
+package cn.fd.ratziel.script.jexl
 
+import cn.fd.ratziel.script.api.CompilableScriptExecutor
 import cn.fd.ratziel.script.api.ScriptContent
 import cn.fd.ratziel.script.api.ScriptEnvironment
-import cn.fd.ratziel.script.impl.CompilableScriptExecutor
 import taboolib.common.env.RuntimeDependency
+import taboolib.common.platform.Ghost
 import javax.script.Compilable
 import javax.script.CompiledScript
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
 /**
- * JavaScriptExecutor
+ * JexlExecutor
  *
  * @author TheFloodDragon
- * @since 2024/7/14 21:40
+ * @since 2024/7/14 21:41
  */
+@Ghost // 避免依赖注入, 主动触发
 @RuntimeDependency(
-    value = "!org.openjdk.nashorn:nashorn-core:15.4",
-    test = "!org.openjdk.nashorn.api.scripting.NashornScriptEngine"
+    value = "!org.apache.commons:commons-jexl3:3.4.0",
+    test = "!org.apache.commons.jexl3.JexlEngine",
+    transitive = false
 )
-object JavaScriptExecutor : CompilableScriptExecutor {
+object JexlExecutor : CompilableScriptExecutor {
 
     override fun compile(script: String?): CompiledScript {
         return (newEngine() as Compilable).compile(script)
@@ -30,7 +33,7 @@ object JavaScriptExecutor : CompilableScriptExecutor {
     }
 
     fun newEngine(): ScriptEngine =
-        ScriptEngineManager(this::class.java.classLoader).getEngineByName("js")
-            ?: throw NullPointerException("Cannot find ScriptEngine for JavaScriptExecutor")
+        ScriptEngineManager(this::class.java.classLoader).getEngineByName("Jexl")
+            ?: throw NullPointerException("Cannot find ScriptEngine for JexlExecutor")
 
 }

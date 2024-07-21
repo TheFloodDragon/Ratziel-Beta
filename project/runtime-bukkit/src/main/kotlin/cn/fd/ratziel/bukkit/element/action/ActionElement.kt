@@ -7,7 +7,7 @@ import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.toBasic
 import cn.fd.ratziel.script.ScriptBlockBuilder
 import cn.fd.ratziel.script.ScriptManager
-import cn.fd.ratziel.script.impl.SimpleScriptEnvironment
+import cn.fd.ratziel.script.impl.SimpleScriptEnv
 import taboolib.common.LifeCycle
 
 /**
@@ -27,7 +27,7 @@ object ActionElement : ElementHandler {
         element.property.let { json ->
             val block = ScriptBlockBuilder.build(json.toBasic(), ScriptManager.defaultScriptLanguage.executor)
             println(block)
-            val result = block.evaluate(SimpleScriptEnvironment())
+            val result = block.evaluate(SimpleScriptEnv())
             println(result)
         }
     }
