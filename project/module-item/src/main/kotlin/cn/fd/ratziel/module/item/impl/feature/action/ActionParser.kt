@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.feature.action
 
 import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.core.serialization.toBasic
-import cn.fd.ratziel.module.item.event.ItemResolvedEvent
+import cn.fd.ratziel.module.item.api.event.ItemResolvedEvent
 import cn.fd.ratziel.script.ScriptBlockBuilder
 import cn.fd.ratziel.script.ScriptManager
 import kotlinx.serialization.json.JsonObject
@@ -10,13 +10,13 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.severe
 
 /**
- * ActionRegister
+ * ActionParser
  *
  * @author TheFloodDragon
  * @since 2024/7/3 18:55
  */
 @Suppress("unused")
-object ActionRegister {
+object ActionParser {
 
     /**
      * 动作节点名称
