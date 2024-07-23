@@ -41,15 +41,15 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
     companion object {
 
         /**
+         * Registry for [CraftMetaType]
+         */
+        val registry: MutableSet<CraftMetaType<*>> = CopyOnWriteArraySet()
+
+        /**
          * inventory.CraftMetaItem
          */
         val META_ITEM: CraftMetaType<ItemMeta> = CraftMetaType("inventory.CraftMetaItem")
         val META_SKULL: CraftMetaType<SkullMeta> = CraftMetaType("inventory.CraftMetaSkull")
-
-        /**
-         * Registry for [CraftMetaType]
-         */
-        val registry: MutableSet<CraftMetaType<*>> = CopyOnWriteArraySet()
 
         /**
          * CraftMetaItem#constructor(NBTTagCompound)

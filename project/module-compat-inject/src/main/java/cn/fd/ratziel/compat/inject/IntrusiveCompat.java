@@ -14,12 +14,14 @@ import java.lang.invoke.MethodHandle;
  */
 public final class IntrusiveCompat {
 
-    private IntrusiveCompat() {
+    private IntrusiveCompat(ClassLoader pluginClassLoader, ClassLoader globalClassLoader) {
+        this.PLUGIN_CLASS_LOADER = pluginClassLoader;
+        this.GLOBAL_CLASS_LOADER = globalClassLoader;
     }
 
-    public static ClassLoader PLUGIN_CLASS_LOADER = IsolatedClassLoader.INSTANCE.getParent();
+    public static ClassLoader PLUGIN_CLASS_LOADER;
 
-    public static ClassLoader GLOBAL_CLASS_LOADER = PLUGIN_CLASS_LOADER.getParent();
+    public static ClassLoader GLOBAL_CLASS_LOADER;
 
     public static ClassLoader INTRUSIVE_CLASSLOADER;
 
@@ -35,7 +37,7 @@ public final class IntrusiveCompat {
         }
     }
 
-    private static void inject() throws Throwable {
+    private void inject() throws Throwable {
         // 类加载器示例
         INTRUSIVE_CLASSLOADER = new IntrusiveClassLoader(GLOBAL_CLASS_LOADER, PLUGIN_GROUP_NAME);
         // 隔离模式下注入类加载器

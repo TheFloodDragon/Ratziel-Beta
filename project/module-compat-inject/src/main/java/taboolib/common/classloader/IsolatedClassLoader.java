@@ -34,12 +34,16 @@ public class IsolatedClassLoader extends URLClassLoader {
             Object delegateObject = delegateClass.getConstructor().newInstance();
             delegateClass.getMethod("init").invoke(delegateObject);
             // ::Start:: 注入
+            // Load Injector
             Class<?> injectClass = Class.forName("cn.fd.ratziel.compat.inject.IntrusiveCompat", true, INSTANCE);
+            // Inject
             Method injectMethod = injectClass.getDeclaredMethod("inject");
-            Constructor<?> injectConstructor = injectClass.getDeclaredConstructor();
+            Constructor<?> injectConstructor = injectClass.getDeclaredConstructor(ClassLoader.class, ClassLoader.class);
             injectMethod.setAccessible(true);
             injectConstructor.setAccessible(true);
-            injectMethod.invoke(injectConstructor.newInstance());
+            ClassLoader pluginClassLoader = INSTANCE.getParent();
+            ClassLoader globalClassLoader = pluginClassLoader.getParent();
+            injectMethod.invoke(injectConstructor.newInstance(pluginClassLoader, globalClassLoader));
             // ::End::
         } catch (Exception e) {
             throw new RuntimeException(e);

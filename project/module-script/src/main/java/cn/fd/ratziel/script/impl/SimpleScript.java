@@ -60,7 +60,7 @@ public class SimpleScript implements EvaluableScript, StorableScript, ScriptCont
 
     @Override
     public @Nullable CompiledScript getCompiled() {
-        if (future.isDone())
+        if (future != null && future.isDone())
             return future.getNow(null);
         else return null;
     }
