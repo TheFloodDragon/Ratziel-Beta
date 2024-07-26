@@ -3,7 +3,6 @@ package cn.fd.ratziel.script
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.script.api.ScriptType
 import taboolib.common.ClassAppender
-import taboolib.common.LifeCycle
 import taboolib.common.env.JarRelocation
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
@@ -24,14 +23,14 @@ object ScriptManager {
     var defaultLanguage: ScriptType = ScriptTypes.KETHER
         internal set
 
-    @Awake(LifeCycle.INIT)
+    @Awake
     private fun init() {
         // Read config
         val conf = Settings.conf.getConfigurationSection("Script")
 
         // Default Language
-        val defLanguage = conf?.getString("Default")?.let { ScriptTypes.match(it) }
-        if (defLanguage != null) defaultLanguage = defLanguage
+        val defLang = conf?.getString("Default")?.let { ScriptTypes.match(it) }
+        if (defLang != null) defaultLanguage = defLang
 
         // Options
         val optionsConf = conf?.getConfigurationSection("Options")

@@ -22,7 +22,7 @@ val adventureModules = setOf(
  * 要合并的文件列表
  */
 val combineFiles = setOf(
-    "config.yml",
+    "settings.yml",
     "lang/zh_CN.yml",
     "lang/en_US.yml"
 )
