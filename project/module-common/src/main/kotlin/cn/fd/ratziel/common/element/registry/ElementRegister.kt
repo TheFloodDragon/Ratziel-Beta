@@ -23,15 +23,15 @@ class ElementRegister : ClassVisitor(0) {
         if (clazz.isAnnotationPresent(NewElement::class.java)) {
             val anno = clazz.getAnnotation(NewElement::class.java)
             try {
-                val etype = ElementType(anno.space, anno.name, anno.alias)
+                val type = ElementType(anno.space, anno.name, anno.alias)
                 /**
                  * 处理器
                  */
                 if (ElementHandler::class.java.isAssignableFrom(clazz)) {
                     // 获取实例
                     val handler = clazz.asSubclass(ElementHandler::class.java).getInstance(true)!!.get()
-                    ElementRegistry.register(etype, handler, anno.priority)
-                } else ElementRegistry.register(etype)
+                    ElementRegistry.register(type, handler, anno.priority)
+                } else ElementRegistry.register(type)
             } catch (e: Exception) {
                 severe("Unable to register element form class $clazz!")
                 e.printStackTrace()

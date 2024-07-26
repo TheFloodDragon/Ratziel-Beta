@@ -17,7 +17,7 @@ annotation class NewElement(
     /**
      * 命名空间
      */
-    val space: String = "ez",
+    val space: String = "ratziel",
     /**
      * 如果使用此注解的类是元素处理器
      * 则该项代表着元素处理器的优先级

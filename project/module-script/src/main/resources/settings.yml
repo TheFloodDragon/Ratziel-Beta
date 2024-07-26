@@ -1,0 +1,12 @@
+# 脚本相关内容配置
+Script:
+  Default: Kether # 默认使用的脚本引擎
+  Options:
+    JavaScript:
+      enabled: true
+    Kether:
+      enabled: true
+    Jexl:
+      enabled: true
+    Kotlin:
+      enabled: true

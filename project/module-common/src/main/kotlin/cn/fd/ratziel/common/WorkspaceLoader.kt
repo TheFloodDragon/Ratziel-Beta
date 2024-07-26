@@ -4,7 +4,6 @@ import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.element.ElementEvaluator
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
-import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.FutureFactory
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -12,7 +11,6 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendLang
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -23,7 +21,8 @@ object WorkspaceLoader {
     /**
      * 缓存的元素
      */
-    val cachedElements = ConcurrentLinkedQueue<Element>()
+    lateinit var lastEvaluator: ElementEvaluator
+        private set
 
     /**
      * 线程池
@@ -46,12 +45,13 @@ object WorkspaceLoader {
      * 加载工作空间中的元素
      */
     fun load(sender: ProxyCommandSender): CompletableFuture<Duration> {
-        cachedElements.clear() // 清空缓存
         WorkspaceLoadEvent.Start().call() // 事件 - 开始加载
         val timeMark = TimeSource.Monotonic.markNow() // 开始记录时间
         val result = CompletableFuture<Duration>()
-        val evaluator = ElementEvaluator(executor) // 创建评估器
-        // 创建异步工厂
+        // 创建评估器
+        val evaluator = ElementEvaluator(executor)
+        lastEvaluator = evaluator
+        // 创建任务工厂
         FutureFactory {
             for (file in WorkspaceManager.getFilteredFiles()) {
                 submitAsync(executor) {
@@ -59,7 +59,6 @@ object WorkspaceLoader {
                         // 加载元素文件
                         DefaultElementLoader.load(file).onEach {
                             evaluator.submitWith(it) // 提交到评估器
-                            cachedElements.add(it) // 插入缓存
                         }
                     } catch (ex: Exception) {
                         ex.printStackTrace()
@@ -71,7 +70,7 @@ object WorkspaceLoader {
             // 评估器开始评估
             evaluator.evaluate().thenAccept {
                 val time = loadTime.plus(it) // 计算最终时间 = 加载时间 + 评估时间
-                sender.sendLang("Workspace-Finished", cachedElements.size, time.inWholeMilliseconds)
+                sender.sendLang("Workspace-Finished", evaluator.evaluatedElements.size, time.inWholeMilliseconds)
                 WorkspaceLoadEvent.End().call() // 事件 - 结束加载
                 result.complete(time) // 完成最后任务
             }

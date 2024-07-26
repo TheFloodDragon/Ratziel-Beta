@@ -2,12 +2,10 @@ package cn.fd.ratziel.common.element
 
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.element.ElementIdentifier
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.util.FutureFactory
-import cn.fd.ratziel.function.ArgumentContext
-import cn.fd.ratziel.function.SimpleArgumentContext
-import cn.fd.ratziel.function.popOrNull
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.function.severe
@@ -26,6 +24,14 @@ import kotlin.time.TimeSource
  */
 class ElementEvaluator(val executor: Executor) {
 
+    /**
+     * 加载过的元素表
+     */
+    val evaluatedElements: MutableMap<ElementIdentifier, Element> = ConcurrentHashMap()
+
+    /**
+     * 评估任务表
+     */
     val evaluations: MutableMap<LifeCycle, MutableList<EvaluationTask>> = ConcurrentHashMap()
 
     /**
@@ -55,7 +61,7 @@ class ElementEvaluator(val executor: Executor) {
         val factory = FutureFactory<Throwable?>()
         // 遍历任务单个处理
         tasks.forEach { task ->
-            factory += handleElement(task.handler, task.element) // 提交任务
+            factory += handleTask(task) // 提交任务
         }
         factory.thenRun {
             // 完成后完成传入任务, 返回时间
@@ -65,26 +71,29 @@ class ElementEvaluator(val executor: Executor) {
 
     /**
      * 调用 [ElementHandler] 处理 [Element]
-     * @param handler 元素处理器
-     * @param element 要处理的元素
      * @return [CompletableFuture] - 过程的中可能存在的异常
      */
-    fun handleElement(handler: ElementHandler, element: Element, async: Boolean = false): CompletableFuture<Throwable?> {
+    fun handleTask(task: EvaluationTask): CompletableFuture<Throwable?> {
         // 创建处理任务
         val future = CompletableFuture<Throwable?>()
         // 处理函数 (非立即执行)
         val function = Runnable {
             try {
-                handler.handle(element)
-                future.complete(null) // 完成任务
+                val element = task.element
+                // 处理元素
+                task.handler.handle(element)
+                // 缓存评估过的元素
+                evaluatedElements[element.identifier] = element
+                // 完成任务
+                future.complete(null)
             } catch (ex: Throwable) {
-                severe("Couldn't handle element by $handler!")
+                severe("Couldn't handle element by ${task.handler}!")
                 ex.printStackTrace()
                 future.complete(ex) // 异常时返回(尽管已经处理过了)
             }
         }
         // 异步 & 同步 处理
-        if (async) {
+        if (task.config.async) {
             CompletableFuture.runAsync(function, executor)
         } else {
             function.run()
@@ -93,33 +102,26 @@ class ElementEvaluator(val executor: Executor) {
     }
 
     /**
-     * 提交评估任务
-     */
-    fun submitTask(task: EvaluationTask) =
-        evaluations.computeIfAbsent(popConfig(task.args).lifeCycle) { CopyOnWriteArrayList() }.add(task)
-
-    /**
      * 解析 [Element] 并提交评估任务
      */
     fun submitWith(element: Element) {
         // 注册到处理器表
         for (handler in ElementRegistry.getHandlersByType(element.type)) {
-            val args = SimpleArgumentContext(findConfig(handler))
-            submitTask(EvaluationTask(element, handler, args))
+            submitTask(EvaluationTask(element, handler, findConfig(handler)))
         }
     }
 
     /**
+     * 提交评估任务
+     */
+    fun submitTask(task: EvaluationTask) = evaluations.computeIfAbsent(task.config.lifeCycle) { CopyOnWriteArrayList() }.add(task)
+
+    /**
      * 评估任务
      */
-    class EvaluationTask(val element: Element, val handler: ElementHandler, val args: ArgumentContext)
+    class EvaluationTask(val element: Element, val handler: ElementHandler, val config: ElementConfig)
 
     companion object {
-
-        /**
-         * 弹出 [ElementConfig]
-         */
-        fun popConfig(args: ArgumentContext): ElementConfig = args.popOrNull<ElementConfig>() ?: ElementConfig()
 
         /**
          * 获取[ElementHandler]的[ElementConfig]

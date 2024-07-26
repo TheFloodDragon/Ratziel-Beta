@@ -3,8 +3,8 @@ package cn.fd.ratziel.script
 import cn.fd.ratziel.script.api.ScriptEnvironment
 import cn.fd.ratziel.script.api.ScriptExecutor
 import cn.fd.ratziel.script.api.ScriptType
-import cn.fd.ratziel.script.js.JavaScriptExecutor
 import cn.fd.ratziel.script.jexl.JexlExecutor
+import cn.fd.ratziel.script.js.JavaScriptExecutor
 import cn.fd.ratziel.script.kether.KetherExecutor
 import cn.fd.ratziel.script.kts.KotlinScriptExecutor
 import java.util.concurrent.CopyOnWriteArrayList
@@ -34,7 +34,7 @@ enum class ScriptTypes(
     val appliers: MutableList<ScriptEnvironment.Applier> = CopyOnWriteArrayList()
 ) : ScriptType {
 
-    JAVASCRIPT(JavaScriptExecutor, "js", "JavaScript", "javascript", "java-script", "JS"),
+    JAVASCRIPT(JavaScriptExecutor, "js", "JavaScript", "javascript", "java-script", "JS", "Js"),
     KETHER(KetherExecutor, "Kether", "kether", "ke", "ks"),
     JEXL(JexlExecutor, "Jexl", "jexl", "Jexl3", "jexl3"),
     KOTLIN_SCRIPTING(KotlinScriptExecutor, "Kotlin", "kotlin", "kts", "KTS");
