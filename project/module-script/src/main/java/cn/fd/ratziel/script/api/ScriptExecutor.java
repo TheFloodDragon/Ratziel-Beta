@@ -23,4 +23,10 @@ public interface ScriptExecutor {
     @Nullable
     Object evaluate(@NotNull ScriptContent script, @NotNull ScriptEnvironment environment) throws ScriptException;
 
+    /**
+     * 初始化脚本执行环境
+     */
+    default void initEnv() {
+    }
+
 }
