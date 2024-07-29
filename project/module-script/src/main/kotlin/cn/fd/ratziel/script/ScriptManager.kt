@@ -23,7 +23,7 @@ object ScriptManager {
     var defaultLanguage: ScriptType = ScriptTypes.KETHER
         internal set
 
-    @Awake
+    @Awake(taboolib.common.LifeCycle.INIT)
     private fun init() {
         // Read config
         val conf = Settings.conf.getConfigurationSection("Script")
