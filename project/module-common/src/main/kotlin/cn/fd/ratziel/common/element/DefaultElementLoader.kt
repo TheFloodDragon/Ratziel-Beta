@@ -27,8 +27,9 @@ object DefaultElementLoader : ElementLoader {
             val config = Configuration.loadFromFile(file)
             // 转化成Json对象
             config.changeType(Type.JSON)
-            println(Class.forName("kotlinx.serialization.json.JsonElementSerializer",true, DefaultElementLoader::class.java.classLoader).classLoader)
+            println(Class.forName("kotlinx.serialization.json.JsonElementSerializer").classLoader)
             println(kotlinx.serialization.DeserializationStrategy::class.java.classLoader)
+            println(Class.forName("kotlinx.serialization.DeserializationStrategy").classLoader)
             val json = Json.parseToJsonElement(config.saveToString())
             // 一般解析
             return this.parseDefault(json, file)
