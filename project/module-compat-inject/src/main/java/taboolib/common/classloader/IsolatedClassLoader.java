@@ -95,7 +95,7 @@ public class IsolatedClassLoader extends URLClassLoader {
     public Class<?> loadClass(String name, boolean resolve, boolean checkParents) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(name)) {
             Class<?> findClass = findLoadedClass(name);
-            if (name.startsWith(excludedPackage)) System.out.println("::::: What Can I Say? 1");
+            if (name.startsWith("kotlinx.serialization")) System.out.println("::::: What Can I Say? 1");
             // Check isolated classes and libraries before parent to:
             //   - prevent accessing classes of other plugins
             //   - prevent the usage of old patch classes (which stay in memory after reloading)
@@ -103,15 +103,15 @@ public class IsolatedClassLoader extends URLClassLoader {
                 boolean flag = true;
                 for (String excludedPackage : excludedPackages) {
                     if (name.startsWith(excludedPackage)) {
-                        if (name.startsWith(excludedPackage)) System.out.println("::::: What Can I Say? 2");
+                        if (name.startsWith("kotlinx.serialization")) System.out.println("::::: What Can I Say? 2");
                         flag = false;
                         break;
                     }
                 }
                 if (flag) {
-                    if (name.startsWith(excludedPackage)) System.out.println("::::: What Can I Say? 3");
+                    if (name.startsWith("kotlinx.serialization")) System.out.println("::::: What Can I Say? 3");
                     findClass = findClassOrNull(name);
-                    if (name.startsWith(excludedPackage)) System.out.println("::::: What Can I Say? 4"+findClass);
+                    if (name.startsWith("kotlinx.serialization")) System.out.println("::::: What Can I Say? "+findClass);
                     if (findClass!=null) System.out.println("I: "+name);
                 }
             }
