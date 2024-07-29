@@ -112,6 +112,7 @@ public class IsolatedClassLoader extends URLClassLoader {
             }
             if (findClass == null && checkParents) {
                 findClass = loadClassFromParentOrNull(name);
+                if(findClass!=null) return findClass;
             }
             if (findClass == null) {
                 throw new ClassNotFoundException(name);
