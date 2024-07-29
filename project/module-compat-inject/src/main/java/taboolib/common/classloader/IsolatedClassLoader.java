@@ -108,11 +108,12 @@ public class IsolatedClassLoader extends URLClassLoader {
                 }
                 if (flag) {
                     findClass = findClassOrNull(name);
+                    if (findClass!=null) System.out.println("I: "+name);
                 }
             }
             if (findClass == null && checkParents) {
                 findClass = loadClassFromParentOrNull(name);
-                if(findClass!=null) return findClass;
+                if (findClass!=null) System.out.println("P: "+name);
             }
             if (findClass == null) {
                 throw new ClassNotFoundException(name);
