@@ -2,7 +2,7 @@ dependencies {
     // Core
     compileCore(12005)
     compileTaboo("platform-bukkit")
-    compileTaboo("module-nms")
+    compileTaboo("nms")
     // Module
     compileModule("module-script")
     // PlaceholderAPI

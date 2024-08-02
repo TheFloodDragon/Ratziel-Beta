@@ -34,15 +34,13 @@ public final class IntrusiveClassLoader extends ClassLoader {
             // 优先父级加载
             Class<?> find = loadClassOrNull(getParent(), name);
             // 隔离类加载器加载 (不检查其父级)
-            if (find == null) try {
-                // 检查可访问性
-                if (name.startsWith(ACCESS_GROUP_NAME)) {
-                    find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
-                }
+            // 同时检查可访问性
+            if (find == null && name.startsWith(ACCESS_GROUP_NAME)) try {
+                find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
             } catch (ClassNotFoundException ignored) {
             }
             // 检查结果
-            if (find == null) throw new ClassNotFoundException();
+            if (find == null) throw new ClassNotFoundException(name);
             // 返回值
             return find;
         }

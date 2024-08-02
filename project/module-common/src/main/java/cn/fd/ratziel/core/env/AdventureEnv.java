@@ -15,6 +15,11 @@ import taboolib.common.env.RuntimeDependency;
                 test = "!net.kyori.adventure.text.Component"
         ),
         @RuntimeDependency(
+                value = "!net.kyori:adventure-key:" + AdventureEnv.ADVENTURE_VERSION,
+                test = "!net.kyori.adventure.key.Key",
+                transitive = false
+        ),
+        @RuntimeDependency(
                 value = "!net.kyori:adventure-text-serializer-gson:" + AdventureEnv.ADVENTURE_VERSION,
                 test = "!net.kyori.adventure.text.serializer.gson.GsonComponentSerializer",
                 transitive = false

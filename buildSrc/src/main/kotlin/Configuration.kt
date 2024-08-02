@@ -22,7 +22,7 @@ val adventureModules = setOf(
  * 要合并的文件列表
  */
 val combineFiles = setOf(
-    "config.yml",
+    "settings.yml",
     "lang/zh_CN.yml",
     "lang/en_US.yml"
 )
@@ -31,5 +31,5 @@ val taboolibModules = setOf(
     // 核心模块
     "common", "common-env", "common-util", "common-legacy-api", "common-platform-api", "common-reflex",
     // 泛用模块
-    "module-chat", "module-configuration", "module-lang", "expansion-command-helper"
+    "basic-configuration", "minecraft-chat", "minecraft-i18n", "minecraft-command-helper"
 )

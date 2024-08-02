@@ -30,8 +30,8 @@ object ScriptManager {
         val conf = Settings.conf.getConfigurationSection("Script")
 
         // Default Language
-        val defLanguage = conf?.getString("Default")?.let { ScriptTypes.match(it) }
-        if (defLanguage != null) defaultLanguage = defLanguage
+        val defLang = conf?.getString("Default")?.let { ScriptTypes.match(it) }
+        if (defLang != null) defaultLanguage = defLang
 
         // Options
         val optionsConf = conf?.getConfigurationSection("Options")

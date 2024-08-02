@@ -1,7 +1,5 @@
 package taboolib.common.classloader;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
@@ -9,11 +7,6 @@ import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-/**
- * Last Updated: 2024年3月24日08:30:27
- *
- * @see <a href="https://github.com/TabooLib/taboolib/blob/master/common/src/main/java/taboolib/common/classloader/IsolatedClassLoader.java">...</a>
- */
 public class IsolatedClassLoader extends URLClassLoader {
 
     /**
@@ -30,21 +23,21 @@ public class IsolatedClassLoader extends URLClassLoader {
         INSTANCE = new IsolatedClassLoader(clazz);
         // 加载启动类
         try {
-            Class<?> delegateClass = Class.forName("taboolib.common.PrimitiveLoader", true, INSTANCE);
+            Class<?> delegateClass = Class.forName("taboolib.common.PrimitiveLoader", false, INSTANCE);
             Object delegateObject = delegateClass.getConstructor().newInstance();
             delegateClass.getMethod("init").invoke(delegateObject);
-            // ::Start:: 注入
+            // Start - Support for IntrusiveClassLoader
             // Load Injector
-            Class<?> injectClass = Class.forName("cn.fd.ratziel.compat.inject.IntrusiveCompat", true, INSTANCE);
+            Class<?> injectClass = Class.forName("cn.fd.ratziel.compat.inject.IntrusiveCompat", false, INSTANCE);
             // Inject
-            Method injectMethod = injectClass.getDeclaredMethod("inject");
-            Constructor<?> injectConstructor = injectClass.getDeclaredConstructor(ClassLoader.class, ClassLoader.class);
+            java.lang.reflect.Method injectMethod = injectClass.getDeclaredMethod("inject");
+            java.lang.reflect.Constructor<?> injectConstructor = injectClass.getDeclaredConstructor(ClassLoader.class, ClassLoader.class);
             injectMethod.setAccessible(true);
             injectConstructor.setAccessible(true);
             ClassLoader pluginClassLoader = INSTANCE.getParent();
             ClassLoader globalClassLoader = pluginClassLoader.getParent();
             injectMethod.invoke(injectConstructor.newInstance(pluginClassLoader, globalClassLoader));
-            // ::End::
+            // End - Support for IntrusiveClassLoader
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -166,5 +159,4 @@ public class IsolatedClassLoader extends URLClassLoader {
     public void addExcludedPackages(Collection<String> names) {
         excludedPackages.addAll(names);
     }
-
 }

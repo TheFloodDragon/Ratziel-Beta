@@ -2,9 +2,9 @@
 Script:
   Default: Kether # 默认使用的脚本引擎
   Options:
-    JavaScript:
-      enabled: true
     Kether:
+      enabled: true
+    JavaScript:
       enabled: true
     Jexl:
       enabled: true
