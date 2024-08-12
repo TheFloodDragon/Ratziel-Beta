@@ -14,20 +14,24 @@ inline fun NBTCompound.removeDeep(node: String) = DeepVisitor.removeDeep(this, n
 /**
  * 读取指定类型的数据
  */
+@Deprecated("Will be removed")
 inline fun <reified T : NBTData> NBTCompound.read(nodes: String, action: Consumer<T>) = (this.read(nodes) as? T)?.let { action.accept(it) }
 
 /**
  * 读取数据
  */
+@Deprecated("Will be removed")
 inline fun NBTCompound.read(nodes: String): NBTData? = DeepVisitor.read(this, nodes)
 
 /**
  * 写入数据
  */
+@Deprecated("Will be removed")
 inline fun NBTCompound.write(nodes: String, value: NBTData?) = value?.let { DeepVisitor.write(this, nodes, it) }
 
 /**
  * 深度获取NBT数据
+ * TODO 真是一坨shi
  */
 object DeepVisitor {
 
@@ -43,18 +47,21 @@ object DeepVisitor {
 
     const val LIST_INDEX_END = "]"
 
+    @Deprecated("Will be removed")
     fun write(data: NBTCompound, nodes: String, value: NBTData) {
         if (nodes.contains(DEEP_SEPARATION)) {
             write(data, nodes.split(DEEP_SEPARATION).iterator(), value)
         } else data[nodes] = value
     }
 
+    @Deprecated("Will be removed")
     fun read(data: NBTCompound, nodes: String): NBTData? {
         return if (nodes.contains(DEEP_SEPARATION)) {
             read(data, nodes.split(DEEP_SEPARATION))
         } else data[nodes]
     }
 
+    @Deprecated("Will be removed")
     fun write(data: NBTCompound, nodes: Iterator<String>, value: NBTData) {
         var find = data
         while (nodes.hasNext()) {
@@ -65,6 +72,7 @@ object DeepVisitor {
         }
     }
 
+    @Deprecated("Will be removed")
     fun read(data: NBTData, nodes: Iterable<String>): NBTData? {
         var find: NBTData = data
         for (n in nodes) {

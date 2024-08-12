@@ -23,7 +23,8 @@ taboolib {
         // Bukkit - XSeries
         install("bukkit-xseries", "bukkit-xseries-item", "bukkit-xseries-skull")
         // NMS
-        install("nms", "nms-util-stable")
+//        install("nms", "nms-util-stable") TODO 6.2
+        install("nms")
         // Script
 //        install("minecraft-kether") TODO 6.2
     }

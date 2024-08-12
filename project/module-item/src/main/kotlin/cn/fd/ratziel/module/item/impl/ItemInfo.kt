@@ -6,6 +6,7 @@ import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.nbt.NBTString
+import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.util.ComponentUtil
 
 /**
@@ -35,7 +36,7 @@ data class ItemInfo(
         /**
          * [RatzielItem] 物品数据节点
          */
-        val RATZIEL_NODE = OccupyNode("Ratziel", OccupyNode.CUSTOM_DATA)
+        val RATZIEL_NODE = OccupyNode("Ratziel", ItemSheet.CUSTOM_DATA)
 
         /**
          * [RatzielItem] 物品标识符

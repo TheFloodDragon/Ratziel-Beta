@@ -4,12 +4,12 @@
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.nbt.NBTInt
-import cn.fd.ratziel.module.item.nbt.read
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemMeta
+import cn.fd.ratziel.module.item.util.read
+import cn.fd.ratziel.module.item.util.write
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -78,8 +78,6 @@ data class ItemSundry(
 
     companion object : ItemTransformer<ItemSundry> {
 
-        override val node = ItemNode.ROOT
-
         override fun transform(data: ItemData.Mutable, component: ItemSundry) {
             val itemMeta = RefItemMeta.of(RefItemMeta.META_ITEM)
             // HideFlags
@@ -93,7 +91,7 @@ data class ItemSundry(
             itemMeta.applyToTag(data.tag)
             // CustomModelData (1.14+)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                data.tag[ItemSheet.CUSTOM_MODEL_DATA] = component.customModelData?.let { NBTInt(it) }
+                data.write(ItemSheet.CUSTOM_MODEL_DATA, component.customModelData?.let { NBTInt(it) })
             }
         }
 
@@ -111,7 +109,7 @@ data class ItemSundry(
             }
             // CustomModelData (1.14+)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                data.tag.read<NBTInt>(ItemSheet.CUSTOM_MODEL_DATA) {
+                data.read<NBTInt>(ItemSheet.CUSTOM_MODEL_DATA) {
                     customModelData = it.content
                 }
             }

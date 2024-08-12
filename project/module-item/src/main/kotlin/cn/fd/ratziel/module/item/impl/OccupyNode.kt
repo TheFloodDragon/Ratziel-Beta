@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.module.item.api.ItemNode
-import cn.fd.ratziel.module.item.nms.ItemSheet
 
 /**
  * OccupyNode - [ItemNode] 实现
@@ -15,15 +14,5 @@ data class OccupyNode(
 ) : ItemNode {
 
     constructor(name: String) : this(name, ItemNode.ROOT)
-
-    companion object {
-
-        /**
-         * 默认节点 - [CUSTOM_DATA]
-         */
-        @JvmField
-        val CUSTOM_DATA = OccupyNode(ItemSheet.CUSTOM_DATA, ItemNode.ROOT)
-
-    }
 
 }

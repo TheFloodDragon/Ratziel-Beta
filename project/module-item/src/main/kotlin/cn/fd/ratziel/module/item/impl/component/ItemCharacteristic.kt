@@ -4,18 +4,17 @@
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
 import cn.fd.ratziel.module.item.impl.SimpleItemMaterial
 import cn.fd.ratziel.module.item.impl.component.util.SkullData
 import cn.fd.ratziel.module.item.impl.component.util.SkullUtil
 import cn.fd.ratziel.module.item.nbt.NBTInt
-import cn.fd.ratziel.module.item.nbt.read
-import cn.fd.ratziel.module.item.nbt.write
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemMeta
 import cn.fd.ratziel.module.item.nms.RefItemStack
+import cn.fd.ratziel.module.item.util.read
+import cn.fd.ratziel.module.item.util.write
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -44,8 +43,6 @@ data class ItemCharacteristic(
 
     companion object : ItemTransformer<ItemCharacteristic> {
 
-        override val node = ItemNode.ROOT
-
         override fun transform(data: ItemData.Mutable, component: ItemCharacteristic) {
             // 头颅处理 (当源数据的材料为空或者是PLAYER_HEAD时, 才处理相关)
             if (data.material.isEmpty() || SimpleItemMaterial.equal(data.material, BukkitMaterial.PLAYER_HEAD)) {
@@ -63,7 +60,7 @@ data class ItemCharacteristic(
                 SimpleItemMaterial.isPotion(data.material) -> ItemSheet.POTION_COLOR
                 else -> return
             }
-            data.tag.write(node, component.color?.let { parseColor(it) }?.let { NBTInt(it) })
+            data.write(node, component.color?.let { parseColor(it) }?.let { NBTInt(it) })
         }
 
         override fun detransform(data: ItemData): ItemCharacteristic {
@@ -76,10 +73,10 @@ data class ItemCharacteristic(
                 }
                 // 皮革颜色处理
                 SimpleItemMaterial.isLeatherArmor(data.material) ->
-                    data.tag.read<NBTInt>(ItemSheet.DYED_COLOR) { impl.color = it.content.toString() }
+                    data.read<NBTInt>(ItemSheet.DYED_COLOR) { impl.color = it.content.toString() }
                 // 药水颜色处理
                 SimpleItemMaterial.isPotion(data.material) ->
-                    data.tag.read<NBTInt>(ItemSheet.POTION_COLOR) { impl.color = it.content.toString() }
+                    data.read<NBTInt>(ItemSheet.POTION_COLOR) { impl.color = it.content.toString() }
             }
             // 返回
             return impl

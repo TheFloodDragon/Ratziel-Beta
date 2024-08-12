@@ -7,9 +7,11 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.ArgumentContext
+import cn.fd.ratziel.function.util.uncheck
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
@@ -19,7 +21,6 @@ import cn.fd.ratziel.module.item.api.event.ItemResolveEvent
 import cn.fd.ratziel.module.item.impl.ItemInfo
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleItemData
-import cn.fd.ratziel.module.item.util.toApexDataUncheck
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
@@ -116,7 +117,9 @@ class DefaultItemGenerator(
             }
             // 转换成以顶级节点为根节点的数据
             try {
-                Priority(prt.priority, transformer.toApexDataUncheck(component, SimpleItemData())) // 封装成优先级对象后传递给合并阶段
+                val data = SimpleItemData()
+                (uncheck<ItemTransformer<Any>>(transformer)).transform(data, component)
+                Priority(prt.priority, data) // 封装成优先级对象后传递给合并阶段
             } catch (ex: Exception) {
                 severe("Failed to transform component by \"$transformer\"! Target component: $component")
                 ex.printStackTrace(); null

@@ -6,7 +6,7 @@ dependencies {
     compileTaboo("platform-bukkit")
     compileTaboo("platform-bukkit-impl")
     compileTaboo("nms")
-    compileTaboo("nms-util-stable")
+//    compileTaboo("nms-util-stable") TODO 6.2
     compileTaboo("bukkit-xseries")
     compileTaboo("bukkit-xseries-skull")
     compileTaboo("bukkit-util")

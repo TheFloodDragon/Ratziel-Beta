@@ -4,11 +4,8 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.util.toApexComponent
-import cn.fd.ratziel.module.item.util.toApexData
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -25,8 +22,8 @@ data class ItemMetadata(
     /**
      * 物品材料
      */
-    
-     @JsonNames("mat", "mats", "materials")
+
+    @JsonNames("mat", "mats", "materials")
     var material: ItemMaterial = ItemMaterial.EMPTY,
     /**
      * 物品耐久部分
@@ -53,24 +50,22 @@ data class ItemMetadata(
 
     companion object : ItemTransformer<ItemMetadata> {
 
-        override val node = ItemNode.ROOT
-
         override fun transform(data: ItemData.Mutable, component: ItemMetadata) {
             data.material = component.material
-            ItemDisplay.toApexData(component.display, data)
-            ItemDurability.toApexData(component.durability, data)
-            ItemSundry.toApexData(component.sundry, data)
-            ItemCharacteristic.toApexData(component.characteristic, data)
+            ItemDisplay.transform(data, component.display)
+            ItemDurability.transform(data, component.durability)
+            ItemSundry.transform(data, component.sundry)
+            ItemCharacteristic.transform(data, component.characteristic)
             val newTag = component.tag
             if (newTag != null) data.tag.merge(newTag, true)
         }
 
         override fun detransform(data: ItemData) = ItemMetadata(
             material = data.material,
-            display = ItemDisplay.toApexComponent(data),
-            durability = ItemDurability.toApexComponent(data),
-            sundry = ItemSundry.toApexComponent(data),
-            characteristic = ItemCharacteristic.toApexComponent(data),
+            display = ItemDisplay.detransform(data),
+            durability = ItemDurability.detransform(data),
+            sundry = ItemSundry.detransform(data),
+            characteristic = ItemCharacteristic.detransform(data),
             tag = data.tag
         )
 

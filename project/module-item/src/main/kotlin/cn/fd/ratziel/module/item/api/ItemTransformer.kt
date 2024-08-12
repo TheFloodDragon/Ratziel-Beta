@@ -9,11 +9,6 @@ package cn.fd.ratziel.module.item.api
 interface ItemTransformer<T> {
 
     /**
-     * 物品节点
-     */
-    val node: ItemNode
-
-    /**
      * 正向转化 - 将 [component] 的内容合并到 [data] 中
      */
     fun transform(data: ItemData.Mutable, component: T)
