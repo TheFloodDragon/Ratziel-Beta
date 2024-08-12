@@ -14,8 +14,8 @@ import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
-import cn.fd.ratziel.module.item.api.event.ItemResolvedEvent
 import cn.fd.ratziel.module.item.api.event.ItemBuildEvent
+import cn.fd.ratziel.module.item.api.event.ItemResolvedEvent
 import cn.fd.ratziel.module.item.impl.ItemInfo
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleItemData
@@ -37,7 +37,7 @@ class DefaultItemGenerator(
     val origin: Element
 ) : ItemGenerator {
 
-    fun build(sourceData: ItemData, context: ArgumentContext): CompletableFuture<NeoItem> {
+    fun build(sourceData: ItemData.Mutable, context: ArgumentContext): CompletableFuture<NeoItem> {
         // 生成物品唯一标识符
         val identifier = IdentifierImpl()
 
@@ -123,6 +123,7 @@ class DefaultItemGenerator(
             }
         }, ItemElement.executor)
 
+    @Deprecated("Shit")
     fun createRatzielItem(
         element: Element,
         data: ItemData,

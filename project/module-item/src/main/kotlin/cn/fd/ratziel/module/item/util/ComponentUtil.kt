@@ -18,7 +18,7 @@ object ComponentUtil {
     /**
      * 通过 [transformer] 将 [component] 转化成 [ItemData]
      */
-    fun <T> toData(data: ItemData, component: T, transformer: ItemTransformer<T>): ItemData {
+    fun <T> toData(data: ItemData.Mutable, component: T, transformer: ItemTransformer<T>): ItemData.Mutable {
         transformer.transform(data, component) // 转换底层数据
         val newTag = NBTCompound() // 创建新NBT
         setByNode(newTag, transformer.node, data.tag) // 设置新NBT

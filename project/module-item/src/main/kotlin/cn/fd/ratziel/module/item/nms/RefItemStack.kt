@@ -126,7 +126,9 @@ class RefItemStack(raw: Any) {
     /**
      * 设置物品数量
      */
-    fun setAmount(amount: Int) = InternalUtil.obcSetAmountMethod.invoke(handle, amount)
+    fun setAmount(amount: Int) {
+        InternalUtil.obcSetAmountMethod.invoke(handle, amount)
+    }
 
     /**
      * 获取物品最大堆叠数量
@@ -142,7 +144,9 @@ class RefItemStack(raw: Any) {
     /**
      * 设置物品损伤值
      */
-    fun setDamage(damage: Short) = InternalUtil.obcSetDamageMethod.invoke(handle, damage)
+    fun setDamage(damage: Short) {
+        InternalUtil.obcSetDamageMethod.invoke(handle, damage)
+    }
 
     /**
      * 克隆数据

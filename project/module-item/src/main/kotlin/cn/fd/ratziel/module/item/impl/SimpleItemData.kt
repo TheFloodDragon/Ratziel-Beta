@@ -23,16 +23,15 @@ data class SimpleItemData(
      * 物品数量
      */
     override var amount: Int = 1
-) : ItemData {
+) : ItemData.Mutable {
 
     companion object {
-
-        val EMPTY = SimpleItemData()
 
         /**
          * 将 [target] 合并到 [source] 中
          */
-        fun merge(source: ItemData, target: ItemData, replace: Boolean = true) {
+        @Deprecated("Shit")
+        fun merge(source: ItemData.Mutable, target: ItemData, replace: Boolean = true) {
             mergeWithoutTag(source, target)
             source.tag.merge(target.tag, replace)
         }
@@ -40,15 +39,17 @@ data class SimpleItemData(
         /**
          * 将 [target] 合并到 [source] 中 (不合并[tag])
          */
-        fun mergeWithoutTag(source: ItemData, target: ItemData) {
-            if (target.material != EMPTY.material) source.material = target.material
-            if (target.amount != EMPTY.amount) source.amount = target.amount
+        @Deprecated("Shit")
+        fun mergeWithoutTag(source: ItemData.Mutable, target: ItemData) {
+            if (target.material != ItemData.EMPTY.material) source.material = target.material
+            if (target.amount != ItemData.EMPTY.amount) source.amount = target.amount
         }
 
         /**
          * 将 [target] 合并到 [source] 中 (浅合并)
          */
-        fun mergeShallow(source: ItemData, target: ItemData, replace: Boolean = true) {
+        @Deprecated("Shit")
+        fun mergeShallow(source: ItemData.Mutable, target: ItemData, replace: Boolean = true) {
             mergeWithoutTag(source, target)
             source.tag.mergeShallow(target.tag, replace)
         }

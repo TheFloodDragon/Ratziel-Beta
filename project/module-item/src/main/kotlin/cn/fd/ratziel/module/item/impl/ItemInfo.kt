@@ -34,7 +34,7 @@ data class ItemInfo(
         /**
          * [RatzielItem] 物品数据节点
          */
-        val RATZIEL_NODE = OccupyNode("Ratziel", OccupyNode.CUSTOM_DATA_NODE)
+        val RATZIEL_NODE = OccupyNode("Ratziel", OccupyNode.CUSTOM_DATA)
 
         /**
          * [RatzielItem] 物品标识符

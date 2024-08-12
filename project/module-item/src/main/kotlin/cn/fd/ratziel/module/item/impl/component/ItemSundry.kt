@@ -80,7 +80,7 @@ data class ItemSundry(
 
         override val node = ItemNode.ROOT
 
-        override fun transform(data: ItemData, component: ItemSundry) {
+        override fun transform(data: ItemData.Mutable, component: ItemSundry) {
             val itemMeta = RefItemMeta.of(RefItemMeta.META_ITEM)
             // HideFlags
             val flags = component.hideFlags?.toTypedArray()

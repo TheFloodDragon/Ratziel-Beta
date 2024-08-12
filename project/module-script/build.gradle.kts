@@ -6,7 +6,7 @@ dependencies {
     compileOnly(kotlin("scripting-compiler"))
     compileOnly(kotlin("compiler"))
     // Kether: Taboolib
-    compileTaboo("minecraft-kether")
+//    compileTaboo("minecraft-kether") TODO 6.2
     // JavaScript: Nashorn Engine
     compileOnly("org.openjdk.nashorn:nashorn-core:15.4")
     // Jexl3: Apache

@@ -48,7 +48,7 @@ data class ItemCharacteristic(
 
         override val node = ItemNode.ROOT
 
-        override fun transform(data: ItemData, component: ItemCharacteristic) {
+        override fun transform(data: ItemData.Mutable, component: ItemCharacteristic) {
             // 头颅处理 (当源数据的材料为空或者是PLAYER_HEAD时, 才处理相关)
             if (data.material.isEmpty() || SimpleItemMaterial.equal(data.material, BukkitMaterial.PLAYER_HEAD)) {
                 component.headMeta?.let { HeadUtil.getHeadTag(it) }?.let {

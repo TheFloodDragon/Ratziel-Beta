@@ -19,9 +19,10 @@ data class OccupyNode(
     companion object {
 
         /**
-         * 默认节点 - [CUSTOM_DATA_NODE]
+         * 默认节点 - [CUSTOM_DATA]
          */
-        val CUSTOM_DATA_NODE = OccupyNode(ItemSheet.CUSTOM_DATA)
+        @JvmField
+        val CUSTOM_DATA = OccupyNode(ItemSheet.CUSTOM_DATA, ItemNode.ROOT)
 
     }
 

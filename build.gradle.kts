@@ -30,14 +30,14 @@ subprojects {
 
         // 项目依赖
         if (parent?.name == "project") {
-            // Taboolib通用模块
-            compileTabooCommon()
-            // Adventure API
-            adventure()
             // Kotlin序列化工具
             serialization()
             // Kotlin协程工具
             coroutine()
+            // Adventure API
+            adventure()
+            // Taboolib通用模块
+            taboolibModules.forEach { compileTaboo(it) }
             // 基本依赖
             if (name != "module-core") compileModule("module-core")
             if (name != "module-core" && name != "module-common") compileModule("module-common")

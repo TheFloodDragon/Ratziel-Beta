@@ -50,7 +50,7 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), Mutab
      * 合并目标数据
      * @param replace 是否替换原有的数据 (false时不会 替换/删除 任何一个节点)
      */
-    open fun merge(target: NBTCompound, replace: Boolean = true): NBTCompound = this.apply {
+    open fun merge(target: NBTCompound, replace: Boolean = true): NBTCompound {
         target.sourceMap.forEach { (key, targetValue) ->
             // 获取自身的数据
             val ownValue = this.sourceMap[key]
@@ -65,19 +65,21 @@ open class NBTCompound(rawData: Any) : NBTData(rawData, NBTType.COMPOUND), Mutab
                 else -> null
             } ?: if (ownValue == null || replace) targetValue else return@forEach
         }
+        return this
     }
 
     /**
      * 合并目标数据 (浅合并)
      * @param replace 是否替换原有的标签
      */
-    open fun mergeShallow(target: NBTCompound, replace: Boolean = true): NBTCompound = this.apply {
+    open fun mergeShallow(target: NBTCompound, replace: Boolean = true): NBTCompound {
         target.sourceMap.forEach { (key, value) ->
             // 如果当前NBT数据中存在, 且不允许替换, 则直接跳出循环
             if (this.sourceMap.containsKey(key) && !replace) return@forEach
             // 反则设置值
             this.sourceMap[key] = value
         }
+        return this
     }
 
     companion object {

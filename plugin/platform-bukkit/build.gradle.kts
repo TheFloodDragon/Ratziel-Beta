@@ -1,7 +1,3 @@
-import io.izzel.taboolib.gradle.BUKKIT_ALL
-import io.izzel.taboolib.gradle.EXPANSION_PLAYER_FAKE_OP
-import io.izzel.taboolib.gradle.KETHER
-
 dependencies {
     // Core / Common
     shadowModule("module-core")
@@ -20,11 +16,20 @@ dependencies {
 
 taboolib {
     env {
-        install(BUKKIT_ALL, KETHER, EXPANSION_PLAYER_FAKE_OP, "nms", "nms-util-stable", "script-javascript")
+        // Platform - Bukkit
+        install("platform-bukkit", "platform-bukkit-impl")
+        // Bukkit - Basic
+        install("bukkit-hook", "bukkit-util", "bukkit-fake-op")
+        // Bukkit - XSeries
+        install("bukkit-xseries", "bukkit-xseries-item", "bukkit-xseries-skull")
+        // NMS
+        install("nms", "nms-util-stable")
+        // Script
+//        install("minecraft-kether") TODO 6.2
     }
     description {
         dependencies {
-            name("PlaceholderAPI").optional(true)
+            name("PlaceholderAPI").with("bukkit").optional(true)
         }
     }
 }

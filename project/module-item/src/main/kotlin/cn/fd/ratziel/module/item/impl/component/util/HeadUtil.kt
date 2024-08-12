@@ -56,7 +56,7 @@ object HeadUtil {
      * 通过 [headMeta] 生成 [SkullMeta]
      */
     fun generateSkullMeta(headMeta: String): SkullMeta? {
-        return DEFAULT_HEAD.clone().itemMeta?.let { XSkull.applySkin(it, headMeta) }
+        return DEFAULT_HEAD.clone().itemMeta?.let { Skull.applySkin(it, headMeta) }
     }
 
 }

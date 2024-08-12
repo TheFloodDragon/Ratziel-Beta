@@ -28,7 +28,7 @@ subprojects {
             // Isolated Mode
             enableIsolatedClassloader = true
             // Common Modules
-            install(UNIVERSAL)
+            install(taboolibModules)
         }
 
         description {
@@ -62,11 +62,11 @@ subprojects {
     }
 
     tasks {
-        jar { allModules.onEach { dependsOn(it.tasks.jar) } }
+        jar { allModules.forEach { dependsOn(it.tasks.jar) } }
         shadowJar {
             dependsOn(taboolibMainTask)
             from(taboolibMainTask.get().inJar)
-            combineFiles.onEach { append(it) }
+            combineFiles.forEach { append(it) }
         }
         build { dependsOn(shadowJar) }
     }

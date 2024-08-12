@@ -60,13 +60,6 @@ fun DependencyHandler.adventure() {
 }
 
 /**
- * Taboolib通用依赖
- */
-fun DependencyHandler.compileTabooCommon() {
-    taboolibModules.forEach { compileTaboo(it) }
-}
-
-/**
  * 依赖项目
  * @param name 项目名称
  */

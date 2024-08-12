@@ -55,7 +55,7 @@ data class ItemMetadata(
 
         override val node = ItemNode.ROOT
 
-        override fun transform(data: ItemData, component: ItemMetadata) {
+        override fun transform(data: ItemData.Mutable, component: ItemMetadata) {
             data.material = component.material
             ItemDisplay.toApexData(component.display, data)
             ItemDurability.toApexData(component.durability, data)

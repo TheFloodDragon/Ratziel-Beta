@@ -69,7 +69,7 @@ data class ItemDisplay(
 
         override val node = ItemNode.ROOT
 
-        override fun transform(data: ItemData, component: ItemDisplay) {
+        override fun transform(data: ItemData.Mutable, component: ItemDisplay) {
             data.tag.write(ItemSheet.DISPLAY_NAME, componentToData(component.name))
             data.tag.write(ItemSheet.DISPLAY_LORE, component.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) })
             data.tag.write(ItemSheet.DISPLAY_LOCAL_NAME, componentToData(component.localizedName))

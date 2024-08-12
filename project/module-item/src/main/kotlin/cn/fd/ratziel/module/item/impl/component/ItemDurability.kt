@@ -41,7 +41,7 @@ data class ItemDurability(
 
         override val node = ItemNode.ROOT
 
-        override fun transform(data: ItemData, component: ItemDurability) {
+        override fun transform(data: ItemData.Mutable, component: ItemDurability) {
             data.tag.write(ItemSheet.REPAIR_COST, component.repairCost?.let { NBTInt(it) })
             data.tag.write(ItemSheet.MAX_DAMAGE, component.maxDurability?.let { NBTInt(it) })
             // 无法破坏部分的特殊处理

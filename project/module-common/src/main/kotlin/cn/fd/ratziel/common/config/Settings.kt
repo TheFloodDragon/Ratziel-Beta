@@ -14,19 +14,10 @@ object Settings {
 
     /**
      * 配置文件
+     * @see Configuration.reload
      */
-    lateinit var conf: Configuration
-        internal set
-
-    /**
-     * 重载配置文件
-     */
-    fun reloadConfig() {
-        conf = Configuration.loadFromFile(file)
-    }
-
-    init {
-        reloadConfig()
+    val conf: Configuration by lazy {
+        Configuration.loadFromFile(file)
     }
 
     /**
@@ -37,7 +28,7 @@ object Settings {
     /**
      * 配置项 - 工作空间文件过滤器 (正则表达式)
      */
-    var fileFilter = conf["Workspaces.filter"]?.toString() ?: "^(?![#!]).*\\.(?i)(yaml|yml|toml|tml|json|conf)\$"
+    val fileFilter get() = conf["Workspaces.filter"]?.toString() ?: "^(?![#!]).*\\.(?i)(yaml|yml|toml|tml|json|conf)\$"
 
     /**
      * 配置项 - 是否启用文件监听
