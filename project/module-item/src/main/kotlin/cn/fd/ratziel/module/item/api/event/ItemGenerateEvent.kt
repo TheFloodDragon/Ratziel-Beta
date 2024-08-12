@@ -6,15 +6,15 @@ import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 
 /**
- * ItemBuildEvent
+ * ItemGenerateEvent
  *
  * @author TheFloodDragon
  * @since 2024/7/3 14:26
  */
-class ItemBuildEvent {
+class ItemGenerateEvent {
 
     /**
-     * 物品构建之前触发
+     * 物品生成之前触发
      */
     class Pre(
         /**
@@ -32,7 +32,7 @@ class ItemBuildEvent {
     ) : ItemEvent(identifier)
 
     /**
-     * 物品构建结束后触发
+     * 物品生成结束后触发
      */
     class Post(
         /**

@@ -6,6 +6,7 @@ package cn.fd.ratziel.module.item.api.feature
  * @author TheFloodDragon
  * @since 2024/7/3 18:41
  */
+@Deprecated("需要重构")
 interface ItemTrigger {
 
     /**

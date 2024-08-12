@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.feature.action.triggers
 
 import cn.fd.ratziel.module.item.api.feature.ItemTrigger
-import cn.fd.ratziel.module.item.api.event.ItemBuildEvent
+import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.feature.action.ActionManager
 import cn.fd.ratziel.module.item.nms.RefItemStack
@@ -18,7 +18,7 @@ internal object ReleaseTrigger : ItemTrigger {
     override val names = arrayOf("onRelease", "release", "onFinished", "onFinish", "finish", "onEnd", "end")
 
     @SubscribeEvent
-    fun onRelease(event: ItemBuildEvent.Post) {
+    fun onRelease(event: ItemGenerateEvent.Post) {
         val neoItem = event.item as? RatzielItem ?: return
         // 获取攻击时的物品
         val item = RefItemStack(event.item.data).getAsBukkit()

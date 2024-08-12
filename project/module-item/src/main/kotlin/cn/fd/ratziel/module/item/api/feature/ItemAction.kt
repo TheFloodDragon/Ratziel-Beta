@@ -8,6 +8,7 @@ import cn.fd.ratziel.script.api.ScriptEnvironment
  * @author TheFloodDragon
  * @since 2024/7/3 15:11
  */
+@Deprecated("需要重构")
 interface ItemAction {
 
     /**

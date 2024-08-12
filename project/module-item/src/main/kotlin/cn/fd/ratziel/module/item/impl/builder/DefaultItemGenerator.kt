@@ -14,8 +14,8 @@ import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
-import cn.fd.ratziel.module.item.api.event.ItemBuildEvent
-import cn.fd.ratziel.module.item.api.event.ItemResolvedEvent
+import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
+import cn.fd.ratziel.module.item.api.event.ItemResolveEvent
 import cn.fd.ratziel.module.item.impl.ItemInfo
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleItemData
@@ -42,12 +42,12 @@ class DefaultItemGenerator(
         val identifier = IdentifierImpl()
 
         // PreEvent
-        ItemBuildEvent.Pre(identifier, this, context).call()
+        ItemGenerateEvent.Pre(identifier, this, context).call()
 
         // Step1: Resolve (with priorities)
         val element = resolve(origin.property, context, ItemRegistry.Resolver.getResolversSorted())
         // ResolvedEvent
-        ItemResolvedEvent(identifier, element, context).call()
+        ItemResolveEvent(identifier, element, context).call()
 
         // Step2: Serialize (async)
         val serializeFactory = FutureFactory<Any?>()
@@ -72,7 +72,7 @@ class DefaultItemGenerator(
             // 合成最终结果
             createRatzielItem(origin, sourceData, identifier).let { item ->
                 // PostEvent
-                val event = ItemBuildEvent.Post(item.identifier, this, item, context)
+                val event = ItemGenerateEvent.Post(item.identifier, this, item, context)
                 event.call()
                 event.item
             }

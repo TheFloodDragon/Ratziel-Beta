@@ -5,14 +5,14 @@ import cn.fd.ratziel.function.ArgumentContext
 import kotlinx.serialization.json.JsonElement
 
 /**
- * ItemResolvedEvent
+ * ItemResolveEvent
  *
  * 构建物品中的所有解析阶段完成后触发
  *
  * @author TheFloodDragon
  * @since 2024/7/3 15:15
  */
-class ItemResolvedEvent(
+class ItemResolveEvent(
     /**
      * 物品标识符
      */

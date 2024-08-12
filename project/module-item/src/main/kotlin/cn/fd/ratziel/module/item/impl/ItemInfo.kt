@@ -14,6 +14,7 @@ import cn.fd.ratziel.module.item.util.ComponentUtil
  * @author TheFloodDragon
  * @since 2024/6/28 15:27
  */
+@Deprecated("影响物品表现")
 data class ItemInfo(
     /**
      * 物品唯一标识符 [Identifier]

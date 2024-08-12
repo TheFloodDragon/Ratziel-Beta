@@ -8,20 +8,19 @@ import cn.fd.ratziel.module.item.api.ItemNode
 import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
 import cn.fd.ratziel.module.item.impl.SimpleItemMaterial
-import cn.fd.ratziel.module.item.impl.component.util.HeadUtil
+import cn.fd.ratziel.module.item.impl.component.util.SkullData
+import cn.fd.ratziel.module.item.impl.component.util.SkullUtil
 import cn.fd.ratziel.module.item.nbt.NBTInt
 import cn.fd.ratziel.module.item.nbt.read
 import cn.fd.ratziel.module.item.nbt.write
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemMeta
+import cn.fd.ratziel.module.item.nms.RefItemStack
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import org.bukkit.Color
 import org.bukkit.DyeColor
-import org.bukkit.inventory.meta.SkullMeta
-import taboolib.library.xseries.XSkull
-import taboolib.platform.util.getSkullValue
 
 /**
  * ItemCharacteristic
@@ -32,11 +31,10 @@ import taboolib.platform.util.getSkullValue
 @Serializable
 data class ItemCharacteristic(
     /**
-     * 头颅元数据:
-     * 使用字符串存储, 值的类型详见 [XSkull.ValueType]
+     * 头颅数据
      */
-    @JsonNames("skull", "skull-meta", "skullMeta", "head", "head-meta")
-    var headMeta: String? = null,
+    @JsonNames("head", "skull-meta", "skullMeta", "head", "head-meta")
+    var skull: SkullData? = null,
     /**
      * 染色皮革物品和药水的颜色
      */
@@ -51,11 +49,12 @@ data class ItemCharacteristic(
         override fun transform(data: ItemData.Mutable, component: ItemCharacteristic) {
             // 头颅处理 (当源数据的材料为空或者是PLAYER_HEAD时, 才处理相关)
             if (data.material.isEmpty() || SimpleItemMaterial.equal(data.material, BukkitMaterial.PLAYER_HEAD)) {
-                component.headMeta?.let { HeadUtil.getHeadTag(it) }?.let {
+                val skullTag = component.skull?.let { RefItemStack(it) }?.getTag()
+                if (skullTag != null) {
                     // 设置材质
                     data.material = SimpleItemMaterial(BukkitMaterial.PLAYER_HEAD)
                     // 应用标签
-                    data.tag.merge(it, true)
+                    data.tag.merge(skullTag, true)
                 }
             }
             // 颜色处理
@@ -72,8 +71,8 @@ data class ItemCharacteristic(
             when {
                 // 头颅处理 (需要对应材质为PLAYER_HEAD)
                 data.material.name == BukkitMaterial.PLAYER_HEAD.name -> {
-                    val skullMeta = RefItemMeta.of(RefItemMeta.META_SKULL, data.tag).handle as? SkullMeta
-                    impl.headMeta = skullMeta?.owner ?: skullMeta?.getSkullValue() ?: return impl
+                    val skullMeta = RefItemMeta.of(RefItemMeta.META_SKULL, data.tag).handle
+                    if (skullMeta.hasOwner()) impl.skull = SkullUtil.fetchSkull(skullMeta)
                 }
                 // 皮革颜色处理
                 SimpleItemMaterial.isLeatherArmor(data.material) ->
