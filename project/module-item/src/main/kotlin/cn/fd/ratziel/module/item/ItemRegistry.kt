@@ -2,8 +2,8 @@ package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.util.sortPriority
-import cn.fd.ratziel.function.util.uncheck
-import cn.fd.ratziel.module.item.api.ItemTransformer
+import cn.fd.ratziel.function.uncheck
+import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.api.registry.ComponentRegistry

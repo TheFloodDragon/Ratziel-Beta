@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.api.registry
 
 import cn.fd.ratziel.core.Priority
-import cn.fd.ratziel.module.item.api.ItemTransformer
+import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 
 /**
  * ComponentRegistry - 物品组件注册表

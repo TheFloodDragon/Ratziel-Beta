@@ -25,7 +25,7 @@ enum class Triggers(
     BREAK("onBreak", "break"),
 
     // 耐久损伤
-    DAMAGED("onDamaged","damaged", "onDamage", "damage"),
+    DAMAGED("onDamaged", "damaged", "onDamage", "damage"),
 
     // 交互
     INTERACT_LEFT_CLICK("onLeft", "left", "onLeftClick", "leftClick"),

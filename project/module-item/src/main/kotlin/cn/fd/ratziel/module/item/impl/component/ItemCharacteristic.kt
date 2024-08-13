@@ -1,10 +1,10 @@
 @file:OptIn(ExperimentalSerializationApi::class)
-@file:Suppress("DEPRECATION")
 
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.ItemTransformer
+import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
 import cn.fd.ratziel.module.item.impl.SimpleItemMaterial
 import cn.fd.ratziel.module.item.impl.component.util.SkullData
@@ -20,6 +20,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import org.bukkit.Color
 import org.bukkit.DyeColor
+import java.util.concurrent.CompletableFuture
 
 /**
  * ItemCharacteristic
@@ -32,7 +33,7 @@ data class ItemCharacteristic(
     /**
      * 头颅数据
      */
-    @JsonNames("head", "skull-meta", "skullMeta", "head", "head-meta")
+    @JsonNames("head", "skull-meta", "skullMeta", "headMeta", "head-meta")
     var skull: SkullData? = null,
     /**
      * 染色皮革物品和药水的颜色
@@ -45,8 +46,8 @@ data class ItemCharacteristic(
 
         override fun transform(data: ItemData.Mutable, component: ItemCharacteristic) {
             // 头颅处理 (当源数据的材料为空或者是PLAYER_HEAD时, 才处理相关)
-            if (data.material.isEmpty() || SimpleItemMaterial.equal(data.material, BukkitMaterial.PLAYER_HEAD)) {
-                val skullTag = component.skull?.let { RefItemStack(it) }?.getTag()
+            if (data.material.isEmpty() || SimpleItemMaterial.equals(data.material, BukkitMaterial.PLAYER_HEAD)) {
+                val skullTag = component.skull?.get()?.let { RefItemStack(it) }?.getTag()
                 if (skullTag != null) {
                     // 设置材质
                     data.material = SimpleItemMaterial(BukkitMaterial.PLAYER_HEAD)
@@ -56,8 +57,8 @@ data class ItemCharacteristic(
             }
             // 颜色处理
             val node = when {
-                SimpleItemMaterial.isLeatherArmor(data.material) -> ItemSheet.DYED_COLOR
-                SimpleItemMaterial.isPotion(data.material) -> ItemSheet.POTION_COLOR
+                isLeatherArmor(data.material) -> ItemSheet.DYED_COLOR
+                isPotion(data.material) -> ItemSheet.POTION_COLOR
                 else -> return
             }
             data.write(node, component.color?.let { parseColor(it) }?.let { NBTInt(it) })
@@ -69,13 +70,13 @@ data class ItemCharacteristic(
                 // 头颅处理 (需要对应材质为PLAYER_HEAD)
                 data.material.name == BukkitMaterial.PLAYER_HEAD.name -> {
                     val skullMeta = RefItemMeta.of(RefItemMeta.META_SKULL, data.tag).handle
-                    if (skullMeta.hasOwner()) impl.skull = SkullUtil.fetchSkull(skullMeta)
+                    if (skullMeta.hasOwner()) impl.skull = CompletableFuture.completedFuture(SkullUtil.fetchSkull(skullMeta))
                 }
                 // 皮革颜色处理
-                SimpleItemMaterial.isLeatherArmor(data.material) ->
+                isLeatherArmor(data.material) ->
                     data.read<NBTInt>(ItemSheet.DYED_COLOR) { impl.color = it.content.toString() }
                 // 药水颜色处理
-                SimpleItemMaterial.isPotion(data.material) ->
+                isPotion(data.material) ->
                     data.read<NBTInt>(ItemSheet.POTION_COLOR) { impl.color = it.content.toString() }
             }
             // 返回
@@ -99,6 +100,19 @@ data class ItemCharacteristic(
                 else -> Integer.parseInt(content)
             }
         }
+
+        fun isPotion(material: ItemMaterial) = material.name.contains("POTION", true)
+
+        private val leatherArmors by lazy {
+            arrayOf(
+                BukkitMaterial.LEATHER_HELMET.name,
+                BukkitMaterial.LEATHER_CHESTPLATE.name,
+                BukkitMaterial.LEATHER_LEGGINGS.name,
+                BukkitMaterial.LEATHER_BOOTS.name
+            )
+        }
+
+        fun isLeatherArmor(material: ItemMaterial) = leatherArmors.contains(material.name.uppercase())
 
     }
 

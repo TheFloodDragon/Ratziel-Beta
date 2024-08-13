@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.nbt
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.function.util.uncheck
+import cn.fd.ratziel.function.uncheck
 
 /**
  * NBTCompound

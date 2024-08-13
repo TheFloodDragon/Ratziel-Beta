@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.service
 
-import cn.fd.ratziel.function.util.uncheck
+import cn.fd.ratziel.function.uncheck
 import cn.fd.ratziel.module.item.api.service.ItemServiceFunction
 import cn.fd.ratziel.module.item.api.service.ItemServiceGetter
 import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry

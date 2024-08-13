@@ -28,7 +28,7 @@ abstract class NMSItem {
 
     /**
      * 设置 [NMSItemStack]的 NBT (克隆)
-     * @param tag [NBTTagCompound]
+     * @param tag [NBTCompound]
      */
     abstract fun setTag(nmsItem: Any, tag: NBTCompound)
 
@@ -40,7 +40,7 @@ abstract class NMSItem {
 
     /**
      * 设置 [NMSItemStack]的自定义 NBT (克隆)
-     * @param tag [NBTTagCompound]
+     * @param tag [NBTCompound]
      */
     abstract fun setCustomTag(nmsItem: Any, tag: NBTCompound)
 
@@ -102,7 +102,7 @@ class NMSItemImpl2 : NMSItem() {
     }
 
     override fun setTag(nmsItem: Any, tag: NBTCompound) {
-        val dcp = NMS12005.INSTANCE.parsePatch(tag.getRaw() as NBTTagCompound) as? DataComponentPatch
+        val dcp = NMS12005.INSTANCE.parsePatch(tag) as? DataComponentPatch
         val components = componentsField.get(nmsItem) as? PatchedDataComponentMap
         if (components != null) {
             components.restorePatch(dcp)

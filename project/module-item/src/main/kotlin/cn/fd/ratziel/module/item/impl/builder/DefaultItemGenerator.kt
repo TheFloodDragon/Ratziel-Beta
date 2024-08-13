@@ -6,15 +6,15 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.FutureFactory
 import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.ArgumentContext
-import cn.fd.ratziel.function.util.uncheck
+import cn.fd.ratziel.function.uncheck
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.ItemTransformer
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
+import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.api.event.ItemResolveEvent
 import cn.fd.ratziel.module.item.impl.RatzielItem
@@ -38,7 +38,7 @@ class DefaultItemGenerator(
 
     fun build(sourceData: ItemData.Mutable, context: ArgumentContext): CompletableFuture<NeoItem> {
         // 生成物品唯一标识符
-        val identifier = IdentifierImpl()
+        val identifier = IdentifierImpl(origin.name)
 
         // PreEvent
         ItemGenerateEvent.Pre(identifier, this, context).call()

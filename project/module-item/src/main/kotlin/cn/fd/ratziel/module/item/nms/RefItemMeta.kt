@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.function.util.uncheck
+import cn.fd.ratziel.function.uncheck
 import cn.fd.ratziel.module.item.nbt.NBTCompound
 import cn.fd.ratziel.module.item.nbt.NMSUtil
 import org.bukkit.inventory.meta.ItemMeta
@@ -95,7 +95,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
         }
 
         internal fun new(tag: NBTCompound): T {
-            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(tag.getRaw())!! else tag
+            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(tag)!! else tag
             return uncheck(craftMetaConstructor.instance(handled)!!)
         }
 
@@ -110,7 +110,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
                 applyToItemMethod.invoke(meta, applicator) // Apply to the applicator
                 val dcp = applicatorBuildMethod.invoke(applicator)!! // Applicator to DataComponentPatch
                 val newTag = NMS12005.INSTANCE.savePatch(dcp) // DataComponentPatch save to NBT
-                if (newTag != null) tag.mergeShallow(NBTCompound.of(newTag), true)
+                if (newTag != null) tag.mergeShallow(newTag, true)
             } else {
                 applyToItemMethod.invoke(meta, tag.getRaw())
             }

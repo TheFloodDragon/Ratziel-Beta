@@ -35,7 +35,7 @@ object KotlinScriptExecutor : CompilableScriptExecutor {
             test = "!kotlin.reflect.jvm.ReflectLambdaKt",
             transitive = false
         );loadEnv(
-            value = "!org.jetbrains.kotlin:kotlin-compiler:" + CoreEnv.KOTLIN_VERSION,
+            value = "!org.jetbrains.kotlin:kotlin-compiler-embeddable:" + CoreEnv.KOTLIN_VERSION,
             transitive = false
         );loadEnv(
             value = "!org.jetbrains.kotlin:kotlin-script-runtime:" + CoreEnv.KOTLIN_VERSION,
@@ -47,13 +47,13 @@ object KotlinScriptExecutor : CompilableScriptExecutor {
             value = "!org.jetbrains.kotlin:kotlin-scripting-jvm:" + CoreEnv.KOTLIN_VERSION,
             transitive = false
         );loadEnv(
-            value = "!org.jetbrains.kotlin:kotlin-scripting-jvm-host-unshaded:" + CoreEnv.KOTLIN_VERSION,
+            value = "!org.jetbrains.kotlin:kotlin-scripting-jvm-host:" + CoreEnv.KOTLIN_VERSION,
             transitive = false
         );loadEnv(
-            value = "!org.jetbrains.kotlin:kotlin-scripting-compiler:" + CoreEnv.KOTLIN_VERSION,
+            value = "!org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:" + CoreEnv.KOTLIN_VERSION,
             transitive = false
         );loadEnv(
-            value = "!org.jetbrains.kotlin:kotlin-scripting-compiler-impl:" + CoreEnv.KOTLIN_VERSION,
+            value = "!org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:" + CoreEnv.KOTLIN_VERSION,
             transitive = false
         );loadEnv(
             value = "!org.jetbrains.intellij.deps:trove4j:1.0.20200330",

@@ -24,6 +24,8 @@ internal sealed class NMSUtil(val type: NBTType) {
 
     val reflexClass by lazy { ReflexClass.of(nmsClass, false) }
 
+    val structure get() = reflexClass.structure
+
     fun isOwnClass(clazz: Class<*>): Boolean = nmsClass.isAssignableFrom(clazz)
 
     object NtCompound : NMSUtil(NBTType.COMPOUND) {
@@ -36,17 +38,17 @@ internal sealed class NMSUtil(val type: NBTType) {
          * protected NBTTagCompound(Map<String, NBTBase> var0)
          * public NBTTagCompound() { this(Maps.newHashMap()); }
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(Map::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(Map::class.java) }
 
         /**
          * private final Map<String, NBTBase> x
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "x" else "map") }
+        override val sourceField by lazy { structure.getFieldSilently("tags") ?: structure.getField(if (MinecraftVersion.isUniversal) "x" else "map") }
 
         /**
          * public CompoundTag h()
          */
-        val methodClone by lazy { reflexClass.structure.getMethod(if (MinecraftVersion.isUniversal) "h" else "clone") }
+        val methodClone by lazy { structure.getMethodSilently("copy") ?: structure.getMethod(if (MinecraftVersion.isUniversal) "h" else "clone") }
 
     }
 
@@ -60,17 +62,17 @@ internal sealed class NMSUtil(val type: NBTType) {
          * NBTTagList(List<NBTBase> var0, byte var1)
          * public NBTTagList() { this(Lists.newArrayList(), (byte)0); }
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(List::class.java, Byte::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(List::class.java, Byte::class.java) }
 
         /**
          *  private final List<NBTBase> c
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "list") }
+        override val sourceField by lazy { structure.getFieldSilently("list") ?: structure.getField(if (MinecraftVersion.isUniversal) "c" else "list") }
 
         /**
          * public ListTag e()
          */
-        val methodClone by lazy { reflexClass.structure.getMethod(if (MinecraftVersion.isUniversal) "e" else "clone") }
+        val methodClone by lazy { structure.getMethodSilently("copy") ?: structure.getMethod(if (MinecraftVersion.isUniversal) "e" else "clone") }
 
     }
 
@@ -83,12 +85,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * private NBTTagString(String var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(String::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(String::class.java) }
 
         /**
          *  private final String A
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "A" else "data") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "A" else "data") }
 
     }
 
@@ -101,12 +103,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * NBTTagByte(byte var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(Byte::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(Byte::class.java) }
 
         /**
          *  private final byte x
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "x" else "data") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "x" else "data") }
 
     }
 
@@ -119,12 +121,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * public NBTTagByteArray(byte[] bytes)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(ByteArray::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(ByteArray::class.java) }
 
         /**
          * private byte[] c
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
 
     }
 
@@ -137,12 +139,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * private NBTTagDouble(double var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(Double::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(Double::class.java) }
 
         /**
          * private final double w
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "w" else "data") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "w" else "data") }
 
     }
 
@@ -155,12 +157,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * private NBTTagFloat(float var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(Float::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(Float::class.java) }
 
         /**
          * private final float w
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "w" else "data") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "w" else "data") }
 
     }
 
@@ -173,12 +175,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * public static NBTTagInt a(int var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(Int::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(Int::class.java) }
 
         /**
          * private final int c
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
 
     }
 
@@ -191,12 +193,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * public NBTTagIntArray(int[] var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(IntArray::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(IntArray::class.java) }
 
         /**
          * private int[] c
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
 
     }
 
@@ -209,12 +211,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * NBTTagLong(long var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(Long::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(Long::class.java) }
 
         /**
          * private final long c
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
 
     }
 
@@ -227,12 +229,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * public NBTTagLongArray(long[] var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(LongArray::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(LongArray::class.java) }
 
         /**
          * private long[] c
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "b") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "c" else "b") }
 
     }
 
@@ -246,12 +248,12 @@ internal sealed class NMSUtil(val type: NBTType) {
         /**
          * NBTTagShort(short var0)
          */
-        override val constructor by lazy { reflexClass.structure.getConstructorByType(Short::class.java) }
+        override val constructor by lazy { structure.getConstructorByType(Short::class.java) }
 
         /**
          * private final short c
          */
-        override val sourceField by lazy { reflexClass.structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
+        override val sourceField by lazy { structure.getFieldSilently("data") ?: structure.getField(if (MinecraftVersion.isUniversal) "c" else "data") }
 
     }
 

@@ -1,4 +1,6 @@
-package cn.fd.ratziel.module.item.api
+package cn.fd.ratziel.module.item.api.builder
+
+import cn.fd.ratziel.module.item.api.ItemData
 
 /**
  * ItemTransformer

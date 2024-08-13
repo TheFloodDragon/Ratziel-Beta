@@ -3,7 +3,7 @@ package cn.fd.ratziel.function
 import cn.fd.ratziel.function.argument.Argument
 import cn.fd.ratziel.function.argument.ArgumentSupplier
 import cn.fd.ratziel.function.argument.exception.ArgumentException
-import cn.fd.ratziel.function.util.uncheck
+import cn.fd.ratziel.function.uncheck
 import java.util.function.Function
 
 fun <T : Any> ArgumentSupplier.supplyOrNull(type: Class<T>): Argument<T>? =

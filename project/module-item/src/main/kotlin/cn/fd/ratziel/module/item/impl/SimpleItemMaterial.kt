@@ -61,11 +61,11 @@ open class SimpleItemMaterial(private val ref: BukkitMaterial) : ItemMaterial {
 
     override fun hashCode() = name.hashCode()
 
-    override fun equals(other: Any?) = equal(this, other)
+    override fun equals(other: Any?) = equals(this, other)
 
     companion object {
 
-        fun equal(material: ItemMaterial, other: Any?) = material === other
+        fun equals(material: ItemMaterial, other: Any?) = material === other
                 || (other as? ItemMaterial)?.name == material.name
                 || (other as? BukkitMaterial)?.name == material.name
                 || (other as? XMaterial)?.name == material.name
@@ -97,23 +97,6 @@ open class SimpleItemMaterial(private val ref: BukkitMaterial) : ItemMaterial {
         private val bukkitIdField by lazy {
             ReflexClass.of(BukkitMaterial::class.java, false).structure.getField("id")
         }
-
-        /**
-         * 类型判断
-         */
-
-        fun isPotion(material: ItemMaterial) = material.name.contains("POTION", true)
-
-        private val leatherArmors by lazy {
-            arrayOf(
-                BukkitMaterial.LEATHER_HELMET.name,
-                BukkitMaterial.LEATHER_CHESTPLATE.name,
-                BukkitMaterial.LEATHER_LEGGINGS.name,
-                BukkitMaterial.LEATHER_BOOTS.name
-            )
-        }
-
-        fun isLeatherArmor(material: ItemMaterial) = leatherArmors.contains(material.name.uppercase())
 
     }
 

@@ -4,7 +4,6 @@ import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.core.serialization.toBasic
 import cn.fd.ratziel.module.item.api.event.ItemResolveEvent
 import cn.fd.ratziel.script.ScriptBlockBuilder
-import cn.fd.ratziel.script.ScriptManager
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.severe
@@ -37,7 +36,7 @@ object ActionParser {
                 continue
             }
             // 构建脚本块
-            val block = ScriptBlockBuilder.build(raw.value.toBasic(), ScriptManager.defaultLanguage.executor)
+            val block = ScriptBlockBuilder.build(raw.value.toBasic())
             // 创建脚本动作, 放入表中
             map[type] = ScriptedAction(block)
         }

@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.serialization
 
-import cn.fd.ratziel.function.util.uncheck
+import cn.fd.ratziel.function.uncheck
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encoding.Decoder

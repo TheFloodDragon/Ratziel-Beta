@@ -28,7 +28,7 @@ subprojects {
             // Isolated Mode
             enableIsolatedClassloader = true
             // Common Modules
-            install(taboolibModules)
+            taboolibModules.forEach { install(it) }
         }
 
         description {

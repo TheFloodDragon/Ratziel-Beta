@@ -1,6 +1,5 @@
 package cn.fd.ratziel.function
 
-import cn.fd.ratziel.function.util.uncheck
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**

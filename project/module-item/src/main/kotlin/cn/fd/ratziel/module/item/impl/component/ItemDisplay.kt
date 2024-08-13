@@ -6,7 +6,7 @@ import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
 import cn.fd.ratziel.core.serialization.EnhancedList
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.ItemTransformer
+import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.nbt.NBTList
 import cn.fd.ratziel.module.item.nbt.NBTString
 import cn.fd.ratziel.module.item.nms.ItemSheet

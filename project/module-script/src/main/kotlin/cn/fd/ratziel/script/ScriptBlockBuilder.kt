@@ -12,6 +12,8 @@ import cn.fd.ratziel.script.impl.SimpleScript
  */
 object ScriptBlockBuilder {
 
+    fun build(section: Any) = build(section, ScriptManager.defaultLanguage.executor)
+
     fun build(section: Any, executor: ScriptExecutor): ScriptBlock {
         when (section) {
             // BasicBlock

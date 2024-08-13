@@ -1,7 +1,10 @@
 package cn.fd.ratziel.module.item.nms
 
-import cn.fd.ratziel.function.util.uncheck
+import cn.fd.ratziel.function.uncheck
+import cn.fd.ratziel.module.item.nbt.*
+import com.mojang.datafixers.util.Pair
 import com.mojang.serialization.Codec
+import com.mojang.serialization.DataResult
 import com.mojang.serialization.DynamicOps
 import net.minecraft.core.IRegistryCustom
 import net.minecraft.core.component.DataComponentMap
@@ -15,6 +18,11 @@ import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
+import java.nio.ByteBuffer
+import java.util.*
+import java.util.stream.Stream
+import kotlin.streams.toList
+
 
 /**
  * NMS12005
@@ -27,24 +35,24 @@ import taboolib.module.nms.nmsProxy
 abstract class NMS12005 {
 
     /**
-     * [NBTTagCompound] to [DataComponentPatch]
+     * [NBTCompound] to [DataComponentPatch]
      */
-    abstract fun parsePatch(nbt: Any): Any?
+    abstract fun parsePatch(tag: NBTCompound): Any?
 
     /**
-     * [DataComponentPatch] to [NBTTagCompound]
+     * [DataComponentPatch] to [NBTCompound]
      */
-    abstract fun savePatch(dcp: Any): Any?
+    abstract fun savePatch(dcp: Any): NBTCompound?
 
     /**
-     * [NBTTagCompound] to [DataComponentMap]
+     * [NBTCompound] to [DataComponentMap]
      */
-    abstract fun parseMap(nbt: Any): Any?
+    abstract fun parseMap(tag: NBTCompound): Any?
 
     /**
-     * [DataComponentMap] to [NBTTagCompound]
+     * [DataComponentMap] to [NBTCompound]
      */
-    abstract fun saveMap(dcm: Any): Any?
+    abstract fun saveMap(dcm: Any): NBTCompound?
 
     companion object {
 
@@ -69,34 +77,129 @@ abstract class NMS12005 {
 @Suppress("unused")
 class NMS12005Impl : NMS12005() {
 
-    fun <T> parse(codec: Codec<T>, nbt: NBTTagCompound): T? {
+    fun <T> parse(codec: Codec<T>, tag: NBTCompound): T? {
+        val result = codec.parse(createSerializationContext(InternalOps), tag)
+        val opt = result.resultOrPartial { error("Failed to parse: $it") }
+        return if (opt.isPresent) opt.get() else null
+    }
+
+    fun <T> save(codec: Codec<T>, obj: T): NBTCompound? {
+        val result = codec.encodeStart(createSerializationContext(InternalOps), obj)
+        val opt = result.resultOrPartial { error("Failed to save: $it") }
+        return if (opt.isPresent) opt.get() as? NBTCompound else null
+    }
+
+    fun <T> parse0(codec: Codec<T>, nbt: NBTTagCompound): T? {
         val result = codec.parse(createSerializationContext(DynamicOpsNBT.INSTANCE), nbt)
         val opt = result.resultOrPartial { error("Failed to parse: $it") }
         return if (opt.isPresent) opt.get() else null
     }
 
-    fun <T> save(codec: Codec<T>, obj: T): NBTTagCompound? {
+    fun <T> save0(codec: Codec<T>, obj: T): NBTTagCompound? {
         val result = codec.encodeStart(createSerializationContext(DynamicOpsNBT.INSTANCE), obj)
         val opt = result.resultOrPartial { error("Failed to save: $it") }
         return if (opt.isPresent) opt.get() as? NBTTagCompound else null
     }
 
-    override fun parsePatch(nbt: Any): Any? = parse(DataComponentPatch.CODEC, nbt as NBTTagCompound)
+    override fun parsePatch(tag: NBTCompound): Any? = parse0(DataComponentPatch.CODEC, tag.getRaw() as NBTTagCompound)
+        .also { println("Test-parse: " + parse(DataComponentPatch.CODEC, tag)) }
 
-    override fun savePatch(dcp: Any): Any? = save(DataComponentPatch.CODEC, dcp as DataComponentPatch)
+    override fun savePatch(dcp: Any): NBTCompound? = save0(DataComponentPatch.CODEC, dcp as DataComponentPatch)?.let { NBTCompound.of(it) }
+        .also { println("Test-save: " + save(DataComponentPatch.CODEC, dcp)) }
 
-    override fun parseMap(nbt: Any): Any? = parse(DataComponentMap.CODEC, nbt as NBTTagCompound)
+    override fun parseMap(tag: NBTCompound): Any? = parse0(DataComponentMap.CODEC, tag.getRaw() as NBTTagCompound)
 
-    override fun saveMap(dcm: Any): Any? = save(DataComponentMap.CODEC, dcm as DataComponentMap)
+    override fun saveMap(dcm: Any): NBTCompound? = save0(DataComponentMap.CODEC, dcm as DataComponentMap)?.let { NBTCompound.of(it) }
 
-    val access: IRegistryCustom.Dimension by lazy { (Bukkit.getServer() as CraftServer).server.registryAccess() }
+    private val access: IRegistryCustom.Dimension by lazy { (Bukkit.getServer() as CraftServer).server.registryAccess() }
 
-    val method by lazy {
+    private val method by lazy {
         val ref = ReflexClass.of(net.minecraft.core.HolderLookup.a::class.java, false)
         ref.structure.getMethodByTypeSilently("a", DynamicOps::class.java)
             ?: ref.structure.getMethodByType("createSerializationContext", DynamicOps::class.java)
     }
 
     fun <V> createSerializationContext(dynamicOps: DynamicOps<V>): RegistryOps<V> = uncheck(method.invoke(access, dynamicOps)!!)
+
+    private object InternalOps : DynamicOps<NBTData> {
+
+        override fun empty() = NBTCompound()
+
+        override fun createNumeric(p0: Number) = NBTAdapter.adapt(p0)
+
+        override fun createString(p0: String) = NBTString(p0)
+
+        override fun remove(raw: NBTData, str: String) =
+            if (raw is NBTCompound) {
+                val copied = raw.clone() // TODO shallow
+                copied.remove(str)
+                copied
+            } else raw
+
+        override fun createList(stream: Stream<NBTData>) = NBTList(stream.toList())
+
+        override fun getStream(data: NBTData): DataResult<Stream<NBTData>> =
+            if (data is NBTList) {
+                DataResult.success(data.stream())
+            } else {
+                DataResult.error { "Not a list" }
+            }
+
+        override fun createMap(stream: Stream<Pair<NBTData, NBTData>>) = NBTCompound().also { tag ->
+            stream.forEach { tag.put((it.first as NBTData).toString(), it.second) }
+        }
+
+        override fun getMapValues(data: NBTData): DataResult<Stream<Pair<NBTData, NBTData>>> =
+            if (data is NBTCompound) {
+                DataResult.success(data.entries.stream().map { Pair.of(this.createString(it.key), it.value) })
+            } else {
+                DataResult.error { "Not a map: $data" }
+            }
+
+        override fun mergeToMap(data1: NBTData, data2: NBTData, data3: NBTData): DataResult<NBTData> {
+            if (data1 !is NBTCompound) {
+                return DataResult.error({ "mergeToMap called with not a map: $data1" }, data1)
+            } else if (data2 !is NBTString) {
+                return DataResult.error({ "key is not a string: $data2" }, data1)
+            } else {
+                val newMap = data1.clone() // TODO shallowCopy()
+                newMap.put(data2.content, data3)
+                return DataResult.success(newMap)
+            }
+        }
+
+        override fun mergeToList(data1: NBTData, data2: NBTData): DataResult<NBTData> =
+            if (data1 is NBTList && data2 is NBTList)
+                DataResult.success(NBTList(data1.plus(data2.content))) // TODO Improve
+            else DataResult.error({ "mergeToList called with not a list: $data1" }, data1)
+
+        override fun getStringValue(data: NBTData?): DataResult<String> {
+            return if (data is NBTString) DataResult.success(data.content) else DataResult.error { "Not a string" }
+        }
+
+        override fun getNumberValue(data: NBTData): DataResult<Number> {
+            val number = data.content as? Number
+            return if (number != null) DataResult.success(number) else DataResult.error { "Not a number" }
+        }
+
+        override fun <U> convertTo(ops: DynamicOps<U>, data: NBTData): U =
+            when (data.type.id) {
+                0 -> ops.empty()
+                1 -> ops.createByte((data as NBTByte).content)
+                2 -> ops.createShort((data as NBTShort).content)
+                3 -> ops.createInt((data as NBTInt).content)
+                4 -> ops.createLong((data as NBTLong).content)
+                5 -> ops.createFloat((data as NBTFloat).content)
+                6 -> ops.createDouble((data as NBTDouble).content)
+                7 -> ops.createByteList(ByteBuffer.wrap((data as NBTByteArray).content))
+                8 -> ops.createString(data.toString())
+                9 -> convertList(ops, data)
+                10 -> convertMap(ops, data)
+                11 -> ops.createIntList(Arrays.stream((data as NBTIntArray).content))
+                12 -> ops.createLongList(Arrays.stream((data as NBTLongArray).content))
+                else -> throw IllegalStateException("Unknown tag type: $data")
+            }
+
+    }
 
 }

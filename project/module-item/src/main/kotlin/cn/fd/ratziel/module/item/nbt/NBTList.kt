@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.nbt
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.function.util.uncheck
+import cn.fd.ratziel.function.uncheck
 
 /**
  * NBTList
@@ -9,7 +9,7 @@ import cn.fd.ratziel.function.util.uncheck
  * @author TheFloodDragon
  * @since 2024/3/15 20:31
  */
-open class NBTList private constructor(rawData: Any)  : NBTData(rawData, NBTType.LIST), MutableList<NBTData> {
+open class NBTList private constructor(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<NBTData> {
 
     constructor() : this(new())
 

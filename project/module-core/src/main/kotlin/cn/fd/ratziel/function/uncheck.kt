@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
 
-package cn.fd.ratziel.function.util
+package cn.fd.ratziel.function
 
 /**
  * 简便方法 - 用于表示类型已受过检查 (忽略编译器警告)
