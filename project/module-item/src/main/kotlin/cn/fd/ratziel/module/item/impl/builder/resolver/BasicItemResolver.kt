@@ -21,6 +21,7 @@ import java.util.function.Function
  * @author TheFloodDragon
  * @since 2024/5/24 21:32
  */
+@Deprecated("see CommonItemResolver")
 object BasicItemResolver : ItemResolver {
 
     /**

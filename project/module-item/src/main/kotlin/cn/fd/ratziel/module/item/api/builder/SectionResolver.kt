@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.item.api.ArgumentResolver
  * @author TheFloodDragon
  * @since 2024/7/8 17:53
  */
+@Deprecated("Will be removed")
 interface SectionResolver<E, T> : ArgumentResolver<E, T> {
 
     /**
@@ -25,6 +26,7 @@ interface SectionResolver<E, T> : ArgumentResolver<E, T> {
      * @author TheFloodDragon
      * @since 2024/6/25 20:04
      */
+    @Deprecated("Will be removed")
     interface TagResolver : SectionResolver<Iterable<String>, String?> {
 
         /**

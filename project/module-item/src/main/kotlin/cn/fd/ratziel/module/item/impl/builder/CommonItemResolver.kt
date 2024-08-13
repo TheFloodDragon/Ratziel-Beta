@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder
 import cn.fd.ratziel.core.serialization.MutableJsonObject
 import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonElement
 import java.util.concurrent.ConcurrentHashMap
 
@@ -31,7 +32,8 @@ class CommonItemResolver(
      *
      * @return 解析完后, 返回值只包含 [visibleNode] 内的节点, 因此 [CommonItemSerializer] 需要作为最后一个解析
      */
-    override fun resolve(element: JsonElement, context: ArgumentContext): JsonElement {
+    override fun resolve(element: JsonElement, context: ArgumentContext): JsonElement = runBlocking {
+
         TODO("Not yet implemented")
     }
 

@@ -13,6 +13,7 @@ import taboolib.common.util.VariableReader
  * @author TheFloodDragon
  * @since 2024/7/8 17:51
  */
+@Deprecated("see SectionItemResolver")
 object BasicTagResolver : SectionResolver.StringResolver {
 
     /**

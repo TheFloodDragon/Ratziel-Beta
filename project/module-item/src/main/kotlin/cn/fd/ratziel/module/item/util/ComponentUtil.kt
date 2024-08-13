@@ -11,6 +11,7 @@ import cn.fd.ratziel.module.item.nbt.NBTData
  * @author TheFloodDragon
  * @since 2024/6/24 17:15
  */
+@Deprecated("Will be removed")
 object ComponentUtil {
 
     /**
