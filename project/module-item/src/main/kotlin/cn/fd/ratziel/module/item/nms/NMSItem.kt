@@ -65,19 +65,19 @@ abstract class NMSItem {
 object NMSItemImpl1 : NMSItem() {
 
     override fun getTag(nmsItem: Any): NBTCompound? {
-        return RefItemStack.InternalUtil.nmsTagField.get(nmsItem)?.let { NBTCompound(it).clone() }
+        return RefItemStack.InternalUtil.nmsTagField.get(nmsItem)?.let { NBTCompound.of(it).clone() }
     }
 
     override fun setTag(nmsItem: Any, tag: NBTCompound) {
-        RefItemStack.InternalUtil.nmsTagField.set(nmsItem, tag.clone().getData())
+        RefItemStack.InternalUtil.nmsTagField.set(nmsItem, tag.clone().getRaw())
     }
 
     override fun getCustomTag(nmsItem: Any): NBTCompound? {
-        return getTag(nmsItem)?.get(ItemSheet.CUSTOM_DATA) as? NBTCompound
+        return getTag(nmsItem)?.get(ItemSheet.CUSTOM_DATA.name) as? NBTCompound
     }
 
     override fun setCustomTag(nmsItem: Any, tag: NBTCompound) {
-        getTag(nmsItem)?.put(ItemSheet.CUSTOM_DATA, tag)
+        getTag(nmsItem)?.put(ItemSheet.CUSTOM_DATA.name, tag)
     }
 
     override fun copyItem(nmsItem: Any): Any {
@@ -98,11 +98,11 @@ class NMSItemImpl2 : NMSItem() {
 
     override fun getTag(nmsItem: Any): NBTCompound? {
         val dcp = (nmsItem as NMSItemStack).componentsPatch
-        return NMS12005.INSTANCE.savePatch(dcp)?.let { NBTCompound(it) }
+        return NMS12005.INSTANCE.savePatch(dcp)?.let { NBTCompound.of(it) }
     }
 
     override fun setTag(nmsItem: Any, tag: NBTCompound) {
-        val dcp = NMS12005.INSTANCE.parsePatch(tag.getData() as NBTTagCompound) as? DataComponentPatch
+        val dcp = NMS12005.INSTANCE.parsePatch(tag.getRaw() as NBTTagCompound) as? DataComponentPatch
         val components = componentsField.get(nmsItem) as? PatchedDataComponentMap
         if (components != null) {
             components.restorePatch(dcp)
@@ -115,11 +115,11 @@ class NMSItemImpl2 : NMSItem() {
 
     override fun getCustomTag(nmsItem: Any): NBTCompound? {
         val customData = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
-        return customData?.copyTag()?.let { NBTCompound(it) }
+        return customData?.copyTag()?.let { NBTCompound.of(it) }
     }
 
     override fun setCustomTag(nmsItem: Any, tag: NBTCompound) {
-        val customData = CustomData.of(tag.getData() as NBTTagCompound)
+        val customData = CustomData.of(tag.getRaw() as NBTTagCompound)
         (nmsItem as NMSItemStack).set(DataComponents.CUSTOM_DATA, customData)
     }
 

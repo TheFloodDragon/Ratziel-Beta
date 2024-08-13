@@ -12,16 +12,20 @@ import cn.fd.ratziel.module.item.api.ItemNode
  */
 object TagHelper {
 
+    @JvmStatic
     fun readCreatable(source: NBTCompound, tailNode: ItemNode) = readCreatable(source, unfold(tailNode))
 
+    @JvmStatic
     fun write(source: NBTCompound, tailNode: ItemNode, value: NBTData) = write(source, unfold(tailNode), value)
 
+    @JvmStatic
     fun read(source: NBTCompound, tailNode: ItemNode) = read(source, unfold(tailNode))
 
     /**
      * 读取 [NBTCompound]
      * 如果获取到的 [find] 为空则写入 空的[NBTCompound]
      */
+    @JvmStatic
     fun readCreatable(source: NBTCompound, iterator: Iterator<String>): NBTCompound {
         var find = source
         for (node in iterator) {
@@ -34,6 +38,7 @@ object TagHelper {
      * 通过节点写入 [NBTData]
      * 如果获取到的 [find] 为空则写入 空的[NBTCompound]
      */
+    @JvmStatic
     fun write(source: NBTCompound, iterator: Iterator<String>, value: NBTData) {
         var find: NBTCompound = source
         while (iterator.hasNext()) {
@@ -50,6 +55,7 @@ object TagHelper {
      * 通过节点获取 [NBTData]
      * 值不存在时返回空
      */
+    @JvmStatic
     fun read(source: NBTCompound, iterator: Iterator<String>): NBTData? {
         var find: NBTCompound = source
         while (iterator.hasNext()) {
@@ -69,6 +75,7 @@ object TagHelper {
      * 展开物品节点 (从上往下的顺序, 不包括[ItemNode.ROOT])
      * @return 物品节点迭代器
      */
+    @JvmStatic
     fun unfold(tailNode: ItemNode): Iterator<String> {
         val nodeList = buildList {
             var node: ItemNode = tailNode

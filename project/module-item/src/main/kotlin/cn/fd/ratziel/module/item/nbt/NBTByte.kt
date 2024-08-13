@@ -1,12 +1,14 @@
 package cn.fd.ratziel.module.item.nbt
 
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
+
 /**
  * NBTByte
  *
  * @author TheFloodDragon
  * @since 2024/3/15 21:20
  */
-class NBTByte(rawData: Any) : NBTData(rawData, NBTType.BYTE) {
+class NBTByte  private constructor(rawData: Any)  : NBTData(rawData, NBTType.BYTE) {
 
     constructor(value: Boolean) : this(new(value))
 
@@ -24,6 +26,9 @@ class NBTByte(rawData: Any) : NBTData(rawData, NBTType.BYTE) {
 
         @JvmStatic
         fun new(value: Byte) = NMSUtil.NtByte.constructor.instance(value)!!
+
+        @JvmStatic
+        fun of(raw: Any) = if (NMSUtil.NtByte.isOwnClass(raw::class.java)) NBTByte(raw) else throw UnsupportedTypeException(raw)
 
         @JvmStatic
         fun adapt(from: Byte): Boolean = adaptOrNull(from) ?: false

@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.nbt
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-
 /**
  * NBTData - NBT数据
  *
@@ -16,13 +14,8 @@ abstract class NBTData(
     /**
      * NBT数据类型
      */
-    val type: NBTType
+    @JvmField val type: NBTType
 ) {
-
-    init {
-        // 数据检验
-        if (!NMSUtil.inferUtil(type).isOwnClass(data::class.java)) throw UnsupportedTypeException(data)
-    }
 
     /**
      * 数据内容
@@ -32,9 +25,9 @@ abstract class NBTData(
     /**
      * 获取原始数据
      */
-    open fun getData() = data
+    open fun getRaw() = data
 
-    override fun equals(other: Any?) = (if (other is NBTData) other.getData() else other) == data
+    override fun equals(other: Any?) = (if (other is NBTData) other.getRaw() else other) == data
 
     override fun toString() = data.toString()
 

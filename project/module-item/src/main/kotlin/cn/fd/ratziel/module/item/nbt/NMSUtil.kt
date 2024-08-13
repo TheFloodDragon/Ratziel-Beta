@@ -2,8 +2,6 @@
 
 package cn.fd.ratziel.module.item.nbt
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.module.item.nbt.NBTType.*
 import taboolib.library.reflex.ClassConstructor
 import taboolib.library.reflex.ClassField
 import taboolib.library.reflex.ReflexClass
@@ -16,7 +14,7 @@ import taboolib.module.nms.nmsClass
  * @author TheFloodDragon
  * @since 2024/3/15 18:56
  */
-internal sealed class NMSUtil {
+internal sealed class NMSUtil(val type: NBTType) {
 
     abstract val nmsClass: Class<*>
 
@@ -28,7 +26,7 @@ internal sealed class NMSUtil {
 
     fun isOwnClass(clazz: Class<*>): Boolean = nmsClass.isAssignableFrom(clazz)
 
-    object NtCompound : NMSUtil() {
+    object NtCompound : NMSUtil(NBTType.COMPOUND) {
         /**
          * net.minecraft.nbt.NBTTagCompound
          */
@@ -52,7 +50,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtList : NMSUtil() {
+    object NtList : NMSUtil(NBTType.LIST) {
         /**
          * net.minecraft.nbt.NBTTagList
          */
@@ -76,7 +74,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtString : NMSUtil() {
+    object NtString : NMSUtil(NBTType.STRING) {
         /**
          * net.minecraft.nbt.NBTTagString
          */
@@ -94,7 +92,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtByte : NMSUtil() {
+    object NtByte : NMSUtil(NBTType.BYTE) {
         /**
          * net.minecraft.nbt.NBTTagByte
          */
@@ -112,7 +110,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtByteArray : NMSUtil() {
+    object NtByteArray : NMSUtil(NBTType.BYTE_ARRAY) {
         /**
          * net.minecraft.nbt.NBTTagByteArray
          */
@@ -130,7 +128,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtDouble : NMSUtil() {
+    object NtDouble : NMSUtil(NBTType.DOUBLE) {
         /**
          * net.minecraft.nbt.NBTTagDouble
          */
@@ -148,7 +146,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtFloat : NMSUtil() {
+    object NtFloat : NMSUtil(NBTType.FLOAT) {
         /**
          * net.minecraft.nbt.NBTTagFloat
          */
@@ -166,7 +164,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtInt : NMSUtil() {
+    object NtInt : NMSUtil(NBTType.INT) {
         /**
          * net.minecraft.nbt.NBTTagInt
          */
@@ -184,7 +182,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtIntArray : NMSUtil() {
+    object NtIntArray : NMSUtil(NBTType.INT_ARRAY) {
         /**
          * net.minecraft.nbt.NBTTagIntArray
          */
@@ -202,7 +200,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtLong : NMSUtil() {
+    object NtLong : NMSUtil(NBTType.LONG) {
         /**
          * net.minecraft.nbt.NBTTagLong
          */
@@ -220,7 +218,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtLongArray : NMSUtil() {
+    object NtLongArray : NMSUtil(NBTType.LONG_ARRAY) {
         /**
          * net.minecraft.nbt.NBTTagLongArray
          */
@@ -238,7 +236,7 @@ internal sealed class NMSUtil {
 
     }
 
-    object NtShort : NMSUtil() {
+    object NtShort : NMSUtil(NBTType.SHORT) {
 
         /**
          * net.minecraft.nbt.NBTTagShort
@@ -258,30 +256,11 @@ internal sealed class NMSUtil {
     }
 
     object NtBase {
+
         /**
          * net.minecraft.nbt.NBTBase
          */
         val nmsClass by lazy { nmsClass("NBTBase") }
-
-    }
-
-    companion object {
-
-        internal fun inferUtil(type: NBTType): NMSUtil = when (type) {
-            BYTE -> NtByte
-            SHORT -> NtShort
-            INT -> NtInt
-            LONG -> NtLong
-            FLOAT -> NtFloat
-            DOUBLE -> NtDouble
-            BYTE_ARRAY -> NtByteArray
-            STRING -> NtString
-            LIST -> NtList
-            COMPOUND -> NtCompound
-            INT_ARRAY -> NtIntArray
-            LONG_ARRAY -> NtLongArray
-            else -> throw UnsupportedTypeException(type)
-        }
 
     }
 

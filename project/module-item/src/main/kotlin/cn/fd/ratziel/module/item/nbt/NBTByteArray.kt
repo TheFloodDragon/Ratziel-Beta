@@ -1,12 +1,14 @@
 package cn.fd.ratziel.module.item.nbt
 
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
+
 /**
  * NBTByteArray
  *
  * @author TheFloodDragon
  * @since 2024/3/15 21:21
  */
-class NBTByteArray(rawData: Any) : NBTData(rawData, NBTType.BYTE_ARRAY) {
+class NBTByteArray private constructor(rawData: Any) : NBTData(rawData, NBTType.BYTE_ARRAY) {
 
     constructor(value: ByteArray) : this(new(value))
 
@@ -16,6 +18,9 @@ class NBTByteArray(rawData: Any) : NBTData(rawData, NBTType.BYTE_ARRAY) {
 
         @JvmStatic
         fun new(value: ByteArray) = NMSUtil.NtByteArray.constructor.instance(value)!!
+
+        @JvmStatic
+        fun of(raw: Any) = if (NMSUtil.NtByteArray.isOwnClass(raw::class.java)) NBTByteArray(raw) else throw UnsupportedTypeException(raw)
 
     }
 

@@ -95,7 +95,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
         }
 
         internal fun new(tag: NBTCompound): T {
-            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(tag.getData())!! else tag
+            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(tag.getRaw())!! else tag
             return uncheck(craftMetaConstructor.instance(handled)!!)
         }
 
@@ -110,9 +110,9 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
                 applyToItemMethod.invoke(meta, applicator) // Apply to the applicator
                 val dcp = applicatorBuildMethod.invoke(applicator)!! // Applicator to DataComponentPatch
                 val newTag = NMS12005.INSTANCE.savePatch(dcp) // DataComponentPatch save to NBT
-                if (newTag != null) tag.mergeShallow(NBTCompound(newTag), true)
+                if (newTag != null) tag.mergeShallow(NBTCompound.of(newTag), true)
             } else {
-                applyToItemMethod.invoke(meta, tag.getData())
+                applyToItemMethod.invoke(meta, tag.getRaw())
             }
         }
 

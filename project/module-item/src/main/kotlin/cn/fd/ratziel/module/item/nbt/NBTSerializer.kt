@@ -115,22 +115,22 @@ object NBTSerializer : KSerializer<NBTData> {
         private fun adaptString(str: String) = NBTAdapter.BasicAdapter.adapt(str.adapt())!!
 
         private fun convertBasicString(str: String, type: NBTType) = when (type) {
-            NBTType.BYTE -> NBTByte(NBTByte.new(str.toByte()))
-            NBTType.DOUBLE -> NBTDouble(NBTDouble.new(str.toDouble()))
-            NBTType.SHORT -> NBTShort(NBTShort.new(str.toShort()))
-            NBTType.LONG -> NBTLong(NBTLong.new(str.toLong()))
-            NBTType.FLOAT -> NBTFloat(NBTFloat.new(str.toFloat()))
-            NBTType.INT -> NBTInt(NBTInt.new(str.toInt()))
-            NBTType.STRING -> NBTString(NBTString.new(str))
+            NBTType.BYTE -> NBTByte(str.toByte())
+            NBTType.DOUBLE -> NBTDouble(str.toDouble())
+            NBTType.SHORT -> NBTShort(str.toShort())
+            NBTType.LONG -> NBTLong(str.toLong())
+            NBTType.FLOAT -> NBTFloat(str.toFloat())
+            NBTType.INT -> NBTInt(str.toInt())
+            NBTType.STRING -> NBTString(str)
             else -> null
         }
 
         private fun convertArrayString(str: String, type: NBTType) =
             str.split(ELEMENT_SEPARATOR).let { array ->
                 when (type) {
-                    NBTType.INT_ARRAY -> NBTIntArray(NBTIntArray.new(array.map { it.toInt() }.toIntArray()))
-                    NBTType.BYTE_ARRAY -> NBTByteArray(NBTByteArray.new(array.map { it.toByte() }.toByteArray()))
-                    NBTType.LONG_ARRAY -> NBTLongArray(NBTLongArray.new(array.map { it.toLong() }.toLongArray()))
+                    NBTType.INT_ARRAY -> NBTIntArray(array.map { it.toInt() }.toIntArray())
+                    NBTType.BYTE_ARRAY -> NBTByteArray(array.map { it.toByte() }.toByteArray())
+                    NBTType.LONG_ARRAY -> NBTLongArray(array.map { it.toLong() }.toLongArray())
                     else -> null
                 }
             }

@@ -1,12 +1,14 @@
 package cn.fd.ratziel.module.item.nbt
 
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
+
 /**
  * NBTLongArray
  *
  * @author TheFloodDragon
  * @since 2024/3/15 21:23
  */
-class NBTLongArray(rawData: Any) : NBTData(rawData, NBTType.LONG_ARRAY) {
+class NBTLongArray private constructor(rawData: Any) : NBTData(rawData, NBTType.LONG_ARRAY) {
 
     constructor(value: LongArray) : this(new(value))
 
@@ -16,6 +18,9 @@ class NBTLongArray(rawData: Any) : NBTData(rawData, NBTType.LONG_ARRAY) {
 
         @JvmStatic
         fun new(value: LongArray) = NMSUtil.NtLongArray.constructor.instance(value)!!
+
+        @JvmStatic
+        fun of(raw: Any) = if (NMSUtil.NtLongArray.isOwnClass(raw::class.java)) NBTLongArray(raw) else throw UnsupportedTypeException(raw)
 
     }
 

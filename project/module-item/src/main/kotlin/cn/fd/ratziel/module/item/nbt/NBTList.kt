@@ -1,24 +1,30 @@
 package cn.fd.ratziel.module.item.nbt
 
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
+import cn.fd.ratziel.function.util.uncheck
+
 /**
  * NBTList
  *
  * @author TheFloodDragon
  * @since 2024/3/15 20:31
  */
-@Suppress("UNCHECKED_CAST")
-open class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<NBTData> {
+open class NBTList private constructor(rawData: Any)  : NBTData(rawData, NBTType.LIST), MutableList<NBTData> {
 
     constructor() : this(new())
 
-    constructor(list: Iterable<*>) : this(NBTAdapter.adaptList(list).getData())
+    constructor(list: Iterable<*>) : this(NBTAdapter.adaptList(list).getRaw())
 
     /**
      * [java.util.List] is the same as [MutableList] in [kotlin.collections]
      * Because [MutableList] will be compiled to [java.util.List]
+     * And this is final, so it's not getter
      */
-    internal val sourceList get() = NMSUtil.NtList.sourceField.get(data) as MutableList<Any>
+    internal val sourceList: MutableList<Any> = uncheck(NMSUtil.NtList.sourceField.get(data)!!)
 
+    /**
+     * 内容
+     */
     override val content: List<NBTData> get() = sourceList.map { NBTAdapter.adaptNms(it) }
 
     /**
@@ -29,12 +35,12 @@ open class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<N
     /**
      * 在索引处添加数据
      */
-    override fun add(index: Int, element: NBTData) = sourceList.add(index, element.getData())
+    override fun add(index: Int, element: NBTData) = sourceList.add(index, element.getRaw())
 
     /**
      * 在末尾添加数据
      */
-    override fun add(element: NBTData) = sourceList.add(element.getData())
+    override fun add(element: NBTData) = sourceList.add(element.getRaw())
 
     /**
      * 根据索引删除数据
@@ -44,12 +50,12 @@ open class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<N
     /**
      * 删除某个指定数据
      */
-    override fun remove(element: NBTData) = sourceList.remove(element.getData())
+    override fun remove(element: NBTData) = sourceList.remove(element.getRaw())
 
     /**
      * 设置索引处的数据
      */
-    override fun set(index: Int, element: NBTData): NBTData = sourceList.set(index, element.getData()).let { NBTAdapter.adaptNms(it) }
+    override fun set(index: Int, element: NBTData): NBTData = sourceList.set(index, element.getRaw()).let { NBTAdapter.adaptNms(it) }
 
     /**
      * 克隆数据
@@ -58,9 +64,14 @@ open class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<N
 
     companion object {
 
+        @JvmStatic
         fun new() = new(ArrayList())
 
+        @JvmStatic
         fun new(list: List<Any>) = NMSUtil.NtList.constructor.instance(list, 0.toByte())!!
+
+        @JvmStatic
+        fun of(raw: Any) = if (NMSUtil.NtList.isOwnClass(raw::class.java)) NBTList(raw) else throw UnsupportedTypeException(raw)
 
     }
 
@@ -69,31 +80,31 @@ open class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<N
      */
     override fun isEmpty(): Boolean = sourceList.isEmpty()
 
-    override fun indexOf(element: NBTData): Int = sourceList.indexOf(element.getData())
+    override fun indexOf(element: NBTData): Int = sourceList.indexOf(element.getRaw())
 
-    override fun removeAll(elements: Collection<NBTData>) = sourceList.removeAll(elements.map { it.getData() })
+    override fun removeAll(elements: Collection<NBTData>) = sourceList.removeAll(elements.map { it.getRaw() })
 
-    override fun lastIndexOf(element: NBTData): Int = sourceList.lastIndexOf(element.getData())
+    override fun lastIndexOf(element: NBTData): Int = sourceList.lastIndexOf(element.getRaw())
 
     override val size: Int get() = sourceList.size
 
     override fun clear() = sourceList.clear()
 
-    override fun containsAll(elements: Collection<NBTData>) = sourceList.containsAll(elements.map { it.getData() })
+    override fun containsAll(elements: Collection<NBTData>) = sourceList.containsAll(elements.map { it.getRaw() })
 
-    override fun contains(element: NBTData) = sourceList.contains(element.getData())
+    override fun contains(element: NBTData) = sourceList.contains(element.getRaw())
 
-    override fun addAll(elements: Collection<NBTData>) = sourceList.addAll(elements.map { it.getData() })
+    override fun addAll(elements: Collection<NBTData>) = sourceList.addAll(elements.map { it.getRaw() })
 
-    override fun addAll(index: Int, elements: Collection<NBTData>) = sourceList.addAll(index, elements.map { it.getData() })
+    override fun addAll(index: Int, elements: Collection<NBTData>) = sourceList.addAll(index, elements.map { it.getRaw() })
 
     override fun subList(fromIndex: Int, toIndex: Int) = sourceList.subList(fromIndex, toIndex).let { source ->
         object : AbstractMutableList<NBTData>() {
-            override fun add(index: Int, element: NBTData) = source.add(index, element.getData())
+            override fun add(index: Int, element: NBTData) = source.add(index, element.getRaw())
             override val size: Int get() = source.size
             override fun get(index: Int) = NBTAdapter.adaptNms(source[index])
             override fun removeAt(index: Int) = NBTAdapter.adaptNms(source.removeAt(index))
-            override fun set(index: Int, element: NBTData) = NBTAdapter.adaptNms(source.set(index, element.getData()))
+            override fun set(index: Int, element: NBTData) = NBTAdapter.adaptNms(source.set(index, element.getRaw()))
         }
     }
 
@@ -103,7 +114,7 @@ open class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<N
 
     override fun listIterator(index: Int) = sourceList.listIterator().let { source ->
         object : MutableListIterator<NBTData> {
-            override fun add(element: NBTData) = source.add(element.getData())
+            override fun add(element: NBTData) = source.add(element.getRaw())
             override fun hasNext() = source.hasNext()
             override fun hasPrevious() = source.hasPrevious()
             override fun next() = NBTAdapter.adaptNms(source.next())
@@ -111,10 +122,10 @@ open class NBTList(rawData: Any) : NBTData(rawData, NBTType.LIST), MutableList<N
             override fun previous() = NBTAdapter.adaptNms(source.previous())
             override fun previousIndex() = source.previousIndex()
             override fun remove() = source.remove()
-            override fun set(element: NBTData) = source.set(element.getData())
+            override fun set(element: NBTData) = source.set(element.getRaw())
         }
     }
 
-    override fun retainAll(elements: Collection<NBTData>) = sourceList.retainAll(elements.map { it.getData() })
+    override fun retainAll(elements: Collection<NBTData>) = sourceList.retainAll(elements.map { it.getRaw() })
 
 }
