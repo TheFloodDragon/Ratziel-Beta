@@ -30,7 +30,7 @@ internal object AttackTrigger : ItemTrigger {
         val item = attacker.inventory.itemInMainHand
         val neoItem = asNeo(item) ?: return
         // 触发触发器 (参数: 事件(EntityDamageByEntityEvent), 攻击者(Player), ItemStack, RatzielItem)
-        ActionManager.trigger(neoItem.identifier, this) {
+        ActionManager.trigger(neoItem.id, this) {
             set("event", event)
             set("attacker", attacker)
             set("item", item)

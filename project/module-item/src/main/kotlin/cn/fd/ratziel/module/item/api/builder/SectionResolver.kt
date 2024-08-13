@@ -16,6 +16,7 @@ interface SectionResolver<E, T> : ArgumentResolver<E, T> {
      * @author TheFloodDragon
      * @since 2024/6/25 20:16
      */
+    @Deprecated("Will be removed")
     interface StringResolver : SectionResolver<String, String>
 
     /**

@@ -9,6 +9,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemResolver
  * @author TheFloodDragon
  * @since 2024/6/25 14:13
  */
+@Deprecated("独立交给ItemGenerator控制")
 interface ResolverRegistry {
 
     /**

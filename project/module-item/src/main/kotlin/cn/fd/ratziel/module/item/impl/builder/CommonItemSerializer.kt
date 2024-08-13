@@ -20,12 +20,12 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
- * DefaultItemSerializer - 通过 [Json] 序列化/反序列化 物品组件
+ * CommonItemSerializer
  *
  * @author TheFloodDragon
  * @since 2024/4/4 19:58
  */
-object DefaultItemSerializer : ItemKSerializer<ItemMetadata> {
+object CommonItemSerializer : ItemKSerializer<ItemMetadata> {
 
     val json = Json(baseJson) {
         serializersModule += SerializersModule {
@@ -41,6 +41,11 @@ object DefaultItemSerializer : ItemKSerializer<ItemMetadata> {
             contextual(AttributeModifier::class, AttributeModifierSerializer)
         }
     }
+
+    /**
+     * 使用到的节点
+     */
+    val usedNodes by lazy { serializers.flatMap { it.descriptor.elementAlias }.toTypedArray() }
 
     /**
      * 使用到的序列化器列表
@@ -81,11 +86,6 @@ object DefaultItemSerializer : ItemKSerializer<ItemMetadata> {
      * 序列化 (强制开启结构化解析)
      */
     override fun serialize(component: ItemMetadata) = forceStructured(json.encodeToJsonElement(ItemMetadata.serializer(), component))
-
-    /**
-     * 占据的节点
-     */
-    val occupiedNodes = serializers.flatMap { it.descriptor.elementAlias }
 
     val NODES_MATERIAL = ItemMetadata.serializer().descriptor.getElementNames(ItemMetadata::material.name)
 

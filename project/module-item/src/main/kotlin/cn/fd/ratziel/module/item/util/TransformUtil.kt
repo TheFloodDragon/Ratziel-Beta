@@ -32,8 +32,13 @@ inline fun ItemData.handle(tailNode: ItemNode, noinline action: NBTCompound.() -
  * 深度读取指定类型的 [NBTData]
  * @see [TagHelper.read]
  */
-inline fun <reified T : NBTData> ItemData.read(tailNode: ItemNode, action: Consumer<T>) =
-    (TagHelper.read(this.tag, tailNode) as? T)?.let { action.accept(it) }
+inline fun <reified T : NBTData> ItemData.read(tailNode: ItemNode, action: Consumer<T>) = this.read<T>(tailNode)?.let { action.accept(it) }
+
+/**
+ * 深度读取指定类型的 [NBTData]
+ * @see [TagHelper.read]
+ */
+inline fun <reified T : NBTData> ItemData.read(tailNode: ItemNode) = (TagHelper.read(this.tag, tailNode) as? T)
 
 /**
  * 深度写入指定类型的 [NBTData]

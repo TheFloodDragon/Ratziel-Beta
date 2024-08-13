@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.Element
@@ -18,7 +17,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.api.event.ItemResolveEvent
-import cn.fd.ratziel.module.item.impl.ItemInfo
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleItemData
 import kotlinx.serialization.json.JsonElement
@@ -71,12 +69,11 @@ class DefaultItemGenerator(
                 SimpleItemData.merge(sourceData, data, true) // 合并数据
             }
             // 合成最终结果
-            createRatzielItem(origin, sourceData, identifier).let { item ->
-                // PostEvent
-                val event = ItemGenerateEvent.Post(item.identifier, this, item, context)
-                event.call()
-                event.item
-            }
+            val info = RatzielItem.Info(identifier, origin.property.hashCode())
+            val item = RatzielItem(info, sourceData)
+            // PostEvent
+            ItemGenerateEvent.Post(item.id, this, item, context)
+                .also { it.call() }.item
         }
     }
 
@@ -125,16 +122,5 @@ class DefaultItemGenerator(
                 ex.printStackTrace(); null
             }
         }, ItemElement.executor)
-
-    @Deprecated("Shit")
-    fun createRatzielItem(
-        element: Element,
-        data: ItemData,
-        identifier: Identifier,
-    ): RatzielItem {
-        // 物品信息
-        val info = ItemInfo(identifier, element.name, element.property.hashCode())
-        return RatzielItem(info, data)
-    }
 
 }

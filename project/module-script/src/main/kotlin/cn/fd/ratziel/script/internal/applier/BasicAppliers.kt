@@ -14,6 +14,7 @@ import taboolib.common.platform.ProxyCommandSender
  * @since 2024/7/16 12:21
  */
 @Awake
+@Deprecated("Shi")
 private object BasicAppliers {
 
     @Awake
@@ -34,9 +35,9 @@ private object BasicAppliers {
         }
     }
 
-    inline fun <reified T> fetch(noinline function: ScriptEnvironment.(T) -> Unit) = fetch(T::class.java, function)
+    inline fun <reified T : Any> fetch(noinline function: ScriptEnvironment.(T) -> Unit) = fetch(T::class.java, function)
 
-    fun <T> fetch(type: Class<T>, function: ScriptEnvironment.(T) -> Unit) =
+    fun <T : Any> fetch(type: Class<T>, function: ScriptEnvironment.(T) -> Unit) =
         ScriptEnvironment.Applier {
             val ins = it.context.popOrNull(type) ?: return@Applier
             function(it, ins);
