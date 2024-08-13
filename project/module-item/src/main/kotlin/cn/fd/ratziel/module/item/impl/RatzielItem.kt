@@ -12,6 +12,7 @@ import cn.fd.ratziel.module.item.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.handle
 import cn.fd.ratziel.module.item.util.read
 import org.bukkit.inventory.ItemStack
+import taboolib.platform.util.isAir
 
 /**
  * RatzielItem
@@ -63,6 +64,7 @@ open class RatzielItem : NeoItem {
          */
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
+            if (itemStack.isAir()) return null
             val itemData = RefItemStack(itemStack).getData() ?: return null
             return of(itemData)
         }

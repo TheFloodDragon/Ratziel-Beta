@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl.feature.action
+package cn.fd.ratziel.module.item.impl.action
 
 import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.core.serialization.toBasic
