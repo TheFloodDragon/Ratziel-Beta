@@ -15,12 +15,12 @@ open class NBTCompound(override val content: MutableMap<String, NBTData>) : NBTD
     /**
      * 克隆数据
      */
-    override fun clone() = of(this.content.mapValues { it.value.clone() })
+    override fun clone() = NBTCompound().also { new -> this.content.forEach { new.put(it.key, it.value.clone()) } }
 
     /**
      * 浅克隆数据
      */
-    open fun cloneShallow() = NBTCompound().apply { putAll(content) }
+    open fun cloneShallow() = NBTCompound().also { new -> new.putAll(this.content) }
 
     /**
      * 合并目标数据
@@ -49,11 +49,11 @@ open class NBTCompound(override val content: MutableMap<String, NBTData>) : NBTD
      * @param replace 是否替换原有的标签
      */
     open fun mergeShallow(target: NBTCompound, replace: Boolean = true): NBTCompound {
-        for ((key, value) in target) {
+        for ((key, value) in target.content) {
             // 如果当前数据中不存在, 或者允许替换
-            if (!this.containsKey(key) || replace) {
+            if (!content.containsKey(key) || replace) {
                 // 直接设置值
-                this[key] = value
+                content[key] = value
             }
         }
         return this

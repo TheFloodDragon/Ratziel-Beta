@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Pair
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
 import com.mojang.serialization.DynamicOps
+import com.mojang.serialization.MapLike;
 import net.minecraft.core.IRegistryCustom
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
@@ -18,8 +19,9 @@ import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
 import java.nio.ByteBuffer
 import java.util.*
+import java.util.stream.IntStream
+import java.util.stream.LongStream
 import java.util.stream.Stream
-import kotlin.streams.asSequence
 
 
 /**
@@ -143,7 +145,22 @@ class NMS12005Impl : NMS12005() {
 
         override fun createString(str: String) = NBTString(str)
 
-        override fun createList(stream: Stream<NBTData>) = NBTList().apply { addAll(stream.asSequence()) }
+        override fun createList(stream: Stream<NBTData>) = InitialListCollector.acceptAll(stream.iterator()).result()
+
+        override fun createByteList(byteBuffer: ByteBuffer) = NBTByteArray(byteBuffer.array().copyOf())
+
+        override fun getByteBuffer(data: NBTData): DataResult<ByteBuffer> =
+            if (data is NBTByteArray) DataResult.success(ByteBuffer.wrap(data.content)) else super.getByteBuffer(data)
+
+        override fun createIntList(intStream: IntStream) = NBTIntArray(intStream.toArray())
+
+        override fun getIntStream(data: NBTData): DataResult<IntStream> =
+            if (data is NBTIntArray) DataResult.success(Arrays.stream(data.content)) else super.getIntStream(data)
+
+        override fun createLongList(longStream: LongStream) = NBTLongArray(longStream.toArray())
+
+        override fun getLongStream(data: NBTData): DataResult<LongStream> =
+            if (data is NBTLongArray) DataResult.success(Arrays.stream(data.content)) else super.getLongStream(data)
 
         override fun createMap(stream: Stream<Pair<NBTData, NBTData>>) =
             NBTCompound().apply { stream.forEach { put((it.first as NBTString).content, it.second) } }
@@ -156,17 +173,30 @@ class NMS12005Impl : NMS12005() {
             return if (number != null) DataResult.success(number) else DataResult.error { "Not a number: $data" }
         }
 
-        override fun getStream(tag: NBTData): DataResult<Stream<NBTData>> =
-            if (tag is NBTList) {
-                DataResult.success(if (tag.elementType == NBTType.COMPOUND) {
-                    tag.stream().map { tryUnwrap(it as NBTCompound) }
-                } else tag.stream())
-            } else DataResult.error { "Not a list: $tag" }
+        override fun getStream(data: NBTData): DataResult<Stream<NBTData>> = when (data) {
+            is NBTList -> DataResult.success(
+                if (data.elementType == NBTType.COMPOUND) {
+                    data.stream().map { tryUnwrap(it as NBTCompound) }
+                } else data.stream())
+            is NBTByteArray -> DataResult.success(data.content.toList().stream().map { NBTByte(it) })
+            is NBTIntArray -> DataResult.success(data.content.toList().stream().map { NBTInt(it) })
+            is NBTLongArray -> DataResult.success(data.content.toList().stream().map { NBTLong(it) })
+            else -> DataResult.error { "Not a list: $data" }
+        }
 
         override fun getMapValues(tag: NBTData): DataResult<Stream<Pair<NBTData, NBTData>>> =
             if (tag is NBTCompound)
                 DataResult.success(tag.entries.stream().map { Pair.of(this.createString(it.key), it.value) })
             else DataResult.error { "Not a map: $tag" }
+
+        override fun getMap(tag: NBTData): DataResult<MapLike<NBTData>> = if (tag is NBTCompound) {
+            DataResult.success(object : MapLike<NBTData> {
+                override fun get(data: NBTData): NBTData? = get((data as NBTString).content)
+                override fun get(str: String): NBTData? = tag[str]
+                override fun entries(): Stream<Pair<NBTData, NBTData>> = tag.entries.stream().map { Pair.of(createString(it.key), it.value) }
+                override fun toString() =  "MapLike[" + tag + "]"
+            })
+        } else DataResult.error { "Not a map: $tag" }
 
         override fun mergeToMap(data1: NBTData, data2: NBTData, data3: NBTData): DataResult<NBTData> {
             if (data1 !is NBTCompound && data1 !is NBTEnd) {
@@ -189,13 +219,7 @@ class NMS12005Impl : NMS12005() {
         fun isWrapper(tag: NBTCompound) = tag.content.size == 1 && tag.contains("")
         fun wrapElement(data: NBTData) = NBTCompound().apply { put("", data) }
         fun wrapIfNeeded(data: NBTData) = if (data is NBTCompound && !isWrapper(data)) data else wrapElement(data)
-        fun tryUnwrap(tag: NBTCompound): NBTData {
-            if (tag.content.size == 1) {
-                val unwrap = tag[""]
-                if (unwrap != null) return unwrap
-            }
-            return tag
-        }
+        fun tryUnwrap(tag: NBTCompound) = tag[""] ?: tag
 
         fun createCollector(data: NBTData): ListCollector? = when (data) {
             is NBTEnd -> InitialListCollector
@@ -211,21 +235,7 @@ class NMS12005Impl : NMS12005() {
             else -> null
         }
 
-        interface ListCollector {
-            fun accept(data: NBTData): ListCollector
-            fun result(): NBTData
-            fun acceptAll(iterable: Iterable<NBTData>): ListCollector {
-                var collector = this
-                iterable.forEach { collector = collector.accept(it) }
-                return collector
-            }
-        }
-
         class HeterogenousListCollector(val result: NBTList = NBTList()) : ListCollector {
-            constructor(list: List<Int>) : this(NBTList(list.map { wrapElement(NBTInt(it)) }))
-            constructor(list: List<Byte>) : this(NBTList(list.map { wrapElement(NBTByte(it)) }))
-            constructor(list: List<Long>) : this(NBTList(list.map { wrapElement(NBTLong(it)) }))
-
             override fun accept(data: NBTData) = this.apply { result.add(wrapIfNeeded(data)) }
             override fun result() = this.result
         }
@@ -251,23 +261,34 @@ class NMS12005Impl : NMS12005() {
             override fun result() = NBTByteArray(values.toByteArray())
             override fun accept(data: NBTData) =
                 if (data is NBTByte) this.apply { values.add(data.content) }
-                else HeterogenousListCollector(values).accept(data)
+                else HeterogenousListCollector(NBTList().apply { values.forEach { add(wrapElement(NBTByte(it))) } }).accept(data)
         }
 
         class IntListCollector(val values: MutableList<Int> = mutableListOf()) : ListCollector {
             override fun result() = NBTIntArray(values.toIntArray())
             override fun accept(data: NBTData) =
                 if (data is NBTInt) this.apply { values.add(data.content) }
-                else HeterogenousListCollector(values).accept(data)
+                else HeterogenousListCollector(NBTList().apply { values.forEach { add(wrapElement(NBTInt(it))) } }).accept(data)
         }
 
         class LongListCollector(val values: MutableList<Long> = mutableListOf()) : ListCollector {
             override fun result() = NBTLongArray(values.toLongArray())
             override fun accept(data: NBTData) =
                 if (data is NBTLong) this.apply { values.add(data.content) }
-                else HeterogenousListCollector(values).accept(data)
+                else HeterogenousListCollector(NBTList().apply { values.forEach { add(wrapElement(NBTLong(it))) } }).accept(data)
         }
 
     }
 
+}
+
+interface ListCollector {
+    fun accept(data: NBTData): ListCollector
+    fun result(): NBTData
+    fun acceptAll(iterable: Iterable<NBTData>) = acceptAll(iterable.iterator())
+    fun acceptAll(iterator: Iterator<NBTData>): ListCollector {
+        var collector = this
+        iterator.forEach { collector = collector.accept(it) }
+        return collector
+    }
 }
