@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.command
 
-import cn.fd.ratziel.module.item.nbt.*
 import cn.fd.ratziel.module.item.util.handleItemTag
+import cn.fd.ratziel.module.nbt.*
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
@@ -131,7 +131,7 @@ object NBTCommand {
              */
             is NBTCompound -> {
                 var first = isFirst
-                nbt.toMapShallow().forEach { (shallow, value) ->
+                nbt.forEach { (shallow, value) ->
                     val deep = if (nodeDeep == null) shallow else nodeDeep + DeepVisitor.DEEP_SEPARATION + shallow // 深层节点的合成
                     if (!first) {
                         newLine(); repeat(level) { append(retractComponent) } // 缩进
@@ -147,13 +147,6 @@ object NBTCommand {
              */
             else -> append(componentValue(sender, nbt)).append(translateType(sender, nbt))
         }
-    }
-
-    /**
-     * 转换成 Map 形式 (全部以浅层即一层节点表示)
-     */
-    private fun NBTCompound.toMapShallow(source: Map<String, Any>? = this.sourceMap): Map<String, NBTData> = buildMap {
-        source?.forEach { shallow -> this[shallow.key] = NBTAdapter.adapt(shallow.value) }
     }
 
     /**
@@ -202,7 +195,7 @@ object NBTCommand {
      */
     private fun asString(nbt: NBTData): String = when (nbt) {
         is NBTString -> nbt.content
-        is NBTByte -> (NBTByte.adaptOrNull(nbt.content) ?: nbt.content).toString()
+        is NBTByte -> (NBTByte.parseBoolean(nbt.content) ?: nbt.content).toString()
         is NBTInt -> nbt.content.toString()
         is NBTFloat -> nbt.content.toString()
         is NBTDouble -> nbt.content.toString()

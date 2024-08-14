@@ -6,7 +6,7 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
 import cn.fd.ratziel.module.item.impl.SimpleItemData
 import cn.fd.ratziel.module.item.impl.SimpleItemMaterial
-import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTCompound
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.Reflex.Companion.unsafeInstance

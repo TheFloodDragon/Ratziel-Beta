@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package cn.fd.ratziel.module.item.nbt
+package cn.fd.ratziel.module.nbt
 
 import java.util.function.Consumer
 

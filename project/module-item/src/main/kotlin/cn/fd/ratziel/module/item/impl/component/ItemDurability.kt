@@ -4,9 +4,9 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemTransformer
-import cn.fd.ratziel.module.item.nbt.NBTByte
-import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.nbt.NBTInt
+import cn.fd.ratziel.module.nbt.NBTByte
+import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTInt
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.util.read
 import cn.fd.ratziel.module.item.util.write
@@ -48,11 +48,11 @@ data class ItemDurability(
             // 无法破坏部分的特殊处理
             if (MinecraftVersion.majorLegacy >= 12005) {
                 if (component.unbreakable == true && data.tag[ItemSheet.UNBREAKABLE.name] == null) {
-                    data.tag.put(ItemSheet.UNBREAKABLE.name, NBTCompound())
+                    data.tag[ItemSheet.UNBREAKABLE.name] = NBTCompound()
                 } else {
                     data.tag.remove(ItemSheet.UNBREAKABLE.name)
                 }
-            } else data.tag[ItemSheet.UNBREAKABLE.name] = component.unbreakable?.let { NBTByte(it) }
+            } else component.unbreakable?.let { data.tag[ItemSheet.UNBREAKABLE.name] = NBTByte(it) }
         }
 
         override fun detransform(data: ItemData): ItemDurability = ItemDurability().apply {
@@ -61,7 +61,7 @@ data class ItemDurability(
             // 无法破坏部分的特殊处理
             val unsure = data.tag[ItemSheet.UNBREAKABLE.name]
             if (MinecraftVersion.majorLegacy >= 12005) this.unbreakable = unsure != null
-            else if (unsure != null) this.unbreakable = NBTByte.adapt((unsure as NBTByte).content)
+            else if (unsure != null) this.unbreakable = NBTByte.parseBooleanOrFalse((unsure as NBTByte).content)
         }
 
     }

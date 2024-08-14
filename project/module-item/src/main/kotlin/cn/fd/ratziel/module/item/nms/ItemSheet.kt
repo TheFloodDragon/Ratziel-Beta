@@ -50,7 +50,7 @@ object ItemSheet {
                 node = OccupyNode(s, node)
             }
             node
-        } else OccupyNode(name)
+        } else OccupyNode(name, ItemNode.ROOT)
     }
 
     /**

@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package cn.fd.ratziel.module.item.nbt
+package cn.fd.ratziel.module.nbt
 
 import cn.fd.ratziel.module.item.api.ItemNode
 
@@ -86,7 +86,7 @@ object TagHelper {
         }
         // 返回迭代器并调换Next和Previous来做到反转的效果
         return object : Iterator<String> {
-            val iterator = nodeList.listIterator(nodeList.lastIndex)
+            val iterator = nodeList.listIterator(nodeList.size)
             override fun hasNext() = iterator.hasPrevious()
             override fun next() = iterator.previous()
         }
@@ -97,14 +97,19 @@ object TagHelper {
 /**
  * 读取 [String]
  */
-inline fun NBTCompound.readString(node: String): String? = this[node]?.content as? String
+fun NBTCompound.readString(node: String): String? = this[node]?.content as? String
 
 /**
  * 读取 [Int]
  */
-inline fun NBTCompound.readInt(node: String): Int? = this[node]?.content as? Int
+fun NBTCompound.readInt(node: String): Int? = this[node]?.content as? Int
+
+/**
+ * 读取 [Byte]
+ */
+fun NBTCompound.readByte(node: String): Byte? = this[node]?.content as? Byte
 
 /**
  * 读取 [Boolean]
  */
-inline fun NBTCompound.readBoolean(node: String): Boolean? = (this[node]?.content as? Byte)?.let { NBTByte.adaptOrNull(it) }
+fun NBTCompound.readBoolean(node: String): Boolean? = readByte(node)?.let { NBTByte.parseBoolean(it) }

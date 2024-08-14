@@ -134,7 +134,7 @@ public class IsolatedClassLoader extends URLClassLoader {
     private Class<?> findClassOrNull(String name) {
         try {
             return findClass(name);
-        } catch (ClassNotFoundException ignored) {
+        } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
             return null;
         }
     }

@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTCompound
 
 /**
  * ItemData - 物品数据

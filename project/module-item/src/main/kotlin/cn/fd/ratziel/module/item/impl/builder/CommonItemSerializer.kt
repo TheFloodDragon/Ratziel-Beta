@@ -7,8 +7,8 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.ItemKSerializer
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
-import cn.fd.ratziel.module.item.nbt.NBTData
-import cn.fd.ratziel.module.item.nbt.NBTSerializer
+import cn.fd.ratziel.module.nbt.NBTData
+import cn.fd.ratziel.module.nbt.NBTSerializer
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.SerializersModule

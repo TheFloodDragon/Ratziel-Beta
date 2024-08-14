@@ -2,8 +2,8 @@ package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemNode
-import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.nbt.NBTData
+import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTData
 
 /**
  * ComponentUtil

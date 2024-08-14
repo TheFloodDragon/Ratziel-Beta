@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.module.item.nbt.*
-import cn.fd.ratziel.module.item.nbt.NBTList
+import cn.fd.ratziel.module.nbt.*
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
@@ -126,7 +126,7 @@ class NMSItemImpl2 : NMSItem() {
         is NBTIntArray -> NBTTagIntArray(data.content.copyOf())
         is NBTByteArray -> NBTTagByteArray(data.content.copyOf())
         is NBTLongArray -> NBTTagLongArray(data.content.copyOf())
-        is NBTList -> NBTTagList().also { nmsList -> data.content.forEach { nmsList.add(toNms(it)) } }
+        is cn.fd.ratziel.module.nbt.NBTList -> NBTTagList().also { nmsList -> data.content.forEach { nmsList.add(toNms(it)) } }
         is NBTCompound -> NBTTagCompound().also { nmsCompound -> data.content.forEach { nmsCompound.put(it.key, toNms(it.value)) } }
         else -> throw UnsupportedOperationException("NBTData cannot convert to NmsNBTData: $data")
     }
@@ -142,7 +142,7 @@ class NMSItemImpl2 : NMSItem() {
         is NBTTagByteArray -> NBTByteArray(nmsData.asByteArray.copyOf())
         is NBTTagIntArray -> NBTIntArray(nmsData.asIntArray.copyOf())
         is NBTTagLongArray -> NBTLongArray(nmsData.asLongArray.copyOf())
-        is NBTTagList -> NBTList().apply { nmsData.forEach { add(fromNms(it)) } }
+        is NBTTagList -> cn.fd.ratziel.module.nbt.NBTList().apply { nmsData.forEach { add(fromNms(it)) } }
         is NBTTagCompound -> NBTCompound().apply { nmsData.allKeys.forEach { put(it, fromNms(nmsData.get(it)!!)) } }
         else -> throw UnsupportedOperationException("NmsNBTData cannot convert to NBTData: $nmsData")
     }
@@ -230,7 +230,7 @@ class NMSItemImpl1 : NMSItem() {
         is NBTIntArray -> NBTTagIntArray12(data.content.copyOf())
         is NBTByteArray -> NBTTagByteArray12(data.content.copyOf())
         is NBTLongArray -> NBTTagLongArray12(data.content.copyOf())
-        is NBTList -> NBTTagList12().also { src ->
+        is cn.fd.ratziel.module.nbt.NBTList -> NBTTagList12().also { src ->
             // 反射获取字段：
             // private final List<NBTBase> list;
             val list = nbtTagListGetter.get<MutableList<Any>>(src)
@@ -263,7 +263,7 @@ class NMSItemImpl1 : NMSItem() {
         is NBTTagByteArray12 -> NBTByteArray(nbtTagByteArrayGetter.get<ByteArray>(nmsData).copyOf())
         is NBTTagIntArray12 -> NBTIntArray(nbtTagIntArrayGetter.get<IntArray>(nmsData).copyOf())
         is NBTTagLongArray12 -> NBTLongArray(nbtTagLongArrayGetter!!.get<LongArray>(nmsData).copyOf())
-        is NBTTagList12 -> NBTList().apply { nbtTagListGetter.get<List<Any>>(nmsData).forEach { add(fromNms(it)) } }
+        is NBTTagList12 -> cn.fd.ratziel.module.nbt.NBTList().apply { nbtTagListGetter.get<List<Any>>(nmsData).forEach { add(fromNms(it)) } }
         is NBTTagCompound12 -> NBTCompound().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nmsData).forEach { put(it.key, fromNms(it.value)) } }
         else -> throw UnsupportedOperationException("NmsNBTData cannot convert to NBTData: $nmsData")
     }

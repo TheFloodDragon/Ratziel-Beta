@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.function.uncheck
-import cn.fd.ratziel.module.item.nbt.*
+import cn.fd.ratziel.module.nbt.*
 import com.mojang.datafixers.util.Pair
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
@@ -112,7 +112,7 @@ class NMS12005Impl : NMS12005() {
 
         override fun empty() = NBTEnd
 
-        override fun createNumeric(number: Number) = NBTAdapter.adapt(number) // TODO
+        override fun createNumeric(number: Number) = NBTAdapter.adapt(number)
 
         override fun createString(str: String) = NBTString(str)
 
@@ -143,10 +143,20 @@ class NMS12005Impl : NMS12005() {
             }
         }
 
-        override fun mergeToList(data1: NBTData, data2: NBTData): DataResult<NBTData> =
-            if (data1 is NBTList && data2 is NBTList)
-                DataResult.success(NBTList(data1.plus(data2.content))) // TODO Improve
-            else DataResult.error({ "mergeToList called with not a list: $data1" }, data1)
+        override fun mergeToList(data1: NBTData, data2: NBTData): DataResult<NBTData> = when (data1) {
+            is NBTEnd -> DataResult.success(initial(data2))
+            is NBTList -> DataResult.success(if (data2 is NBTList) NBTList(data1.plus(data2)) else initial(data2))
+            is NBTByteArray -> DataResult.success(if (data2 is NBTByteArray) NBTByteArray(data1.content.plus(data2.content)) else initial(data2))
+            is NBTIntArray -> DataResult.success(if (data2 is NBTIntArray) NBTIntArray(data1.content.plus(data2.content)) else initial(data2))
+            is NBTLongArray -> DataResult.success(if (data2 is NBTLongArray) NBTLongArray(data1.content.plus(data2.content)) else initial(data2))
+            else -> DataResult.error({ "mergeToList called with not a list: $data1" }, data1)
+        }
+
+        private fun initial(data: NBTData) = when (data) {
+            is NBTEnd -> NBTList()
+            is NBTList, is NBTByteArray, is NBTIntArray, is NBTLongArray -> data
+            else -> NBTList().apply { add(data) }
+        }
 
         override fun getStringValue(data: NBTData): DataResult<String> =
             if (data is NBTString) DataResult.success(data.content) else DataResult.error { "Not a string: $data" }
@@ -178,6 +188,7 @@ class NMS12005Impl : NMS12005() {
 
 }
 
-object NBTEnd : NBTData(Unit, NBTType.END) {
+object NBTEnd : NBTData(NBTType.END) {
     override val content = Unit
+    override fun clone() = this
 }

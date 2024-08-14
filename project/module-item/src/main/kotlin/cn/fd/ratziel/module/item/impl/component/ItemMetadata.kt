@@ -5,7 +5,7 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.ItemTransformer
-import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTCompound
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable

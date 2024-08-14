@@ -9,7 +9,7 @@ import cn.fd.ratziel.module.item.impl.BukkitMaterial
 import cn.fd.ratziel.module.item.impl.SimpleItemMaterial
 import cn.fd.ratziel.module.item.impl.component.util.SkullData
 import cn.fd.ratziel.module.item.impl.component.util.SkullUtil
-import cn.fd.ratziel.module.item.nbt.NBTInt
+import cn.fd.ratziel.module.nbt.NBTInt
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemMeta
 import cn.fd.ratziel.module.item.nms.RefItemStack

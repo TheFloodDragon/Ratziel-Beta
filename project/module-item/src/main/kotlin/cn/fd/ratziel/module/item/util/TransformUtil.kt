@@ -4,23 +4,11 @@ package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemNode
-import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.nbt.NBTData
-import cn.fd.ratziel.module.item.nbt.TagHelper
+import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTData
+import cn.fd.ratziel.module.nbt.TagHelper
 import java.util.function.Consumer
 import java.util.function.Supplier
-
-//@Deprecated("不适用")
-//inline fun <T> ItemTransformer<T>.toApexData(component: T, data: ItemData.Mutable): ItemData.Mutable = ComponentUtil.toData(data, component, this)
-//
-//@Deprecated("不适用")
-//inline fun <T> ItemTransformer<T>.toApexComponent(data: ItemData): T = ComponentUtil.toComponent(data, this)
-//
-//@Deprecated("不适用")
-//inline fun ItemTransformer<*>.toApexDataUncheck(component: Any, data: ItemData.Mutable): ItemData.Mutable = ComponentUtil.toData(data, component, uncheck(this))
-//
-//@Deprecated("不适用")
-//inline fun ItemTransformer<*>.toApexComponentUncheck(data: ItemData): Any = ComponentUtil.toComponent(data, uncheck(this))
 
 /**
  * 读取并处理 [NBTCompound]

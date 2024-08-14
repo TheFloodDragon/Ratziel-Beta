@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.nbt
+package cn.fd.ratziel.module.nbt
 
 /**
  * NBTType - NBT类型

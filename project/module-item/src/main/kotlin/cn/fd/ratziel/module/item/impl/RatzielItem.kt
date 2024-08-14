@@ -5,8 +5,9 @@ import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
-import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.nbt.NBTString
+import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTString
+import cn.fd.ratziel.module.nbt.readString
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.handle
@@ -145,11 +146,11 @@ open class RatzielItem : NeoItem {
                 // 获取内部信息
                 val internal = data.read<NBTCompound>(INTERNAL_NODE) ?: return null
                 // 读取类型
-                val type = internal[INFO_TYPE.name] as? NBTString ?: return null
+                val type = internal.readString(INFO_TYPE.name) ?: return null
                 // 读取版本信息
-                val hash = internal[INFO_HASH.name] as? NBTString ?: return null
+                val hash = internal.readString(INFO_HASH.name) ?: return null
                 // 构造信息对象
-                return Info(type.content, hash.content)
+                return Info(type, hash)
             }
 
             /**

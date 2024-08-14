@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.nbt
+package cn.fd.ratziel.module.nbt
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.core.util.adapt
@@ -46,7 +46,7 @@ object NBTSerializer : KSerializer<NBTData> {
         fun deserializeFromJson(json: JsonElement, source: NBTCompound = NBTCompound()): NBTData =
             when (json) {
                 is JsonPrimitive -> deserializeFromString(json.content)
-                is JsonArray -> NBTAdapter.adaptList(json.map { deserializeFromJson(it, NBTCompound()) })
+                is JsonArray -> NBTList(json.map { deserializeFromJson(it, NBTCompound()) })
                 is JsonObject -> source.also { tag ->
                     json.forEach {
                         val newSource = tag.getDeep(it.key) as? NBTCompound ?: NBTCompound()
@@ -110,7 +110,7 @@ object NBTSerializer : KSerializer<NBTData> {
                 ?: throw UnsupportedTypeException(type)
         }
 
-        private fun adaptString(str: String) = NBTAdapter.BasicAdapter.adapt(str.adapt())!!
+        private fun adaptString(str: String) = NBTAdapter.adapt(str.adapt())
 
         private fun convertBasicString(str: String, type: NBTType) = when (type) {
             NBTType.BYTE -> NBTByte(str.toByte())

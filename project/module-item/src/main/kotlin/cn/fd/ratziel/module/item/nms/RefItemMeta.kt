@@ -2,12 +2,12 @@ package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.function.uncheck
-import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.nbt.NMSUtil
+import cn.fd.ratziel.module.nbt.NBTCompound
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -83,14 +83,14 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
          */
         private val craftMetaConstructor by lazy {
             ReflexClass.of(craftClass, false).structure.getConstructorByType(
-                if (MinecraftVersion.majorLegacy >= 12005) NMS12005.dataComponentPatchClass else NMSUtil.NtCompound.nmsClass
+                if (MinecraftVersion.majorLegacy >= 12005) NMS12005.dataComponentPatchClass else nbtTagCompoundClass
             )
         }
 
         private val applyToItemMethod by lazy {
             ReflexClass.of(craftClass, false).structure.getMethodByType(
                 "applyToItem",
-                if (MinecraftVersion.majorLegacy >= 12005) applicatorClass else NMSUtil.NtCompound.nmsClass
+                if (MinecraftVersion.majorLegacy >= 12005) applicatorClass else nbtTagCompoundClass
             )
         }
 
@@ -135,6 +135,10 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
 
             val applicatorBuildMethod by lazy {
                 ReflexClass.of(applicatorClass, false).getMethod("build")
+            }
+
+            val nbtTagCompoundClass by lazy {
+                nmsClass("NBTTagCompound")
             }
 
         }

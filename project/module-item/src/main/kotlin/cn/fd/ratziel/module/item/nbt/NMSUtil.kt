@@ -2,6 +2,7 @@
 
 package cn.fd.ratziel.module.item.nbt
 
+import cn.fd.ratziel.module.nbt.NBTType
 import taboolib.library.reflex.ClassConstructor
 import taboolib.library.reflex.ClassField
 import taboolib.library.reflex.ReflexClass

@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTCompound
 
 /**
  * SimpleItemData

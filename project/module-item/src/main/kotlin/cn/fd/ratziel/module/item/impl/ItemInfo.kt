@@ -3,9 +3,9 @@ package cn.fd.ratziel.module.item.impl
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.module.item.api.NeoItem
-import cn.fd.ratziel.module.item.nbt.NBTCompound
-import cn.fd.ratziel.module.item.nbt.NBTInt
-import cn.fd.ratziel.module.item.nbt.NBTString
+import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTInt
+import cn.fd.ratziel.module.nbt.NBTString
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.util.ComponentUtil
 
