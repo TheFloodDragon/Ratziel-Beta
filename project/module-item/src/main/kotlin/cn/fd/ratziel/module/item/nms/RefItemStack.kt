@@ -234,29 +234,6 @@ class RefItemStack(raw: Any) {
 
     internal object InternalUtil {
 
-        /**
-         * private NBTTagCompound A
-         * private NBTTagCompound tag
-         */
-        val nmsTagField by lazy {
-            ReflexClass.of(nmsClass).structure.getField(
-                if (MinecraftVersion.isUniversal) "A" else "tag"
-            )
-        }
-
-        /**
-         * public nms.ItemStack p()
-         * public nms.ItemStack cloneItemStack()
-         * public ItemStack s()
-         */
-        val nmsCloneMethod by lazy {
-            ReflexClass.of(nmsClass).structure.getMethodByType(
-                if (MinecraftVersion.majorLegacy >= 12005) "s"
-                else if (MinecraftVersion.isUniversal) "p"
-                else "cloneItemStack"
-            )
-        }
-
         // net.minecraft.world.item.ItemStack handle;
         val obcHandleField by lazy {
             ReflexClass.of(obcClass).structure.getField("handle")

@@ -52,6 +52,11 @@ open class NBTCompound private constructor(rawData: Any) : NBTData(rawData, NBTT
     open fun clone() = this.apply { data = NMSUtil.NtCompound.methodClone.invoke(data)!! }
 
     /**
+     * 浅克隆数据
+     */
+    open fun cloneShallow() = NBTCompound(HashMap(sourceMap))
+
+    /**
      * 合并目标数据
      * @param replace 是否替换原有的数据 (false时不会 替换/删除 任何一个节点)
      */

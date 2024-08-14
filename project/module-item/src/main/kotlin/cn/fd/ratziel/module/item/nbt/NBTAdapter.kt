@@ -17,6 +17,7 @@ object NBTAdapter {
         else -> BasicAdapter.adapt(target)
     } ?: throw UnsupportedTypeException(target)
 
+    @Deprecated("Use NMSItem.INSTANCE")
     @JvmStatic
     fun adaptNms(target: Any) = NmsAdapter.adapt(target)!!
 
@@ -38,6 +39,7 @@ object NBTAdapter {
 
     object NmsAdapter {
 
+        @Deprecated("Use NMSItem.INSTANCE")
         @JvmStatic
         fun adapt(target: Any) = target::class.java.let { c ->
             when {

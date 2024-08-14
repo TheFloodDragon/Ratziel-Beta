@@ -102,9 +102,7 @@ object NBTSerializer : KSerializer<NBTData> {
             val dataStr = target.substringBeforeLast(EXACT_TYPE_CHAR)
 
             // 匹配类型
-            val type = NBTType.entries.find {
-                it.alias.contains(typeStr) || it.simpleName == typeStr
-            } ?: return adaptString(target)
+            val type = NBTType.entries.find { it.names.contains(typeStr) } ?: return adaptString(target)
 
             return convertBasicString(dataStr, type)
                 ?: convertArrayString(dataStr, type)

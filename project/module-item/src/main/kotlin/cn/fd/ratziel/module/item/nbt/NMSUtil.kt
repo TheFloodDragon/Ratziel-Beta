@@ -14,6 +14,7 @@ import taboolib.module.nms.nmsClass
  * @author TheFloodDragon
  * @since 2024/3/15 18:56
  */
+@Deprecated("Use NMSItem.INSTANCE")
 internal sealed class NMSUtil(val type: NBTType) {
 
     abstract val nmsClass: Class<*>

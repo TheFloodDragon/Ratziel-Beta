@@ -9,8 +9,6 @@ import com.mojang.serialization.DynamicOps
 import net.minecraft.core.IRegistryCustom
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
-import net.minecraft.nbt.DynamicOpsNBT
-import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.resources.RegistryOps
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer
@@ -21,7 +19,7 @@ import taboolib.module.nms.nmsProxy
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.stream.Stream
-import kotlin.streams.toList
+import kotlin.streams.asSequence
 
 
 /**
@@ -74,7 +72,10 @@ abstract class NMS12005 {
 
 }
 
-@Suppress("unused")
+/**
+ * 代码参考自: Taboolib/nms-tag-12005
+ */
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class NMS12005Impl : NMS12005() {
 
     fun <T> parse(codec: Codec<T>, tag: NBTCompound): T? {
@@ -89,27 +90,15 @@ class NMS12005Impl : NMS12005() {
         return if (opt.isPresent) opt.get() as? NBTCompound else null
     }
 
-    fun <T> parse0(codec: Codec<T>, nbt: NBTTagCompound): T? {
-        val result = codec.parse(createSerializationContext(DynamicOpsNBT.INSTANCE), nbt)
-        val opt = result.resultOrPartial { error("Failed to parse: $it") }
-        return if (opt.isPresent) opt.get() else null
-    }
+    override fun parsePatch(tag: NBTCompound): Any? = parse(DataComponentPatch.CODEC, tag)
 
-    fun <T> save0(codec: Codec<T>, obj: T): NBTTagCompound? {
-        val result = codec.encodeStart(createSerializationContext(DynamicOpsNBT.INSTANCE), obj)
-        val opt = result.resultOrPartial { error("Failed to save: $it") }
-        return if (opt.isPresent) opt.get() as? NBTTagCompound else null
-    }
+    override fun savePatch(dcp: Any): NBTCompound? = save(DataComponentPatch.CODEC, dcp as DataComponentPatch)
 
-    override fun parsePatch(tag: NBTCompound): Any? = parse0(DataComponentPatch.CODEC, tag.getRaw() as NBTTagCompound)
-        .also { println("Test-parse: " + parse(DataComponentPatch.CODEC, tag)) }
+    override fun parseMap(tag: NBTCompound): Any? = parse(DataComponentMap.CODEC, tag)
 
-    override fun savePatch(dcp: Any): NBTCompound? = save0(DataComponentPatch.CODEC, dcp as DataComponentPatch)?.let { NBTCompound.of(it) }
-        .also { println("Test-save: " + save(DataComponentPatch.CODEC, dcp)) }
+    override fun saveMap(dcm: Any): NBTCompound? = save(DataComponentMap.CODEC, dcm as DataComponentMap)
 
-    override fun parseMap(tag: NBTCompound): Any? = parse0(DataComponentMap.CODEC, tag.getRaw() as NBTTagCompound)
-
-    override fun saveMap(dcm: Any): NBTCompound? = save0(DataComponentMap.CODEC, dcm as DataComponentMap)?.let { NBTCompound.of(it) }
+    fun <V> createSerializationContext(dynamicOps: DynamicOps<V>): RegistryOps<V> = uncheck(method.invoke(access, dynamicOps)!!)
 
     private val access: IRegistryCustom.Dimension by lazy { (Bukkit.getServer() as CraftServer).server.registryAccess() }
 
@@ -119,50 +108,36 @@ class NMS12005Impl : NMS12005() {
             ?: ref.structure.getMethodByType("createSerializationContext", DynamicOps::class.java)
     }
 
-    fun <V> createSerializationContext(dynamicOps: DynamicOps<V>): RegistryOps<V> = uncheck(method.invoke(access, dynamicOps)!!)
-
     private object InternalOps : DynamicOps<NBTData> {
 
-        override fun empty() = NBTCompound()
+        override fun empty() = NBTEnd
 
-        override fun createNumeric(p0: Number) = NBTAdapter.adapt(p0)
+        override fun createNumeric(number: Number) = NBTAdapter.adapt(number) // TODO
 
-        override fun createString(p0: String) = NBTString(p0)
+        override fun createString(str: String) = NBTString(str)
 
-        override fun remove(raw: NBTData, str: String) =
-            if (raw is NBTCompound) {
-                val copied = raw.clone() // TODO shallow
-                copied.remove(str)
-                copied
-            } else raw
+        override fun remove(tag: NBTData, str: String) = if (tag is NBTCompound) tag.cloneShallow().apply { remove(str) } else tag
 
-        override fun createList(stream: Stream<NBTData>) = NBTList(stream.toList())
+        override fun createList(stream: Stream<NBTData>) = NBTList().apply { addAll(stream.asSequence()) }
 
-        override fun getStream(data: NBTData): DataResult<Stream<NBTData>> =
-            if (data is NBTList) {
-                DataResult.success(data.stream())
-            } else {
-                DataResult.error { "Not a list" }
-            }
+        override fun getStream(tag: NBTData): DataResult<Stream<NBTData>> =
+            if (tag is NBTList) DataResult.success(tag.stream()) else DataResult.error { "Not a list: $tag" }
 
-        override fun createMap(stream: Stream<Pair<NBTData, NBTData>>) = NBTCompound().also { tag ->
-            stream.forEach { tag.put((it.first as NBTData).toString(), it.second) }
-        }
+        override fun createMap(stream: Stream<Pair<NBTData, NBTData>>) =
+            NBTCompound().apply { stream.forEach { put((it.first as NBTString).content, it.second) } }
 
-        override fun getMapValues(data: NBTData): DataResult<Stream<Pair<NBTData, NBTData>>> =
-            if (data is NBTCompound) {
-                DataResult.success(data.entries.stream().map { Pair.of(this.createString(it.key), it.value) })
-            } else {
-                DataResult.error { "Not a map: $data" }
-            }
+        override fun getMapValues(tag: NBTData): DataResult<Stream<Pair<NBTData, NBTData>>> =
+            if (tag is NBTCompound)
+                DataResult.success(tag.entries.stream().map { Pair.of(this.createString(it.key), it.value) })
+            else DataResult.error { "Not a map: $tag" }
 
         override fun mergeToMap(data1: NBTData, data2: NBTData, data3: NBTData): DataResult<NBTData> {
-            if (data1 !is NBTCompound) {
+            if (data1 !is NBTCompound && data1 !is NBTEnd) {
                 return DataResult.error({ "mergeToMap called with not a map: $data1" }, data1)
             } else if (data2 !is NBTString) {
                 return DataResult.error({ "key is not a string: $data2" }, data1)
             } else {
-                val newMap = data1.clone() // TODO shallowCopy()
+                val newMap = (data1 as? NBTCompound)?.cloneShallow() ?: NBTCompound()
                 newMap.put(data2.content, data3)
                 return DataResult.success(newMap)
             }
@@ -173,13 +148,12 @@ class NMS12005Impl : NMS12005() {
                 DataResult.success(NBTList(data1.plus(data2.content))) // TODO Improve
             else DataResult.error({ "mergeToList called with not a list: $data1" }, data1)
 
-        override fun getStringValue(data: NBTData?): DataResult<String> {
-            return if (data is NBTString) DataResult.success(data.content) else DataResult.error { "Not a string" }
-        }
+        override fun getStringValue(data: NBTData): DataResult<String> =
+            if (data is NBTString) DataResult.success(data.content) else DataResult.error { "Not a string: $data" }
 
         override fun getNumberValue(data: NBTData): DataResult<Number> {
             val number = data.content as? Number
-            return if (number != null) DataResult.success(number) else DataResult.error { "Not a number" }
+            return if (number != null) DataResult.success(number) else DataResult.error { "Not a number: $data" }
         }
 
         override fun <U> convertTo(ops: DynamicOps<U>, data: NBTData): U =
@@ -202,4 +176,8 @@ class NMS12005Impl : NMS12005() {
 
     }
 
+}
+
+object NBTEnd : NBTData(Unit, NBTType.END) {
+    override val content = Unit
 }

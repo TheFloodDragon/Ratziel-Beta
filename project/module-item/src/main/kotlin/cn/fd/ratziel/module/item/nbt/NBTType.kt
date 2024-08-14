@@ -26,4 +26,6 @@ enum class NBTType(val id: Int, val alias: Array<String> = emptyArray()) {
 
     val simpleName get() = name.lowercase()
 
+    val names by lazy { alias.plus(simpleName) }
+
 }
