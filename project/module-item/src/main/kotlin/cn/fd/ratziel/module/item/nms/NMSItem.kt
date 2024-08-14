@@ -1,19 +1,16 @@
 package cn.fd.ratziel.module.item.nms
 
-import cn.fd.ratziel.module.item.nbt.*
 import cn.fd.ratziel.module.nbt.*
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.PatchedDataComponentMap
-import net.minecraft.nbt.*
 import net.minecraft.world.item.component.CustomData
 import taboolib.library.reflex.ReflexClass
 import taboolib.library.reflex.UnsafeAccess
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
 import java.lang.invoke.MethodHandle
-import net.minecraft.world.item.ItemStack as NMSItemStack
 
 /**
  * NMSItem
@@ -77,37 +74,40 @@ abstract class NMSItem {
 /**
  * 1.20.5+
  */
-@Suppress("unused", "MemberVisibilityCanBePrivate")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "DEPRECATION")
 class NMSItemImpl2 : NMSItem() {
 
     val componentsField by lazy {
         ReflexClass.of(RefItemStack.nmsClass).getField("components", remap = true)
     }
 
+    val customDataConstructor by lazy {
+        ReflexClass.of(CustomData::class.java).structure.getConstructorByType(NBTTagCompound::class.java)
+    }
+
+    val customDataTagField by lazy {
+        ReflexClass.of(CustomData::class.java).getField("tag", remap = true)
+    }
+
     override fun getTag(nmsItem: Any): NBTCompound? {
         val dcp = (nmsItem as NMSItemStack).componentsPatch
-        return NMS12005.INSTANCE.savePatch(dcp)?.let { NBTCompound.of(it) }
+        return NMS12005.INSTANCE.savePatch(dcp)
     }
 
     override fun setTag(nmsItem: Any, tag: NBTCompound) {
-        val dcp = NMS12005.INSTANCE.parsePatch(tag) as? DataComponentPatch
-        val components = componentsField.get(nmsItem) as? PatchedDataComponentMap
-        if (components != null) {
-            components.restorePatch(dcp)
-        } else {
-            val newComponents = PatchedDataComponentMap(DataComponentMap.EMPTY)
-            newComponents.restorePatch(dcp)
-            componentsField.set(nmsItem, newComponents)
-        }
+        val dcp = NMS12005.INSTANCE.parsePatch(tag) as? DataComponentPatch ?: return
+        val components = PatchedDataComponentMap(DataComponentMap.EMPTY)
+        components.restorePatch(dcp)
+        componentsField.set(nmsItem, components)
     }
 
     override fun getCustomTag(nmsItem: Any): NBTCompound? {
         val customData = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
-        return customData?.copyTag()?.let { NBTCompound.of(it) }
+        return customData?.unsafe?.let { fromNms(it) } as? NBTCompound
     }
 
     override fun setCustomTag(nmsItem: Any, tag: NBTCompound) {
-        val customData = CustomData.of(tag.getRaw() as NBTTagCompound)
+        val customData = customDataConstructor.instance(toNms(tag))!! as CustomData
         (nmsItem as NMSItemStack).set(DataComponents.CUSTOM_DATA, customData)
     }
 
@@ -126,8 +126,8 @@ class NMSItemImpl2 : NMSItem() {
         is NBTIntArray -> NBTTagIntArray(data.content.copyOf())
         is NBTByteArray -> NBTTagByteArray(data.content.copyOf())
         is NBTLongArray -> NBTTagLongArray(data.content.copyOf())
-        is cn.fd.ratziel.module.nbt.NBTList -> NBTTagList().also { nmsList -> data.content.forEach { nmsList.add(toNms(it)) } }
-        is NBTCompound -> NBTTagCompound().also { nmsCompound -> data.content.forEach { nmsCompound.put(it.key, toNms(it.value)) } }
+        is NBTList -> NBTTagList().apply { data.content.forEach { add(toNms(it)) } }
+        is NBTCompound -> NBTTagCompound().apply { data.content.forEach { put(it.key, toNms(it.value)) } }
         else -> throw UnsupportedOperationException("NBTData cannot convert to NmsNBTData: $data")
     }
 
@@ -142,7 +142,7 @@ class NMSItemImpl2 : NMSItem() {
         is NBTTagByteArray -> NBTByteArray(nmsData.asByteArray.copyOf())
         is NBTTagIntArray -> NBTIntArray(nmsData.asIntArray.copyOf())
         is NBTTagLongArray -> NBTLongArray(nmsData.asLongArray.copyOf())
-        is NBTTagList -> cn.fd.ratziel.module.nbt.NBTList().apply { nmsData.forEach { add(fromNms(it)) } }
+        is NBTTagList -> NBTList().apply { nmsData.forEach { add(fromNms(it)) } }
         is NBTTagCompound -> NBTCompound().apply { nmsData.allKeys.forEach { put(it, fromNms(nmsData.get(it)!!)) } }
         else -> throw UnsupportedOperationException("NmsNBTData cannot convert to NBTData: $nmsData")
     }
@@ -186,7 +186,9 @@ class NMSItemImpl1 : NMSItem() {
      * private NBTTagCompound A
      * private NBTTagCompound tag
      */
-    val nmsTagField = ReflexClass.of(RefItemStack.nmsClass).structure.getField(if (MinecraftVersion.isUniversal) "A" else "tag")
+    val nmsTagField by lazy {
+        ReflexClass.of(RefItemStack.nmsClass).structure.getField(if (MinecraftVersion.isUniversal) "A" else "tag")
+    }
 
     /**
      * public nms.ItemStack p()
@@ -214,8 +216,9 @@ class NMSItemImpl1 : NMSItem() {
     val nbtTagByteArrayGetter = unreflectGetter<NBTTagByteArray12>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagIntArrayGetter = unreflectGetter<NBTTagIntArray12>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagLongArrayGetter =
-        if (!MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) null
-        else unreflectGetter<NBTTagLongArray12>(if (MinecraftVersion.isUniversal) "c" else "b")
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
+            unreflectGetter<NBTTagLongArray12>(if (MinecraftVersion.isUniversal) "c" else "b")
+        } else null
 
     val new = MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_15)
 
@@ -230,7 +233,7 @@ class NMSItemImpl1 : NMSItem() {
         is NBTIntArray -> NBTTagIntArray12(data.content.copyOf())
         is NBTByteArray -> NBTTagByteArray12(data.content.copyOf())
         is NBTLongArray -> NBTTagLongArray12(data.content.copyOf())
-        is cn.fd.ratziel.module.nbt.NBTList -> NBTTagList12().also { src ->
+        is NBTList -> NBTTagList12().also { src ->
             // 反射获取字段：
             // private final List<NBTBase> list;
             val list = nbtTagListGetter.get<MutableList<Any>>(src)
@@ -238,7 +241,7 @@ class NMSItemImpl1 : NMSItem() {
             if (dataList.isNotEmpty()) {
                 dataList.forEach { list.add(toNms(it)) }
                 // 修改 NBTTagList 的类型，不改他妈这条 List 作废，天坑。。。
-                nbtTagListTypeSetter.set(src, dataList.first().type.id)
+                nbtTagListTypeSetter.set(src, dataList.first().type.id.toByte())
             }
         }
 
@@ -263,7 +266,7 @@ class NMSItemImpl1 : NMSItem() {
         is NBTTagByteArray12 -> NBTByteArray(nbtTagByteArrayGetter.get<ByteArray>(nmsData).copyOf())
         is NBTTagIntArray12 -> NBTIntArray(nbtTagIntArrayGetter.get<IntArray>(nmsData).copyOf())
         is NBTTagLongArray12 -> NBTLongArray(nbtTagLongArrayGetter!!.get<LongArray>(nmsData).copyOf())
-        is NBTTagList12 -> cn.fd.ratziel.module.nbt.NBTList().apply { nbtTagListGetter.get<List<Any>>(nmsData).forEach { add(fromNms(it)) } }
+        is NBTTagList12 -> NBTList().apply { nbtTagListGetter.get<List<Any>>(nmsData).forEach { add(fromNms(it)) } }
         is NBTTagCompound12 -> NBTCompound().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nmsData).forEach { put(it.key, fromNms(it.value)) } }
         else -> throw UnsupportedOperationException("NmsNBTData cannot convert to NBTData: $nmsData")
     }
@@ -282,6 +285,8 @@ class NMSItemImpl1 : NMSItem() {
     private fun <T> MethodHandle.set(src: Any, value: T) = bindTo(src).invoke(value)
 
 }
+
+typealias NMSItemStack = net.minecraft.world.item.ItemStack
 
 typealias NBTTagCompound12 = net.minecraft.server.v1_12_R1.NBTTagCompound
 typealias NBTTagList12 = net.minecraft.server.v1_12_R1.NBTTagList
@@ -303,3 +308,17 @@ typealias NBTTagLong15 = net.minecraft.server.v1_15_R1.NBTTagLong
 typealias NBTTagFloat15 = net.minecraft.server.v1_15_R1.NBTTagFloat
 typealias NBTTagDouble15 = net.minecraft.server.v1_15_R1.NBTTagDouble
 typealias NBTTagString15 = net.minecraft.server.v1_15_R1.NBTTagString
+
+typealias NBTBase = net.minecraft.nbt.NBTBase
+typealias NBTTagCompound = net.minecraft.nbt.NBTTagCompound
+typealias NBTTagList = net.minecraft.nbt.NBTTagList
+typealias NBTTagByte = net.minecraft.nbt.NBTTagByte
+typealias NBTTagShort = net.minecraft.nbt.NBTTagShort
+typealias NBTTagInt = net.minecraft.nbt.NBTTagInt
+typealias NBTTagLong = net.minecraft.nbt.NBTTagLong
+typealias NBTTagFloat = net.minecraft.nbt.NBTTagFloat
+typealias NBTTagDouble = net.minecraft.nbt.NBTTagDouble
+typealias NBTTagString = net.minecraft.nbt.NBTTagString
+typealias NBTTagByteArray = net.minecraft.nbt.NBTTagByteArray
+typealias NBTTagIntArray = net.minecraft.nbt.NBTTagIntArray
+typealias NBTTagLongArray = net.minecraft.nbt.NBTTagLongArray

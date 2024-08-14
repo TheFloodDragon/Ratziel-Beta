@@ -12,12 +12,10 @@ open class NBTCompound(override val content: MutableMap<String, NBTData>) : NBTD
 
     constructor() : this(ConcurrentHashMap())
 
-    constructor(map: Map<String, NBTData>) : this(ConcurrentHashMap(map))
-
     /**
      * 克隆数据
      */
-    override fun clone() = NBTCompound(this.content.mapValues { it.value.clone() })
+    override fun clone() = of(this.content.mapValues { it.value.clone() })
 
     /**
      * 浅克隆数据
@@ -59,6 +57,13 @@ open class NBTCompound(override val content: MutableMap<String, NBTData>) : NBTD
             }
         }
         return this
+    }
+
+    companion object {
+
+        @JvmStatic
+        fun of(map: Map<String, NBTData>): NBTCompound = NBTCompound(ConcurrentHashMap(map))
+
     }
 
 }

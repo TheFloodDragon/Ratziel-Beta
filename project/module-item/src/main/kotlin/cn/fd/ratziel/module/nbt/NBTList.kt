@@ -15,6 +15,11 @@ open class NBTList(override val content: MutableList<NBTData>) : NBTData(NBTType
     constructor(array: Array<NBTData>) : this(array.toMutableList())
 
     /**
+     * 存储元素的类型
+     */
+    val elementType get() = if(content.isNotEmpty()) content.first().type else NBTType.END
+
+    /**
      * 克隆数据
      */
     override fun clone() = NBTList(this.content.map { it.clone() })
