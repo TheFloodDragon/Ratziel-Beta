@@ -36,7 +36,7 @@ class DefaultItemGenerator(
     val origin: Element
 ) : ItemGenerator {
 
-    fun build(sourceData: ItemData.Mutable, context: ArgumentContext): CompletableFuture<NeoItem> {
+    fun build(sourceData: ItemData, context: ArgumentContext): CompletableFuture<NeoItem> {
         // 生成物品唯一标识符
         val identifier = IdentifierImpl(origin.name)
 

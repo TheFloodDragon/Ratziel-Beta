@@ -50,7 +50,7 @@ data class ItemMetadata(
 
     companion object : ItemTransformer<ItemMetadata> {
 
-        override fun transform(data: ItemData.Mutable, component: ItemMetadata) {
+        override fun transform(data: ItemData, component: ItemMetadata) {
             data.material = component.material
             ItemDisplay.transform(data, component.display)
             ItemDurability.transform(data, component.durability)

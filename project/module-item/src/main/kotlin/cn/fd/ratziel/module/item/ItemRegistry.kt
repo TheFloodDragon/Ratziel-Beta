@@ -3,14 +3,14 @@ package cn.fd.ratziel.module.item
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.uncheck
-import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSerializer
+import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.api.registry.ComponentRegistry
 import cn.fd.ratziel.module.item.api.registry.ResolverRegistry
 import cn.fd.ratziel.module.item.api.registry.SerializerRegistry
-import cn.fd.ratziel.module.item.impl.builder.CommonItemSerializer
-import cn.fd.ratziel.module.item.impl.builder.resolver.BasicItemResolver
+import cn.fd.ratziel.module.item.impl.builder.CommonItemResolver
+import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
 import cn.fd.ratziel.module.item.impl.component.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -28,7 +28,7 @@ object ItemRegistry {
      */
     internal fun registerDefault() {
         // 注册默认序列化器
-        Serializer.register(CommonItemSerializer)
+        Serializer.register(DefaultItemSerializer)
         // 注册默认转换器
         Component.register(ItemDisplay::class.java, ItemDisplay)
         Component.register(ItemDurability::class.java, ItemDurability)
@@ -36,7 +36,8 @@ object ItemRegistry {
         Component.register(ItemMetadata::class.java, ItemMetadata)
         Component.register(ItemCharacteristic::class.java, ItemCharacteristic)
         // 注册默认物品解析器
-        Resolver.register(BasicItemResolver)
+//        Resolver.register(BasicItemResolver)
+        Resolver.register(CommonItemResolver)
     }
 
     object Component : ComponentRegistry {

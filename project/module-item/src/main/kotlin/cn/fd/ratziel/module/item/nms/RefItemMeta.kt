@@ -34,9 +34,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
     /**
      * 将 [ItemMeta] 应用到 [NBTCompound]
      */
-    fun applyToTag(tag: NBTCompound) = tag.also {
-        metaType.applyToItem(handle, tag)
-    }
+    fun applyToTag(sourceTag: NBTCompound = NBTCompound()): NBTCompound =  metaType.applyToItem(handle, sourceTag)
 
     companion object {
 
@@ -94,13 +92,14 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
             )
         }
 
-        internal fun new(tag: NBTCompound): T {
-            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(tag)!! else NMSItem.INSTANCE.toNms(tag)
+        internal fun new(sourceTag: NBTCompound): T {
+            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(sourceTag)!! else NMSItem.INSTANCE.toNms(sourceTag)
             return uncheck(craftMetaConstructor.instance(handled)!!)
         }
 
-        internal fun applyToItem(meta: ItemMeta, tag: NBTCompound) {
-            if (MinecraftVersion.majorLegacy >= 12005) {/*
+        internal fun applyToItem(meta: ItemMeta, sourceTag: NBTCompound): NBTCompound {
+            if (MinecraftVersion.majorLegacy >= 12005) {
+                /*
                 1.20.5+ 巨tm坑:
                 if (this.customTag != null) {
                   itemTag.put(CUSTOM_DATA, CustomData.a(this.customTag));
@@ -110,9 +109,12 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
                 applyToItemMethod.invoke(meta, applicator) // Apply to the applicator
                 val dcp = applicatorBuildMethod.invoke(applicator)!! // Applicator to DataComponentPatch
                 val newTag = NMS12005.INSTANCE.savePatch(dcp) // DataComponentPatch save to NBT
-                if (newTag != null) tag.mergeShallow(newTag, true)
+                if (newTag != null) sourceTag.mergeShallow(newTag, true)
+                return sourceTag
             } else {
-                applyToItemMethod.invoke(meta, NMSItem.INSTANCE.toNms(tag))
+                val nmsTag = NMSItem.INSTANCE.toNms(sourceTag)
+                applyToItemMethod.invoke(meta, nmsTag)
+                return NMSItem.INSTANCE.fromNms(nmsTag) as NBTCompound
             }
         }
 

@@ -18,12 +18,12 @@ data class SimpleItemData(
     /**
      * 物品NBT
      */
-    override val tag: NBTCompound = NBTCompound(),
+    override var tag: NBTCompound = NBTCompound(),
     /**
      * 物品数量
      */
     override var amount: Int = 1
-) : ItemData.Mutable {
+) : ItemData {
 
     companion object {
 
@@ -31,7 +31,7 @@ data class SimpleItemData(
          * 将 [target] 合并到 [source] 中
          */
         @Deprecated("Shit")
-        fun merge(source: ItemData.Mutable, target: ItemData, replace: Boolean = true) {
+        fun merge(source: ItemData, target: ItemData, replace: Boolean = true) {
             mergeWithoutTag(source, target)
             source.tag.merge(target.tag, replace)
         }
@@ -40,7 +40,7 @@ data class SimpleItemData(
          * 将 [target] 合并到 [source] 中 (不合并[tag])
          */
         @Deprecated("Shit")
-        fun mergeWithoutTag(source: ItemData.Mutable, target: ItemData) {
+        fun mergeWithoutTag(source: ItemData, target: ItemData) {
             if (target.material != ItemData.EMPTY.material) source.material = target.material
             if (target.amount != ItemData.EMPTY.amount) source.amount = target.amount
         }
@@ -49,7 +49,7 @@ data class SimpleItemData(
          * 将 [target] 合并到 [source] 中 (浅合并)
          */
         @Deprecated("Shit")
-        fun mergeShallow(source: ItemData.Mutable, target: ItemData, replace: Boolean = true) {
+        fun mergeShallow(source: ItemData, target: ItemData, replace: Boolean = true) {
             mergeWithoutTag(source, target)
             source.tag.mergeShallow(target.tag, replace)
         }

@@ -13,7 +13,7 @@ interface ItemTransformer<T> {
     /**
      * 正向转化 - 将 [component] 的内容合并到 [data] 中
      */
-    fun transform(data: ItemData.Mutable, component: T)
+    fun transform(data: ItemData, component: T)
 
     /**
      * 反向转化 - 通过 [data] 构造组件

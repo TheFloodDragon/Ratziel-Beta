@@ -44,7 +44,7 @@ data class ItemCharacteristic(
 
     companion object : ItemTransformer<ItemCharacteristic> {
 
-        override fun transform(data: ItemData.Mutable, component: ItemCharacteristic) {
+        override fun transform(data: ItemData, component: ItemCharacteristic) {
             // 头颅处理 (当源数据的材料为空或者是PLAYER_HEAD时, 才处理相关)
             if (data.material.isEmpty() || SimpleItemMaterial.equals(data.material, BukkitMaterial.PLAYER_HEAD)) {
                 val skullTag = component.skull?.get()?.let { RefItemStack(it) }?.getTag()

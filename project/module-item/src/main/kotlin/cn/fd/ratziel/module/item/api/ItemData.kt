@@ -13,39 +13,17 @@ interface ItemData {
     /**
      * 物品材料
      */
-    val material: ItemMaterial
+    var material: ItemMaterial
 
     /**
      * 物品NBT
      */
-    val tag: NBTCompound
+    var tag: NBTCompound
 
     /**
      * 物品数量
      */
-    val amount: Int
-
-    /**
-     * 可变的 [ItemData]
-     */
-    interface Mutable : ItemData {
-
-        /**
-         * 物品材料 (可变)
-         */
-        override var material: ItemMaterial
-
-        /**
-         * 物品标签数据
-         */
-        override val tag: NBTCompound
-
-        /**
-         * 物品数量 (可变)
-         */
-        override var amount: Int
-
-    }
+    var amount: Int
 
     companion object {
 
@@ -53,9 +31,15 @@ interface ItemData {
          * 空 [ItemData]
          */
         val EMPTY = object : ItemData {
-            override val material = ItemMaterial.EMPTY
-            override val tag: NBTCompound = NBTCompound()
-            override var amount = 0
+            override var material: ItemMaterial
+                get() = ItemMaterial.EMPTY
+                set(_) = throw UnsupportedOperationException("ItemData#EMPTY cannot be changed")
+            override var tag: NBTCompound
+                get() = NBTCompound()
+                set(_) = throw UnsupportedOperationException("ItemData#EMPTY cannot be changed")
+            override var amount: Int
+                get() = 0
+                set(_) = throw UnsupportedOperationException("ItemData#EMPTY cannot be changed")
         }
 
     }

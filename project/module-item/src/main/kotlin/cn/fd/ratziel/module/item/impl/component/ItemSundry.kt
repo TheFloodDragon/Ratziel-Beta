@@ -5,11 +5,11 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemTransformer
-import cn.fd.ratziel.module.nbt.NBTInt
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemMeta
 import cn.fd.ratziel.module.item.util.read
 import cn.fd.ratziel.module.item.util.write
+import cn.fd.ratziel.module.nbt.NBTInt
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -78,7 +78,7 @@ data class ItemSundry(
 
     companion object : ItemTransformer<ItemSundry> {
 
-        override fun transform(data: ItemData.Mutable, component: ItemSundry) {
+        override fun transform(data: ItemData, component: ItemSundry) {
             val itemMeta = RefItemMeta.of(RefItemMeta.META_ITEM)
             // HideFlags
             val flags = component.hideFlags?.toTypedArray()
@@ -88,7 +88,7 @@ data class ItemSundry(
                 value.forEach { itemMeta.handle.addAttributeModifier(key, it) }
             }
             // Merge
-            itemMeta.applyToTag(data.tag)
+            data.tag = itemMeta.applyToTag(data.tag)
             // CustomModelData (1.14+)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
                 data.write(ItemSheet.CUSTOM_MODEL_DATA, component.customModelData?.let { NBTInt(it) })

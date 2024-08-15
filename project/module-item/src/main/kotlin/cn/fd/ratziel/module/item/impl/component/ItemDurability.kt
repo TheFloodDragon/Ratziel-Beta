@@ -42,7 +42,7 @@ data class ItemDurability(
 
     companion object : ItemTransformer<ItemDurability> {
 
-        override fun transform(data: ItemData.Mutable, component: ItemDurability) {
+        override fun transform(data: ItemData, component: ItemDurability) {
             data.write(ItemSheet.REPAIR_COST, component.repairCost?.let { NBTInt(it) })
             data.write(ItemSheet.MAX_DAMAGE, component.maxDurability?.let { NBTInt(it) })
             // 无法破坏部分的特殊处理

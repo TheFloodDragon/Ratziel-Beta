@@ -6,7 +6,7 @@ import com.mojang.datafixers.util.Pair
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
 import com.mojang.serialization.DynamicOps
-import com.mojang.serialization.MapLike;
+import com.mojang.serialization.MapLike
 import net.minecraft.core.IRegistryCustom
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
@@ -178,6 +178,7 @@ class NMS12005Impl : NMS12005() {
                 if (data.elementType == NBTType.COMPOUND) {
                     data.stream().map { tryUnwrap(it as NBTCompound) }
                 } else data.stream())
+
             is NBTByteArray -> DataResult.success(data.content.toList().stream().map { NBTByte(it) })
             is NBTIntArray -> DataResult.success(data.content.toList().stream().map { NBTInt(it) })
             is NBTLongArray -> DataResult.success(data.content.toList().stream().map { NBTLong(it) })
@@ -194,7 +195,7 @@ class NMS12005Impl : NMS12005() {
                 override fun get(data: NBTData): NBTData? = get((data as NBTString).content)
                 override fun get(str: String): NBTData? = tag[str]
                 override fun entries(): Stream<Pair<NBTData, NBTData>> = tag.entries.stream().map { Pair.of(createString(it.key), it.value) }
-                override fun toString() =  "MapLike[" + tag + "]"
+                override fun toString() = "MapLike[$tag]"
             })
         } else DataResult.error { "Not a map: $tag" }
 
