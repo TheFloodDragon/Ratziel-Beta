@@ -1,6 +1,9 @@
 package cn.fd.ratziel.core.serialization
 
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import java.util.function.Function
 
 /**
@@ -40,16 +43,12 @@ object JsonHandler {
     }
 
     /**
-     * 从给定 [JsonElement] 中寻找 [JsonPrimitive]
-     * 并通过 [action] 的操作后, 用返回的 [JsonElement] 替换掉原来的 [JsonPrimitive]
+     * 映射 [JsonPrimitive]
      */
-    fun handlePrimitives(element: JsonElement, action: Function<JsonPrimitive, JsonElement>): JsonElement =
-        when (element) {
-            is JsonPrimitive -> action.apply(element)
-            is JsonArray -> JsonArray(element.map { handlePrimitives(it, action) })
-            is JsonObject -> buildJsonObject {
-                element.forEach { put(it.key, handlePrimitives(it.value, action)) }
-            }
-        }
+    fun mapPrimitives(element: JsonElement, action: Function<JsonPrimitive, JsonElement>): JsonElement = when (element) {
+        is JsonPrimitive -> action.apply(element)
+        is JsonArray -> JsonArray(element.map { mapPrimitives(it, action) })
+        is JsonObject -> JsonObject(element.mapValues { mapPrimitives(it.value, action) })
+    }
 
 }

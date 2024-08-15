@@ -10,7 +10,7 @@ import cn.fd.ratziel.module.item.api.registry.ComponentRegistry
 import cn.fd.ratziel.module.item.api.registry.ResolverRegistry
 import cn.fd.ratziel.module.item.api.registry.SerializerRegistry
 import cn.fd.ratziel.module.item.impl.builder.CommonItemResolver
-import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer
+import cn.fd.ratziel.module.item.impl.builder.CommonItemSerializer
 import cn.fd.ratziel.module.item.impl.component.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -28,7 +28,7 @@ object ItemRegistry {
      */
     internal fun registerDefault() {
         // 注册默认序列化器
-        Serializer.register(DefaultItemSerializer)
+        Serializer.register(CommonItemSerializer)
         // 注册默认转换器
         Component.register(ItemDisplay::class.java, ItemDisplay)
         Component.register(ItemDurability::class.java, ItemDurability)

@@ -54,10 +54,10 @@ inline fun JsonObject.handle(action: MutableJsonObject.(JsonObject) -> Unit): Js
 inline fun JsonElement.toBasic(): Any = JsonHandler.toBasic(this)
 
 /**
- * 处理[JsonPrimitive]
- * @see [JsonHandler.handlePrimitives]
+ * 映射 [JsonPrimitive]
+ * @see [JsonHandler.mapPrimitives]
  */
-inline fun JsonElement.handlePrimitives(action: Function<JsonPrimitive, JsonElement>): JsonElement = JsonHandler.handlePrimitives(this, action)
+inline fun JsonElement.mapPrimitives(action: Function<JsonPrimitive, JsonElement>): JsonElement = JsonHandler.mapPrimitives(this, action)
 
 /**
  * 合并目标

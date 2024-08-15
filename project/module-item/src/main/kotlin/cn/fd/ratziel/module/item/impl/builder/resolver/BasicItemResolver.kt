@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder.resolver
 
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.serialization.asMutable
-import cn.fd.ratziel.core.serialization.handlePrimitives
+import cn.fd.ratziel.core.serialization.mapPrimitives
 import cn.fd.ratziel.core.util.priority
 import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.ArgumentContext
@@ -41,7 +41,7 @@ object BasicItemResolver : ItemResolver {
         // 过滤节点
         CleanUp.handleOnFilter(element, accessibleNodes) { filtered ->
             // 处理 JsonPrimitive
-            filtered.value.handlePrimitives { resolvePrimitive(it, context) }
+            filtered.value.mapPrimitives { resolvePrimitive(it, context) }
         }
 
     fun resolvePrimitive(element: JsonPrimitive, context: ArgumentContext): JsonElement {

@@ -5,8 +5,6 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.ItemTransformer
-import cn.fd.ratziel.module.nbt.NBTCompound
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -22,7 +20,6 @@ data class ItemMetadata(
     /**
      * 物品材料
      */
-
     @JsonNames("mat", "mats", "materials")
     var material: ItemMaterial = ItemMaterial.EMPTY,
     /**
@@ -41,11 +38,6 @@ data class ItemMetadata(
      * 物品特征部分
      */
     var characteristic: ItemCharacteristic = ItemCharacteristic(),
-    /**
-     * 物品数据标签
-     */
-    @JsonNames("nbt", "nbt-data", "nbt-tag")
-    var tag: @Contextual NBTCompound? = null
 ) {
 
     companion object : ItemTransformer<ItemMetadata> {
@@ -56,8 +48,6 @@ data class ItemMetadata(
             ItemDurability.transform(data, component.durability)
             ItemSundry.transform(data, component.sundry)
             ItemCharacteristic.transform(data, component.characteristic)
-            val newTag = component.tag
-            if (newTag != null) data.tag.merge(newTag, true)
         }
 
         override fun detransform(data: ItemData) = ItemMetadata(
@@ -66,7 +56,6 @@ data class ItemMetadata(
             durability = ItemDurability.detransform(data),
             sundry = ItemSundry.detransform(data),
             characteristic = ItemCharacteristic.detransform(data),
-            tag = data.tag
         )
 
     }

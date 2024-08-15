@@ -1,11 +1,10 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.serialization.MutableJsonObject
+import cn.fd.ratziel.core.serialization.JsonHandler
 import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonElement
-import java.util.concurrent.ConcurrentHashMap
+import kotlinx.serialization.json.JsonObject
 
 /**
  * CommonItemResolver
@@ -13,34 +12,30 @@ import java.util.concurrent.ConcurrentHashMap
  * @author TheFloodDragon
  * @since 2024/8/13 10:54
  */
-class CommonItemResolver(
-    val element: JsonElement
-) : ItemResolver {
+object CommonItemResolver : ItemResolver {
 
     /**
-     * 访问的节点, 通过 [CommonItemSerializer] 获取
+     * [SectionItemResolver] 应该访问的节点
      */
-    val visibleNode: Array<String> get() = CommonItemSerializer.usedNodes
-
-    /**
-     * 构建器 (支持多线程和异步)
-     */
-    val builder: MutableJsonObject = newMap()
+    val visitNodes: Array<String> get() = CommonItemSerializer.usedNodes
 
     /**
      * 解析元素
      *
-     * @return 解析完后, 返回值只包含 [visibleNode] 内的节点, 因此 [CommonItemSerializer] 需要作为最后一个解析
+     * @return 解析完后, 返回值只包含 [visitNodes] 内的节点, 因此 [CommonItemResolver] 需要作为最后一个解析
      */
-    override fun resolve(element: JsonElement, context: ArgumentContext): JsonElement = runBlocking {
-
-        TODO("Not yet implemented")
+    override fun resolve(element: JsonElement, context: ArgumentContext): JsonElement {
+        if (element !is JsonObject) return resolveBySection(element, context)
+        // 过滤节点
+        val builder: MutableMap<String, JsonElement> = HashMap()
+        for ((node, value) in element) {
+            if (visitNodes.contains(node)) builder[node] = resolveBySection(value, context)
+        }
+        return JsonObject(builder)
     }
 
-    /**
-     * 创建一个可变的 [MutableJsonObject]
-     * 同时保证线程安全, 以支持 [resolve] 的操作
-     */
-    private fun newMap() = MutableJsonObject(ConcurrentHashMap())
+    fun resolveBySection(element: JsonElement, context: ArgumentContext): JsonElement {
+        return JsonHandler.mapPrimitives(element) { SectionItemResolver.resolve(it, context) }
+    }
 
 }

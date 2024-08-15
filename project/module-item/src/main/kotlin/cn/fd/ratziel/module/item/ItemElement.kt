@@ -8,7 +8,9 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import taboolib.common.platform.event.SubscribeEvent
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 /**
@@ -26,14 +28,14 @@ object ItemElement : ElementHandler {
     /**
      * 构建物品用到的线程池
      */
-    val executor by lazy {
+    val executor: ExecutorService by lazy {
         Executors.newFixedThreadPool(8)
     }
 
     /**
      * 协程作用域
      */
-    val scope = CoroutineScope(Dispatchers.Default)
+    val buildScope = CoroutineScope(Dispatchers.Default)
 
     init {
         // 注册默认的东西
@@ -59,6 +61,8 @@ object ItemElement : ElementHandler {
 
     @SubscribeEvent
     fun onLoadStart(event: WorkspaceLoadEvent.Start) {
+        // 清除协程任务
+        buildScope.cancel()
         // 清除注册的物品
         ItemManager.registry.clear()
     }

@@ -5,21 +5,23 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemTransformer
+import cn.fd.ratziel.module.item.impl.component.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.module.item.impl.component.serializers.AttributeSerializer
+import cn.fd.ratziel.module.item.impl.component.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemMeta
 import cn.fd.ratziel.module.item.util.read
 import cn.fd.ratziel.module.item.util.write
 import cn.fd.ratziel.module.nbt.NBTInt
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
-import org.bukkit.attribute.Attribute
-import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.EquipmentSlot
 import taboolib.module.nms.MinecraftVersion
 
-typealias HideFlag = org.bukkit.inventory.ItemFlag
+typealias HideFlag = @Serializable(HideFlagSerializer::class) org.bukkit.inventory.ItemFlag
+typealias Attribute = @Serializable(AttributeSerializer::class) org.bukkit.attribute.Attribute
+typealias AttributeModifier = @Serializable(AttributeModifierSerializer::class) org.bukkit.attribute.AttributeModifier
 
 /**
  * ItemSundry - 物品杂项
@@ -38,12 +40,12 @@ data class ItemSundry(
      * 物品隐藏标签 (1.20.5- 但仍能通过BukkitAPI使用)
      */
     @JsonNames("hideflag", "hideflags", "hideFlag")
-    var hideFlags: MutableSet<@Contextual HideFlag>? = null,
+    var hideFlags: MutableSet<HideFlag>? = null,
     /**
      * 物品属性修饰符
      */
     @JsonNames("attribute-modifiers", "attributeModifiers", "bukkit-attributes")
-    var bukkitAttributes: MutableMap<@Contextual Attribute, MutableList<@Contextual AttributeModifier>>? = null
+    var bukkitAttributes: MutableMap<Attribute, MutableList<AttributeModifier>>? = null
 ) {
 
     /**

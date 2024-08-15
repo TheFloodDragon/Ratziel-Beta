@@ -26,27 +26,27 @@ open class MutableJsonObject(
      * [MutableJsonObject] 存储的不可变 [JsonObject] 实例
      * 其 [JsonObject.content] 应该与 [MutableJsonObject.content] 是同一个对象 (内存地址相同)
      */
-    protected open val immutable: JsonObject = JsonObject(content)
+    protected open val delegate: JsonObject = JsonObject(content)
 
     /**
      * 转化为不可变的 [JsonObject]
      */
-    open fun asImmutable() = immutable
+    open fun asImmutable() = delegate
 
     /**
      * @see [JsonObject.equals]
      */
-    override fun equals(other: Any?) = immutable == other
+    override fun equals(other: Any?) = delegate == other
 
     /**
      * @see [JsonObject.hashCode]
      */
-    override fun hashCode() = immutable.hashCode()
+    override fun hashCode() = delegate.hashCode()
 
     /**
      * @see [JsonObject.toString]
      */
-    override fun toString() = immutable.toString()
+    override fun toString() = delegate.toString()
 
     /**
      * [MutableJsonObject] 的序列化器

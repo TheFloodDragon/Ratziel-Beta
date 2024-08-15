@@ -1,6 +1,6 @@
 package cn.fd.ratziel.function
 
-import java.util.concurrent.CopyOnWriteArraySet
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * SimpleArgumentContext
@@ -9,21 +9,19 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @since 2024/6/28 16:19
  */
 open class SimpleArgumentContext(
-    val collection: MutableCollection<Any>
-) : ArgumentContext, MutableCollection<Any> by collection {
+    val list: MutableList<Any>
+) : ArgumentContext, MutableList<Any> by list {
 
-    constructor(vararg values: Any) : this(CopyOnWriteArraySet<Any>().apply { values.forEach { add(it) } })
+    constructor(vararg values: Any) : this(CopyOnWriteArrayList<Any>().apply { addAll(values) })
 
     override fun <T : Any> popOrNull(type: Class<T>): T? {
-        return uncheck(collection.find { type.isAssignableFrom(it::class.java) })
+        return uncheck(list.find { type.isAssignableFrom(it::class.java) })
     }
 
     override fun <T : Any> popAll(type: Class<T>): Iterable<T> {
-        return uncheck(collection.filter { type.isAssignableFrom(it::class.java) })
+        return uncheck(list.filter { type.isAssignableFrom(it::class.java) })
     }
 
-    override fun args(): Collection<Any> {
-        return collection
-    }
+    override fun args(): Collection<Any> = list
 
 }

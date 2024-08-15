@@ -1,23 +1,21 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.serialization.*
-import cn.fd.ratziel.core.serialization.serializers.UUIDSerializer
+import cn.fd.ratziel.core.serialization.elementAlias
+import cn.fd.ratziel.core.serialization.getBy
+import cn.fd.ratziel.core.serialization.getElementNames
+import cn.fd.ratziel.core.serialization.handle
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.ItemKSerializer
+import cn.fd.ratziel.module.item.impl.builder.DefaultItemSerializer.json
 import cn.fd.ratziel.module.item.impl.component.*
-import cn.fd.ratziel.module.item.impl.component.serializers.*
-import cn.fd.ratziel.module.nbt.NBTData
-import cn.fd.ratziel.module.nbt.NBTSerializer
-import kotlinx.serialization.DeserializationStrategy
+import cn.fd.ratziel.module.item.impl.component.serializers.ItemMaterialSerializer
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.serialization.json.*
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.plus
-import org.bukkit.attribute.Attribute
-import org.bukkit.attribute.AttributeModifier
-import org.bukkit.enchantments.Enchantment
-import java.util.*
-import java.util.concurrent.CompletableFuture
 
 /**
  * CommonItemSerializer
@@ -26,21 +24,6 @@ import java.util.concurrent.CompletableFuture
  * @since 2024/4/4 19:58
  */
 object CommonItemSerializer : ItemKSerializer<ItemMetadata> {
-
-    val json = Json(baseJson) {
-        serializersModule += SerializersModule {
-            // Basic Serializers
-            contextual(UUID::class, UUIDSerializer)
-            // Common Serializers
-            contextual(NBTData::class, NBTSerializer)
-            contextual(ItemMaterial::class, ItemMaterialSerializer)
-            // Bukkit Serializers
-            contextual(Enchantment::class, EnchantmentSerializer)
-            contextual(HideFlag::class, HideFlagSerializer)
-            contextual(Attribute::class, AttributeSerializer)
-            contextual(AttributeModifier::class, AttributeModifierSerializer)
-        }
-    }
 
     /**
      * 使用到的节点
@@ -66,20 +49,19 @@ object CommonItemSerializer : ItemKSerializer<ItemMetadata> {
     override fun deserialize(element: JsonElement): ItemMetadata {
         // 结构化解析
         if (isStructured(element)) return json.decodeFromJsonElement(ItemMetadata.serializer(), element)
-        // 异步方法
-        fun <T> asyncDecode(deserializer: DeserializationStrategy<T>, from: JsonElement = element) =
-            CompletableFuture.supplyAsync({
-                json.decodeFromJsonElement(deserializer, from)
-            }, ItemElement.executor).exceptionally { it.printStackTrace();null }
-        // 一般解析
-        val display = asyncDecode(ItemDisplay.serializer())
-        val durability = asyncDecode(ItemDurability.serializer())
-        val sundry = asyncDecode(ItemSundry.serializer())
-        val characteristic = asyncDecode(ItemCharacteristic.serializer())
-        val material = (element as? JsonObject)?.getBy(NODES_MATERIAL)
-            ?.let { asyncDecode(ItemMaterialSerializer, it) }
-            ?: CompletableFuture.completedFuture(ItemMaterial.EMPTY)
-        return ItemMetadata(material.get(), display.get(), durability.get(), sundry.get(), characteristic.get())
+        val deferred = ItemElement.buildScope.async {
+            // 一般解析
+            val display = async { json.decodeFromJsonElement(ItemDisplay.serializer(), element) }
+            val durability = async { json.decodeFromJsonElement(ItemDurability.serializer(), element) }
+            val sundry = async { json.decodeFromJsonElement(ItemSundry.serializer(), element) }
+            val characteristic = async { json.decodeFromJsonElement(ItemCharacteristic.serializer(), element) }
+            val material = async {
+                val name = (element as? JsonObject)?.getBy(NODES_MATERIAL)
+                if (name != null) json.decodeFromJsonElement(ItemMaterialSerializer, name) else ItemMaterial.EMPTY
+            }
+            ItemMetadata(material.await(), display.await(), durability.await(), sundry.await(), characteristic.await())
+        }
+        return deferred.asCompletableFuture().get()
     }
 
     /**
@@ -94,13 +76,13 @@ object CommonItemSerializer : ItemKSerializer<ItemMetadata> {
      */
     const val NODE_STRUCTURED = "structured"
 
-    internal fun isStructured(element: JsonElement): Boolean = try {
+    private fun isStructured(element: JsonElement): Boolean = try {
         element.jsonObject[NODE_STRUCTURED]!!.jsonPrimitive.boolean
     } catch (_: Exception) {
         false
     }
 
-    internal fun forceStructured(element: JsonElement): JsonElement = try {
+    private fun forceStructured(element: JsonElement): JsonElement = try {
         element.jsonObject.handle { put(NODE_STRUCTURED, JsonPrimitive(true)) }
     } catch (_: Exception) {
         element
