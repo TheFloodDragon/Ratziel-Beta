@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.util.digest
 import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
@@ -64,14 +65,17 @@ class DefaultGenerator(
         return ItemElement.scope.async {
             // 生成任务列表
             val tasks: List<Job> = serializers.map { createTask(this@async, it, resolved, data) }
+            val extendTasks: List<Job>? = ItemGenerateEvent.TaskAdder().takeUnless { it.call() }
+                ?.extendTasks?.map { launch { it.accept(resolved, data) } }
             // 等待所有任务完成
             tasks.joinAll()
+            extendTasks?.joinAll()
             // 合成最终结果
-            val info = RatzielItem.Info(identifier, origin.property.hashCode())
-            val item = RatzielItem(info, data)
+            val version = origin.property.toString().digest()
+            val item = RatzielItem.of(RatzielItem.Info(identifier, version), data)
             // 呼出生成结束的事件
             val event = ItemGenerateEvent.Post(item.id, this@DefaultGenerator, item, context)
-            event.call() // 不确定这里在协程中呼出是否会出现问题
+            event.call()
             event.item // 返回最终结果
         }.asCompletableFuture()
     }
@@ -86,19 +90,33 @@ class DefaultGenerator(
         resolved: JsonElement,
         sourceData: ItemData
     ) = scope.launch {
+        val component = deserialize(serializer, resolved) ?: return@launch
+        transform(component, sourceData)
+    }
+
+    fun deserialize(
+        serializer: ItemSerializer<*>,
+        resolved: JsonElement
+    ): Any? {
         // 反序列成物品组件
-        val component = try {
-            serializer.deserialize(resolved) ?: return@launch
+        try {
+            return serializer.deserialize(resolved)
         } catch (ex: Exception) {
             severe("Failed to deserialize element by \"$serializer!\"! Target element: $resolved")
             ex.printStackTrace()
-            return@launch
         }
+        return null
+    }
+
+    fun transform(
+        component: Any,
+        sourceData: ItemData
+    ) {
         // 获取转化器
         val transformer = ItemRegistry.Component.getUnsafe(component::class.java)
         if (transformer == null) {
-            severe("Transformer is not found for component \"$component\"!")
-            return@launch
+            severe("Transformer not found for component \"$component\"!")
+            return
         }
         try {
             // 应用数据

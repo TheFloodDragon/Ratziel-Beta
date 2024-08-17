@@ -21,26 +21,23 @@ import java.lang.invoke.MethodHandle
 abstract class NMSItem {
 
     /**
-     * 获取 [NMSItemStack]的 NBT (克隆)
+     * 获取 [NMSItemStack] 的 NBT (克隆)
      * @return [NBTCompound]
      */
     abstract fun getTag(nmsItem: Any): NBTCompound?
 
     /**
-     * 设置 [NMSItemStack]的 NBT (克隆)
-     * @param tag [NBTCompound]
+     * 设置 [NMSItemStack] 的 NBT (克隆)
      */
     abstract fun setTag(nmsItem: Any, tag: NBTCompound)
 
     /**
-     * 获取 [NMSItemStack]的自定义 NBT (克隆)
-     * @return [NBTCompound]
+     * 获取 [NMSItemStack] 的自定义 NBT (克隆)
      */
     abstract fun getCustomTag(nmsItem: Any): NBTCompound?
 
     /**
-     * 设置 [NMSItemStack]的自定义 NBT (克隆)
-     * @param tag [NBTCompound]
+     * 设置 [NMSItemStack] 的自定义 NBT (克隆)
      */
     abstract fun setCustomTag(nmsItem: Any, tag: NBTCompound)
 
@@ -95,7 +92,7 @@ class NMSItemImpl2 : NMSItem() {
     }
 
     override fun setTag(nmsItem: Any, tag: NBTCompound) {
-        val dcp = NMS12005.INSTANCE.parsePatch(tag) as? DataComponentPatch ?: return
+        val dcp = NMS12005.INSTANCE.parsePatch(tag) as DataComponentPatch
         val components = PatchedDataComponentMap(DataComponentMap.EMPTY)
         components.restorePatch(dcp)
         componentsField.set(nmsItem, components)

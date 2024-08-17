@@ -18,6 +18,9 @@ enum class Triggers(
     val parent: TriggerType? = null
 ) : TriggerType {
 
+    // 物品完成构建
+    RELEASE("onRelease", "release", "onReleased", "released"),
+
     // 攻击
     ATTACK("onAttack", "onAtk", "attack", "atk"),
 

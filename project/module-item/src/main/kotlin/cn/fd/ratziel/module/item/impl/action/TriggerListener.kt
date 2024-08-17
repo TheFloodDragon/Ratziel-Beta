@@ -2,6 +2,7 @@
 
 package cn.fd.ratziel.module.item.impl.action
 
+import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.script.impl.SimpleScriptEnv
 import org.bukkit.entity.Player
@@ -20,6 +21,15 @@ import taboolib.platform.util.attacker
  * @since 2024/8/13 14:35
  */
 object TriggerListener {
+
+    @SubscribeEvent
+    fun onRelease(event: ItemGenerateEvent.Post) {
+        Triggers.RELEASE.trigger(event.identifier) {
+            set("event", event)
+            set("neoItem", event.item)
+            set("context", event.context)
+        }
+    }
 
     @SubscribeEvent
     fun onAttack(event: EntityDamageByEntityEvent) {

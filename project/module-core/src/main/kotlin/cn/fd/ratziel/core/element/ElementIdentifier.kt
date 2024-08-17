@@ -9,27 +9,27 @@ import java.io.File
  * @author TheFloodDragon
  * @since 2023/8/21 10:49
  */
-open class ElementIdentifier(
+class ElementIdentifier(
     /**
      * 元素名称
      */
-    open val name: String,
+    val name: String,
     /**
      * 元素类型
      */
-    open val type: ElementType,
+    val type: ElementType,
     /**
      * 元素文件
      */
-    open val file: File?,
+    val file: File?,
 ) : Identifier {
 
     override val content get() = this.name
 
-    override fun toString() = this::class.java.simpleName + '{' + "name=" + name + ";" + "type=" + type + ";" + "path=" + file?.path + '}'
+    override fun toString() = "ElementIdentifier(name=$name, type=$type, path=${file?.path})"
 
     override fun equals(other: Any?) = other is ElementIdentifier && this.name == other.name && this.type == other.type && this.file == other.file
 
-    override fun hashCode() = name.hashCode() + type.hashCode() + file.hashCode()
+    override fun hashCode() = 31 * (31 * name.hashCode() + type.hashCode()) + file.hashCode()
 
 }

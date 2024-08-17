@@ -2,8 +2,13 @@ package cn.fd.ratziel.module.item.api.event
 
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.function.ArgumentContext
+import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
+import kotlinx.serialization.json.JsonElement
+import taboolib.platform.type.BukkitProxyEvent
+import java.util.*
+import java.util.function.BiConsumer
 
 /**
  * ItemGenerateEvent
@@ -52,5 +57,16 @@ class ItemGenerateEvent {
          */
         val context: ArgumentContext
     ) : ItemEvent(identifier)
+
+    /**
+     * 用于自定义生成任务
+     */
+    @Deprecated("Necessary?")
+    class TaskAdder(
+        /**
+         * 扩展任务列表
+         */
+        val extendTasks: MutableList<BiConsumer<JsonElement, ItemData>> = LinkedList(),
+    ) : BukkitProxyEvent()
 
 }

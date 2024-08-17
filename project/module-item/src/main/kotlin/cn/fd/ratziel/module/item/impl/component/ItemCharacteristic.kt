@@ -57,14 +57,15 @@ data class ItemCharacteristic(
                     // 应用标签
                     data.tag.merge(skullTag, true)
                 }
+            } else {
+                // 颜色处理
+                val node = when {
+                    isLeatherArmor(data.material) -> ItemSheet.DYED_COLOR
+                    isPotion(data.material) -> ItemSheet.POTION_COLOR
+                    else -> return
+                }
+                data.write(node, component.color?.let { parseColor(it) }?.let { NBTInt(it) })
             }
-            // 颜色处理
-            val node = when {
-                isLeatherArmor(data.material) -> ItemSheet.DYED_COLOR
-                isPotion(data.material) -> ItemSheet.POTION_COLOR
-                else -> return
-            }
-            data.write(node, component.color?.let { parseColor(it) }?.let { NBTInt(it) })
         }
 
         override fun detransform(data: ItemData): ItemCharacteristic {
@@ -92,7 +93,7 @@ data class ItemCharacteristic(
         } catch (_: IllegalArgumentException) {
             when {
                 // #42b983
-                content.startsWith("#") -> Integer.parseInt(content, 16)
+                content.startsWith("#") -> Integer.parseInt(content.drop(1), 16)
                 // 42b983
                 content.length == 6 -> Integer.parseInt(content, 16)
                 content.contains(",") -> {

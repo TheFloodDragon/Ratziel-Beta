@@ -60,7 +60,7 @@ value class SimpleMaterial(private val ref: BukkitMaterial) : ItemMaterial {
      */
     fun getAsXSeries(): XMaterial = XMaterial.matchXMaterial(ref)
 
-    override fun toString() = "SimpleItemMaterial(name=$name,id=$id)"
+    override fun toString() = "SimpleMaterial(name=$name, id=$id)"
 
     companion object {
 

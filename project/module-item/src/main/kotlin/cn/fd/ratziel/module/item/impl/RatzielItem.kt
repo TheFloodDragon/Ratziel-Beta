@@ -5,13 +5,13 @@ import cn.fd.ratziel.core.IdentifierImpl
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
-import cn.fd.ratziel.module.nbt.NBTCompound
-import cn.fd.ratziel.module.nbt.NBTString
-import cn.fd.ratziel.module.nbt.readString
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.handle
 import cn.fd.ratziel.module.item.util.read
+import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTString
+import cn.fd.ratziel.module.nbt.readString
 import org.bukkit.inventory.ItemStack
 import taboolib.platform.util.isAir
 
@@ -21,29 +21,23 @@ import taboolib.platform.util.isAir
  * @author TheFloodDragon
  * @since 2024/5/2 22:05
  */
-open class RatzielItem : NeoItem {
-
-    constructor(info: Info, data: ItemData) {
-        Info.write(info, data)
-        this.info = info
-        this.data = data
-    }
+open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem {
 
     /**
      * 物品信息
      */
-    val info: Info
+    val info: Info = info
+
+    /**
+     * 物品数据
+     */
+    final override var data: ItemData = data
+        protected set
 
     /**
      * 物品标识符
      */
     val id: Identifier get() = info.type
-
-    /**
-     * 物品数据
-     */
-    final override var data: ItemData
-        protected set
 
     /**
      * 物品服务
@@ -64,9 +58,20 @@ open class RatzielItem : NeoItem {
          * @return 若目标不满足 [isRatzielItem], 则返回空
          */
         @JvmStatic
+        fun of(info: Info, data: ItemData): RatzielItem {
+            Info.write(info, data)
+            return RatzielItem(info, data)
+        }
+
+        /**
+         * 将目标 [ItemStack] 转为 [RatzielItem]
+         *
+         * @return 若目标不满足 [isRatzielItem], 则返回空
+         */
+        @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
             if (itemStack.isAir()) return null
-            val itemData = RefItemStack(itemStack).getData() ?: return null
+            val itemData = RefItemStack(itemStack).getData()
             return of(itemData)
         }
 
