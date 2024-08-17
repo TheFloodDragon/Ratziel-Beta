@@ -6,15 +6,15 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
-import cn.fd.ratziel.module.item.impl.SimpleItemMaterial
+import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.impl.component.util.SkullData
 import cn.fd.ratziel.module.item.impl.component.util.SkullUtil
-import cn.fd.ratziel.module.nbt.NBTInt
 import cn.fd.ratziel.module.item.nms.ItemSheet
 import cn.fd.ratziel.module.item.nms.RefItemMeta
 import cn.fd.ratziel.module.item.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.read
 import cn.fd.ratziel.module.item.util.write
+import cn.fd.ratziel.module.nbt.NBTInt
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -44,13 +44,16 @@ data class ItemCharacteristic(
 
     companion object : ItemTransformer<ItemCharacteristic> {
 
+        @JvmField
+        val PLAYER_HEAD: ItemMaterial = SimpleMaterial(BukkitMaterial.PLAYER_HEAD)
+
         override fun transform(data: ItemData, component: ItemCharacteristic) {
             // 头颅处理 (当源数据的材料为空或者是PLAYER_HEAD时, 才处理相关)
-            if (data.material.isEmpty() || SimpleItemMaterial.equals(data.material, BukkitMaterial.PLAYER_HEAD)) {
+            if (data.material.isEmpty() || data.material == PLAYER_HEAD) {
                 val skullTag = component.skull?.get()?.let { RefItemStack(it) }?.getTag()
                 if (skullTag != null) {
                     // 设置材质
-                    data.material = SimpleItemMaterial(BukkitMaterial.PLAYER_HEAD)
+                    data.material = PLAYER_HEAD
                     // 应用标签
                     data.tag.merge(skullTag, true)
                 }

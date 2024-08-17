@@ -4,19 +4,22 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import taboolib.library.reflex.ReflexClass
 import taboolib.library.xseries.XMaterial
 
+typealias BukkitMaterial = org.bukkit.Material
+
 /**
- * SimpleItemMaterial
+ * SimpleMaterial
  *
  * 由于不可抗力的影响(我不会), 仅支持 [BukkitMaterial], 即仅支持原版物品
  *
  * @author TheFloodDragon
  * @since 2024/4/5 13:26
  */
-open class SimpleItemMaterial(private val ref: BukkitMaterial) : ItemMaterial {
+@JvmInline
+value class SimpleMaterial(private val ref: BukkitMaterial) : ItemMaterial {
 
-    constructor(name: String) : this(getBukkitMaterial(name) ?: BukkitMaterial.AIR)
+    constructor(name: String) : this(findBukkit(name) ?: BukkitMaterial.AIR)
 
-    constructor(id: Int) : this(getBukkitMaterial(id) ?: BukkitMaterial.AIR)
+    constructor(id: Int) : this(findBukkit(id) ?: BukkitMaterial.AIR)
 
     constructor(mat: XMaterial) : this(mat.name)
 
@@ -25,7 +28,7 @@ open class SimpleItemMaterial(private val ref: BukkitMaterial) : ItemMaterial {
     /**
      * 材料标识符 (低版本)
      */
-    override val id: Int get() = getIdUnsafe(ref)
+    override val id: Int get() = ref.unsafeId
 
     /**
      * 材料名称
@@ -45,51 +48,50 @@ open class SimpleItemMaterial(private val ref: BukkitMaterial) : ItemMaterial {
     /**
      * 材料是否为空气材料
      */
-    open fun isAir() = ref.isAir || this.isEmpty()
+    override fun isEmpty() = ref.isAir || super.isEmpty()
 
     /**
      * 获取 [BukkitMaterial] 形式
      */
-    open fun getAsBukkit(): BukkitMaterial = ref
+    fun getAsBukkit(): BukkitMaterial = ref
 
     /**
      * 获取 [XMaterial] 形式
      */
-    open fun getAsXSeries(): XMaterial = XMaterial.matchXMaterial(ref)
+    fun getAsXSeries(): XMaterial = XMaterial.matchXMaterial(ref)
 
     override fun toString() = "SimpleItemMaterial(name=$name,id=$id)"
 
-    override fun hashCode() = name.hashCode()
-
-    override fun equals(other: Any?) = equals(this, other)
-
     companion object {
-
-        fun equals(material: ItemMaterial, other: Any?) = material === other
-                || (other as? ItemMaterial)?.name == material.name
-                || (other as? BukkitMaterial)?.name == material.name
-                || (other as? XMaterial)?.name == material.name
-
-        /**
-         * 获取 [BukkitMaterial] 形式的物品材料
-         */
-        fun getBukkitMaterial(name: String) = BukkitMaterial.getMaterial(name)
-
-        fun getBukkitMaterial(id: Int) = BukkitMaterial.entries.find { getIdUnsafe(it) == id }
 
         /**
          * 材料大全
          */
         val materialsMap by lazy {
             HashMap<String, ItemMaterial>().apply {
-                BukkitMaterial.entries.forEach { put(it.name, SimpleItemMaterial(it)) }
+                BukkitMaterial.entries.forEach { put(it.name, SimpleMaterial(it)) }
             }
         }
 
         /**
+         * 通过名称寻找 [BukkitMaterial] 形式的物品材料
+         */
+        fun findBukkit(name: String) = BukkitMaterial.getMaterial(name)
+
+        /**
+         * 通过标识符寻找 [BukkitMaterial] 形式的物品材料
+         */
+        fun findBukkit(id: Int) = BukkitMaterial.entries.find { it.unsafeId == id }
+
+        /**
+         * 将 [ItemMaterial] 转换为 [BukkitMaterial] 形式
+         */
+        fun ItemMaterial.asBukkit(): BukkitMaterial = if (this is SimpleMaterial) this.ref else findBukkit(this.name) ?: BukkitMaterial.AIR
+
+        /**
          * 通过反射获取 [id], 因为 [BukkitMaterial] 不会获取老版物品的 [id]
          */
-        fun getIdUnsafe(material: BukkitMaterial) = bukkitIdField.get(material) as Int
+        val BukkitMaterial.unsafeId get() = bukkitIdField.get(this) as Int
 
         /**
          * private final int id
@@ -101,5 +103,3 @@ open class SimpleItemMaterial(private val ref: BukkitMaterial) : ItemMaterial {
     }
 
 }
-
-typealias BukkitMaterial = org.bukkit.Material

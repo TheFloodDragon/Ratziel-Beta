@@ -8,7 +8,7 @@ import cn.fd.ratziel.core.util.sortPriority
 import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.SectionResolver
-import cn.fd.ratziel.module.item.impl.builder.CommonItemSerializer
+import cn.fd.ratziel.module.item.impl.builder.DefaultSerializer
 import cn.fd.ratziel.module.item.impl.builder.resolver.sectionResolvers.PapiResolver
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -27,7 +27,7 @@ object BasicItemResolver : ItemResolver {
     /**
      * 可通过的节点 (不在此的节点都会被过滤掉)
      */
-    val accessibleNodes: MutableSet<String> = CommonItemSerializer.usedNodes.toMutableSet()
+    val accessibleNodes: MutableSet<String> = DefaultSerializer.usedNodes.toMutableSet()
 
     /**
      * 字符串解析器

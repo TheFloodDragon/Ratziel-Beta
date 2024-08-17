@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemSerializer
  * @author TheFloodDragon
  * @since 2024/6/25 13:34
  */
-@Deprecated("独立交给ItemGenerator控制")
 interface SerializerRegistry {
 
     /**

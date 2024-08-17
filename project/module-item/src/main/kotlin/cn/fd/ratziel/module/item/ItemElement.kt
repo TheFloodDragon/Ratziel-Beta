@@ -4,11 +4,13 @@ import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.module.item.impl.builder.DefaultItemGenerator
+import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
+import cn.fd.ratziel.module.item.impl.builder.DefaultSerializer
+import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.nms.RefItemStack
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.asCoroutineDispatcher
 import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -35,16 +37,23 @@ object ItemElement : ElementHandler {
     /**
      * 协程作用域
      */
-    val buildScope = CoroutineScope(Dispatchers.Default)
+    val scope = CoroutineScope(CoroutineName("ItemHandler") + executor.asCoroutineDispatcher())
 
     init {
-        // 注册默认的东西
-        ItemRegistry.registerDefault()
+        // 注册默认序列化器
+        ItemRegistry.register(DefaultSerializer)
+        // 注册默认转换器
+        ItemRegistry.register(ItemDisplay::class.java, ItemDisplay)
+        ItemRegistry.register(ItemDurability::class.java, ItemDurability)
+        ItemRegistry.register(ItemSundry::class.java, ItemSundry)
+        ItemRegistry.register(ItemMetadata::class.java, ItemMetadata)
+        ItemRegistry.register(ItemCharacteristic::class.java, ItemCharacteristic)
+        // 注册自定义物品解析器 (默认解析器无需注册, 保持在最后直接使用)
     }
 
     override fun handle(element: Element) {
 
-        val generator = DefaultItemGenerator(element)
+        val generator = DefaultGenerator(element)
 
         val item = generator.build().get()
 
@@ -61,8 +70,6 @@ object ItemElement : ElementHandler {
 
     @SubscribeEvent
     fun onLoadStart(event: WorkspaceLoadEvent.Start) {
-        // 清除协程任务
-        buildScope.cancel()
         // 清除注册的物品
         ItemManager.registry.clear()
     }

@@ -5,12 +5,12 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.nbt.NBTCompound
 
 /**
- * SimpleItemData
+ * SimpleData
  *
  * @author TheFloodDragon
  * @since 2024/5/5 13:33
  */
-data class SimpleItemData(
+data class SimpleData(
     /**
      * 物品材料
      */

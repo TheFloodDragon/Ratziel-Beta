@@ -13,6 +13,7 @@ import taboolib.platform.compat.replacePlaceholder
  * @author TheFloodDragon
  * @since 2024/6/25 20:18
  */
+@Deprecated("Will be removed")
 object PapiResolver : SectionResolver.StringResolver {
 
     override fun resolve(element: String, context: ArgumentContext): String {

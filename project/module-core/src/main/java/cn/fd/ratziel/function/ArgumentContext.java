@@ -1,5 +1,6 @@
 package cn.fd.ratziel.function;
 
+import cn.fd.ratziel.function.exception.ArgumentNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,11 +17,11 @@ public interface ArgumentContext {
     /**
      * 弹出第一个指定类型的参数
      *
-     * @throws NullPointerException 当无法找到指定类型的参数时抛出
+     * @throws ArgumentNotFoundException 当无法找到指定类型的参数时抛出
      */
-    default <@NotNull T> @NotNull T pop(@NotNull Class<T> type) throws NullPointerException {
+    default <@NotNull T> @NotNull T pop(@NotNull Class<T> type) throws ArgumentNotFoundException {
         T result = popOrNull(type);
-        if (result == null) throw new NullPointerException("Cannot find argument: " + type.getName() + " !");
+        if (result == null) throw new ArgumentNotFoundException(type);
         return result;
     }
 

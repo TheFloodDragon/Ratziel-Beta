@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.module.item.api.ItemNode
-import cn.fd.ratziel.module.item.impl.OccupyNode
+import cn.fd.ratziel.module.item.impl.SimpleNode
 import kotlinx.serialization.json.*
 import taboolib.common.io.runningResources
 import taboolib.module.nms.MinecraftVersion
@@ -47,10 +47,10 @@ object ItemSheet {
         if (name.contains(".")) {
             var node = ItemNode.ROOT
             for (s in name.split(".")) {
-                node = OccupyNode(s, node)
+                node = SimpleNode(s, node)
             }
             node
-        } else OccupyNode(name, ItemNode.ROOT)
+        } else SimpleNode(name, ItemNode.ROOT)
     }
 
     /**

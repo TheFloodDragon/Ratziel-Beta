@@ -8,16 +8,13 @@ import java.util.*
  * @author TheFloodDragon
  * @since 2024/6/24 13:47
  */
-open class IdentifierImpl(val unique: String) : Identifier {
+@JvmInline
+value class IdentifierImpl(override val content: String) : Identifier {
 
     constructor(uuid: UUID) : this(uuid.toString())
 
     constructor() : this(UUID.randomUUID())
 
-    override fun equals(other: Any?): Boolean = unique == other
-
-    override fun toString(): String = unique
-
-    override fun hashCode(): Int = unique.hashCode()
+    override fun toString() = "Identifier(unique=$content)"
 
 }

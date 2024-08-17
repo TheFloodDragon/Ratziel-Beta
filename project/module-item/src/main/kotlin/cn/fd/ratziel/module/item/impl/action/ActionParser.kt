@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.action
 
 import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.core.serialization.toBasic
-import cn.fd.ratziel.module.item.api.event.ItemResolveEvent
+import cn.fd.ratziel.module.item.api.event.ItemResolvedEvent
 import cn.fd.ratziel.script.ScriptBlockBuilder
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.event.SubscribeEvent
@@ -44,7 +44,7 @@ object ActionParser {
     }
 
     @SubscribeEvent
-    fun onResolvingFinished(event: ItemResolveEvent) {
+    fun onResolved(event: ItemResolvedEvent) {
         val element = event.result as? JsonObject ?: return
         // 获取原始动作
         val raw = element.getBy(nodeNames.asIterable()) ?: return

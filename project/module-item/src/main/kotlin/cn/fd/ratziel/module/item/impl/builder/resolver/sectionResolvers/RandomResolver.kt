@@ -10,6 +10,7 @@ import taboolib.common.util.random
  * @author TheFloodDragon
  * @since 2024/5/18 16:22
  */
+@Deprecated("Will be removed")
 object RandomResolver : SectionResolver.TagResolver {
 
     override val names = arrayOf("random", "ran", "rd")

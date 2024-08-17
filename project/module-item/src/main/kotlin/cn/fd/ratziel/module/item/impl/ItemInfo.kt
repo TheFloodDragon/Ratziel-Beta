@@ -36,22 +36,22 @@ data class ItemInfo(
         /**
          * [RatzielItem] 物品数据节点
          */
-        val RATZIEL_NODE = OccupyNode("Ratziel", ItemSheet.CUSTOM_DATA)
+        val RATZIEL_NODE = SimpleNode("Ratziel", ItemSheet.CUSTOM_DATA)
 
         /**
          * [RatzielItem] 物品标识符
          */
-        val RATZIEL_IDENTIFIER_NODE = OccupyNode("Identifier", RATZIEL_NODE)
+        val RATZIEL_IDENTIFIER_NODE = SimpleNode("Identifier", RATZIEL_NODE)
 
         /**
          * [RatzielItem] 物品元素名称
          */
-        val RATZIEL_ELEMENT_NODE = OccupyNode("Type", RATZIEL_NODE)
+        val RATZIEL_ELEMENT_NODE = SimpleNode("Type", RATZIEL_NODE)
 
         /**
          * [RatzielItem] 物品元素内容哈希值
          */
-        val RATZIEL_HASH_NODE = OccupyNode("Hash", RATZIEL_NODE)
+        val RATZIEL_HASH_NODE = SimpleNode("Hash", RATZIEL_NODE)
 
         /**
          * 向 [NBTCompound] 中写入 [ItemInfo]

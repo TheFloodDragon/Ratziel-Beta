@@ -9,7 +9,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemResolver
  * @author TheFloodDragon
  * @since 2024/6/25 14:13
  */
-@Deprecated("独立交给ItemGenerator控制")
 interface ResolverRegistry {
 
     /**
@@ -40,12 +39,12 @@ interface ResolverRegistry {
     /**
      * 获取指定类型的物品解析器
      */
-    fun <T : ItemResolver> get(type: Class<T>): T? = getPriority(type)?.value
+    fun <T : ItemResolver> get(type: Class<T>): T? = getWithPriority(type)?.value
 
     /**
      * 获取指定类型的物品解析器 - [Priority]
      */
-    fun <T : ItemResolver> getPriority(type: Class<T>): Priority<T>?
+    fun <T : ItemResolver> getWithPriority(type: Class<T>): Priority<T>?
 
     /**
      * 判断指定类型的解析器是否被注册过
@@ -67,6 +66,6 @@ interface ResolverRegistry {
     /**
      * 获取所有注册的解析器 - [Priority]
      */
-    fun getResolversPriority(): Collection<Priority<ItemResolver>>
+    fun getResolversWithPriority(): Collection<Priority<ItemResolver>>
 
 }

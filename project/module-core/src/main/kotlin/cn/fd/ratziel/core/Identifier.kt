@@ -8,19 +8,13 @@ package cn.fd.ratziel.core
  */
 interface Identifier {
 
-
     /**
-     * 判断此标识符是否与另一个对象相同
+     * 获取标识符的字符串内容
      */
-    override fun equals(other: Any?): Boolean
+    val content: String
 
     /**
-     * 获取标识符的字符串形式
-     */
-    override fun toString(): String
-
-    /**
-     * 此标识符的Hash码
+     * 此标识符的 [hashCode]
      */
     override fun hashCode(): Int
 

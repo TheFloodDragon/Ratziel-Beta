@@ -2,8 +2,10 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.function.ArgumentContext
+import cn.fd.ratziel.function.argument.exception.ArgumentNotFoundException
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.SectionTagResolver
+import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import taboolib.common.util.VariableReader
@@ -15,12 +17,17 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @author TheFloodDragon
  * @since 2024/8/13 14:42
  */
-object SectionItemResolver : ItemResolver {
+object SectionResolver : ItemResolver {
 
     /**
      * 标签解析器列表
      */
     val resolvers: MutableCollection<SectionTagResolver> = CopyOnWriteArrayList()
+
+    init {
+        // TODO Shit
+        resolvers.add(PapiResolver)
+    }
 
     /**
      * 只解析字符串形式的 [JsonPrimitive]
@@ -57,10 +64,20 @@ object SectionItemResolver : ItemResolver {
         // 获取名称
         val name = split.firstOrNull() ?: return null
         // 获取解析器
-        val resolver = matchResolver(name)
+        val resolver = matchResolver(name) ?: return null
         // 解析并返回
-        return resolver?.resolve(split.drop(1), context)
+        return try {
+            resolver.resolve(split.drop(1), context)
+        } catch (_: ArgumentNotFoundException) {
+            null
+        }
     }
+
+    /**
+     * 匹配 [SectionTagResolver]
+     * @return 匹配不到时返回空
+     */
+    fun matchResolver(name: String): SectionTagResolver? = resolvers.find { it.names.contains(name) }
 
     /**
      * 标签读取器
@@ -71,23 +88,5 @@ object SectionItemResolver : ItemResolver {
      * 标签参数分隔符
      */
     const val TAG_ARG_SEPARATION = ":"
-
-    /**
-     * 检查字符串内是否包含标签
-     */
-    fun checkHasTag(str: String): Boolean {
-        for (part in reader.readToFlatten(str)) {
-            if (part.isVariable &&
-                matchResolver(part.text.split(TAG_ARG_SEPARATION).first()) != null
-            ) return true
-        }
-        return false
-    }
-
-    /**
-     * 匹配 [SectionTagResolver]
-     * @return 匹配不到时返回空
-     */
-    fun matchResolver(name: String): SectionTagResolver? = resolvers.find { it.names.contains(name) }
 
 }

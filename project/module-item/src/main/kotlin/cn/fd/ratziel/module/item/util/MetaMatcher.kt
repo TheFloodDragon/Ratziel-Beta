@@ -4,7 +4,7 @@ package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
-import cn.fd.ratziel.module.item.impl.SimpleItemMaterial
+import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.impl.component.HideFlag
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
@@ -97,8 +97,8 @@ object MetaMatcher {
         val exactName: String? =
             BukkitMaterial.getMaterial(name)?.name  // BukkitMaterial Match
                 ?: XMaterial.matchXMaterial(name).getOrNull()?.name // XMaterial Match
-        return if (exactName != null) SimpleItemMaterial(exactName)
-        else SimpleItemMaterial.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value // Similar
+        return if (exactName != null) SimpleMaterial(exactName)
+        else SimpleMaterial.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value // Similar
     }
 
     private fun clean(source: String): String = source.uppercase().replace(" ", "_").replace('-', '_')

@@ -4,8 +4,9 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
-import cn.fd.ratziel.module.item.impl.SimpleItemData
-import cn.fd.ratziel.module.item.impl.SimpleItemMaterial
+import cn.fd.ratziel.module.item.impl.SimpleData
+import cn.fd.ratziel.module.item.impl.SimpleMaterial
+import cn.fd.ratziel.module.item.impl.SimpleMaterial.Companion.unsafeId
 import cn.fd.ratziel.module.nbt.NBTCompound
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
@@ -77,8 +78,8 @@ class RefItemStack(raw: Any) {
      * 获取物品数据
      */
     fun getData(): ItemData? {
-        return SimpleItemData(
-            material = SimpleItemMaterial(getMaterial()),
+        return SimpleData(
+            material = SimpleMaterial(getMaterial()),
             tag = getTag() ?: return null,
             amount = getAmount()
         )
@@ -100,7 +101,7 @@ class RefItemStack(raw: Any) {
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
             InternalUtil.obcGetMaterialMethod.invoke(handle)!! as BukkitMaterial
         } else {
-            SimpleItemMaterial.getBukkitMaterial(InternalUtil.obcGetMaterialMethodLegacy.invoke(handle)!! as Int)!!
+            SimpleMaterial.findBukkit(InternalUtil.obcGetMaterialMethodLegacy.invoke(handle)!! as Int)!!
         }
 
     /**
@@ -110,12 +111,12 @@ class RefItemStack(raw: Any) {
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
             InternalUtil.obcSetMaterialMethod.invoke(handle, material)
         } else {
-            InternalUtil.obcSetMaterialMethodLegacy.invoke(handle, SimpleItemMaterial.getIdUnsafe(material))
+            InternalUtil.obcSetMaterialMethodLegacy.invoke(handle, material.unsafeId)
         }
     }
 
     fun setMaterial(material: ItemMaterial) {
-        SimpleItemMaterial.getBukkitMaterial(material.name)?.let { setMaterial(it) }
+        SimpleMaterial.findBukkit(material.name)?.let { setMaterial(it) }
     }
 
     /**

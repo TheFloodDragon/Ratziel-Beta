@@ -7,22 +7,22 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 /**
- * CommonItemResolver
+ * NativeItemResolver
  *
  * @author TheFloodDragon
  * @since 2024/8/13 10:54
  */
-object CommonItemResolver : ItemResolver {
+object DefaultResolver : ItemResolver {
 
     /**
-     * [SectionItemResolver] 应该访问的节点
+     * [SectionResolver] 应该访问的节点
      */
-    val visitNodes: Array<String> get() = CommonItemSerializer.usedNodes
+    val visitNodes: Array<String> get() = DefaultSerializer.usedNodes
 
     /**
      * 解析元素
      *
-     * @return 解析完后, 返回值只包含 [visitNodes] 内的节点, 因此 [CommonItemResolver] 需要作为最后一个解析
+     * @return 解析完后, 返回值只包含 [visitNodes] 内的节点, 因此 [DefaultResolver] 需要作为最后一个解析
      */
     override fun resolve(element: JsonElement, context: ArgumentContext): JsonElement {
         if (element !is JsonObject) return resolveBySection(element, context)
@@ -35,7 +35,7 @@ object CommonItemResolver : ItemResolver {
     }
 
     fun resolveBySection(element: JsonElement, context: ArgumentContext): JsonElement {
-        return JsonHandler.mapPrimitives(element) { SectionItemResolver.resolve(it, context) }
+        return JsonHandler.mapPrimitives(element) { SectionResolver.resolve(it, context) }
     }
 
 }

@@ -56,7 +56,7 @@ open class RatzielItem : NeoItem {
          * 物品数据节点
          */
         @JvmField
-        val RATZIEL_DATA_NODE = OccupyNode("Ratziel", ItemSheet.CUSTOM_DATA)
+        val RATZIEL_DATA_NODE = SimpleNode("Ratziel", ItemSheet.CUSTOM_DATA)
 
         /**
          * 将目标 [ItemStack] 转为 [RatzielItem]
@@ -124,19 +124,19 @@ open class RatzielItem : NeoItem {
              * 专有信息节点
              */
             @JvmField
-            val INTERNAL_NODE = OccupyNode("internal", RATZIEL_DATA_NODE)
+            val INTERNAL_NODE = SimpleNode("internal", RATZIEL_DATA_NODE)
 
             /**
              * 内部信息 - [id]
              */
             @JvmField
-            val INFO_TYPE = OccupyNode("type", INTERNAL_NODE)
+            val INFO_TYPE = SimpleNode("type", INTERNAL_NODE)
 
             /**
              * 内部信息 - [hash]
              */
             @JvmField
-            val INFO_HASH = OccupyNode("hash", INTERNAL_NODE)
+            val INFO_HASH = SimpleNode("hash", INTERNAL_NODE)
 
             /**
              * 从 [ItemData] 中读取信息

@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.item.api.ArgumentResolver
  * @author TheFloodDragon
  * @since 2024/8/13 14:44
  */
-interface SectionTagResolver :ArgumentResolver<Iterable<String>, String?>{
+interface SectionTagResolver : ArgumentResolver<List<String>, String?> {
 
     /**
      * 解析器名称

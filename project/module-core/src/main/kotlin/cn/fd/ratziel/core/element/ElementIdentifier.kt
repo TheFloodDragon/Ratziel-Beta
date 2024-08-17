@@ -24,6 +24,8 @@ open class ElementIdentifier(
     open val file: File?,
 ) : Identifier {
 
+    override val content get() = this.name
+
     override fun toString() = this::class.java.simpleName + '{' + "name=" + name + ";" + "type=" + type + ";" + "path=" + file?.path + '}'
 
     override fun equals(other: Any?) = other is ElementIdentifier && this.name == other.name && this.type == other.type && this.file == other.file
