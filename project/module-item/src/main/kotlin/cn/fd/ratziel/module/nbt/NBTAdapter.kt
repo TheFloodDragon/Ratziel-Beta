@@ -11,7 +11,7 @@ import cn.fd.ratziel.core.exception.UnsupportedTypeException
 object NBTAdapter {
 
     @JvmStatic
-    fun adapt(target: Any): NBTData = when (target) {
+    fun box(target: Any): NBTData = when (target) {
         is NBTData -> target
         is String -> NBTString(target)
         is Int -> NBTInt(target)
@@ -24,17 +24,30 @@ object NBTAdapter {
         is IntArray -> NBTIntArray(target)
         is ByteArray -> NBTByteArray(target)
         is LongArray -> NBTLongArray(target)
-        is Iterable<*> -> NBTList(target.mapNotNull { e -> e?.let { adapt(it) } })
-        is Array<*> -> NBTList(target.mapNotNull { e -> e?.let { adapt(it) } })
-        is Map<*, *> -> adaptMap(target)
+        is Iterable<*> -> NBTList.of(target.mapNotNull { e -> e?.let { tryUnbox(it) } })
+        is Array<*> -> NBTList.of(target.mapNotNull { e -> e?.let { tryUnbox(it) } })
+        is Map<*, *> -> boxMap(target)
         else -> null
     } ?: throw UnsupportedTypeException(target)
 
     @JvmStatic
-    fun adaptMap(target: Map<*, *>) = NBTCompound().apply {
-        for ((k, v) in target) {
-            put(k?.toString() ?: continue, v?.let { adapt(it) } ?: continue)
+    fun unbox(target: NBTData): Any = when (target) {
+        is NBTCompound -> unboxMap(target)
+        is NBTList -> target.map { unbox(it) }
+        else -> target.content
+    }
+
+    @JvmStatic
+    fun tryUnbox(target: Any): Any = if (target is NBTData) unbox(target) else target
+
+    @JvmStatic
+    fun boxMap(target: Map<*, *>): NBTCompound = NBTCompound().apply {
+        for ((key, value) in target) {
+            sourceMap[(key ?: continue).toString()] = tryUnbox(value ?: continue)
         }
     }
+
+    @JvmStatic
+    fun unboxMap(target: NBTCompound): Map<String, Any> = target.sourceMap
 
 }

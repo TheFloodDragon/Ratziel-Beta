@@ -2,9 +2,8 @@ package cn.fd.ratziel.compat.hook
 
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
-import taboolib.common.io.getInstance
 import taboolib.common.platform.Awake
-import java.util.function.Supplier
+import taboolib.library.reflex.ReflexClass
 
 /**
  * HookRegister
@@ -15,9 +14,10 @@ import java.util.function.Supplier
 @Awake
 class HookRegister : ClassVisitor(10) {
 
-    override fun visitStart(clazz: Class<*>, instance: Supplier<*>?) {
-        if (PluginHook::class.java.isAssignableFrom(clazz) && clazz.isAnnotationPresent(HookInject::class.java))
-            HookManager.register(instance?.get() as? PluginHook ?: clazz.asSubclass(PluginHook::class.java).getInstance(true)!!.get())
+    override fun visitStart(clazz: ReflexClass) {
+        if (clazz.hasInterface(PluginHook::class.java) && clazz.hasAnnotation(HookInject::class.java)) {
+            HookManager.register(findInstance(clazz) as PluginHook)
+        }
     }
 
     override fun getLifeCycle() = LifeCycle.INIT

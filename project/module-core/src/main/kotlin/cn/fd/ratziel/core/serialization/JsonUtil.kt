@@ -49,21 +49,21 @@ inline fun JsonObject.handle(action: MutableJsonObject.(JsonObject) -> Unit): Js
 
 /**
  * 将 [JsonElement] 转为为纯原生对象形式
- * @see [JsonHandler.toBasic]
+ * @see [JsonHelper.toBasic]
  */
-inline fun JsonElement.toBasic(): Any = JsonHandler.toBasic(this)
+inline fun JsonElement.toBasic(): Any = JsonHelper.toBasic(this)
 
 /**
  * 映射 [JsonPrimitive]
- * @see [JsonHandler.mapPrimitives]
+ * @see [JsonHelper.mapPrimitives]
  */
-inline fun JsonElement.mapPrimitives(action: Function<JsonPrimitive, JsonElement>): JsonElement = JsonHandler.mapPrimitives(this, action)
+inline fun JsonElement.mapPrimitives(action: Function<JsonPrimitive, JsonElement>): JsonElement = JsonHelper.mapPrimitives(this, action)
 
 /**
  * 合并目标
- * @see [JsonHandler.merge]
+ * @see [JsonHelper.merge]
  */
-inline fun JsonObject.merge(target: JsonObject, replace: Boolean = true): JsonObject = JsonHandler.merge(this.asMutable(), target, replace).asImmutable()
+inline fun JsonObject.merge(target: JsonObject, replace: Boolean = true): JsonObject = JsonHelper.merge(this.asMutable(), target, replace).asImmutable()
 
 /**
  * 简易的 [JsonObject] 检查

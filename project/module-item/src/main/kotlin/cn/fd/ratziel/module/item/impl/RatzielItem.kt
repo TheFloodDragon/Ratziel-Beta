@@ -53,9 +53,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
         val RATZIEL_DATA_NODE = SimpleNode("Ratziel", ItemSheet.CUSTOM_DATA)
 
         /**
-         * 将目标 [ItemStack] 转为 [RatzielItem]
-         *
-         * @return 若目标不满足 [isRatzielItem], 则返回空
+         * @return [RatzielItem]
          */
         @JvmStatic
         fun of(info: Info, data: ItemData): RatzielItem {

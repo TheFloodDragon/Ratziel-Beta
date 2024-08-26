@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.nms
 
 import cn.fd.ratziel.module.nbt.*
-import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.PatchedDataComponentMap
@@ -74,16 +73,8 @@ abstract class NMSItem {
 @Suppress("unused", "MemberVisibilityCanBePrivate", "DEPRECATION")
 class NMSItemImpl2 : NMSItem() {
 
-    val componentsField by lazy {
-        ReflexClass.of(RefItemStack.nmsClass).getField("components", remap = true)
-    }
-
     val customDataConstructor by lazy {
         ReflexClass.of(CustomData::class.java).structure.getConstructorByType(NBTTagCompound::class.java)
-    }
-
-    val customDataTagField by lazy {
-        ReflexClass.of(CustomData::class.java).getField("tag", remap = true)
     }
 
     override fun getTag(nmsItem: Any): NBTCompound? {
@@ -92,10 +83,22 @@ class NMSItemImpl2 : NMSItem() {
     }
 
     override fun setTag(nmsItem: Any, tag: NBTCompound) {
+        val components = (nmsItem as NMSItemStack).components as? PatchedDataComponentMap ?: return
         val dcp = NMS12005.INSTANCE.parsePatch(tag) as DataComponentPatch
-        val components = PatchedDataComponentMap(DataComponentMap.EMPTY)
         components.restorePatch(dcp)
-        componentsField.set(nmsItem, components)
+    }
+
+    // TODO review
+    fun applyTag(nmsItem: Any, tag: NBTCompound) {
+        val dcp = NMS12005.INSTANCE.parsePatch(tag) as DataComponentPatch
+        (nmsItem as NMSItemStack).applyComponents(dcp)
+        // 特殊处理自定义数据
+        val customData = dcp[DataComponents.CUSTOM_DATA]
+        if (customData?.isPresent == true) {
+            val customTag = customData.get().unsafe.let { fromNms(it) } as? NBTCompound ?: return
+            val src = getCustomTag(nmsItem)
+            setCustomTag(nmsItem, src?.merge(customTag, true) ?: customTag)
+        }
     }
 
     override fun getCustomTag(nmsItem: Any): NBTCompound? {
@@ -123,8 +126,8 @@ class NMSItemImpl2 : NMSItem() {
         is NBTIntArray -> NBTTagIntArray(data.content.copyOf())
         is NBTByteArray -> NBTTagByteArray(data.content.copyOf())
         is NBTLongArray -> NBTTagLongArray(data.content.copyOf())
-        is NBTList -> NBTTagList().apply { data.content.forEach { add(toNms(it)) } }
-        is NBTCompound -> NBTTagCompound().apply { data.content.forEach { put(it.key, toNms(it.value)) } }
+        is NBTList -> NBTTagList().apply { data.forEach { add(toNms(it)) } }
+        is NBTCompound -> NBTTagCompound().apply { data.forEach { put(it.key, toNms(it.value)) } }
         else -> throw UnsupportedOperationException("NBTData cannot convert to NmsNBTData: $data")
     }
 

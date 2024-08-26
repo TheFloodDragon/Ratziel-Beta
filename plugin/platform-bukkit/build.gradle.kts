@@ -21,7 +21,7 @@ taboolib {
         // Bukkit - Basic
         install("bukkit-hook", "bukkit-util", "bukkit-fake-op")
         // Bukkit - XSeries
-        install("bukkit-xseries", "bukkit-xseries-item", "bukkit-xseries-skull")
+        install("bukkit-xseries", "bukkit-xseries-item")
         // NMS
 //        install("nms", "nms-util-stable") TODO 6.2
         install("nms")

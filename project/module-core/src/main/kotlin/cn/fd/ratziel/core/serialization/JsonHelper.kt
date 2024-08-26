@@ -7,12 +7,12 @@ import kotlinx.serialization.json.JsonPrimitive
 import java.util.function.Function
 
 /**
- * JsonHandler
+ * JsonHelper
  *
  * @author TheFloodDragon
  * @since 2024/5/2 12:56
  */
-object JsonHandler {
+object JsonHelper {
 
     /**
      * 将 [JsonElement] 转为为纯原生对象形式

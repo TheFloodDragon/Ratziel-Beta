@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.serialization.JsonHandler
+import cn.fd.ratziel.core.serialization.JsonHelper
 import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import kotlinx.serialization.json.JsonElement
@@ -35,7 +35,7 @@ object DefaultResolver : ItemResolver {
     }
 
     fun resolveBySection(element: JsonElement, context: ArgumentContext): JsonElement {
-        return JsonHandler.mapPrimitives(element) { SectionResolver.resolve(it, context) }
+        return JsonHelper.mapPrimitives(element) { SectionResolver.resolve(it, context) }
     }
 
 }

@@ -68,7 +68,7 @@ data class ItemDisplay(
 
         override fun transform(data: ItemData, component: ItemDisplay) {
             data.write(ItemSheet.DISPLAY_NAME, componentToData(component.name))
-            data.write(ItemSheet.DISPLAY_LORE, component.lore?.mapNotNull { componentToData(it) }?.let { NBTList(it) })
+            data.write(ItemSheet.DISPLAY_LORE, component.lore?.mapNotNull { componentToData(it) }?.let { NBTList.of(it) })
             data.write(ItemSheet.DISPLAY_LOCAL_NAME, componentToData(component.localizedName))
         }
 
