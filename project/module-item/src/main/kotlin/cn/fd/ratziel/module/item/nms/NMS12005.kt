@@ -1,13 +1,15 @@
 package cn.fd.ratziel.module.item.nms
 
-import cn.fd.ratziel.function.uncheck
-import cn.fd.ratziel.module.nbt.NBTAdapter
 import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTTagCompound
+import cn.fd.ratziel.module.nbt.NMSUtil
+import cn.fd.ratziel.module.nbt.proxyAsNms
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DynamicOps
 import com.mojang.serialization.JavaOps
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.resources.RegistryOps
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer
@@ -70,24 +72,24 @@ abstract class NMS12005 {
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class NMS12005Impl : NMS12005() {
 
-    fun <T> parse0(codec: Codec<T>, tag: Any): T? {
-        val result = codec.parse(access.createSerializationContext(JavaOps.INSTANCE), tag)
+    fun <T> parse0(codec: Codec<T>, tag: NBTTagCompound): T? {
+        val result = codec.parse(access.createSerializationContext(DynamicOpsNBT.INSTANCE), tag)
         val opt = result.resultOrPartial { error("Failed to parse: $it") }
         return if (opt.isPresent) opt.get() else null
     }
 
-    fun <T> save0(codec: Codec<T>, obj: T): Any? {
+    fun <T> save0(codec: Codec<T>, obj: T): NBTTagCompound? {
         val result = codec.encodeStart(access.createSerializationContext(JavaOps.INSTANCE), obj)
         val opt = result.resultOrPartial { error("Failed to save: $it") }
-        return if (opt.isPresent) opt.get() else null
+        return if (opt.isPresent) opt.get() as NBTTagCompound else null
     }
 
     fun <T> parse(codec: Codec<T>, tag: NBTCompound): T? {
-        return parse0(codec, NBTAdapter.unboxMap(tag))
+        return parse0(codec, proxyAsNms(tag) as NBTTagCompound)
     }
 
     fun <T> save(codec: Codec<in T>, obj: T): NBTCompound? {
-        return (save0(codec, obj) as? Map<*, *>)?.let { NBTAdapter.boxMap(it) }
+        return save0(codec, obj)?.let { NBTCompound(NMSUtil.INSTANCE.createProxyMap(it)) }
     }
 
     override fun parsePatch(tag: NBTCompound): Any? = parse(DataComponentPatch.CODEC, tag)
@@ -98,16 +100,18 @@ class NMS12005Impl : NMS12005() {
 
     override fun saveMap(dcm: Any): NBTCompound? = save(DataComponentMap.CODEC, dcm as DataComponentMap)
 
-    fun <V> createSerializationContext(dynamicOps: DynamicOps<V>): RegistryOps<V> = uncheck(method.invoke(access, dynamicOps)!!)
-
     private val access: net.minecraft.core.HolderLookup.a by lazy {
         (Bukkit.getServer() as CraftServer).server.registryAccess()
     }
 
+    @Deprecated("Need review")
     private val method by lazy {
         val ref = ReflexClass.of(net.minecraft.core.HolderLookup.a::class.java, false)
         ref.structure.getMethodByTypeSilently("a", DynamicOps::class.java)
             ?: ref.structure.getMethodByType("createSerializationContext", DynamicOps::class.java)
     }
+
+    @Deprecated("Need review")
+    fun <V> createSerializationContext(dynamicOps: DynamicOps<V>): RegistryOps<V> = cn.fd.ratziel.function.uncheck(method.invoke(access, dynamicOps)!!)
 
 }

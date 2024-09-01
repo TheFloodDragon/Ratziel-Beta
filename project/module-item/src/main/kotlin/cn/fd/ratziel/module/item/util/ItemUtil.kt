@@ -27,9 +27,10 @@ fun PlayerInventory.getItemBySlot(slot: String?): ItemStack? {
  * 根据物品栏位操作物品NBT数据
  */
 fun PlayerInventory.handleItemTag(slot: String?, action: Consumer<NBTCompound>): NBTCompound? {
-    val item = RefItemStack(getItemBySlot(slot) ?: return null)
-    val tag = item.getTag() ?: return null
+    val item = RefItemStack.of(getItemBySlot(slot) ?: return null)
+    if (item.material.isEmpty()) return null
+    val tag = item.tag
     action.accept(tag)
-    item.setTag(tag)
+    item.tag = tag
     return tag
 }

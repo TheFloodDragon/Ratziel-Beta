@@ -16,7 +16,7 @@ interface ItemData {
     var material: ItemMaterial
 
     /**
-     * 物品NBT
+     * 物品总标签数据
      */
     var tag: NBTCompound
 

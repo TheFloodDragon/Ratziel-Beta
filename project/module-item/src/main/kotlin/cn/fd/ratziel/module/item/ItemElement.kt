@@ -59,9 +59,9 @@ object ItemElement : ElementHandler {
 
         println(item.data)
 
-        val ri = RefItemStack(item.data)
-        println(ri.getTag())
-        val bi = ri.getAsBukkit()
+        val ri = RefItemStack.of(item.data)
+        println(ri.tag)
+        val bi = ri.bukkitStack
         println(bi)
 
         // 注册

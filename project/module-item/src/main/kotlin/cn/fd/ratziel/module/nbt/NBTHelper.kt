@@ -1,16 +1,14 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package cn.fd.ratziel.module.nbt
 
 import cn.fd.ratziel.module.item.api.ItemNode
 
 /**
- * TagHelper - 用于读取/写入 [NBTCompound] 的节点信息
+ * NBTHelper
  *
  * @author TheFloodDragon
  * @since 2024/8/12 19:41
  */
-object TagHelper {
+object NBTHelper : NMSUtil by NMSUtil.INSTANCE {
 
     @JvmStatic
     fun readCreatable(source: NBTCompound, tailNode: ItemNode) = readCreatable(source, unfold(tailNode))

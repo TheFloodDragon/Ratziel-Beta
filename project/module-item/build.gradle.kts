@@ -8,7 +8,7 @@ dependencies {
     compileTaboo("nms")
 //    compileTaboo("nms-util-stable") TODO 6.2
     compileTaboo("bukkit-xseries")
-    compileTaboo("bukkit-xseries-skull")
+    compileTaboo("bukkit-xseries-item")
     compileTaboo("bukkit-util")
     compileTaboo("bukkit-hook")
     compileModule("runtime-bukkit")

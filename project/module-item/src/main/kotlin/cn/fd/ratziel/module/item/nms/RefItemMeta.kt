@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.nms
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.function.uncheck
 import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTHelper
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
 import taboolib.library.reflex.ReflexClass
@@ -93,7 +94,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
         }
 
         internal fun new(sourceTag: NBTCompound): T {
-            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(sourceTag)!! else NMSItem.INSTANCE.toNms(sourceTag)
+            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(sourceTag)!! else NBTHelper.toNms(sourceTag)
             return uncheck(craftMetaConstructor.instance(handled)!!)
         }
 
@@ -112,9 +113,9 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
                 if (newTag != null) sourceTag.mergeShallow(newTag, true)
                 return sourceTag
             } else {
-                val nmsTag = NMSItem.INSTANCE.toNms(sourceTag)
+                val nmsTag = NBTHelper.toNms(sourceTag)
                 applyToItemMethod.invoke(meta, nmsTag)
-                return NMSItem.INSTANCE.fromNms(nmsTag) as NBTCompound
+                return NBTHelper.fromNms(nmsTag) as NBTCompound
             }
         }
 

@@ -50,7 +50,7 @@ data class ItemCharacteristic(
         override fun transform(data: ItemData, component: ItemCharacteristic) {
             // 头颅处理 (当源数据的材料为空或者是PLAYER_HEAD时, 才处理相关)
             if (data.material.isEmpty() || data.material == PLAYER_HEAD) {
-                val skullTag = component.skull?.get()?.let { RefItemStack(it) }?.getTag()
+                val skullTag = component.skull?.get()?.let { RefItemStack.of(it) }?.tag
                 if (skullTag != null) {
                     // 设置材质
                     data.material = PLAYER_HEAD

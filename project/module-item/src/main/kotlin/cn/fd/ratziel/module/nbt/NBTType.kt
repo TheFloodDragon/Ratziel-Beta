@@ -8,7 +8,7 @@ package cn.fd.ratziel.module.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 18:59
  */
-enum class NBTType(val id: Int, val alias: Array<String> = emptyArray()) {
+enum class NBTType(val id: Byte, val alias: Array<String> = emptyArray()) {
 
     END(0),
     BYTE(1, arrayOf("b")),

@@ -4,12 +4,16 @@ plugins {
     `java-library`
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
-    id("com.github.johnrengelman.shadow") version shadowJarVersion
+    id("com.gradleup.shadow") version shadowJarVersion
 }
 
 subprojects {
 
-    applyPlugins()
+    // 应用插件
+    apply(plugin = "java-library")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+    apply(plugin = "com.gradleup.shadow")
 
     repositories {
         // 中央库

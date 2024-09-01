@@ -5,13 +5,6 @@ import org.gradle.api.plugins.PluginAware
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.project
 
-fun PluginAware.applyPlugins() {
-    apply(plugin = "java-library")
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
-    apply(plugin = "com.github.johnrengelman.shadow")
-}
-
 fun Project.buildDirClean() {
     @Suppress("DEPRECATION") gradle.buildFinished { buildDir.deleteRecursively() }
 }

@@ -69,7 +69,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
             if (itemStack.isAir()) return null
-            val itemData = RefItemStack(itemStack).getData()
+            val itemData = RefItemStack.of(itemStack).getData()
             return of(itemData)
         }
 
@@ -89,7 +89,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
          */
         @JvmStatic
         fun isRatzielItem(itemStack: ItemStack): Boolean {
-            return isRatzielItem(RefItemStack(itemStack).getCustomTag())
+            return isRatzielItem(RefItemStack.of(itemStack).customTag)
         }
 
         /**

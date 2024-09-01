@@ -24,11 +24,24 @@ object NBTAdapter {
         is IntArray -> NBTIntArray(target)
         is ByteArray -> NBTByteArray(target)
         is LongArray -> NBTLongArray(target)
-        is Iterable<*> -> NBTList.of(target.mapNotNull { e -> e?.let { tryUnbox(it) } })
-        is Array<*> -> NBTList.of(target.mapNotNull { e -> e?.let { tryUnbox(it) } })
+        is Iterable<*> -> boxList(target)
+        is Array<*> -> boxList(target)
         is Map<*, *> -> boxMap(target)
         else -> null
     } ?: throw UnsupportedTypeException(target)
+
+    @JvmStatic
+    fun boxMap(target: Map<*, *>): NBTCompound = NBTCompound().apply {
+        for ((key, value) in target) {
+            sourceMap[(key ?: continue).toString()] = box(value ?: continue)
+        }
+    }
+
+    @JvmStatic
+    fun boxList(list: Iterable<*>): NBTList = NBTList.of(list.mapNotNull { it?.let(::box) })
+
+    @JvmStatic
+    fun boxList(list: Array<*>): NBTList = NBTList.of(list.mapNotNull { it?.let(::box) })
 
     @JvmStatic
     fun unbox(target: NBTData): Any = when (target) {
@@ -38,16 +51,9 @@ object NBTAdapter {
     }
 
     @JvmStatic
+    fun unboxMap(target: NBTCompound): Map<String, Any> = target.content.mapValues { unbox(it.value) }
+
+    @JvmStatic
     fun tryUnbox(target: Any): Any = if (target is NBTData) unbox(target) else target
-
-    @JvmStatic
-    fun boxMap(target: Map<*, *>): NBTCompound = NBTCompound().apply {
-        for ((key, value) in target) {
-            sourceMap[(key ?: continue).toString()] = tryUnbox(value ?: continue)
-        }
-    }
-
-    @JvmStatic
-    fun unboxMap(target: NBTCompound): Map<String, Any> = target.sourceMap
 
 }

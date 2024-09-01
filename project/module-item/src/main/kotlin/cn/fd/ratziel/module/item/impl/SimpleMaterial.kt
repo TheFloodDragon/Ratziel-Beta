@@ -84,6 +84,11 @@ value class SimpleMaterial(private val ref: BukkitMaterial) : ItemMaterial {
         fun findBukkit(id: Int) = BukkitMaterial.entries.find { it.unsafeId == id }
 
         /**
+         * 通过标识符寻找 [ItemMaterial] 形式的物品材料
+         */
+        fun findBy(id: Int) = materialsMap.values.find { it.id == id }
+
+        /**
          * 将 [ItemMaterial] 转换为 [BukkitMaterial] 形式
          */
         fun ItemMaterial.asBukkit(): BukkitMaterial = if (this is SimpleMaterial) this.ref else findBukkit(this.name) ?: BukkitMaterial.AIR
