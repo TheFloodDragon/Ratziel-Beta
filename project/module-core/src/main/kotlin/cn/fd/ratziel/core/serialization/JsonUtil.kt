@@ -38,7 +38,7 @@ fun JsonObject.getBy(names: Iterable<String>): JsonElement? {
 /**
  * 可变化
  */
-fun Map<String, JsonElement>.asMutable(): MutableJsonObject = if (this is MutableJsonObject) this else MutableJsonObject(this.toMutableMap())
+fun Map<String, JsonElement>.asMutable(): MutableJsonObject = if (this is MutableJsonObject) this else MutableJsonObject().also { it.putAll(this) }
 
 /**
  * 处理 [JsonObject]

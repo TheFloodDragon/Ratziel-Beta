@@ -1,13 +1,13 @@
 package cn.fd.ratziel.core.serialization
 
-import cn.fd.ratziel.function.uncheck
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import taboolib.common.io.getInstance
+import taboolib.library.reflex.ReflexClass
 
 /**
  * MutableJsonObject - 可变的 [JsonObject]
@@ -20,13 +20,13 @@ open class MutableJsonObject(
     val content: MutableMap<String, JsonElement>
 ) : MutableMap<String, JsonElement> by content {
 
-    constructor() : this(mutableMapOf())
+    constructor() : this(ConcurrentHashMap())
 
     /**
      * [MutableJsonObject] 存储的不可变 [JsonObject] 实例
      * 其 [JsonObject.content] 应该与 [MutableJsonObject.content] 是同一个对象 (内存地址相同)
      */
-    protected open val delegate: JsonObject = JsonObject(content)
+    protected open val delegate: JsonObject = JsonObject(this.content)
 
     /**
      * 转化为不可变的 [JsonObject]
@@ -56,8 +56,8 @@ open class MutableJsonObject(
 
         internal val JsonObjectSerializer: KSerializer<JsonObject> by lazy {
             val clazz = Class.forName("kotlinx.serialization.json.JsonObjectSerializer")
-            val instance = clazz.getInstance(true) ?: throw IllegalStateException("Could not get the instance of ${clazz.name}")
-            uncheck(instance.get())
+            @Suppress("UNCHECKED_CAST")
+            ReflexClass.of(clazz).getInstance() as KSerializer<JsonObject> ?: throw IllegalStateException("Could not get the instance of ${clazz.name}")
         }
 
         override val descriptor = JsonObjectSerializer.descriptor

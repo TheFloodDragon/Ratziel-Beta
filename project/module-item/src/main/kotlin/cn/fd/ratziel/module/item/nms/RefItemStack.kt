@@ -139,8 +139,7 @@ class RefItemStack private constructor(
         fun of(item: Any): RefItemStack = ofNullable(item) ?: throw UnsupportedTypeException(item::class.java)
 
         @JvmStatic
-        fun of(data: StackData): RefItemStack =     constructor(data: StackData) : this((data.nmsStack?.let { newObc(it) } ?: newObc(data.bukkitStack)) as BukkitItemStack)
-
+        fun of(data: StackData): RefItemStack = RefItemStack((data.nmsStack?.let { newObc(it) } ?: newObc(data.bukkitStack)) as BukkitItemStack)
 
         @JvmStatic
         fun ofNullable(item: Any): RefItemStack? = (when {

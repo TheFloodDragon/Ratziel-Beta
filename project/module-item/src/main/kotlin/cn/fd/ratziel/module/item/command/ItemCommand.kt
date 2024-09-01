@@ -64,7 +64,7 @@ object ItemCommand {
         // 开始生成物品
         generator.build(args).thenAccept {
             // 将生成结果打包成 BukkitItemStack
-            val item = RefItemStack(it.data).bukkitStack.apply { setAmount(amount) }
+            val item = RefItemStack.of(it.data).bukkitStack.apply { setAmount(amount) }
             submit {
                 // 给予物品
                 player.cast<Player>().giveItem(item)

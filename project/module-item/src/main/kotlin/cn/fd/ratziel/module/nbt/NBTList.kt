@@ -35,9 +35,6 @@ open class NBTList(
         @JvmStatic
         fun of(list: Iterable<NBTData>): NBTList = NBTList().apply { addAll(list) }
 
-        @JvmStatic
-        fun of(list: Iterable<Any>): NBTList = of(list.map { NBTAdapter.box(list) })
-
     }
 
 }

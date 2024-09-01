@@ -74,9 +74,6 @@ open class NBTCompound(
         @JvmStatic
         fun of(map: Map<String, NBTData>): NBTCompound = NBTCompound().apply { putAll(map) }
 
-        @JvmStatic
-        fun of(map: Map<String, Any>): NBTCompound = NBTAdapter.boxMap(map)
-
     }
 
 }

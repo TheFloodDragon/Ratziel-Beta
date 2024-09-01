@@ -65,7 +65,7 @@ object ScriptManager {
         val testClass = real(test)
         if (testClass.isNotEmpty() && !ClassAppender.isExists(testClass)) return
         // 加载类
-        RuntimeEnv.ENV.loadDependency((real(value)), transitive, relocations)
+        RuntimeEnv.ENV_DEPENDENCY.loadDependency((real(value)), transitive, relocations)
     }
 
 }

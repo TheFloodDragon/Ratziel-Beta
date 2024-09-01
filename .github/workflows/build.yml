@@ -39,7 +39,7 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
       - name: Build
-        run: ./gradlew clean build --refresh-dependencies
+        run: ./gradlew clean build
       - name: Capture Build Artifacts
         uses: actions/upload-artifact@v4
         with:
