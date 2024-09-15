@@ -23,10 +23,9 @@ taboolib {
         // Bukkit - XSeries
         install("bukkit-xseries", "bukkit-xseries-item")
         // NMS
-//        install("nms", "nms-util-stable") TODO 6.2
-        install("nms")
+        install("bukkit-nms", "bukkit-nms-stable")
         // Script
-//        install("minecraft-kether") TODO 6.2
+        install("minecraft-kether")
     }
     description {
         dependencies {
