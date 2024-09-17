@@ -118,8 +118,8 @@ class RefItemStack private constructor(
         } else {
             this.tag = this.tag.merge(other.tag)
         }
-        material = other.material
-        amount = other.amount
+        if (other.material != ItemMaterial.EMPTY) this.material = other.material
+        if (other.amount >= 1) this.amount = other.amount
     }
 
     /**

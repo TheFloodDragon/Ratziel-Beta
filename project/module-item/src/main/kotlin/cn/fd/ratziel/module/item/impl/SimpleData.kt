@@ -25,6 +25,19 @@ data class SimpleData(
     override var amount: Int = 1
 ) : ItemData {
 
+    /**
+     * 克隆数据
+     */
+    override fun clone() = this.copy()
+
+    /**
+     * 合并数据
+     */
+    override fun merge(other: ItemData) {
+        if (other.material != ItemMaterial.EMPTY) this.material = other.material
+        if (other.amount >= 1) this.amount = other.amount
+    }
+
     companion object {
 
         /**

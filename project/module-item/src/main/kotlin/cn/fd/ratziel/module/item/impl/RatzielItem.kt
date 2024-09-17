@@ -69,7 +69,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
             if (itemStack.isAir()) return null
-            val itemData = RefItemStack.of(itemStack).getData()
+            val itemData = RefItemStack.of(itemStack)
             return of(itemData)
         }
 

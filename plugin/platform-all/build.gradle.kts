@@ -11,8 +11,6 @@ taboolib {
     }
 }
 
-tasks.jar { platforms.forEach { dependsOn(it.tasks.jar) } }
-
 tasks.shadowJar {
     archiveFileName.set("$rootName-$rootVersion.jar")
 }

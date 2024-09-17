@@ -34,6 +34,12 @@ taboolib {
     }
 }
 
-tasks.shadowJar {
-    archiveFileName.set("$rootName-Bukkit-$rootVersion.jar")
+tasks {
+    shadowJar {
+        dependencies {
+            exclude(project(":project:module-compat-inject"))
+        }
+        archiveFileName.set("$rootName-Bukkit-$rootVersion.jar")
+    }
+    jar { dependsOn(project(":project:module-compat-inject").tasks.jar) }
 }

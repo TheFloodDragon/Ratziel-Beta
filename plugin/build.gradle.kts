@@ -1,5 +1,3 @@
-import io.izzel.taboolib.gradle.UNIVERSAL
-
 plugins {
     id("io.izzel.taboolib") version taboolibPluginVersion
 }
@@ -62,10 +60,14 @@ subprojects {
     }
 
     tasks {
-        jar { allModules.forEach { dependsOn(it.tasks.jar) } }
         shadowJar {
             dependsOn(taboolibMainTask)
             from(taboolibMainTask.get().inJar)
+            dependencies {
+                exclude {
+                    it.moduleGroup == "io.izzel.taboolib"
+                }
+            }
             combineFiles.forEach { append(it) }
         }
         build { dependsOn(shadowJar) }

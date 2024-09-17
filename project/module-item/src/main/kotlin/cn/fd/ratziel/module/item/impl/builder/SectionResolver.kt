@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.function.ArgumentContext
-import cn.fd.ratziel.function.argument.exception.ArgumentNotFoundException
+import cn.fd.ratziel.function.exception.ArgumentNotFoundException
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.SectionTagResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver

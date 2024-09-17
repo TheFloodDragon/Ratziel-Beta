@@ -79,8 +79,6 @@ fun DependencyHandler.compileAll() {
     project(":project").dependencyProject.childProjects.forEach { add(ACTION_COMPILE, it.value) }
 }
 
-val Project.allModules get() = project(":project").childProjects.values
-
 /**
  * 依赖Taboolib模块
  * @param module Taboolib模块名称
