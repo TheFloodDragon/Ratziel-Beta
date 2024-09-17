@@ -40,20 +40,6 @@ class RefItemStack private constructor(
     }
 
     /**
-     * 获取物品数据
-     */
-    fun getData(): StackData = this
-
-    /**
-     * 设置物品数据 [ItemData]
-     */
-    fun setData(data: ItemData) {
-        this.material = data.material
-        this.amount = data.amount
-        this.tag = data.tag
-    }
-
-    /**
      * 物品总标签数据
      * @see NMSItem.getTag
      * @see NMSItem.setTag
@@ -121,7 +107,20 @@ class RefItemStack private constructor(
     /**
      * 克隆数据
      */
-    fun clone() = RefItemStack(InternalUtil.obcCloneMethod.invoke(handle) as BukkitItemStack)
+    override fun clone() = RefItemStack(InternalUtil.obcCloneMethod.invoke(handle) as BukkitItemStack)
+
+    /**
+     * 合并数据
+     */
+    override fun merge(other: ItemData) {
+        if (other is RefItemStack) {
+            NMSItem.INSTANCE.mergeTag(this.nmsStack ?: return, other.nmsStack ?: return)
+        } else {
+            this.tag = this.tag.merge(other.tag)
+        }
+        material = other.material
+        amount = other.amount
+    }
 
     /**
      * 获取NMS形式实例 [net.minecraft.world.item.ItemStack]

@@ -11,7 +11,7 @@ open class NBTList(
      * 源数据
      */
     val sourceList: MutableList<NBTData>
-) : NBTData(NBTType.LIST), MutableList<NBTData> by sourceList {
+) : NBTData, MutableList<NBTData> by sourceList {
 
     constructor() : this(mutableListOf())
 
@@ -29,6 +29,14 @@ open class NBTList(
      * 克隆数据
      */
     override fun clone() = NBTList().apply { this.forEach { add(it.clone()) } }
+
+    override val type get() = NBTType.LIST
+
+    override fun equals(other: Any?) = sourceList == other
+
+    override fun toString() = "NBTList($sourceList)"
+
+    override fun hashCode() = sourceList.hashCode()
 
     companion object {
 

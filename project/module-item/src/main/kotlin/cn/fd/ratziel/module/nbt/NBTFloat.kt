@@ -6,10 +6,13 @@ package cn.fd.ratziel.module.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 21:23
  */
-class NBTFloat(override val content: Float) : NBTData(NBTType.FLOAT) {
+@JvmInline
+value class NBTFloat(override val content: Float) : NBTData {
 
     override fun clone() = NBTFloat(content)
 
     override fun toString() = content.toString() + "f"
+
+    override val type get() = NBTType.FLOAT
 
 }

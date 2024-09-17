@@ -82,24 +82,24 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
          */
         private val craftMetaConstructor by lazy {
             ReflexClass.of(craftClass, false).structure.getConstructorByType(
-                if (MinecraftVersion.majorLegacy >= 12005) NMS12005.dataComponentPatchClass else nbtTagCompoundClass
+                if (MinecraftVersion.versionId >= 12005) NMS12005.dataComponentPatchClass else nbtTagCompoundClass
             )
         }
 
         private val applyToItemMethod by lazy {
             ReflexClass.of(craftClass, false).structure.getMethodByType(
                 "applyToItem",
-                if (MinecraftVersion.majorLegacy >= 12005) applicatorClass else nbtTagCompoundClass
+                if (MinecraftVersion.versionId >= 12005) applicatorClass else nbtTagCompoundClass
             )
         }
 
         internal fun new(sourceTag: NBTCompound): T {
-            val handled = if (MinecraftVersion.majorLegacy >= 12005) NMS12005.INSTANCE.parsePatch(sourceTag)!! else NBTHelper.toNms(sourceTag)
+            val handled = if (MinecraftVersion.versionId >= 12005) NMS12005.INSTANCE.parsePatch(sourceTag)!! else NBTHelper.toNms(sourceTag)
             return uncheck(craftMetaConstructor.instance(handled)!!)
         }
 
         internal fun applyToItem(meta: ItemMeta, sourceTag: NBTCompound): NBTCompound {
-            if (MinecraftVersion.majorLegacy >= 12005) {
+            if (MinecraftVersion.versionId >= 12005) {
                 /*
                 1.20.5+ 巨tm坑:
                 if (this.customTag != null) {

@@ -31,13 +31,14 @@ interface ItemMaterial {
     /**
      * 判断材料是否为空
      */
-    fun isEmpty() = this.id == EMPTY.id
+    fun isEmpty() = this == EMPTY
 
     companion object {
 
         /**
          * 空材料
          */
+        @JvmField
         val EMPTY = object : ItemMaterial {
             override val name = "AIR"
             override val maxStackSize = 0

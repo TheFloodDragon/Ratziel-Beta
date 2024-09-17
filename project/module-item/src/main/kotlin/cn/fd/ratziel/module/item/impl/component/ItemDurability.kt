@@ -46,7 +46,7 @@ data class ItemDurability(
             data.write(ItemSheet.REPAIR_COST, component.repairCost?.let { NBTInt(it) })
             data.write(ItemSheet.MAX_DAMAGE, component.maxDurability?.let { NBTInt(it) })
             // 无法破坏部分的特殊处理
-            if (MinecraftVersion.majorLegacy >= 12005) {
+            if (MinecraftVersion.versionId >= 12005) {
                 if (component.unbreakable == true && data.tag[ItemSheet.UNBREAKABLE.name] == null) {
                     data.tag[ItemSheet.UNBREAKABLE.name] = NBTCompound()
                 } else {
@@ -60,7 +60,7 @@ data class ItemDurability(
             data.read<NBTInt>(ItemSheet.MAX_DAMAGE) { this.maxDurability = it.content }
             // 无法破坏部分的特殊处理
             val unsure = data.tag[ItemSheet.UNBREAKABLE.name]
-            if (MinecraftVersion.majorLegacy >= 12005) this.unbreakable = unsure != null
+            if (MinecraftVersion.versionId >= 12005) this.unbreakable = unsure != null
             else if (unsure != null) this.unbreakable = NBTByte.parseBooleanOrFalse((unsure as NBTByte).content)
         }
 

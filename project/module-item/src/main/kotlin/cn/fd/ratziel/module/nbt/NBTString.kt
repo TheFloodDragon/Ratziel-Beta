@@ -6,8 +6,11 @@ package cn.fd.ratziel.module.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 21:13
  */
-class NBTString(override val content: String) : NBTData(NBTType.STRING) {
+@JvmInline
+value class NBTString(override val content: String) : NBTData{
 
     override fun clone() = NBTString(content)
+
+    override val type get() = NBTType.STRING
 
 }

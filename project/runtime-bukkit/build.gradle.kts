@@ -1,3 +1,7 @@
+repositories {
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+}
+
 dependencies {
     // Core
     compileCore(12005)
@@ -6,5 +10,5 @@ dependencies {
     // Module
     compileModule("module-script")
     // PlaceholderAPI
-    compileOnly("me.clip:placeholderapi:2.11.4")
+    compileOnly("me.clip:placeholderapi:2.11.6")
 }

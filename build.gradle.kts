@@ -24,8 +24,6 @@ subprojects {
         maven("https://papermc.io/repo/repository/maven-public/")
         // OSS
         maven("https://s01.oss.sonatype.org/content/groups/public/")
-        // PlaceholderAPI
-        maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
 
     dependencies {

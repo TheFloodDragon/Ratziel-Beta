@@ -23,7 +23,8 @@ interface ItemNode {
         /**
          * 根节点
          */
-        val ROOT: ItemNode = object : ItemNode {
+        @JvmField
+        val ROOT = object : ItemNode {
             override val name = "\$R\$O\$O\$T\$"
             override val parent: ItemNode = this
         }

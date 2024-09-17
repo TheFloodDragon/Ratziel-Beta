@@ -13,7 +13,7 @@ open class NBTCompound(
      * 源数据
      */
     val sourceMap: MutableMap<String, NBTData>
-) : NBTData(NBTType.COMPOUND), MutableMap<String, NBTData> by sourceMap {
+) : NBTData, MutableMap<String, NBTData> by sourceMap {
 
     constructor() : this(ConcurrentHashMap())
 
@@ -68,6 +68,14 @@ open class NBTCompound(
         }
         return this
     }
+
+    override val type get() = NBTType.COMPOUND
+
+    override fun equals(other: Any?) = sourceMap == other
+
+    override fun toString() = "NBTCompound($sourceMap)"
+
+    override fun hashCode() = sourceMap.hashCode()
 
     companion object {
 

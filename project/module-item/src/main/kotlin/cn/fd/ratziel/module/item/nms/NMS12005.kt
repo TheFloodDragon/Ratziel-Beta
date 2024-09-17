@@ -9,7 +9,6 @@ import com.mojang.serialization.DynamicOps
 import com.mojang.serialization.JavaOps
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
-import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.resources.RegistryOps
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer
@@ -53,7 +52,7 @@ abstract class NMS12005 {
 
         val INSTANCE by lazy {
             // Version Check
-            if (MinecraftVersion.majorLegacy < 12005) throw UnsupportedOperationException("NMS12005 is only available after Minecraft 1.20.5!")
+            if (MinecraftVersion.versionId < 12005) throw UnsupportedOperationException("NMS12005 is only available after Minecraft 1.20.5!")
             // NmsProxy
             nmsProxy<NMS12005>()
         }
@@ -73,7 +72,7 @@ abstract class NMS12005 {
 class NMS12005Impl : NMS12005() {
 
     fun <T> parse0(codec: Codec<T>, tag: NBTTagCompound): T? {
-        val result = codec.parse(access.createSerializationContext(DynamicOpsNBT.INSTANCE), tag)
+        val result = codec.parse(access.createSerializationContext(JavaOps.INSTANCE), tag)
         val opt = result.resultOrPartial { error("Failed to parse: $it") }
         return if (opt.isPresent) opt.get() else null
     }
@@ -85,10 +84,12 @@ class NMS12005Impl : NMS12005() {
     }
 
     fun <T> parse(codec: Codec<T>, tag: NBTCompound): T? {
+        TODO("Shit")
         return parse0(codec, proxyAsNms(tag) as NBTTagCompound)
     }
 
     fun <T> save(codec: Codec<in T>, obj: T): NBTCompound? {
+        TODO("Shit")
         return save0(codec, obj)?.let { NBTCompound(NMSUtil.INSTANCE.createProxyMap(it)) }
     }
 

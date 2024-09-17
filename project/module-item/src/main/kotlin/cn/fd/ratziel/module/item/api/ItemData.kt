@@ -16,7 +16,7 @@ interface ItemData {
     var material: ItemMaterial
 
     /**
-     * 物品总标签数据
+     * 物品标签数据
      */
     var tag: NBTCompound
 
@@ -25,21 +25,28 @@ interface ItemData {
      */
     var amount: Int
 
+    /**
+     * 合并数据
+     */
+    fun merge(other: ItemData)
+
+    /**
+     * 克隆数据
+     */
+    fun clone(): ItemData
+
     companion object {
 
         /**
          * 空 [ItemData]
          */
+        @JvmField
         val EMPTY = object : ItemData {
-            override var material: ItemMaterial
-                get() = ItemMaterial.EMPTY
-                set(_) = throw UnsupportedOperationException("ItemData#EMPTY cannot be changed")
-            override var tag: NBTCompound
-                get() = NBTCompound()
-                set(_) = throw UnsupportedOperationException("ItemData#EMPTY cannot be changed")
-            override var amount: Int
-                get() = 0
-                set(_) = throw UnsupportedOperationException("ItemData#EMPTY cannot be changed")
+            override var material: ItemMaterial get() = ItemMaterial.EMPTY; set(_) = Unit
+            override var tag: NBTCompound get() = NBTCompound(); set(_) = Unit
+            override var amount: Int get() = 0; set(_) = Unit
+            override fun merge(other: ItemData) = Unit
+            override fun clone() = this
         }
 
     }

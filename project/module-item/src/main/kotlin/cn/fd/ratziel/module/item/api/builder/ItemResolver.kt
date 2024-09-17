@@ -9,4 +9,5 @@ import kotlinx.serialization.json.JsonElement
  * @author TheFloodDragon
  * @since 2024/4/14 12:01
  */
+@Deprecated("Use JsonTransofmer")
 interface ItemResolver : ArgumentResolver<JsonElement, JsonElement>

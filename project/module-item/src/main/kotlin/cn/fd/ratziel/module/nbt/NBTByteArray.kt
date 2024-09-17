@@ -6,8 +6,11 @@ package cn.fd.ratziel.module.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 21:21
  */
-class NBTByteArray(override val content: ByteArray) : NBTData(NBTType.BYTE_ARRAY) {
+@JvmInline
+value class NBTByteArray(override val content: ByteArray) : NBTData {
 
     override fun clone() = NBTByteArray(content)
+
+    override val type get() = NBTType.BYTE_ARRAY
 
 }

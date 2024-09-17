@@ -6,8 +6,11 @@ package cn.fd.ratziel.module.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 21:14
  */
-class NBTInt(override val content: Int) : NBTData(NBTType.INT) {
+@JvmInline
+value class NBTInt(override val content: Int) : NBTData {
 
     override fun clone() = NBTInt(content)
+
+    override val type get() = NBTType.INT
 
 }

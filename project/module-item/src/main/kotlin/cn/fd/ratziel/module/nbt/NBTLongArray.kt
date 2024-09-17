@@ -6,8 +6,11 @@ package cn.fd.ratziel.module.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 21:23
  */
-class NBTLongArray(override val content: LongArray) : NBTData(NBTType.LONG_ARRAY) {
+@JvmInline
+value class NBTLongArray(override val content: LongArray) : NBTData {
 
     override fun clone() = NBTLongArray(content)
+
+    override val type get() = NBTType.LONG_ARRAY
 
 }

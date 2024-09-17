@@ -42,7 +42,7 @@ interface NMSUtil {
     companion object {
 
         val INSTANCE by lazy {
-            if (MinecraftVersion.majorLegacy >= 12005)
+            if (MinecraftVersion.versionId >= 12005)
                 nmsProxy<NMSUtil>("{name}Impl2")
             else nmsProxy<NMSUtil>("{name}Impl1")
         }

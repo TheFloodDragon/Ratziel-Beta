@@ -6,28 +6,28 @@ package cn.fd.ratziel.module.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 19:18
  */
-abstract class NBTData(
+interface NBTData {
+
     /**
      * 数据类型
      */
-    @JvmField val type: NBTType
-) {
+    val type: NBTType
 
     /**
      * 数据内容
      */
-    abstract val content: Any
+    val content: Any
 
     /**
      * 克隆数据
      * @return 克隆出的新数据
      */
-    abstract fun clone(): NBTData
+    fun clone(): NBTData
 
-    override fun equals(other: Any?) = content == other
+    override fun equals(other: Any?): Boolean
 
-    override fun toString() = content.toString()
+    override fun toString(): String
 
-    override fun hashCode() = content.hashCode()
+    override fun hashCode(): Int
 
 }

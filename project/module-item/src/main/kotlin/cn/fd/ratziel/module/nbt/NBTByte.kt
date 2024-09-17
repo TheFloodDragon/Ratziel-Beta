@@ -6,13 +6,16 @@ package cn.fd.ratziel.module.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 21:20
  */
-class NBTByte(override val content: Byte) : NBTData(NBTType.BYTE) {
+@JvmInline
+value class NBTByte(override val content: Byte) : NBTData {
 
     constructor(value: Boolean) : this(toByte(value))
 
     override fun clone() = NBTByte(content)
 
     override fun toString() = content.toString() + "b"
+
+    override val type get() = NBTType.BYTE
 
     companion object {
 

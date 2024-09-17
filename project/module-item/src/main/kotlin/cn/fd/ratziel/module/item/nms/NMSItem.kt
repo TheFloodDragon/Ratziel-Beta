@@ -47,10 +47,15 @@ abstract class NMSItem {
      */
     abstract fun copyItem(nmsItem: Any): Any
 
+    /**
+     * 合并内部标签数据
+     */
+    abstract fun mergeTag(source: Any, target: Any)
+
     companion object {
 
         val INSTANCE by lazy {
-            if (MinecraftVersion.majorLegacy >= 12005)
+            if (MinecraftVersion.versionId >= 12005)
                 nmsProxy<NMSItem>("{name}Impl2")
             else nmsProxy<NMSItem>("{name}Impl1")
         }
@@ -62,7 +67,7 @@ abstract class NMSItem {
 /**
  * 1.20.5+
  */
-@Suppress("unused", "MemberVisibilityCanBePrivate", "DEPRECATION")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class NMSItemImpl2 : NMSItem() {
 
     val customDataConstructor by lazy {
@@ -80,21 +85,9 @@ class NMSItemImpl2 : NMSItem() {
         components.restorePatch(dcp)
     }
 
-    // TODO review
-    fun applyTag(nmsItem: Any, tag: NBTCompound) {
-        val dcp = NMS12005.INSTANCE.parsePatch(tag) as DataComponentPatch
-        (nmsItem as NMSItemStack).applyComponents(dcp)
-        // 特殊处理自定义数据
-        val customData = dcp[DataComponents.CUSTOM_DATA]
-        if (customData?.isPresent == true) {
-            val customTag = customData.get().unsafe.let { NBTHelper.fromNms(it) } as? NBTCompound ?: return
-            val src = getCustomTag(nmsItem)
-            setCustomTag(nmsItem, src?.merge(customTag, true) ?: customTag)
-        }
-    }
-
     override fun getCustomTag(nmsItem: Any): NBTCompound? {
         val customData = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
+        @Suppress("DEPRECATION")
         return customData?.unsafe?.let { NBTHelper.fromNms(it) } as? NBTCompound
     }
 
@@ -105,6 +98,10 @@ class NMSItemImpl2 : NMSItem() {
 
     override fun copyItem(nmsItem: Any): Any {
         return (nmsItem as NMSItemStack).copy()
+    }
+
+    override fun mergeTag(source: Any, target: Any) {
+        (source as NMSItemStack).applyComponents((target as NMSItemStack).components)
     }
 
 }
@@ -142,6 +139,13 @@ class NMSItemImpl1 : NMSItem() {
         return nmsCloneMethod.invoke(nmsItem)!!
     }
 
+    override fun mergeTag(source: Any, target: Any) {
+        val targetTag = getTag(target) ?: return
+        val sourceTag = getTag(source) ?: return
+        sourceTag.merge(targetTag)
+        setTag(sourceTag, targetTag)
+    }
+
     /**
      * private NBTTagCompound A
      * private NBTTagCompound tag
@@ -157,7 +161,7 @@ class NMSItemImpl1 : NMSItem() {
      */
     val nmsCloneMethod by lazy {
         ReflexClass.of(RefItemStack.nmsClass).structure.getMethodByType(
-            if (MinecraftVersion.majorLegacy >= 12005) "s"
+            if (MinecraftVersion.versionId >= 12005) "s"
             else if (MinecraftVersion.isUniversal) "p"
             else "cloneItemStack"
         )

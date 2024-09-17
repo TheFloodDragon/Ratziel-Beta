@@ -6,12 +6,11 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.impl.BukkitMaterial
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.impl.component.HideFlag
-import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import taboolib.common.util.Strings
 import taboolib.library.xseries.XEnchantment
 import taboolib.library.xseries.XMaterial
-//import taboolib.module.nms.BukkitAttribute TODO 6.2
+import taboolib.module.nms.BukkitAttribute
 import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrNull
 import org.bukkit.enchantments.Enchantment as BukkitEnchantment
@@ -48,17 +47,11 @@ object MetaMatcher {
     /**
      * 匹配物品属性修饰符
      */
-    // TODO 6.2
-//    @JvmStatic
-//    fun matchAttribute(source: String): BukkitAttribute {
-//        val name = clean(source)
-//        return BukkitAttribute.parse(name)
-//            ?: BukkitAttribute.entries.maxBy { Strings.similarDegree(it.name, name) }
-//    }
     @JvmStatic
-    fun matchAttribute(source: String): Attribute {
+    fun matchAttribute(source: String): BukkitAttribute {
         val name = clean(source)
-        return Attribute.entries.maxBy { Strings.similarDegree(it.name, name) }
+        return BukkitAttribute.parse(name)
+            ?: BukkitAttribute.entries.maxBy { Strings.similarDegree(it.name, name) }
     }
 
     /**

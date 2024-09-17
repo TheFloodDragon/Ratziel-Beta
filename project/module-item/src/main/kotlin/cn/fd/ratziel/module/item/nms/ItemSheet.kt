@@ -78,7 +78,7 @@ object ItemSheet {
         fun matchVersion(json: JsonElement): String = when (json) {
             is JsonObject ->
                 json.toSortedMap(Comparator.comparingInt { it.toInt() }).let { sortedMap ->
-                    sortedMap.entries.findLast { MinecraftVersion.majorLegacy >= it.key.toInt() }
+                    sortedMap.entries.findLast { MinecraftVersion.versionId >= it.key.toInt() }
                 }?.let { it.value as? JsonPrimitive }?.content
 
             is JsonNull -> null

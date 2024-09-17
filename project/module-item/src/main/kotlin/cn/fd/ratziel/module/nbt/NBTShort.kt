@@ -6,8 +6,11 @@ package cn.fd.ratziel.module.nbt
  * @author TheFloodDragon
  * @since 2024/3/15 21:24
  */
-class NBTShort(override val content: Short) : NBTData(NBTType.SHORT) {
+@JvmInline
+value class NBTShort(override val content: Short) : NBTData{
 
     override fun clone() = NBTShort(content)
+
+    override val type get() = NBTType.SHORT
 
 }
