@@ -2,10 +2,9 @@
 
 package cn.fd.ratziel.module.item.util
 
+import cn.fd.ratziel.module.item.BukkitMaterial
+import cn.fd.ratziel.module.item.SimpleMaterial
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.impl.BukkitMaterial
-import cn.fd.ratziel.module.item.impl.SimpleMaterial
-import cn.fd.ratziel.module.item.impl.component.HideFlag
 import org.bukkit.attribute.AttributeModifier
 import taboolib.common.util.Strings
 import taboolib.library.xseries.XEnchantment
@@ -14,6 +13,7 @@ import taboolib.module.nms.BukkitAttribute
 import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrNull
 import org.bukkit.enchantments.Enchantment as BukkitEnchantment
+import org.bukkit.inventory.ItemFlag as HideFlag
 
 /**
  * MetaMatcher

@@ -1,8 +1,5 @@
 package cn.fd.ratziel.function
 
-import cn.fd.ratziel.function.uncheck
-import java.util.function.Function
-
 inline fun <reified T : Any> ArgumentContext.pop() = pop(T::class.java)
 
 inline fun <reified T : Any> ArgumentContext.popAll() = popAll(T::class.java)

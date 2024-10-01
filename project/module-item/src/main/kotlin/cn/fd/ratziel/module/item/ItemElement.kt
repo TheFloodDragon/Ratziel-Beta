@@ -1,16 +1,30 @@
 package cn.fd.ratziel.module.item
 
+import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
-import cn.fd.ratziel.module.item.impl.builder.DefaultSerializer
-import cn.fd.ratziel.module.item.impl.component.*
-import cn.fd.ratziel.module.item.nms.RefItemStack
+import cn.fd.ratziel.core.serialization.baseJson
+import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.builder.DefaultGenerator
+import cn.fd.ratziel.module.item.builder.SectionTransforming
+import cn.fd.ratziel.module.item.internal.component.*
+import cn.fd.ratziel.module.item.internal.component.serializers.*
+import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.nbt.NBTData
+import cn.fd.ratziel.module.nbt.NBTSerializer
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.plus
+import kotlinx.serialization.serializer
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
+import org.bukkit.enchantments.Enchantment
+import taboolib.common.LifeCycle
 import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -24,6 +38,9 @@ import java.util.concurrent.Executors
 @NewElement(
     name = "meta",
     space = "test"
+)
+@ElementConfig(
+    lifeCycle = LifeCycle.ENABLE
 )
 object ItemElement : ElementHandler {
 
@@ -39,16 +56,25 @@ object ItemElement : ElementHandler {
      */
     val scope = CoroutineScope(CoroutineName("ItemHandler") + executor.asCoroutineDispatcher())
 
+    val json = Json(baseJson) {
+        serializersModule += SerializersModule {
+            // Common Serializers
+            contextual(NBTData::class, NBTSerializer)
+            contextual(ItemMaterial::class, ItemMaterialSerializer)
+            // Bukkit Serializers
+            contextual(Enchantment::class, EnchantmentSerializer)
+            contextual(HideFlag::class, HideFlagSerializer)
+            contextual(Attribute::class, AttributeSerializer)
+            contextual(AttributeModifier::class, AttributeModifierSerializer)
+        }
+    }
+
     init {
-        // 注册默认序列化器
-        ItemRegistry.register(DefaultSerializer)
-        // 注册默认转换器
-        ItemRegistry.register(ItemDisplay::class.java, ItemDisplay)
-        ItemRegistry.register(ItemDurability::class.java, ItemDurability)
-        ItemRegistry.register(ItemSundry::class.java, ItemSundry)
-        ItemRegistry.register(ItemMetadata::class.java, ItemMetadata)
-        ItemRegistry.register(ItemCharacteristic::class.java, ItemCharacteristic)
-        // 注册自定义物品解析器 (默认解析器无需注册, 保持在最后直接使用)
+        // 注册默认组件
+        ItemRegistry.register(ItemDisplay::class.java, create(), ItemDisplay)
+        ItemRegistry.register(ItemDurability::class.java, create(), ItemDurability)
+        ItemRegistry.register(ItemSundry::class.java, create(), ItemSundry)
+        ItemRegistry.register(ItemSkull::class.java, create(), ItemSkull)
     }
 
     override fun handle(element: Element) {
@@ -73,5 +99,7 @@ object ItemElement : ElementHandler {
         // 清除注册的物品
         ItemManager.registry.clear()
     }
+
+    private inline fun <reified T : Any> create() = SectionTransforming(serializer<T>(), json)
 
 }

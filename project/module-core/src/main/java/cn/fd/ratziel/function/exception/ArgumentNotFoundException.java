@@ -8,8 +8,15 @@ package cn.fd.ratziel.function.exception;
  */
 public final class ArgumentNotFoundException extends Exception {
 
+    private final Class<?> type;
+
     public ArgumentNotFoundException(Class<?> type) {
         super("Cannot found the argument: " + type.getName() + " !");
+        this.type = type;
+    }
+
+    public Class<?> getMissingType() {
+        return type;
     }
 
 }

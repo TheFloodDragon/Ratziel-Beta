@@ -31,11 +31,11 @@ jobs:
             ~/.gradle/wrapper
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@v3
-      - name: Setup JDK 8
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: adopt
-          java-version: 8
+          java-version: 17
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
       - name: Build

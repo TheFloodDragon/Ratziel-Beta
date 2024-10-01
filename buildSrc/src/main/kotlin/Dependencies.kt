@@ -1,8 +1,6 @@
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.internal.tasks.JvmConstants
-import org.gradle.api.plugins.PluginAware
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.project
 
 fun Project.buildDirClean() {

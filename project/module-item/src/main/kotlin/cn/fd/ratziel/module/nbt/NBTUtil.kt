@@ -33,6 +33,7 @@ inline fun NBTCompound.write(nodes: String, value: NBTData?) = value?.let { Deep
  * 深度获取NBT数据
  * TODO 真是一坨shi
  */
+@Deprecated("Will be removed")
 object DeepVisitor {
 
     /**

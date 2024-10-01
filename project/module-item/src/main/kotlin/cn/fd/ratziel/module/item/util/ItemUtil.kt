@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.util
 
-import cn.fd.ratziel.module.item.command.inferEquipmentSlot
-import cn.fd.ratziel.module.item.nms.RefItemStack
+import cn.fd.ratziel.module.item.internal.command.inferEquipmentSlot
+import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.nbt.NBTCompound
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory

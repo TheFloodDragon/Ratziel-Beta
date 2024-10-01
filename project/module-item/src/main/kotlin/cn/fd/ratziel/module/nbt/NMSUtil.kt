@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.nbt
 
-import taboolib.library.reflex.ReflexClass
 import taboolib.library.reflex.UnsafeAccess
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
@@ -29,16 +28,6 @@ interface NMSUtil {
      */
     fun fromNms(nmsData: Any): NBTData
 
-    /**
-     * 创建[NBTTagCompound]的代理[MutableMap]
-     */
-    fun createProxyMap(mapTag: Any): MutableMap<String, NBTData>
-
-    /**
-     * 创建 [NBTTagList] 的代理 [MutableList]
-     */
-    fun createProxyList(listTag: Any): MutableList<NBTData>
-
     companion object {
 
         val INSTANCE by lazy {
@@ -49,57 +38,6 @@ interface NMSUtil {
 
     }
 
-}
-
-internal fun proxyAsNms(data: NBTData) = when (val content = data.content) {
-    is NBTProxyMap -> content.nmsProxy
-    is NBTProxyList -> content.nmsProxy
-    else -> NMSUtil.INSTANCE.toNms(data)
-}
-
-internal fun proxyFromNms(nmsData: Any) = when (NMSUtil.INSTANCE.inferType(nmsData)) {
-    NBTType.COMPOUND -> NBTCompound(NMSUtil.INSTANCE.createProxyMap(nmsData))
-    NBTType.LIST -> NBTList(NMSUtil.INSTANCE.createProxyList(nmsData))
-    else -> NMSUtil.INSTANCE.fromNms(nmsData)
-}
-
-private class NBTProxyMap(@JvmField val nmsProxy: Any, @JvmField val nmsMap: MutableMap<String, Any>) : AbstractMutableMap<String, NBTData>() {
-
-    override fun put(key: String, value: NBTData): NBTData? = nmsMap.put(key, proxyAsNms(value))?.let { proxyFromNms(it) }
-
-    override val entries
-        get() = object : AbstractMutableSet<MutableMap.MutableEntry<String, NBTData>>() {
-            val ref = nmsMap.entries
-
-            override val size get() = ref.size
-
-            override fun add(element: MutableMap.MutableEntry<String, NBTData>) = ref.add(object : MutableMap.MutableEntry<String, Any> {
-                override val key get() = element.key
-                override val value get() = element.value
-                override fun setValue(newValue: Any) = proxyAsNms(element.setValue(proxyFromNms(newValue)))
-            })
-
-            override fun iterator() = object : MutableIterator<MutableMap.MutableEntry<String, NBTData>> {
-                val refIterator = ref.iterator()
-                override fun hasNext() = refIterator.hasNext()
-                override fun remove() = refIterator.remove()
-                override fun next() = object : MutableMap.MutableEntry<String, NBTData> {
-                    val refNext = refIterator.next()
-                    override val key get() = refNext.key
-                    override val value: NBTData get() = proxyFromNms(refNext.value)
-                    override fun setValue(newValue: NBTData) = proxyFromNms(refNext.setValue(proxyAsNms(newValue)))
-                }
-            }
-        }
-
-}
-
-private class NBTProxyList(@JvmField val nmsProxy: Any, @JvmField val nmsList: MutableList<Any>) : AbstractMutableList<NBTData>() {
-    override val size get() = nmsList.size
-    override fun get(index: Int): NBTData = proxyFromNms(nmsList[index])
-    override fun add(index: Int, element: NBTData) = nmsList.add(index, proxyAsNms(element))
-    override fun set(index: Int, element: NBTData) = proxyFromNms(nmsList.set(index, proxyAsNms(element)))
-    override fun removeAt(index: Int) = proxyFromNms(nmsList.removeAt(index))
 }
 
 /**
@@ -144,17 +82,6 @@ class NMSUtilImpl2 : NMSUtil {
         is NBTTagCompound -> NBTCompound().apply { nmsData.allKeys.forEach { put(it, fromNms(nmsData.get(it)!!)) } }
         else -> throw UnsupportedOperationException("NmsNBTData cannot convert to NBTData: $nmsData")
     }
-
-    private val srcMapField by lazy { ReflexClass.of(NBTTagCompound::class.java).getField("tags", remap = true) }
-    private val srcListField by lazy { ReflexClass.of(NBTTagList::class.java).getField("list", remap = true) }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun createProxyMap(mapTag: Any): MutableMap<String, NBTData> =
-        NBTProxyMap(mapTag as NBTTagCompound, srcMapField.get(mapTag) as MutableMap<String, Any>)
-
-    @Suppress("UNCHECKED_CAST")
-    override fun createProxyList(listTag: Any): MutableList<NBTData> =
-        NBTProxyList(listTag as NBTTagList, srcListField.get(listTag) as MutableList<Any>)
 
 }
 
@@ -237,12 +164,6 @@ class NMSUtilImpl1 : NMSUtil {
         is NBTTagCompound12 -> NBTCompound().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nmsData).forEach { put(it.key, fromNms(it.value)) } }
         else -> throw UnsupportedOperationException("NmsNBTData cannot convert to NBTData: $nmsData")
     }
-
-    override fun createProxyMap(mapTag: Any): MutableMap<String, NBTData> =
-        NBTProxyMap(mapTag as NBTTagCompound, nbtTagCompoundGetter.get(mapTag))
-
-    override fun createProxyList(listTag: Any): MutableList<NBTData> =
-        NBTProxyList(listTag as NBTTagList, nbtTagListGetter.get(listTag))
 
     private fun unreflectGetter(type: Class<*>, name: String): MethodHandle {
         return UnsafeAccess.lookup.unreflectGetter(type.getDeclaredField(name).apply { isAccessible = true })
