@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 open class SimpleArgumentContext(
     val map: MutableMap<Class<*>, Any>
-) : ArgumentContext, MutableMap<Class<*>, Any> by map {
+) : ArgumentContext {
 
     constructor(vararg values: Any) : this(ConcurrentHashMap<Class<*>, Any>()) {
         values.forEach { map[it::class.java] = it }

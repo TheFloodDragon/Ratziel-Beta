@@ -5,6 +5,7 @@ import cn.fd.ratziel.module.nbt.NBTHelper
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
 import taboolib.library.reflex.ClassConstructor
+import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
@@ -88,7 +89,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
                 val common = structure.getConstructorByTypeSilently(NMS12005.DATA_COMPONENT_PATCH_CLASS)
                 if (common == null) {
                     val paper = structure.getConstructorByType(NMS12005.DATA_COMPONENT_PATCH_CLASS, Set::class.java)
-                    paper to { paper.instance(NMS12005.INSTANCE.parsePatch(it)!!, emptySet<Any>())!! as T }
+                    paper to { paper.instance(NMS12005.INSTANCE.parsePatch(it)!!, mutableSetOf<Any>())!! as T }
                 } else common to { common.instance(NMS12005.INSTANCE.parsePatch(it)!!)!! as T }
             } else {
                 val legacy = structure.getConstructorByType(nbtTagCompoundClass)
@@ -109,17 +110,19 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
 
         internal fun applyToItem(meta: ItemMeta, sourceTag: NBTCompound): NBTCompound {
             if (MinecraftVersion.versionId >= 12005) {
-                /*
-                1.20.5+ 巨tm坑:
-                if (this.customTag != null) {
-                  itemTag.put(CUSTOM_DATA, CustomData.a(this.customTag));
+                // 使用Paper的方法 (**Paper天天搁那改)
+                if (paperApplyMetaToItemMethod != null) {
+                    val nmsItem = RefItemStack.newNms()
+                    paperApplyMetaToItemMethod!!.invokeStatic(nmsItem, meta)
+                    val newTag = NMSItem.INSTANCE.getTag(nmsItem)
+                    if (newTag != null) sourceTag.mergeShallow(newTag, true)
+                } else {
+                    val applicator = applicatorConstructor.instance()!! // new Applicator
+                    applyToItemMethod.invoke(meta, applicator) // Apply to the applicator
+                    val dcp = applicatorBuildMethod.invoke(applicator)!! // Applicator to DataComponentPatch
+                    val newTag = NMS12005.INSTANCE.savePatch(dcp) // DataComponentPatch save to NBT
+                    if (newTag != null) sourceTag.mergeShallow(newTag, true)
                 }
-                 */
-                val applicator = applicatorConstructor.instance()!! // new Applicator
-                applyToItemMethod.invoke(meta, applicator) // Apply to the applicator
-                val dcp = applicatorBuildMethod.invoke(applicator)!! // Applicator to DataComponentPatch
-                val newTag = NMS12005.INSTANCE.savePatch(dcp) // DataComponentPatch save to NBT
-                if (newTag != null) sourceTag.mergeShallow(newTag, true)
                 return sourceTag
             } else {
                 val nmsTag = NBTHelper.toNms(sourceTag)
@@ -151,6 +154,15 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
 
             val nbtTagCompoundClass by lazy {
                 nmsClass("NBTTagCompound")
+            }
+
+            /**
+             * 无语了已经, 我要和Paper爆了
+             * public static void applyMetaToItem(net.minecraft.world.item.ItemStack itemStack, ItemMeta itemMeta)
+             */
+            val paperApplyMetaToItemMethod by lazy {
+                ReflexClass.of(RefItemStack.obcClass, false).structure
+                    .getMethodByTypeSilently("applyMetaToItem", RefItemStack.nmsClass, ItemMeta::class.java)
             }
 
         }

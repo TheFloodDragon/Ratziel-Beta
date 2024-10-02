@@ -1,10 +1,7 @@
 package cn.fd.ratziel.script.block
 
 import cn.fd.ratziel.core.Priority
-import cn.fd.ratziel.script.block.provided.ConditionBlock
-import cn.fd.ratziel.script.block.provided.MultiLineBlock
-import cn.fd.ratziel.script.block.provided.PrimitiveBlock
-import cn.fd.ratziel.script.block.provided.ScriptBlock
+import cn.fd.ratziel.script.block.provided.*
 import kotlinx.serialization.json.JsonElement
 import java.util.*
 
@@ -33,11 +30,13 @@ object BlockManager : BlockParser {
         throw NullPointerException("Cannot parse the element to block. Source: $element")
     }
 
+    @JvmName("parse1")
     fun parse(element: JsonElement?): ExecutableBlock? = element?.let { parse(it) }
 
     /**
      * 注册脚本解析器
      */
+    @JvmStatic
     fun register(parser: BlockParser, priority: Byte) {
         registry.add(Priority(priority, parser))
     }
@@ -45,6 +44,7 @@ object BlockManager : BlockParser {
     /**
      * 注册脚本解析器
      */
+    @JvmStatic
     fun register(parser: BlockParser) = register(parser, 0)
 
     init {

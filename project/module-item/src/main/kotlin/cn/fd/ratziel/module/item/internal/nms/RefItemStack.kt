@@ -47,8 +47,8 @@ class RefItemStack private constructor(
         get() {
             return nmsStack?.let { NMSItem.INSTANCE.getTag(it) } ?: NBTCompound()
         }
-        set(tag) {
-            NMSItem.INSTANCE.setTag(nmsStack ?: return, tag)
+        set(value) {
+            NMSItem.INSTANCE.setTag(nmsStack ?: return, value)
         }
 
     /**
@@ -60,8 +60,8 @@ class RefItemStack private constructor(
         get() {
             return NMSItem.INSTANCE.getCustomTag(nmsStack ?: return null)
         }
-        set(tag) {
-            NMSItem.INSTANCE.setCustomTag(nmsStack ?: return, tag ?: return)
+        set(value) {
+            NMSItem.INSTANCE.setCustomTag(nmsStack ?: return, value ?: return)
         }
 
     /**
@@ -112,13 +112,13 @@ class RefItemStack private constructor(
      * 合并数据
      */
     override fun merge(other: ItemData) {
+        if (other.material != ItemMaterial.EMPTY) this.material = other.material
+        if (other.amount >= 1) this.amount = other.amount
         if (other is RefItemStack) {
             NMSItem.INSTANCE.mergeTag(this.nmsStack ?: return, other.nmsStack ?: return)
         } else {
             this.tag = this.tag.merge(other.tag)
         }
-        if (other.material != ItemMaterial.EMPTY) this.material = other.material
-        if (other.amount >= 1) this.amount = other.amount
     }
 
     /**
@@ -140,14 +140,14 @@ class RefItemStack private constructor(
         fun of(data: StackData): RefItemStack = RefItemStack((data.nmsStack?.let { newObc(it) } ?: newObc(data.bukkitStack)) as BukkitItemStack)
 
         @JvmStatic
-        fun ofNullable(item: Any): RefItemStack? = (when {
+        fun ofNullable(item: Any): RefItemStack? = when {
             isObcClass(item::class.java) -> item // CraftItemStack
             isNmsClass(item::class.java) -> newObc(item) // net.minecraft.world.item.ItemStack
             item is BukkitItemStack -> newObc(item) // an impl of interface BukkitItemStack, but not CraftItemStack
             item is StackData -> item.nmsStack?.let { newObc(item) } ?: newObc(item.bukkitStack)
             item is ItemData -> RefItemStack().apply { merge(item) }.handle
             else -> null // Unsupported Type
-        } as? BukkitItemStack)?.let { RefItemStack(it) }
+        }?.let { RefItemStack(it as BukkitItemStack) }
 
         /**
          * nms.ItemStack
@@ -182,6 +182,13 @@ class RefItemStack private constructor(
         fun newObc(nmsItem: Any) = obcClass.invokeConstructor(nmsItem)
 
         /**
+         * 创建一个空的 [NMSItemStack]
+         * private ItemStack(@Nullable Void void_)
+         */
+        @JvmStatic
+        fun newNms() = InternalUtil.nmsItemStackEmptyConstructor.instance(null)!!
+
+        /**
          * public static net.minecraft.world.item.ItemStack asNMSCopy(ItemStack original)
          */
         @JvmStatic
@@ -211,17 +218,14 @@ class RefItemStack private constructor(
         @JvmStatic
         fun isNmsClass(clazz: Class<*>) = nmsClass.isAssignableFrom(clazz)
 
-        /**
-         * 空的 NMSItemStack
-         */
-        @JvmStatic
-        val EMPTY by lazy {
-            ReflexClass.of(nmsClass).getField("EMPTY", remap = true).get(StaticSrc)!!
-        }
-
     }
 
     internal object InternalUtil {
+
+        @JvmStatic
+        val nmsItemStackEmptyConstructor by lazy {
+            ReflexClass.of(nmsClass).structure.getConstructorByType(Void::class.java)
+        }
 
         @JvmStatic
         val asNMSCopyMethod by lazy {

@@ -74,13 +74,17 @@ class NMSItemImpl2 : NMSItem() {
         ReflexClass.of(CustomData::class.java).structure.getConstructorByType(NBTTagCompound::class.java)
     }
 
+    val componentsField by lazy {
+        ReflexClass.of(NMSItemStack::class.java).getField("components", remap = true)
+    }
+
     override fun getTag(nmsItem: Any): NBTCompound? {
-        val dcp = (nmsItem as NMSItemStack).componentsPatch
-        return NMS12005.INSTANCE.savePatch(dcp)
+        val components = (componentsField.get(nmsItem) ?: return null) as PatchedDataComponentMap
+        return NMS12005.INSTANCE.savePatch(components.asPatch())
     }
 
     override fun setTag(nmsItem: Any, tag: NBTCompound) {
-        val components = (nmsItem as NMSItemStack).components as? PatchedDataComponentMap ?: return
+        val components = (componentsField.get(nmsItem) ?: return) as PatchedDataComponentMap
         val dcp = NMS12005.INSTANCE.parsePatch(tag) as DataComponentPatch
         components.restorePatch(dcp)
     }

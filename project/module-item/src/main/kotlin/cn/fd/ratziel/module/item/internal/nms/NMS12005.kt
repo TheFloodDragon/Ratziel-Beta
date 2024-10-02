@@ -1,10 +1,12 @@
 package cn.fd.ratziel.module.item.internal.nms
 
-import cn.fd.ratziel.module.nbt.NBTAdapter
 import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.fd.ratziel.module.nbt.NBTHelper
+import cn.fd.ratziel.module.nbt.NBTBase
+import cn.fd.ratziel.module.nbt.NBTTagCompound
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DynamicOps
-import com.mojang.serialization.JavaOps
+import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.resources.RegistryOps
@@ -66,24 +68,24 @@ abstract class NMS12005 {
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class NMS12005Impl : NMS12005() {
 
-    fun <T> parse0(codec: Codec<T>, obj: Any): T? {
-        val result = codec.parse(access.createSerializationContext(JavaOps.INSTANCE), obj)
+    fun <T> parse0(codec: Codec<T>, obj: NBTTagCompound): T? {
+        val result = codec.parse(access.createSerializationContext(DynamicOpsNBT.INSTANCE), obj)
         val opt = result.resultOrPartial { error("Failed to parse: $it") }
         return if (opt.isPresent) opt.get() else null
     }
 
-    fun <T> save0(codec: Codec<T>, obj: T): Any? {
-        val result = codec.encodeStart(access.createSerializationContext(JavaOps.INSTANCE), obj)
+    fun <T> save0(codec: Codec<T>, obj: T): NBTBase? {
+        val result = codec.encodeStart(access.createSerializationContext(DynamicOpsNBT.INSTANCE), obj)
         val opt = result.resultOrPartial { error("Failed to save: $it") }
         return if (opt.isPresent) opt.get() else null
     }
 
     fun <T> parseFromTag(codec: Codec<T>, tag: NBTCompound): T? {
-        return parse0(codec, NBTAdapter.unbox(tag))
+        return parse0(codec, NBTHelper.toNms(tag) as NBTTagCompound)
     }
 
     fun <T> saveToTag(codec: Codec<T>, obj: T): NBTCompound? {
-        return (save0(codec, obj) as? Map<*, *>)?.let { NBTAdapter.boxMap(it) }
+        return save0(codec, obj)?.let { NBTHelper.fromNms(it as NBTTagCompound) as NBTCompound }
     }
 
     override fun parsePatch(tag: NBTCompound): Any? = parseFromTag(DataComponentPatch.CODEC, tag)

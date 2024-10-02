@@ -5,17 +5,17 @@ Item-Get: '&8[&6R&8] &7You have got item &e{0} &a×{1} &7just now!'
 
 # NBT Tags
 NBTFormat-Entry-Key:
-  type: json
-  text: '[&6{0}]&7: '
-  args:
-    - suggest: '/nbt edit {1} {2} '
-      hover: 'Click to edit'
+  - type: json
+    text: '[&6{0}]&7: '
+    args:
+      - suggest: '/nbt edit {1} {2} '
+        hover: 'Click to edit'
 NBTFormat-Entry-Value:
-  type: json
-  text: '[&e{0}]'
-  args:
-    - copy: '{1}'
-      hover: 'Click to copy'
+  - type: json
+    text: '[&e{0}]'
+    args:
+      - copy: '{1}'
+        hover: 'Click to copy'
 NBTFormat-Retract: '  '
 NBTFormat-Retract-List: '&f- '
 NBTFormat-List-Empty: '&f[]'
