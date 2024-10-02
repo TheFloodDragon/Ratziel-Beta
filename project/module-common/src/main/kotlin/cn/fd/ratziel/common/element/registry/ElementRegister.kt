@@ -22,14 +22,14 @@ class ElementRegister : ClassVisitor(0) {
         val anno = clazz.getAnnotationIfPresent(NewElement::class.java) ?: return
         try {
             val type = ElementType(
-                anno.property<String>("space")!!,
+                anno.property<String>("space", "ratziel"),
                 anno.property<String>("name")!!,
-                anno.property<Array<String>>("alias")!!
+                anno.property<List<String>>("alias", emptyList()).toTypedArray()
             )
             if (clazz.hasInterface(ElementHandler::class.java)) {
                 // 获取实例
                 val handler = findInstance(clazz) as ElementHandler
-                ElementRegistry.register(type, handler, anno.property<Byte>("priority")!!)
+                ElementRegistry.register(type, handler, anno.property<Byte>("priority", 0))
             } else ElementRegistry.register(type)
         } catch (e: Exception) {
             severe("Unable to register element form class $clazz!")

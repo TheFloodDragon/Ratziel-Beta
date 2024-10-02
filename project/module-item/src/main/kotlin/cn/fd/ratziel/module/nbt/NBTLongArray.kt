@@ -11,6 +11,8 @@ value class NBTLongArray(override val content: LongArray) : NBTData {
 
     override fun clone() = NBTLongArray(content)
 
+    override fun toString() = content.toString()
+
     override val type get() = NBTType.LONG_ARRAY
 
 }

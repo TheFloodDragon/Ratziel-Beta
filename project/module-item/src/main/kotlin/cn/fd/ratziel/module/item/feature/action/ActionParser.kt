@@ -7,6 +7,7 @@ import cn.fd.ratziel.script.ScriptBlockBuilder
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.severe
+import java.util.concurrent.CompletableFuture
 
 /**
  * ActionParser
@@ -44,15 +45,17 @@ object ActionParser {
     }
 
     @SubscribeEvent
-    fun onResolved(event: ItemGenerateEvent.Pre) {
+    fun onGenerate(event: ItemGenerateEvent.Pre) {
         val element = event.element as? JsonObject ?: return
         // 获取原始动作
         val raw = element.getBy(nodeNames) ?: return
         if (raw is JsonObject) {
-            // 解析触发器表
-            val triggerMap = parse(raw)
-            // 加入到动作表中
-            ActionManager.actionMap[event.identifier] = triggerMap
+            CompletableFuture.runAsync {
+                // 解析触发器表
+                val triggerMap = parse(raw)
+                // 加入到动作表中
+                ActionManager.actionMap[event.identifier] = triggerMap
+            }
         } else throw IllegalArgumentException("Incorrect action format!")
     }
 

@@ -11,6 +11,8 @@ value class NBTByteArray(override val content: ByteArray) : NBTData {
 
     override fun clone() = NBTByteArray(content)
 
+    override fun toString() = content.toString()
+
     override val type get() = NBTType.BYTE_ARRAY
 
 }

@@ -11,6 +11,8 @@ value class NBTShort(override val content: Short) : NBTData{
 
     override fun clone() = NBTShort(content)
 
+    override fun toString() = content.toString() + "s"
+
     override val type get() = NBTType.SHORT
 
 }

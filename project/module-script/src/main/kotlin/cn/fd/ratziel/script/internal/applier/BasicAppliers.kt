@@ -3,6 +3,7 @@ package cn.fd.ratziel.script.internal.applier
 import cn.fd.ratziel.script.ScriptTypes
 import cn.fd.ratziel.script.api.ScriptEnvironment
 import taboolib.common.platform.Awake
+import taboolib.common.LifeCycle
 import taboolib.common.platform.ProxyCommandSender
 
 /**
@@ -13,11 +14,10 @@ import taboolib.common.platform.ProxyCommandSender
  * @author TheFloodDragon
  * @since 2024/7/16 12:21
  */
-@Awake
 @Deprecated("Shi")
-private object BasicAppliers {
+object BasicAppliers {
 
-    @Awake
+    @Awake(LifeCycle.CONST)
     fun register() {
         for (lang in ScriptTypes.entries) {
             // Sender from Bindings

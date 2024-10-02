@@ -34,7 +34,7 @@ open class NBTList(
 
     override fun equals(other: Any?) = sourceList == other
 
-    override fun toString() = "NBTList($sourceList)"
+    override fun toString() = "NBTList$sourceList"
 
     override fun hashCode() = sourceList.hashCode()
 

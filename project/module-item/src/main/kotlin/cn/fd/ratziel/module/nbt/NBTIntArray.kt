@@ -11,6 +11,8 @@ value class NBTIntArray(override val content: IntArray) : NBTData {
 
     override fun clone() = NBTIntArray(content.copyOf())
 
+    override fun toString() = content.toString()
+
     override val type get() = NBTType.INT_ARRAY
 
 }

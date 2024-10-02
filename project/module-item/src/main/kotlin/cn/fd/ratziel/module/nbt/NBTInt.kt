@@ -11,6 +11,8 @@ value class NBTInt(override val content: Int) : NBTData {
 
     override fun clone() = NBTInt(content)
 
+    override fun toString() = content.toString()
+
     override val type get() = NBTType.INT
 
 }

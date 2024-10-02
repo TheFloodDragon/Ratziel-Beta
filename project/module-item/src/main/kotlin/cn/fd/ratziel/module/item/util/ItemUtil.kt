@@ -5,7 +5,7 @@ import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.nbt.NBTCompound
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
-import taboolib.type.BukkitEquipment
+import taboolib.platform.util.isAir
 import java.util.function.Consumer
 
 
@@ -13,24 +13,21 @@ import java.util.function.Consumer
  * 根据物品栏位获取物品
  * @param slot 栏位的字符串形式, 可以是数字也可是特殊栏位字符串
  */
-fun PlayerInventory.getItemBySlot(slot: String?): ItemStack? {
-    if (slot == null) {
-        return this.getItem(BukkitEquipment.HAND.bukkit)
-    } else {
-        val es = inferEquipmentSlot(slot)
-        return if (es == null) this.getItem(slot.toInt())
-        else this.getItem(es.bukkit)
-    }
+fun PlayerInventory.getItemBySlot(slot: String): ItemStack? {
+    val es = inferEquipmentSlot(slot)
+    return if (es == null) this.getItem(slot.toInt())
+    else this.getItem(es.bukkit)
 }
 
 /**
  * 根据物品栏位操作物品NBT数据
  */
-fun PlayerInventory.handleItemTag(slot: String?, action: Consumer<NBTCompound>): NBTCompound? {
-    val item = RefItemStack.of(getItemBySlot(slot) ?: return null)
-    if (item.material.isEmpty()) return null
-    val tag = item.tag
+fun ItemStack.modifyTag(action: Consumer<NBTCompound>): NBTCompound? {
+    if(this.isAir()) return null
+    // 修改物品标签数据
+    val ref = RefItemStack.of(this)
+    val tag = ref.tag
     action.accept(tag)
-    item.tag = tag
+    ref.tag = tag // 写回数据
     return tag
 }

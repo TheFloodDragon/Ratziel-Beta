@@ -4,7 +4,6 @@ dependencies {
     compileTaboo("bukkit-nms")
     compileTaboo("bukkit-nms-stable")
     compileTaboo("bukkit-xseries")
-    compileTaboo("bukkit-xseries-item")
     compileTaboo("bukkit-util")
     compileTaboo("bukkit-hook")
     compileModule("runtime-bukkit")

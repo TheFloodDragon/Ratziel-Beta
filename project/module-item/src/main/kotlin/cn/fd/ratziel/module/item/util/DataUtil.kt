@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.ItemData

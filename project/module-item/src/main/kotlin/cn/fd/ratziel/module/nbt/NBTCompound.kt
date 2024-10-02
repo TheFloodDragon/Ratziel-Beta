@@ -73,7 +73,7 @@ open class NBTCompound(
 
     override fun equals(other: Any?) = sourceMap == other
 
-    override fun toString() = "NBTCompound($sourceMap)"
+    override fun toString() = "NBTCompound$sourceMap"
 
     override fun hashCode() = sourceMap.hashCode()
 

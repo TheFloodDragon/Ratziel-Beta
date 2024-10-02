@@ -6,6 +6,7 @@ import cn.fd.ratziel.module.nbt.NBTCompound
 import cn.fd.ratziel.module.nbt.NBTHelper
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
+import taboolib.library.reflex.ClassConstructor
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
@@ -78,9 +79,23 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
         /**
          * CraftMetaItem#constructor(NBTTagCompound)
          * CraftMetaItem(DataComponentPatch tag)
+         * CraftMetaItem(DataComponentPatch tag, Set<DataComponentType<?>>) - Fuck you, Paper!
          * @return CraftMetaItem
          */
         private val craftMetaConstructor by lazy {
+            ReflexClass.of(craftClass, false).structure.getConstructorByType(
+                if (MinecraftVersion.versionId >= 12005) NMS12005.DATA_COMPONENT_PATCH_CLASS else nbtTagCompoundClass
+            )
+        }
+
+        private val constructor:Pair<ClassConstructor,Function<NBTCompound,T>> by lazy {
+            if (MinecraftVersion.versionId >= 12005){
+                val structure = ReflexClass.of(craftClass, false).structure
+                val common= structure.getConstructorByTypeSilently(NMS12005.DATA_COMPONENT_PATCH_CLASS)
+                if(common==null) {
+                    val paper = structure
+                }
+            }
             ReflexClass.of(craftClass, false).structure.getConstructorByType(
                 if (MinecraftVersion.versionId >= 12005) NMS12005.DATA_COMPONENT_PATCH_CLASS else nbtTagCompoundClass
             )

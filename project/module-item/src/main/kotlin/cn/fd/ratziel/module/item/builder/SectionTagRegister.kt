@@ -16,8 +16,8 @@ import taboolib.library.reflex.ReflexClass
 class SectionTagRegister : ClassVisitor(10) {
 
     override fun visitStart(clazz: ReflexClass) {
-        if (clazz.interfaces.contains(ReflexClass.of(SectionTagResolver::class.java))) {
-            DefaultSectionResolver.resolvers.add(clazz.getInstance() as SectionTagResolver)
+        if (clazz.hasInterface(SectionTagResolver::class.java)) {
+            DefaultSectionResolver.resolvers.add(findInstance(clazz) as SectionTagResolver)
         }
     }
 
