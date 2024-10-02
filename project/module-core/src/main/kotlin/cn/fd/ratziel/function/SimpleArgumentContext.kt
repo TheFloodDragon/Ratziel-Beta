@@ -1,6 +1,7 @@
 package cn.fd.ratziel.function
 
-import java.util.concurrent.CopyOnWriteArrayList
+import cn.fd.ratziel.function.exception.ArgumentNotFoundException
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * SimpleArgumentContext
@@ -9,19 +10,34 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @since 2024/6/28 16:19
  */
 open class SimpleArgumentContext(
-    val list: MutableList<Any>
-) : ArgumentContext, MutableList<Any> by list {
+    val map: MutableMap<Class<*>, Any>
+) : ArgumentContext, MutableMap<Class<*>, Any> by map {
 
-    constructor(vararg values: Any) : this(CopyOnWriteArrayList<Any>().apply { addAll(values) })
-
-    override fun <T : Any> popOrNull(type: Class<T>): T? {
-        return uncheck(list.find { type.isAssignableFrom(it::class.java) })
+    constructor(vararg values: Any) : this(ConcurrentHashMap<Class<*>, Any>()) {
+        values.forEach { map[it::class.java] = it }
     }
 
-    override fun <T : Any> popAll(type: Class<T>): Iterable<T> {
-        return uncheck(list.filter { type.isAssignableFrom(it::class.java) })
+    override fun <T> get(type: Class<T>): T & Any {
+        return getOrNull(type) ?: throw ArgumentNotFoundException(type);
     }
 
-    override fun args(): Collection<Any> = list
+    override fun <T> getOr(type: Class<T>, def: T & Any): T & Any {
+        return getOrNull(type) ?: def
+    }
+
+    override fun <T> getOrNull(type: Class<T>): T? {
+        @Suppress("UNCHECKED_CAST")
+        return map[type] as? T
+    }
+
+    override fun put(element: Any) {
+        map[element::class.java] = element
+    }
+
+    override fun remove(element: Any) {
+        map.remove(element::class.java)
+    }
+
+    override fun args(): Collection<Any> = map.values
 
 }

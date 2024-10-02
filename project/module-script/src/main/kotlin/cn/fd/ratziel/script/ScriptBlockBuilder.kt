@@ -10,6 +10,7 @@ import cn.fd.ratziel.script.impl.SimpleScript
  * @author TheFloodDragon
  * @since 2024/6/30 16:55
  */
+@Deprecated("Use BlockManager")
 object ScriptBlockBuilder {
 
     fun build(section: Any) = build(section, ScriptManager.defaultLanguage.executor)

@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.internal.nms
 
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.function.uncheck
 import cn.fd.ratziel.module.nbt.NBTCompound
 import cn.fd.ratziel.module.nbt.NBTHelper
 import org.bukkit.inventory.meta.ItemMeta
@@ -24,7 +22,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
     /**
      * ItemMeta子类的CraftMetaItem处理对象
      */
-    var handle: T = raw as? T ?: throw UnsupportedTypeException(raw)
+    var handle: T = raw
 
     /**
      * [CraftMetaType]
@@ -48,8 +46,8 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
         /**
          * inventory.CraftMetaItem
          */
-        val META_ITEM: CraftMetaType<ItemMeta> = CraftMetaType("inventory.CraftMetaItem")
-        val META_SKULL: CraftMetaType<SkullMeta> = CraftMetaType("inventory.CraftMetaSkull")
+        val META_ITEM = CraftMetaType<ItemMeta>("inventory.CraftMetaItem")
+        val META_SKULL = CraftMetaType<SkullMeta>("inventory.CraftMetaSkull")
 
         /**
          * CraftMetaItem#constructor(NBTTagCompound)
@@ -74,7 +72,8 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
             registry.add(this)
         }
 
-        internal constructor(obcName: String) : this(uncheck<Class<T>>(obcClass(obcName)))
+        @Suppress("UNCHECKED_CAST")
+        internal constructor(obcName: String) : this(obcClass(obcName) as Class<T>)
 
         /**
          * CraftMetaItem#constructor(NBTTagCompound)
@@ -82,23 +81,19 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
          * CraftMetaItem(DataComponentPatch tag, Set<DataComponentType<?>>) - Fuck you, Paper!
          * @return CraftMetaItem
          */
-        private val craftMetaConstructor by lazy {
-            ReflexClass.of(craftClass, false).structure.getConstructorByType(
-                if (MinecraftVersion.versionId >= 12005) NMS12005.DATA_COMPONENT_PATCH_CLASS else nbtTagCompoundClass
-            )
-        }
-
-        private val constructor:Pair<ClassConstructor,Function<NBTCompound,T>> by lazy {
-            if (MinecraftVersion.versionId >= 12005){
-                val structure = ReflexClass.of(craftClass, false).structure
-                val common= structure.getConstructorByTypeSilently(NMS12005.DATA_COMPONENT_PATCH_CLASS)
-                if(common==null) {
-                    val paper = structure
-                }
+        @Suppress("UNCHECKED_CAST")
+        private val constructor: Pair<ClassConstructor, (NBTCompound) -> T> by lazy {
+            val structure = ReflexClass.of(craftClass, false).structure
+            if (MinecraftVersion.versionId >= 12005) {
+                val common = structure.getConstructorByTypeSilently(NMS12005.DATA_COMPONENT_PATCH_CLASS)
+                if (common == null) {
+                    val paper = structure.getConstructorByType(NMS12005.DATA_COMPONENT_PATCH_CLASS, Set::class.java)
+                    paper to { paper.instance(NMS12005.INSTANCE.parsePatch(it)!!, emptySet<Any>())!! as T }
+                } else common to { common.instance(NMS12005.INSTANCE.parsePatch(it)!!)!! as T }
+            } else {
+                val legacy = structure.getConstructorByType(nbtTagCompoundClass)
+                legacy to { legacy.instance(NBTHelper.toNms(it))!! as T }
             }
-            ReflexClass.of(craftClass, false).structure.getConstructorByType(
-                if (MinecraftVersion.versionId >= 12005) NMS12005.DATA_COMPONENT_PATCH_CLASS else nbtTagCompoundClass
-            )
         }
 
         private val applyToItemMethod by lazy {
@@ -109,8 +104,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
         }
 
         internal fun new(sourceTag: NBTCompound): T {
-            val handled = if (MinecraftVersion.versionId >= 12005) NMS12005.INSTANCE.parsePatch(sourceTag)!! else NBTHelper.toNms(sourceTag)
-            return uncheck(craftMetaConstructor.instance(handled)!!)
+            return constructor.second.invoke(sourceTag)
         }
 
         internal fun applyToItem(meta: ItemMeta, sourceTag: NBTCompound): NBTCompound {
