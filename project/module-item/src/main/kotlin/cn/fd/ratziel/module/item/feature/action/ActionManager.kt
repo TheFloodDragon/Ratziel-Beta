@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.feature.action
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.action.TriggerType
+import cn.fd.ratziel.module.item.feature.action.provided.Triggers
 import cn.fd.ratziel.module.item.feature.service.NativeServiceRegistry
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet

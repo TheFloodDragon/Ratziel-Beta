@@ -4,10 +4,9 @@ import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.core.serialization.toBasic
-import cn.fd.ratziel.script.ScriptBlockBuilder
-import cn.fd.ratziel.script.ScriptManager
-import cn.fd.ratziel.script.impl.SimpleScriptEnv
+import cn.fd.ratziel.function.SimpleArgumentContext
+import cn.fd.ratziel.script.SimpleScriptEnv
+import cn.fd.ratziel.script.block.GlobalBlockBuilder
 import taboolib.common.LifeCycle
 
 /**
@@ -25,9 +24,9 @@ object ActionElement : ElementHandler {
 
     override fun handle(element: Element) {
         element.property.let { json ->
-            val block = ScriptBlockBuilder.build(json.toBasic(), ScriptManager.defaultLanguage.executor)
+            val block = GlobalBlockBuilder.parse(json)
             println(block)
-            val result = block.evaluate(SimpleScriptEnv())
+            val result = block.execute(SimpleArgumentContext(SimpleScriptEnv()))
             println(result)
         }
     }

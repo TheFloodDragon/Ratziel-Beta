@@ -1,11 +1,17 @@
 package cn.fd.ratziel.script.block.provided
 
+import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.script.ScriptManager
 import cn.fd.ratziel.script.ScriptTypes
-import cn.fd.ratziel.script.api.*
+import cn.fd.ratziel.script.SimpleScript
+import cn.fd.ratziel.script.SimpleScriptEnv
+import cn.fd.ratziel.script.api.EvaluableScript
+import cn.fd.ratziel.script.api.ScriptContent
+import cn.fd.ratziel.script.api.ScriptExecutor
+import cn.fd.ratziel.script.api.StorableScript
 import cn.fd.ratziel.script.block.BlockParser
 import cn.fd.ratziel.script.block.ExecutableBlock
-import cn.fd.ratziel.script.impl.SimpleScript
+import cn.fd.ratziel.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -26,8 +32,13 @@ class ScriptBlock(val script: ScriptContent, val executor: ScriptExecutor) : Exe
         if (script is StorableScript) script.compile(executor)
     }
 
-    override fun execute(environment: ScriptEnvironment) =
-        if (script is EvaluableScript) script.evaluate(environment) else executor.evaluate(script, environment)
+    override fun execute(context: ArgumentContext): Any? {
+        // TODO("Is there needs global script environment?")
+        val environment = context.scriptEnv() ?: SimpleScriptEnv()
+        return if (script is EvaluableScript)
+            script.evaluate(environment)
+        else executor.evaluate(script, environment)
+    }
 
     object Parser : BlockParser {
 

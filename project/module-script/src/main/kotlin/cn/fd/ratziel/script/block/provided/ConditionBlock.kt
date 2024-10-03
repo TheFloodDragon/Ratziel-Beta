@@ -1,9 +1,9 @@
 package cn.fd.ratziel.script.block.provided
 
-import cn.fd.ratziel.script.api.ScriptEnvironment
-import cn.fd.ratziel.script.block.BlockManager
+import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.script.block.BlockParser
 import cn.fd.ratziel.script.block.ExecutableBlock
+import cn.fd.ratziel.script.block.RecursingBlockParser
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
@@ -19,22 +19,22 @@ class ConditionBlock(
     val funcElse: ExecutableBlock?
 ) : ExecutableBlock {
 
-    override fun execute(environment: ScriptEnvironment) =
-        if (funcIf.execute(environment) == true)
-            funcThen?.execute(environment)
-        else funcElse?.execute(environment)
+    override fun execute(context: ArgumentContext) =
+        if (funcIf.execute(context) == true)
+            funcThen?.execute(context)
+        else funcElse?.execute(context)
 
-    object Parser : BlockParser {
+    object Parser : RecursingBlockParser {
 
-        override fun parse(element: JsonElement): ConditionBlock? {
+        override fun parse(element: JsonElement, parser: BlockParser): ConditionBlock? {
             if (element !is JsonObject) return null
             val valueIf = element["if"] ?: element["condition"] ?: return null
             val valueThen = element["then"]
             val valueElse = element["else"]
             return ConditionBlock(
-                BlockManager.parse(valueIf),
-                BlockManager.parse(valueThen),
-                BlockManager.parse(valueElse)
+                parser.parse(valueIf)!!,
+                valueThen?.let { parser.parse(it) },
+                valueElse?.let { parser.parse(it) }
             )
         }
 

@@ -1,9 +1,9 @@
 package cn.fd.ratziel.script.block.provided
 
-import cn.fd.ratziel.script.api.ScriptEnvironment
-import cn.fd.ratziel.script.block.BlockManager
+import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.script.block.BlockParser
 import cn.fd.ratziel.script.block.ExecutableBlock
+import cn.fd.ratziel.script.block.RecursingBlockParser
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 
@@ -17,19 +17,19 @@ class MultiLineBlock(
     val lines: Iterable<ExecutableBlock>
 ) : ExecutableBlock {
 
-    override fun execute(environment: ScriptEnvironment): Any? {
+    override fun execute(context: ArgumentContext): Any? {
         var result: Any? = null
         for (line in lines) {
-            result = line.execute(environment)
+            result = line.execute(context)
         }
         return result
     }
 
-    object Parser : BlockParser {
+    object Parser : RecursingBlockParser {
 
-        override fun parse(element: JsonElement) =
+        override fun parse(element: JsonElement, parser: BlockParser) =
             if (element is JsonArray) {
-                MultiLineBlock(element.map { BlockManager.parse(it) })
+                MultiLineBlock(element.map { parser.parse(it)!! })
             } else null
 
     }

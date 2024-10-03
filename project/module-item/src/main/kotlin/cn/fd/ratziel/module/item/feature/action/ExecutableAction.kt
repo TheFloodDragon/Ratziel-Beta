@@ -3,25 +3,23 @@ package cn.fd.ratziel.module.item.feature.action
 import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.action.TriggerAction
 import cn.fd.ratziel.module.item.api.action.TriggerType
-import cn.fd.ratziel.script.api.EvaluableScript
-import cn.fd.ratziel.script.api.ScriptEnvironment
-import cn.fd.ratziel.script.impl.SimpleScriptEnv
+import cn.fd.ratziel.script.block.ExecutableBlock
 
 /**
- * ScriptedAction
+ * ExecutableAction - 可执行的动作
  *
  * @author TheFloodDragon
- * @since 2024/7/3 15:32
+ * @since 2024/10/3 15:45
  */
-open class ScriptedAction(
+open class ExecutableAction(
     /**
-     * 可执行脚本
+     * 动作语句块
      */
-    val script: EvaluableScript,
+    val block: ExecutableBlock,
 ) : TriggerAction {
 
     override fun execute(trigger: TriggerType, context: ArgumentContext) {
-        script.evaluate(context.popOr(ScriptEnvironment::class.java, SimpleScriptEnv()))
+        block.execute(context)
     }
 
 }

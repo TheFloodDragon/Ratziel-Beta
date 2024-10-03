@@ -3,7 +3,7 @@ package cn.fd.ratziel.script.block
 import kotlinx.serialization.json.JsonElement
 
 /**
- * BlockParser
+ * BlockParser - 语句块
  *
  * @author TheFloodDragon
  * @since 2024/10/2 17:36

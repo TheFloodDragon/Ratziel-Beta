@@ -1,6 +1,6 @@
 package cn.fd.ratziel.script.block.provided
 
-import cn.fd.ratziel.script.api.ScriptEnvironment
+import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.script.block.BlockParser
 import cn.fd.ratziel.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonElement
@@ -15,7 +15,7 @@ import kotlinx.serialization.json.contentOrNull
  */
 class PrimitiveBlock(val value: Any?) : ExecutableBlock {
 
-    override fun execute(environment: ScriptEnvironment) = value
+    override fun execute(context: ArgumentContext) = value
 
     object Parser : BlockParser {
 
