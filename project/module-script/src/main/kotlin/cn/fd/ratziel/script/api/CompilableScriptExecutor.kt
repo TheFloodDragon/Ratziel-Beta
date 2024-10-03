@@ -1,5 +1,6 @@
 package cn.fd.ratziel.script.api
 
+import cn.fd.ratziel.script.SimpleScript
 import java.io.Reader
 import javax.script.Compilable
 import javax.script.CompiledScript
@@ -14,6 +15,10 @@ interface CompilableScriptExecutor : ScriptExecutor, Compilable {
 
     override fun compile(script: Reader?): CompiledScript {
         return compile(script?.readText())
+    }
+
+    override fun build(script: String): ScriptContent {
+        return SimpleScript(script,this) // TODO
     }
 
 }

@@ -5,10 +5,10 @@ import cn.fd.ratziel.script.ScriptManager
 import cn.fd.ratziel.script.ScriptTypes
 import cn.fd.ratziel.script.SimpleScript
 import cn.fd.ratziel.script.SimpleScriptEnv
+import cn.fd.ratziel.script.api.CacheableScript
 import cn.fd.ratziel.script.api.EvaluableScript
 import cn.fd.ratziel.script.api.ScriptContent
 import cn.fd.ratziel.script.api.ScriptExecutor
-import cn.fd.ratziel.script.api.StorableScript
 import cn.fd.ratziel.script.block.BlockParser
 import cn.fd.ratziel.script.block.ExecutableBlock
 import cn.fd.ratziel.script.util.scriptEnv
@@ -29,7 +29,7 @@ class ScriptBlock(val script: ScriptContent, val executor: ScriptExecutor) : Exe
 
     init {
         // 预编译 (SimpleScript#compile()为异步执行, 一般情况下这里也是异步的)
-        if (script is StorableScript) script.compile(executor)
+        if (script is CacheableScript) script.compile(executor)
     }
 
     override fun execute(context: ArgumentContext): Any? {

@@ -4,15 +4,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.script.CompiledScript;
-import javax.script.ScriptException;
 
 /**
- * StorableScript
+ * CacheableScript
  *
  * @author TheFloodDragon
  * @since 2024/7/15 13:18
  */
-public interface StorableScript {
+public interface CacheableScript {
 
     /**
      * 获取编译过后的脚本

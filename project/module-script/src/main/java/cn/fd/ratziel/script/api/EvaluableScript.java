@@ -12,6 +12,7 @@ import javax.script.ScriptException;
  * @author TheFloodDragon
  * @since 2024/7/15 13:14
  */
+@Deprecated
 public interface EvaluableScript {
 
     /**
@@ -22,13 +23,5 @@ public interface EvaluableScript {
      */
     @Nullable
     Object evaluate(@NotNull ScriptEnvironment environment) throws ScriptException;
-
-    /**
-     * 获取脚本执行器
-     *
-     * @return 覆写的脚本执行器
-     */
-    @NotNull
-    ScriptExecutor getExecutor();
 
 }

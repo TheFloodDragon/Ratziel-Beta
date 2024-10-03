@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
  * @author TheFloodDragon
  * @since 2024/7/15 13:25
  */
-public class SimpleScript implements EvaluableScript, StorableScript, ScriptContent {
+public class SimpleScript implements EvaluableScript, CacheableScript, ScriptContent {
 
     public SimpleScript(@NotNull String content, @NotNull ScriptExecutor executor) {
         this.content = content;

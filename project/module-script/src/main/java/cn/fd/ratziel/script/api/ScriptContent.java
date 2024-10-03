@@ -16,4 +16,10 @@ public interface ScriptContent {
     @NotNull
     String getContent();
 
+    /**
+     * 获取脚本执行器
+     */
+    @NotNull
+    ScriptExecutor getExecutor();
+
 }
