@@ -1,11 +1,13 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package cn.fd.ratziel.module.item.feature.service
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.IdentifierImpl
+import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.api.service.ItemService
 import cn.fd.ratziel.module.item.api.service.ItemServiceManager
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.uuid.ExperimentalUuidApi
 
 /**
  * GlobalServiceManager - 全局物品服务管理器
@@ -38,12 +40,8 @@ object GlobalServiceManager : ItemServiceManager {
         groups[identifier] = value
     }
 
-    operator fun get(identifier: String) = get(IdentifierImpl(identifier))
+    operator fun get(identifier: String) = get(SimpleIdentifier(identifier))
 
-    operator fun get(identifier: UUID) = get(IdentifierImpl(identifier))
-
-    operator fun set(identifier: String, value: ItemService) = set(IdentifierImpl(identifier), value)
-
-    operator fun set(identifier: UUID, value: ItemService) = set(IdentifierImpl(identifier), value)
+    operator fun set(identifier: String, value: ItemService) = set(SimpleIdentifier(identifier), value)
 
 }

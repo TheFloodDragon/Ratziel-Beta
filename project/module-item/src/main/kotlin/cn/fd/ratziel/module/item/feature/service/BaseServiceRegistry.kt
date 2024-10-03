@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.feature.service
 
-import cn.fd.ratziel.function.uncheck
 import cn.fd.ratziel.module.item.api.service.ItemServiceFunction
 import cn.fd.ratziel.module.item.api.service.ItemServiceGetter
 import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
@@ -16,9 +15,17 @@ abstract class BaseServiceRegistry : ItemServiceRegistry {
 
     protected abstract val registry: MutableMap<Class<*>, ItemServiceFunction<*>>
 
-    override fun <T> getter(type: Class<T>): ItemServiceGetter<T>? = registry[type]?.getter?.let { uncheck(it) }
+    override fun <T> getter(type: Class<T>): ItemServiceGetter<T>? {
+        val getter = registry[type]?.getter
+        @Suppress("UNCHECKED_CAST")
+        return if (getter != null) getter as ItemServiceGetter<T> else null
+    }
 
-    override fun <T> setter(type: Class<T>): ItemServiceSetter<T>? = registry[type]?.setter?.let { uncheck(it) }
+    override fun <T> setter(type: Class<T>): ItemServiceSetter<T>? {
+        val setter = registry[type]?.setter
+        @Suppress("UNCHECKED_CAST")
+        return if (setter != null) setter as ItemServiceSetter<T> else null
+    }
 
     override fun <T> register(type: Class<T>, function: ItemServiceFunction<T>) {
         registry[type] = function

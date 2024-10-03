@@ -1,14 +1,14 @@
 package cn.fd.ratziel.module.item.internal.nms
 
+import cn.fd.ratziel.module.nbt.NBTBase
 import cn.fd.ratziel.module.nbt.NBTCompound
 import cn.fd.ratziel.module.nbt.NBTHelper
-import cn.fd.ratziel.module.nbt.NBTBase
 import cn.fd.ratziel.module.nbt.NBTTagCompound
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DynamicOps
-import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.resources.RegistryOps
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer
@@ -100,14 +100,13 @@ class NMS12005Impl : NMS12005() {
         (Bukkit.getServer() as CraftServer).server.registryAccess()
     }
 
-    @Deprecated("Need review")
     private val method by lazy {
         val ref = ReflexClass.of(net.minecraft.core.HolderLookup.a::class.java, false)
         ref.structure.getMethodByTypeSilently("a", DynamicOps::class.java)
             ?: ref.structure.getMethodByType("createSerializationContext", DynamicOps::class.java)
     }
 
-    @Deprecated("Need review")
-    fun <V> createSerializationContext(dynamicOps: DynamicOps<V>): RegistryOps<V> = cn.fd.ratziel.function.uncheck(method.invoke(access, dynamicOps)!!)
+    @Suppress("UNCHECKED_CAST")
+    fun <V> createSerializationContext(dynamicOps: DynamicOps<V>): RegistryOps<V> = method.invoke(access, dynamicOps)!! as RegistryOps<V>
 
 }

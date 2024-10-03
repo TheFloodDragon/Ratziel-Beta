@@ -21,7 +21,7 @@ open class ScriptedAction(
 ) : TriggerAction {
 
     override fun execute(trigger: TriggerType, context: ArgumentContext) {
-        script.evaluate(context.getOr(ScriptEnvironment::class.java, SimpleScriptEnv()))
+        script.evaluate(context.popOr(ScriptEnvironment::class.java, SimpleScriptEnv()))
     }
 
 }

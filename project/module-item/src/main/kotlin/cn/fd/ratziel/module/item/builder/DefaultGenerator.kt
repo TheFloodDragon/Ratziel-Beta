@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.builder
 
-import cn.fd.ratziel.core.IdentifierImpl
+import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.core.util.digest
@@ -48,7 +48,7 @@ class DefaultGenerator(
      */
     fun buildAsync(data: ItemData, context: ArgumentContext): CompletableFuture<NeoItem> {
         // 生成物品唯一标识符
-        val identifier = IdentifierImpl(origin.name)
+        val identifier = SimpleIdentifier(origin.name)
 
         // 呼出开始生成的事件
         val element = origin.property

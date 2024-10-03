@@ -22,10 +22,10 @@ object BasicAppliers {
         for (lang in ScriptTypes.entries) {
             // Sender from Bindings
             lang.appliers.add(ScriptEnvironment.Applier {
-                val sender = it.context.getOrNull(ProxyCommandSender::class.java)
+                val sender = it.context.popOrNull(ProxyCommandSender::class.java)
                 if (sender == null) {
                     val newSender = it.bindings["player"] ?: it.bindings["sender"]
-                    if (newSender != null) it.context.put(newSender)
+                    if (newSender != null) it.context.add(newSender)
                 }
             })
             // Sender from Context
@@ -39,7 +39,7 @@ object BasicAppliers {
 
     fun <T : Any> fetch(type: Class<T>, function: ScriptEnvironment.(T) -> Unit) =
         ScriptEnvironment.Applier {
-            val ins = it.context.getOrNull(type) ?: return@Applier
+            val ins = it.context.popOrNull(type) ?: return@Applier
             function(it, ins);
         }
 

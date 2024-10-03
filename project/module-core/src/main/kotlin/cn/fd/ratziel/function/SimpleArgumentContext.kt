@@ -1,7 +1,7 @@
 package cn.fd.ratziel.function
 
 import cn.fd.ratziel.function.exception.ArgumentNotFoundException
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * SimpleArgumentContext
@@ -10,34 +10,42 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 2024/6/28 16:19
  */
 open class SimpleArgumentContext(
-    val map: MutableMap<Class<*>, Any>
+    val list: MutableList<Any>
 ) : ArgumentContext {
 
-    constructor(vararg values: Any) : this(ConcurrentHashMap<Class<*>, Any>()) {
-        values.forEach { map[it::class.java] = it }
+    constructor(vararg values: Any) : this(CopyOnWriteArrayList<Any>().apply { addAll(values) })
+
+    override fun <T> pop(type: Class<T>): T & Any {
+        return popOrNull(type) ?: throw ArgumentNotFoundException(type);
     }
 
-    override fun <T> get(type: Class<T>): T & Any {
-        return getOrNull(type) ?: throw ArgumentNotFoundException(type);
+    override fun <T> popOr(type: Class<T>, def: T & Any): T & Any {
+        return popOrNull(type) ?: def
     }
 
-    override fun <T> getOr(type: Class<T>, def: T & Any): T & Any {
-        return getOrNull(type) ?: def
-    }
-
-    override fun <T> getOrNull(type: Class<T>): T? {
+    override fun <T> popOrNull(type: Class<T>): T? {
+        val find = list.find { type.isAssignableFrom(it::class.java) }
         @Suppress("UNCHECKED_CAST")
-        return map[type] as? T
+        return (find ?: return null) as T
     }
 
-    override fun put(element: Any) {
-        map[element::class.java] = element
+    override fun <T : Any?> popAll(type: Class<T>): List<T> {
+        @Suppress("UNCHECKED_CAST")
+        return list.filter { type.isAssignableFrom(it::class.java) } as List<T>
+    }
+
+    override fun add(element: Any) {
+        list.add(element)
     }
 
     override fun remove(element: Any) {
-        map.remove(element::class.java)
+        list.remove(element)
     }
 
-    override fun args(): Collection<Any> = map.values
+    override fun removeAll(type: Class<*>) = list.forEachIndexed { index, element ->
+        if (!type.isAssignableFrom(element::class.java)) list.removeAt(index)
+    }
+
+    override fun args(): Collection<Any> = list
 
 }

@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.IdentifierImpl
+import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.feature.service.GlobalServiceManager
@@ -117,7 +117,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
         val hash: String
     ) {
 
-        constructor(type: String, hash: String) : this(IdentifierImpl(type), hash)
+        constructor(type: String, hash: String) : this(SimpleIdentifier(type), hash)
 
         constructor(type: Identifier, hash: Int) : this(type, hash.toString())
 
