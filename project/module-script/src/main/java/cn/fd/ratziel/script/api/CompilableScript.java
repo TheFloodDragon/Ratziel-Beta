@@ -1,17 +1,16 @@
 package cn.fd.ratziel.script.api;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.script.CompiledScript;
 
 /**
- * CacheableScript
+ * CompilableScript
  *
  * @author TheFloodDragon
  * @since 2024/7/15 13:18
  */
-public interface CacheableScript {
+public interface CompilableScript {
 
     /**
      * 获取编译过后的脚本
@@ -20,15 +19,5 @@ public interface CacheableScript {
      */
     @Nullable
     CompiledScript getCompiled();
-
-    /**
-     * 编译脚本
-     *
-     * @param executor 脚本执行器
-     * @return 脚本是否可编译
-     */
-    default boolean compile(@NotNull ScriptExecutor executor) {
-        return false;
-    }
 
 }

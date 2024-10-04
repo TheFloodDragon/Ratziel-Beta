@@ -14,6 +14,7 @@ import cn.fd.ratziel.script.api.ScriptEnvironment
  * @author TheFloodDragon
  * @since 2024/8/13 14:29
  */
+@Deprecated("需要重构")
 enum class Triggers(
     override vararg val names: String,
     val parent: TriggerType? = null

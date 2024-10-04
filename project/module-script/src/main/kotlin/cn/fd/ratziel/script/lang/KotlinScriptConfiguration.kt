@@ -1,4 +1,4 @@
-package cn.fd.ratziel.script.kts
+package cn.fd.ratziel.script.lang
 
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.jvm.JvmDependencyFromClassLoader

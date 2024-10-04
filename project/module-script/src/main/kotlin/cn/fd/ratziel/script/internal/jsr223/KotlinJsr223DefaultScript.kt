@@ -2,7 +2,7 @@
 
 package cn.fd.ratziel.script.internal.jsr223
 
-import cn.fd.ratziel.script.kts.KotlinScriptConfiguration
+import cn.fd.ratziel.script.lang.KotlinScriptConfiguration
 import kotlin.script.experimental.annotations.KotlinScript
 
 /**

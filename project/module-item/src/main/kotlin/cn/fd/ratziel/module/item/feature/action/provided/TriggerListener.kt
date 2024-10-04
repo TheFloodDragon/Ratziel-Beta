@@ -20,6 +20,7 @@ import taboolib.platform.util.attacker
  * @author TheFloodDragon
  * @since 2024/8/13 14:35
  */
+@Deprecated("需要重构")
 object TriggerListener {
 
     @SubscribeEvent
