@@ -84,6 +84,8 @@ subprojects {
         destinationDirectory.set(file("$rootDir/outs"))
         // Taboolib
         relocate("taboolib", "$rootGroup.taboolib")
+        // NBT
+        relocate("cn.altawk.nbt.", "$rootGroup.module.nbt.")
         // Kotlin
 //        relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
 //        relocate("kotlinx.coroutines.", "kotlinx${kotlinVersion.escapedVersion}.coroutines${coroutineVersion.escapedVersion}.")
