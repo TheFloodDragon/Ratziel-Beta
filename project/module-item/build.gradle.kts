@@ -1,4 +1,5 @@
 dependencies {
+    implementation("cn.altawk.nbt:tag:0.0.0")
     compileTaboo("platform-bukkit")
     compileTaboo("platform-bukkit-impl")
     compileTaboo("bukkit-nms")

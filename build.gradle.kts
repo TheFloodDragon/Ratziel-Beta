@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     `java-library`
-    kotlin("jvm") version kotlinVersion
-    kotlin("plugin.serialization") version kotlinVersion
+    kotlin("jvm") version libs.versions.kotlin
+    kotlin("plugin.serialization") version libs.versions.kotlin
     id("com.gradleup.shadow") version shadowJarVersion
 }
 
@@ -24,6 +24,14 @@ subprojects {
         maven("https://papermc.io/repo/repository/maven-public/")
         // OSS
         maven("https://s01.oss.sonatype.org/content/groups/public/")
+        // NBT (Github Packages)
+        maven {
+            url = uri("https://maven.pkg.github.com/TheFloodDragon/nbt")
+            credentials {
+                username = project.findProperty("github.user") as String? ?: System.getenv("GITHUB_USER")
+                password = project.findProperty("github.token") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 
     dependencies {

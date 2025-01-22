@@ -1,5 +1,7 @@
 rootProject.name = "Ratziel"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 applyAll("project")
 applyAll("plugin")
 applyAll("script")
