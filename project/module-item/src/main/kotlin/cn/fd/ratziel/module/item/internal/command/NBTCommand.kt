@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.internal.command
 
+import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.module.item.util.getItemBySlot
 import cn.fd.ratziel.module.item.util.modifyTag
 import cn.fd.ratziel.module.nbt.*
@@ -100,7 +101,7 @@ object NBTCommand {
 
     fun nbtAsComponent(
         sender: ProxyCommandSender,
-        nbt: NBTData,
+        nbt: NbtTag,
         level: Int,
         slot: String,
         nodeDeep: String? = null,
@@ -114,7 +115,7 @@ object NBTCommand {
         - 值2 (类型)
          */
         when (nbt) {
-            is NBTList -> {
+            is NbtList<*> -> {
                 nbt.content.let { list ->
                     if (list.isEmpty()) append(sender.asLangText("NBTFormat-List-Empty"))
                     else list.forEachIndexed { index, it ->
@@ -130,7 +131,7 @@ object NBTCommand {
             键1:值1 (类型)
             键2:值2 (类型)
              */
-            is NBTCompound -> {
+            is NbtCompound -> {
                 var first = isFirst
                 nbt.forEach { (shallow, value) ->
                     val deep = if (nodeDeep == null) shallow else nodeDeep + DeepVisitor.DEEP_SEPARATION + shallow // 深层节点的合成
@@ -161,7 +162,7 @@ object NBTCommand {
     ) = getTypeJson(sender, "NBTFormat-Entry-Key")
         .buildMessage(sender, nodeShallow.toString(), slot, nodeDeep.toString())
 
-    private fun componentValue(sender: ProxyCommandSender, nbt: NBTData) =
+    private fun componentValue(sender: ProxyCommandSender, nbt: NbtTag) =
         getTypeJson(sender, "NBTFormat-Entry-Value")
             .buildMessage(sender, asString(nbt), NBTSerializer.Converter.serializeToString(nbt))
 
@@ -175,36 +176,36 @@ object NBTCommand {
     /**
      * 快捷匹配类型组件
      */
-    private fun translateType(sender: ProxyCommandSender, nbt: NBTData): ComponentText = when (nbt.type) {
-        NBTType.STRING -> "NBTFormat-Type-String"
-        NBTType.BYTE -> "NBTFormat-Type-Byte"
-        NBTType.SHORT -> "NBTFormat-Type-Short"
-        NBTType.INT -> "NBTFormat-Type-Int"
-        NBTType.LONG -> "NBTFormat-Type-Long"
-        NBTType.FLOAT -> "NBTFormat-Type-Float"
-        NBTType.DOUBLE -> "NBTFormat-Type-Double"
-        NBTType.BYTE_ARRAY -> "NBTFormat-Type-ByteArray"
-        NBTType.INT_ARRAY -> "NBTFormat-Type-IntArray"
-        NBTType.LONG_ARRAY -> "NBTFormat-Type-LongArray"
-        NBTType.LIST -> "NBTFormat-Type-List"
-        NBTType.COMPOUND -> "NBTFormat-Type-Compound"
+    private fun translateType(sender: ProxyCommandSender, nbt: NbtTag): ComponentText = when (nbt.type) {
+        NbtType.STRING -> "NbtFormat-Type-String"
+        NbtType.BYTE -> "NbtFormat-Type-Byte"
+        NbtType.SHORT -> "NbtFormat-Type-Short"
+        NbtType.INT -> "NbtFormat-Type-Int"
+        NbtType.LONG -> "NbtFormat-Type-Long"
+        NbtType.FLOAT -> "NbtFormat-Type-Float"
+        NbtType.DOUBLE -> "NbtFormat-Type-Double"
+        NbtType.BYTE_ARRAY -> "NbtFormat-Type-ByteArray"
+        NbtType.INT_ARRAY -> "NbtFormat-Type-IntArray"
+        NbtType.LONG_ARRAY -> "NbtFormat-Type-LongArray"
+        NbtType.LIST -> "NbtFormat-Type-List"
+        NbtType.COMPOUND -> "NbtFormat-Type-Compound"
         else -> null
     }?.let { Components.parseSimple(sender.asLangText(it)).build { colored() } } ?: Components.empty()
 
     /**
-     * 获取 [NBTData] 的字符串形式
+     * 获取 [NbtTag] 的字符串形式
      */
-    private fun asString(nbt: NBTData): String = when (nbt) {
-        is NBTString -> nbt.content
-        is NBTByte -> (NBTByte.parseBoolean(nbt.content) ?: nbt.content).toString()
-        is NBTInt -> nbt.content.toString()
-        is NBTFloat -> nbt.content.toString()
-        is NBTDouble -> nbt.content.toString()
-        is NBTLong -> nbt.content.toString()
-        is NBTShort -> nbt.content.toString()
-        is NBTByteArray -> nbt.content.toString()
-        is NBTIntArray -> nbt.content.toString()
-        is NBTLongArray -> nbt.content.toString()
+    private fun asString(nbt: NbtTag): String = when (nbt) {
+        is NbtString -> nbt.content
+        is NbtByte -> (NbtByte(nbt.content).toBoolean() ?: nbt.content).toString()
+        is NbtInt -> nbt.content.toString()
+        is NbtFloat -> nbt.content.toString()
+        is NbtDouble -> nbt.content.toString()
+        is NbtLong -> nbt.content.toString()
+        is NbtShort -> nbt.content.toString()
+        is NbtByteArray -> nbt.content.toString()
+        is NbtIntArray -> nbt.content.toString()
+        is NbtLongArray -> nbt.content.toString()
         else -> NBTSerializer.Converter.serializeToString(nbt).substringBeforeLast(NBTSerializer.Converter.EXACT_TYPE_CHAR)
     }
 

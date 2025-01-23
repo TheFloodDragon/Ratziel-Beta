@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.internal.command.inferEquipmentSlot
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
-import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.altawk.nbt.tag.NbtCompound
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import taboolib.platform.util.isAir
@@ -22,7 +22,7 @@ fun PlayerInventory.getItemBySlot(slot: String): ItemStack? {
 /**
  * 根据物品栏位操作物品NBT数据
  */
-fun ItemStack.modifyTag(action: Consumer<NBTCompound>): NBTCompound? {
+fun ItemStack.modifyTag(action: Consumer<NbtCompound>): NbtCompound? {
     if(this.isAir()) return null
     // 修改物品标签数据
     val ref = RefItemStack.of(this)

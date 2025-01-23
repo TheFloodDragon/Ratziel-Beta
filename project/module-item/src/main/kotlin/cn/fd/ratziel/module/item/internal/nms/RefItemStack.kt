@@ -9,7 +9,7 @@ import cn.fd.ratziel.module.item.api.BukkitItemStack
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.StackData
-import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.altawk.nbt.tag.NbtCompound
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.unsafeInstance
 import taboolib.library.reflex.ReflexClass
@@ -43,9 +43,9 @@ class RefItemStack private constructor(
      * @see NMSItem.getTag
      * @see NMSItem.setTag
      */
-    override var tag: NBTCompound
+    override var tag: NbtCompound
         get() {
-            return nmsStack?.let { NMSItem.INSTANCE.getTag(it) } ?: NBTCompound()
+            return nmsStack?.let { NMSItem.INSTANCE.getTag(it) } ?: NbtCompound()
         }
         set(value) {
             NMSItem.INSTANCE.setTag(nmsStack ?: return, value)
@@ -56,7 +56,7 @@ class RefItemStack private constructor(
      * @see NMSItem.getCustomTag
      * @see NMSItem.setCustomTag
      */
-    override var customTag: NBTCompound?
+    override var customTag: NbtCompound?
         get() {
             return NMSItem.INSTANCE.getCustomTag(nmsStack ?: return null)
         }

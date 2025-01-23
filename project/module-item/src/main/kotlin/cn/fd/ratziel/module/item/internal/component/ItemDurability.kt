@@ -2,14 +2,14 @@
 
 package cn.fd.ratziel.module.item.internal.component
 
+import cn.altawk.nbt.tag.NbtByte
+import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NbtInt
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.internal.nms.ItemSheet
 import cn.fd.ratziel.module.item.util.read
 import cn.fd.ratziel.module.item.util.write
-import cn.fd.ratziel.module.nbt.NBTByte
-import cn.fd.ratziel.module.nbt.NBTCompound
-import cn.fd.ratziel.module.nbt.NBTInt
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -43,25 +43,25 @@ data class ItemDurability(
     companion object : ItemTransformer<ItemDurability> {
 
         override fun transform(data: ItemData, component: ItemDurability) {
-            data.write(ItemSheet.REPAIR_COST, component.repairCost?.let { NBTInt(it) })
-            data.write(ItemSheet.MAX_DAMAGE, component.maxDurability?.let { NBTInt(it) })
+            data.write(ItemSheet.REPAIR_COST, component.repairCost?.let { NbtInt(it) })
+            data.write(ItemSheet.MAX_DAMAGE, component.maxDurability?.let { NbtInt(it) })
             // 无法破坏部分的特殊处理
             if (MinecraftVersion.versionId >= 12005) {
                 if (component.unbreakable == true && data.tag[ItemSheet.UNBREAKABLE.name] == null) {
-                    data.tag[ItemSheet.UNBREAKABLE.name] = NBTCompound()
+                    data.tag[ItemSheet.UNBREAKABLE.name] = NbtCompound()
                 } else {
                     data.tag.remove(ItemSheet.UNBREAKABLE.name)
                 }
-            } else component.unbreakable?.let { data.tag[ItemSheet.UNBREAKABLE.name] = NBTByte(it) }
+            } else component.unbreakable?.let { data.tag[ItemSheet.UNBREAKABLE.name] = NbtByte(it) }
         }
 
         override fun detransform(data: ItemData): ItemDurability = ItemDurability().apply {
-            data.read<NBTInt>(ItemSheet.REPAIR_COST) { this.repairCost = it.content }
-            data.read<NBTInt>(ItemSheet.MAX_DAMAGE) { this.maxDurability = it.content }
+            data.read<NbtInt>(ItemSheet.REPAIR_COST) { this.repairCost = it.content }
+            data.read<NbtInt>(ItemSheet.MAX_DAMAGE) { this.maxDurability = it.content }
             // 无法破坏部分的特殊处理
             val unsure = data.tag[ItemSheet.UNBREAKABLE.name]
             if (MinecraftVersion.versionId >= 12005) this.unbreakable = unsure != null
-            else if (unsure != null) this.unbreakable = NBTByte.parseBooleanOrFalse((unsure as NBTByte).content)
+            else if (unsure != null) this.unbreakable = (unsure as NbtByte).toBoolean()
         }
 
     }

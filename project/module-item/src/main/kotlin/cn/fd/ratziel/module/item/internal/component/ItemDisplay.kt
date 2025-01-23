@@ -2,6 +2,8 @@
 
 package cn.fd.ratziel.module.item.internal.component
 
+import cn.altawk.nbt.tag.NbtList
+import cn.altawk.nbt.tag.NbtString
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
 import cn.fd.ratziel.core.serialization.EnhancedList
@@ -10,8 +12,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.internal.nms.ItemSheet
 import cn.fd.ratziel.module.item.util.read
 import cn.fd.ratziel.module.item.util.write
-import cn.fd.ratziel.module.nbt.NBTList
-import cn.fd.ratziel.module.nbt.NBTString
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -68,19 +68,19 @@ data class ItemDisplay(
 
         override fun transform(data: ItemData, component: ItemDisplay) {
             data.write(ItemSheet.DISPLAY_NAME, componentToData(component.name))
-            data.write(ItemSheet.DISPLAY_LORE, component.lore?.mapNotNull { componentToData(it) }?.let { NBTList.of(it) })
+            data.write(ItemSheet.DISPLAY_LORE, component.lore?.mapNotNull { componentToData(it) }?.let { NbtList.of(it) })
             data.write(ItemSheet.DISPLAY_LOCAL_NAME, componentToData(component.localizedName))
         }
 
         override fun detransform(data: ItemData): ItemDisplay = ItemDisplay().apply {
-            data.read<NBTString>(ItemSheet.DISPLAY_NAME) { this.setName(it.content) }
-            data.read<NBTList>(ItemSheet.DISPLAY_LORE) {
-                this.setLore(it.content.mapNotNull { line -> (line as? NBTString)?.content })
+            data.read<NbtString>(ItemSheet.DISPLAY_NAME) { this.setName(it.content) }
+            data.read<NbtList<*>>(ItemSheet.DISPLAY_LORE) {
+                this.setLore(it.content.mapNotNull { line -> (line as? NbtString)?.content })
             }
-            data.read<NBTString>(ItemSheet.DISPLAY_LOCAL_NAME) { this.setLocalizedName(it.content) }
+            data.read<NbtString>(ItemSheet.DISPLAY_LOCAL_NAME) { this.setLocalizedName(it.content) }
         }
 
-        internal fun componentToData(component: Component?): NBTString? = component?.let { NBTString(transformComponent(it)) }
+        internal fun componentToData(component: Component?): NbtString? = component?.let { NbtString(transformComponent(it)) }
 
         /**
          * Type:

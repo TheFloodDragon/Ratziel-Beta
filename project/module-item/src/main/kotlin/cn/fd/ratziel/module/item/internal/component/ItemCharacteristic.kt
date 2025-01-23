@@ -14,7 +14,7 @@
 //import cn.fd.ratziel.module.item.nms.RefItemStack
 //import cn.fd.ratziel.module.item.util.read
 //import cn.fd.ratziel.module.item.util.write
-//import cn.fd.ratziel.module.nbt.NBTInt
+//import cn.altawk.nbt.tag.NBTInt
 //import kotlinx.serialization.ExperimentalSerializationApi
 //import kotlinx.serialization.Serializable
 //import kotlinx.serialization.json.JsonNames

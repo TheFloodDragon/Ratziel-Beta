@@ -3,6 +3,7 @@
 
 package cn.fd.ratziel.module.item.internal.component
 
+import cn.altawk.nbt.tag.NbtInt
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.internal.component.serializers.AttributeModifierSerializer
@@ -12,7 +13,6 @@ import cn.fd.ratziel.module.item.internal.nms.ItemSheet
 import cn.fd.ratziel.module.item.internal.nms.RefItemMeta
 import cn.fd.ratziel.module.item.util.read
 import cn.fd.ratziel.module.item.util.write
-import cn.fd.ratziel.module.nbt.NBTInt
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -93,7 +93,7 @@ data class ItemSundry(
             data.tag = itemMeta.applyToTag(data.tag)
             // CustomModelData (1.14+)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                data.write(ItemSheet.CUSTOM_MODEL_DATA, component.customModelData?.let { NBTInt(it) })
+                data.write(ItemSheet.CUSTOM_MODEL_DATA, component.customModelData?.let { NbtInt(it) })
             }
         }
 
@@ -111,7 +111,7 @@ data class ItemSundry(
             }
             // CustomModelData (1.14+)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                data.read<NBTInt>(ItemSheet.CUSTOM_MODEL_DATA) {
+                data.read<NbtInt>(ItemSheet.CUSTOM_MODEL_DATA) {
                     customModelData = it.content
                 }
             }

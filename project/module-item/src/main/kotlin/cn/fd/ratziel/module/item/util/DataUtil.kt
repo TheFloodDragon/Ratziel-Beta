@@ -4,40 +4,40 @@ package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemNode
-import cn.fd.ratziel.module.nbt.NBTCompound
-import cn.fd.ratziel.module.nbt.NBTData
-import cn.fd.ratziel.module.nbt.NBTHelper
+import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NbtTag
+import cn.altawk.nbt.tag.NBTHelper
 import java.util.function.Consumer
 import java.util.function.Supplier
 
 
 /**
- * 读取并处理 [NBTCompound]
+ * 读取并处理 [NbtCompound]
  * @see [NBTHelper.readCreatable]
  */
-inline fun ItemData.handle(tailNode: ItemNode, noinline action: NBTCompound.() -> Unit) = action(NBTHelper.readCreatable(this.tag, tailNode))
+inline fun ItemData.handle(tailNode: ItemNode, noinline action: NbtCompound.() -> Unit) = action(NBTHelper.readCreatable(this.tag, tailNode))
 
 /**
- * 深度读取指定类型的 [NBTData]
+ * 深度读取指定类型的 [NbtTag]
  * @see [NBTHelper.read]
  */
-inline fun <reified T : NBTData> ItemData.read(tailNode: ItemNode, action: Consumer<T>) = this.read<T>(tailNode)?.let { action.accept(it) }
+inline fun <reified T : NbtTag> ItemData.read(tailNode: ItemNode, action: Consumer<T>) = this.read<T>(tailNode)?.let { action.accept(it) }
 
 /**
- * 深度读取指定类型的 [NBTData]
+ * 深度读取指定类型的 [NbtTag]
  * @see [NBTHelper.read]
  */
-inline fun <reified T : NBTData> ItemData.read(tailNode: ItemNode) = (NBTHelper.read(this.tag, tailNode) as? T)
+inline fun <reified T : NbtTag> ItemData.read(tailNode: ItemNode) = (NBTHelper.read(this.tag, tailNode) as? T)
 
 /**
- * 深度写入指定类型的 [NBTData]
+ * 深度写入指定类型的 [NbtTag]
  * @see [NBTHelper.write]
  */
-inline fun ItemData.write(tailNode: ItemNode, data: NBTData?) {
+inline fun ItemData.write(tailNode: ItemNode, data: NbtTag?) {
     if (data != null) NBTHelper.write(this.tag, tailNode, data)
 }
 
 /**
- * 深度写入指定类型的 [NBTData]
+ * 深度写入指定类型的 [NbtTag]
  */
-inline fun ItemData.write(tailNode: ItemNode, data: Supplier<out NBTData?>) = write(tailNode, data.get())
+inline fun ItemData.write(tailNode: ItemNode, data: Supplier<out NbtTag?>) = write(tailNode, data.get())

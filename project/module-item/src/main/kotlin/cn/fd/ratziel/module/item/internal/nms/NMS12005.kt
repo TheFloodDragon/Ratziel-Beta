@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.item.internal.nms
 
-import cn.fd.ratziel.module.nbt.NBTBase
-import cn.fd.ratziel.module.nbt.NBTCompound
-import cn.fd.ratziel.module.nbt.NBTHelper
-import cn.fd.ratziel.module.nbt.NBTTagCompound
+import cn.altawk.nbt.tag.NBTBase
+import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NBTHelper
+import cn.altawk.nbt.tag.NBTTagCompound
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DynamicOps
 import net.minecraft.core.component.DataComponentMap
@@ -29,24 +29,24 @@ import taboolib.module.nms.nmsProxy
 abstract class NMS12005 {
 
     /**
-     * [NBTCompound] to [DataComponentPatch]
+     * [NbtCompound] to [DataComponentPatch]
      */
-    abstract fun parsePatch(tag: NBTCompound): Any?
+    abstract fun parsePatch(tag: NbtCompound): Any?
 
     /**
-     * [DataComponentPatch] to [NBTCompound]
+     * [DataComponentPatch] to [NbtCompound]
      */
-    abstract fun savePatch(dcp: Any): NBTCompound?
+    abstract fun savePatch(dcp: Any): NbtCompound?
 
     /**
-     * [NBTCompound] to [DataComponentMap]
+     * [NbtCompound] to [DataComponentMap]
      */
-    abstract fun parseMap(tag: NBTCompound): Any?
+    abstract fun parseMap(tag: NbtCompound): Any?
 
     /**
-     * [DataComponentMap] to [NBTCompound]
+     * [DataComponentMap] to [NbtCompound]
      */
-    abstract fun saveMap(dcm: Any): NBTCompound?
+    abstract fun saveMap(dcm: Any): NbtCompound?
 
     companion object {
 
@@ -80,21 +80,21 @@ class NMS12005Impl : NMS12005() {
         return if (opt.isPresent) opt.get() else null
     }
 
-    fun <T> parseFromTag(codec: Codec<T>, tag: NBTCompound): T? {
+    fun <T> parseFromTag(codec: Codec<T>, tag: NbtCompound): T? {
         return parse0(codec, NBTHelper.toNms(tag) as NBTTagCompound)
     }
 
-    fun <T> saveToTag(codec: Codec<T>, obj: T): NBTCompound? {
-        return save0(codec, obj)?.let { NBTHelper.fromNms(it as NBTTagCompound) as NBTCompound }
+    fun <T> saveToTag(codec: Codec<T>, obj: T): NbtCompound? {
+        return save0(codec, obj)?.let { NBTHelper.fromNms(it as NBTTagCompound) as NbtCompound }
     }
 
-    override fun parsePatch(tag: NBTCompound): Any? = parseFromTag(DataComponentPatch.CODEC, tag)
+    override fun parsePatch(tag: NbtCompound): Any? = parseFromTag(DataComponentPatch.CODEC, tag)
 
-    override fun savePatch(dcp: Any): NBTCompound? = saveToTag(DataComponentPatch.CODEC, dcp as DataComponentPatch)
+    override fun savePatch(dcp: Any): NbtCompound? = saveToTag(DataComponentPatch.CODEC, dcp as DataComponentPatch)
 
-    override fun parseMap(tag: NBTCompound): Any? = parseFromTag(DataComponentMap.CODEC, tag)
+    override fun parseMap(tag: NbtCompound): Any? = parseFromTag(DataComponentMap.CODEC, tag)
 
-    override fun saveMap(dcm: Any): NBTCompound? = saveToTag(DataComponentMap.CODEC, dcm as DataComponentMap)
+    override fun saveMap(dcm: Any): NbtCompound? = saveToTag(DataComponentMap.CODEC, dcm as DataComponentMap)
 
     private val access: net.minecraft.core.HolderLookup.a by lazy {
         (Bukkit.getServer() as CraftServer).server.registryAccess()

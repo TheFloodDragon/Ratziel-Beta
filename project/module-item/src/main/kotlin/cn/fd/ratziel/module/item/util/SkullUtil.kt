@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.util
 
 import cn.fd.ratziel.module.item.api.BukkitItemStack
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
-import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.altawk.nbt.tag.NbtCompound
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -63,7 +63,7 @@ class SkullData(val item: BukkitItemStack) {
         item.itemMeta!! as SkullMeta
     }
 
-    val tag: NBTCompound by lazy {
+    val tag: NbtCompound by lazy {
         RefItemStack.of(item).tag
     }
 

@@ -1,8 +1,9 @@
 package cn.fd.ratziel.module.item
 
+import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.nbt.NBTCompound
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * SimpleData
@@ -18,7 +19,7 @@ data class SimpleData(
     /**
      * 物品NBT
      */
-    override var tag: NBTCompound = NBTCompound(),
+    override var tag: NbtCompound = NbtCompound(ConcurrentHashMap()),
     /**
      * 物品数量
      */

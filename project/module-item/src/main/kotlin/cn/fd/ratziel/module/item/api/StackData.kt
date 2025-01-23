@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.altawk.nbt.tag.NbtCompound
 
 
 /**
@@ -14,7 +14,7 @@ interface StackData : ItemData {
     /**
      * 物品自定义标签数据
      */
-    var customTag: NBTCompound?
+    var customTag: NbtCompound?
 
     /**
      * NMS的ItemStack源 - [NMSItemStack]

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item
 
+import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
@@ -12,7 +13,6 @@ import cn.fd.ratziel.module.item.builder.SectionTransforming
 import cn.fd.ratziel.module.item.internal.component.*
 import cn.fd.ratziel.module.item.internal.component.serializers.*
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
-import cn.fd.ratziel.module.nbt.NBTData
 import cn.fd.ratziel.module.nbt.NBTSerializer
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -59,7 +59,7 @@ object ItemElement : ElementHandler {
     val json = Json(baseJson) {
         serializersModule += SerializersModule {
             // Common Serializers
-            contextual(NBTData::class, NBTSerializer)
+            contextual(NbtTag::class, NBTSerializer)
             contextual(ItemMaterial::class, ItemMaterialSerializer)
             // Bukkit Serializers
             contextual(Enchantment::class, EnchantmentSerializer)

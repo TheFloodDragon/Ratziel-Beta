@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.internal.nms
 
+import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.NMSItemStack
-import cn.fd.ratziel.module.nbt.NBTCompound
 import cn.fd.ratziel.module.nbt.NBTHelper
 import cn.fd.ratziel.module.nbt.NBTTagCompound
 import cn.fd.ratziel.module.nbt.NBTTagCompound12
@@ -23,24 +23,24 @@ abstract class NMSItem {
 
     /**
      * 获取 [NMSItemStack] 的 NBT (克隆)
-     * @return [NBTCompound]
+     * @return [NbtCompound]
      */
-    abstract fun getTag(nmsItem: Any): NBTCompound?
+    abstract fun getTag(nmsItem: Any): NbtCompound?
 
     /**
      * 设置 [NMSItemStack] 的 NBT (克隆)
      */
-    abstract fun setTag(nmsItem: Any, tag: NBTCompound)
+    abstract fun setTag(nmsItem: Any, tag: NbtCompound)
 
     /**
      * 获取 [NMSItemStack] 的自定义 NBT (克隆)
      */
-    abstract fun getCustomTag(nmsItem: Any): NBTCompound?
+    abstract fun getCustomTag(nmsItem: Any): NbtCompound?
 
     /**
      * 设置 [NMSItemStack] 的自定义 NBT (克隆)
      */
-    abstract fun setCustomTag(nmsItem: Any, tag: NBTCompound)
+    abstract fun setCustomTag(nmsItem: Any, tag: NbtCompound)
 
     /**
      * 克隆 [NMSItemStack]
@@ -78,24 +78,24 @@ class NMSItemImpl2 : NMSItem() {
         ReflexClass.of(NMSItemStack::class.java).getField("components", remap = true)
     }
 
-    override fun getTag(nmsItem: Any): NBTCompound? {
+    override fun getTag(nmsItem: Any): NbtCompound? {
         val components = (componentsField.get(nmsItem) ?: return null) as PatchedDataComponentMap
         return NMS12005.INSTANCE.savePatch(components.asPatch())
     }
 
-    override fun setTag(nmsItem: Any, tag: NBTCompound) {
+    override fun setTag(nmsItem: Any, tag: NbtCompound) {
         val components = (componentsField.get(nmsItem) ?: return) as PatchedDataComponentMap
         val dcp = NMS12005.INSTANCE.parsePatch(tag) as DataComponentPatch
         components.restorePatch(dcp)
     }
 
-    override fun getCustomTag(nmsItem: Any): NBTCompound? {
+    override fun getCustomTag(nmsItem: Any): NbtCompound? {
         val customData = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
         @Suppress("DEPRECATION")
-        return customData?.unsafe?.let { NBTHelper.fromNms(it) } as? NBTCompound
+        return customData?.unsafe?.let { NBTHelper.fromNms(it) } as? NbtCompound
     }
 
-    override fun setCustomTag(nmsItem: Any, tag: NBTCompound) {
+    override fun setCustomTag(nmsItem: Any, tag: NbtCompound) {
         val customData = customDataConstructor.instance(NBTHelper.toNms(tag))!! as CustomData
         (nmsItem as NMSItemStack).set(DataComponents.CUSTOM_DATA, customData)
     }
@@ -118,22 +118,22 @@ class NMSItemImpl2 : NMSItem() {
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class NMSItemImpl1 : NMSItem() {
 
-    override fun getTag(nmsItem: Any): NBTCompound? {
-        return nmsTagField.get(nmsItem)?.let { NBTHelper.fromNms(it) } as? NBTCompound
+    override fun getTag(nmsItem: Any): NbtCompound? {
+        return nmsTagField.get(nmsItem)?.let { NBTHelper.fromNms(it) } as? NbtCompound
     }
 
-    override fun setTag(nmsItem: Any, tag: NBTCompound) {
+    override fun setTag(nmsItem: Any, tag: NbtCompound) {
         nmsTagField.set(nmsItem, NBTHelper.toNms(tag))
     }
 
-    override fun getCustomTag(nmsItem: Any): NBTCompound? {
+    override fun getCustomTag(nmsItem: Any): NbtCompound? {
         val nmsTag = nmsTagField.get(nmsItem) ?: return null
         @Suppress("UNCHECKED_CAST") val map = srcMapField.get(nmsTag) as? MutableMap<String, Any> ?: return null
         val customTag = map[ItemSheet.CUSTOM_DATA.name] as? NBTTagCompound12 ?: return null
-        return NBTHelper.fromNms(customTag) as NBTCompound
+        return NBTHelper.fromNms(customTag) as NbtCompound
     }
 
-    override fun setCustomTag(nmsItem: Any, tag: NBTCompound) {
+    override fun setCustomTag(nmsItem: Any, tag: NbtCompound) {
         val nmsTag = nmsTagField.get(nmsItem) ?: return
         @Suppress("UNCHECKED_CAST") val map = srcMapField.get(nmsTag) as? MutableMap<String, Any> ?: return
         map[ItemSheet.CUSTOM_DATA.name] = NBTHelper.toNms(tag)

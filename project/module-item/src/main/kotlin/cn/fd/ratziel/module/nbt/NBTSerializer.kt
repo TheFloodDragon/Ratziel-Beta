@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.nbt
 
+import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.core.util.adapt
 import kotlinx.serialization.KSerializer
@@ -15,17 +16,17 @@ import kotlinx.serialization.json.*
  * @author TheFloodDragon
  * @since 2024/3/15 21:40
  */
-object NBTSerializer : KSerializer<NBTData> {
+object NBTSerializer : KSerializer<NbtTag> {
 
-    override val descriptor = PrimitiveSerialDescriptor("nbt.NBTData", PrimitiveKind.STRING)
+    override val descriptor = PrimitiveSerialDescriptor("nbt.NbtTag", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: NBTData) {
+    override fun serialize(encoder: Encoder, value: NbtTag) {
         if (encoder is JsonEncoder)
             encoder.encodeJsonElement(Converter.serializeToJson(value))
         else throw UnsupportedTypeException(encoder)
     }
 
-    override fun deserialize(decoder: Decoder): NBTData {
+    override fun deserialize(decoder: Decoder): NbtTag {
         if (decoder is JsonDecoder)
             return Converter.deserializeFromJson(decoder.decodeJsonElement())
         else throw UnsupportedTypeException(decoder)
@@ -41,27 +42,27 @@ object NBTSerializer : KSerializer<NBTData> {
         const val ELEMENT_SEPARATOR = ","
 
         /**
-         * 将 [JsonElement] 反序列化成 [NBTData]
+         * 将 [JsonElement] 反序列化成 [NbtTag]
          */
-        fun deserializeFromJson(json: JsonElement, source: NBTCompound = NBTCompound()): NBTData =
+        fun deserializeFromJson(json: JsonElement, source: NbtCompound = NbtCompound()): NbtTag =
             when (json) {
                 is JsonPrimitive -> deserializeFromString(json.content)
-                is JsonArray -> NBTList.of(json.map { deserializeFromJson(it, NBTCompound()) })
+                is JsonArray -> NbtList.of(json.map { deserializeFromJson(it, NbtCompound()) })
                 is JsonObject -> source.also { tag ->
                     json.forEach {
-                        val newSource = tag.getDeep(it.key) as? NBTCompound ?: NBTCompound()
+                        val newSource = tag.getDeep(it.key) as? NbtCompound ?: NbtCompound()
                         tag.putDeep(it.key, deserializeFromJson(it.value, newSource))
                     }
                 }
             }
 
         /**
-         * 将 [NBTData] 序列化成 [JsonElement]
+         * 将 [NbtTag] 序列化成 [JsonElement]
          */
-        fun serializeToJson(target: NBTData): JsonElement = when (target) {
+        fun serializeToJson(target: NbtTag): JsonElement = when (target) {
             // 特殊类型序列化
-            is NBTCompound -> serializeToJsonObject(target)
-            is NBTList -> serializeToJsonArray(target)
+            is NbtCompound -> serializeToJsonObject(target)
+            is NbtList<*> -> serializeToJsonArray(target)
             // 基础类型序列化
             else -> JsonPrimitive(serializeToString(target))
         }
@@ -69,33 +70,33 @@ object NBTSerializer : KSerializer<NBTData> {
         /**
          * 序列化精确类型
          */
-        fun serializeToString(target: NBTData): String = when (target) {
+        fun serializeToString(target: NbtTag): String = when (target) {
             // Basic
-            is NBTByte -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.BYTE.simpleName
-            is NBTShort -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.SHORT.simpleName
-            is NBTInt -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.INT.simpleName
-            is NBTLong -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.LONG.simpleName
-            is NBTFloat -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.FLOAT.simpleName
-            is NBTDouble -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.DOUBLE.simpleName
-            is NBTString -> target.content + EXACT_TYPE_CHAR + NBTType.STRING.simpleName
+            is NbtByte -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.BYTE.simpleName
+            is NbtShort -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.SHORT.simpleName
+            is NbtInt -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.INT.simpleName
+            is NbtLong -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.LONG.simpleName
+            is NbtFloat -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.FLOAT.simpleName
+            is NbtDouble -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.DOUBLE.simpleName
+            is NbtString -> target.content + EXACT_TYPE_CHAR + NBTType.STRING.simpleName
             // Array
-            is NBTIntArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.INT_ARRAY.simpleName
-            is NBTByteArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.BYTE_ARRAY.simpleName
-            is NBTLongArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.LONG_ARRAY.simpleName
+            is NbtIntArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.INT_ARRAY.simpleName
+            is NbtByteArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.BYTE_ARRAY.simpleName
+            is NbtLongArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.LONG_ARRAY.simpleName
             // Special Type
-            is NBTCompound -> serializeToJsonObject(target).toString() + EXACT_TYPE_CHAR + NBTType.COMPOUND.simpleName
-            is NBTList -> serializeToJsonArray(target).toString() + EXACT_TYPE_CHAR + NBTType.LIST.simpleName
+            is NbtCompound -> serializeToJsonObject(target).toString() + EXACT_TYPE_CHAR + NBTType.COMPOUND.simpleName
+            is NbtList<*> -> serializeToJsonArray(target).toString() + EXACT_TYPE_CHAR + NBTType.LIST.simpleName
             else -> throw UnsupportedTypeException(target.type)
         }
 
-        fun serializeToJsonObject(target: NBTCompound) = buildJsonObject { target.forEach { put(it.key, serializeToJson(it.value)) } }
+        fun serializeToJsonObject(target: NbtCompound) = buildJsonObject { target.forEach { put(it.key, serializeToJson(it.value)) } }
 
-        fun serializeToJsonArray(target: NBTList) = buildJsonArray { target.forEach { add(serializeToJson(it)) } }
+        fun serializeToJsonArray(target: NbtList<*>) = buildJsonArray { target.forEach { add(serializeToJson(it)) } }
 
         /**
          * 反序列化精确类型
          */
-        fun deserializeFromString(target: String): NBTData {
+        fun deserializeFromString(target: String): NbtTag {
             if (!target.contains(EXACT_TYPE_CHAR)) return adaptString(target)
 
             val typeStr = target.substringAfterLast(EXACT_TYPE_CHAR)
@@ -113,22 +114,22 @@ object NBTSerializer : KSerializer<NBTData> {
         private fun adaptString(str: String) = NBTAdapter.box(str.adapt())
 
         private fun convertBasicString(str: String, type: NBTType) = when (type) {
-            NBTType.BYTE -> NBTByte(str.toByte())
-            NBTType.DOUBLE -> NBTDouble(str.toDouble())
-            NBTType.SHORT -> NBTShort(str.toShort())
-            NBTType.LONG -> NBTLong(str.toLong())
-            NBTType.FLOAT -> NBTFloat(str.toFloat())
-            NBTType.INT -> NBTInt(str.toInt())
-            NBTType.STRING -> NBTString(str)
+            NBTType.BYTE -> NbtByte(str.toByte())
+            NBTType.DOUBLE -> NbtDouble(str.toDouble())
+            NBTType.SHORT -> NbtShort(str.toShort())
+            NBTType.LONG -> NbtLong(str.toLong())
+            NBTType.FLOAT -> NbtFloat(str.toFloat())
+            NBTType.INT -> NbtInt(str.toInt())
+            NBTType.STRING -> NbtString(str)
             else -> null
         }
 
         private fun convertArrayString(str: String, type: NBTType) =
             str.split(ELEMENT_SEPARATOR).let { array ->
                 when (type) {
-                    NBTType.INT_ARRAY -> NBTIntArray(array.map { it.toInt() }.toIntArray())
-                    NBTType.BYTE_ARRAY -> NBTByteArray(array.map { it.toByte() }.toByteArray())
-                    NBTType.LONG_ARRAY -> NBTLongArray(array.map { it.toLong() }.toLongArray())
+                    NBTType.INT_ARRAY -> NbtIntArray(array.map { it.toInt() }.toIntArray())
+                    NBTType.BYTE_ARRAY -> NbtByteArray(array.map { it.toByte() }.toByteArray())
+                    NBTType.LONG_ARRAY -> NbtLongArray(array.map { it.toLong() }.toLongArray())
                     else -> null
                 }
             }

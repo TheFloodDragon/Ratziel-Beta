@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.internal.nms
 
-import cn.fd.ratziel.module.nbt.NBTCompound
-import cn.fd.ratziel.module.nbt.NBTHelper
+import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NBTHelper
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
 import taboolib.library.reflex.ClassConstructor
@@ -33,9 +33,9 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
     }
 
     /**
-     * 将 [ItemMeta] 应用到 [NBTCompound]
+     * 将 [ItemMeta] 应用到 [NbtCompound]
      */
-    fun applyToTag(sourceTag: NBTCompound = NBTCompound()): NBTCompound = metaType.applyToItem(handle, sourceTag)
+    fun applyToTag(sourceTag: NbtCompound = NbtCompound()): NbtCompound = metaType.applyToItem(handle, sourceTag)
 
     companion object {
 
@@ -55,13 +55,13 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
          * CraftMetaItem(DataComponentPatch tag)
          * @return CraftMetaItem
          */
-        fun <T : ItemMeta> new(type: CraftMetaType<T>, tag: NBTCompound): T = type.new(tag)
+        fun <T : ItemMeta> new(type: CraftMetaType<T>, tag: NbtCompound): T = type.new(tag)
 
         @JvmStatic
-        fun <T : ItemMeta> of(type: CraftMetaType<T>) = of(type, NBTCompound())
+        fun <T : ItemMeta> of(type: CraftMetaType<T>) = of(type, NbtCompound())
 
         @JvmStatic
-        fun <T : ItemMeta> of(type: CraftMetaType<T>, tag: NBTCompound) = RefItemMeta(new(type, tag))
+        fun <T : ItemMeta> of(type: CraftMetaType<T>, tag: NbtCompound) = RefItemMeta(new(type, tag))
 
     }
 
@@ -83,7 +83,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
          * @return CraftMetaItem
          */
         @Suppress("UNCHECKED_CAST")
-        private val constructor: Pair<ClassConstructor, (NBTCompound) -> T> by lazy {
+        private val constructor: Pair<ClassConstructor, (NbtCompound) -> T> by lazy {
             val structure = ReflexClass.of(craftClass, false).structure
             if (MinecraftVersion.versionId >= 12005) {
                 val common = structure.getConstructorByTypeSilently(NMS12005.DATA_COMPONENT_PATCH_CLASS)
@@ -104,11 +104,11 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
             )
         }
 
-        internal fun new(sourceTag: NBTCompound): T {
+        internal fun new(sourceTag: NbtCompound): T {
             return constructor.second.invoke(sourceTag)
         }
 
-        internal fun applyToItem(meta: ItemMeta, sourceTag: NBTCompound): NBTCompound {
+        internal fun applyToItem(meta: ItemMeta, sourceTag: NbtCompound): NbtCompound {
             if (MinecraftVersion.versionId >= 12005) {
                 // 使用Paper的方法 (**Paper天天搁那改)
                 if (paperApplyMetaToItemMethod != null) {
@@ -127,7 +127,7 @@ class RefItemMeta<T : ItemMeta>(raw: T) {
             } else {
                 val nmsTag = NBTHelper.toNms(sourceTag)
                 applyToItemMethod.invoke(meta, nmsTag)
-                return NBTHelper.fromNms(nmsTag) as NBTCompound
+                return NBTHelper.fromNms(nmsTag) as NbtCompound
             }
         }
 

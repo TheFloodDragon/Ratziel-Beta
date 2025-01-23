@@ -1,5 +1,7 @@
 package cn.fd.ratziel.module.item
 
+import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NbtString
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.api.ItemData
@@ -9,8 +11,6 @@ import cn.fd.ratziel.module.item.internal.nms.ItemSheet
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.handle
 import cn.fd.ratziel.module.item.util.read
-import cn.fd.ratziel.module.nbt.NBTCompound
-import cn.fd.ratziel.module.nbt.NBTString
 import cn.fd.ratziel.module.nbt.readString
 import org.bukkit.inventory.ItemStack
 import taboolib.platform.util.isAir
@@ -96,8 +96,8 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
          * 检查目标自定义标签数据, 判断是否为 [RatzielItem]
          */
         @JvmStatic
-        fun isRatzielItem(customTag: NBTCompound?): Boolean {
-            val proprietary = customTag?.get(RATZIEL_DATA_NODE.name) as? NBTCompound
+        fun isRatzielItem(customTag: NbtCompound?): Boolean {
+            val proprietary = customTag?.get(RATZIEL_DATA_NODE.name) as? NbtCompound
             return proprietary?.containsKey(Info.INTERNAL_NODE.name) ?: false
         }
 
@@ -147,7 +147,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
             @JvmStatic
             fun read(data: ItemData): Info? {
                 // 获取内部信息
-                val internal = data.read<NBTCompound>(INTERNAL_NODE) ?: return null
+                val internal = data.read<NbtCompound>(INTERNAL_NODE) ?: return null
                 // 读取类型
                 val type = internal.readString(INFO_TYPE.name) ?: return null
                 // 读取版本信息
@@ -162,9 +162,9 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
             @JvmStatic
             fun write(info: Info, data: ItemData) = data.handle(INTERNAL_NODE) {
                 // 写入类型
-                put(INFO_TYPE.name, NBTString(info.type.toString()))
+                put(INFO_TYPE.name, NbtString(info.type.toString()))
                 // 写入版本信息
-                put(INFO_HASH.name, NBTString(info.hash))
+                put(INFO_HASH.name, NbtString(info.hash))
             }
 
         }

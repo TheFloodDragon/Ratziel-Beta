@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.module.nbt.NBTCompound
+import cn.altawk.nbt.tag.NbtCompound
 
 /**
  * ItemData - 物品数据
@@ -18,7 +18,7 @@ interface ItemData {
     /**
      * 物品标签数据
      */
-    var tag: NBTCompound
+    var tag: NbtCompound
 
     /**
      * 物品数量
@@ -39,11 +39,12 @@ interface ItemData {
 
         /**
          * 空 [ItemData]
+         * TODO
          */
         @JvmField
         val EMPTY = object : ItemData {
             override var material: ItemMaterial get() = ItemMaterial.EMPTY; set(_) = Unit
-            override var tag: NBTCompound get() = NBTCompound(); set(_) = Unit
+            override var tag: NbtCompound get() = NbtCompound(); set(_) = Unit
             override var amount: Int get() = 0; set(_) = Unit
             override fun merge(other: ItemData) = Unit
             override fun clone() = this
