@@ -85,12 +85,12 @@ object DeepVisitor {
         return find
     }
 
-    fun setSafely(data: NbtList<NbtTag>, index: Int, value: NbtTag) {
+    fun setSafely(data: NbtList, index: Int, value: NbtTag) {
         if (index == data.size) data.add(value) else data[index] = value
     }
 
     // 开启类型检查, 列表不为空情况下的类型不匹配
-    fun setSafely(data: NbtList<NbtTag>, index: Int, value: NbtTag, typeCheck: Boolean) {
+    fun setSafely(data: NbtList, index: Int, value: NbtTag, typeCheck: Boolean) {
         if (typeCheck && !data.isEmpty() && data.elementType != value.type) error("It's not allowed to set a ${value.type} data in this list.")
         else setSafely(data, index, value)
     }
@@ -102,7 +102,7 @@ object DeepVisitor {
         getDeepWith(this, node, false) { cpd ->
             supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
                 if (index == null) cpd[nodeName]
-                else (cpd[nodeName] as? NbtList<*>)?.let { it[index] }
+                else (cpd[nodeName] as? NbtList)?.let { it[index] }
             }
         }
     }
@@ -115,7 +115,7 @@ object DeepVisitor {
             supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
                 @Suppress("UNCHECKED_CAST")
                 if (index == null) cpd[nodeName] = value
-                else ((cpd[nodeName] ?: NbtList<NbtTag>().also { cpd[nodeName] = it }) as? NbtList<NbtTag>)?.also { setSafely(it, index, value, checkList) }
+                else ((cpd[nodeName] ?: NbtList().also { cpd[nodeName] = it }) as? NbtList)?.also { setSafely(it, index, value, checkList) }
             }
         }
     }
@@ -127,7 +127,7 @@ object DeepVisitor {
         getDeepWith(this, node, false) { cpd ->
             supportList(node.substringAfterLast(DEEP_SEPARATION)) { (nodeName, index) ->
                 if (index == null) cpd.remove(nodeName)
-                else (cpd[nodeName] as? NbtList<*>)?.apply { removeAt(index) }
+                else (cpd[nodeName] as? NbtList)?.apply { removeAt(index) }
             }
         }
     }

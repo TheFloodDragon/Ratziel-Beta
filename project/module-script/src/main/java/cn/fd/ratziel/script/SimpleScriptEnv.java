@@ -3,8 +3,8 @@ package cn.fd.ratziel.script;
 import cn.fd.ratziel.script.api.ScriptEnvironment;
 import org.jetbrains.annotations.NotNull;
 
-import javax.script.Bindings;
-import javax.script.SimpleBindings;
+import javax.script.ScriptContext;
+import javax.script.SimpleScriptContext;
 
 /**
  * SimpleScriptEnv
@@ -15,23 +15,18 @@ import javax.script.SimpleBindings;
 public class SimpleScriptEnv implements ScriptEnvironment {
 
     public SimpleScriptEnv() {
-        this(new SimpleBindings());
+        this(new SimpleScriptContext());
     }
 
-    public SimpleScriptEnv(@NotNull Bindings bindings) {
-        this.bindings = bindings;
+    public SimpleScriptEnv(@NotNull ScriptContext context) {
+        this.context = context;
     }
 
-    private Bindings bindings;
+    private final ScriptContext context;
 
     @Override
-    public @NotNull Bindings getBindings() {
-        return bindings;
-    }
-
-    @Override
-    public void setBindings(@NotNull Bindings bindings) {
-        this.bindings = bindings;
+    public @NotNull ScriptContext getContext() {
+        return context;
     }
 
 }

@@ -63,7 +63,7 @@ class NMSUtilImpl2 : NMSUtil {
         is NbtIntArray -> NBTTagIntArray(data.content.copyOf())
         is NbtByteArray -> NBTTagByteArray(data.content.copyOf())
         is NbtLongArray -> NBTTagLongArray(data.content.copyOf())
-        is NbtList<*> -> NBTTagList().apply { data.forEach { add(toNms(it)) } }
+        is NbtList -> NBTTagList().apply { data.forEach { add(toNms(it)) } }
         is NbtCompound -> NBTTagCompound().apply { data.forEach { put(it.key, toNms(it.value)) } }
         else -> throw UnsupportedOperationException("NBTTag cannot convert to NmsNBTTag: $data")
     }
@@ -79,7 +79,7 @@ class NMSUtilImpl2 : NMSUtil {
         is NBTTagByteArray -> NbtByteArray(nmsData.asByteArray.copyOf())
         is NBTTagIntArray -> NbtIntArray(nmsData.asIntArray.copyOf())
         is NBTTagLongArray -> NbtLongArray(nmsData.asLongArray.copyOf())
-        is NBTTagList -> NbtList<NbtTag>().apply { nmsData.forEach { add(fromNms(it)) } }
+        is NBTTagList -> NbtList().apply { nmsData.forEach { add(fromNms(it)) } }
         is NBTTagCompound -> NbtCompound().apply { nmsData.allKeys.forEach { put(it, fromNms(nmsData.get(it)!!)) } }
         else -> throw UnsupportedOperationException("NmsNBTTag cannot convert to NBTTag: $nmsData")
     }
@@ -128,7 +128,7 @@ class NMSUtilImpl1 : NMSUtil {
         is NbtIntArray -> NBTTagIntArray12(data.content.copyOf())
         is NbtByteArray -> NBTTagByteArray12(data.content.copyOf())
         is NbtLongArray -> NBTTagLongArray12(data.content.copyOf())
-        is NbtList<*> -> NBTTagList12().also { src ->
+        is NbtList -> NBTTagList12().also { src ->
             // 反射获取字段：
             // private final List<NbtBase> list;
             val list = nbtTagListGetter.get<MutableList<Any>>(src)
@@ -161,7 +161,7 @@ class NMSUtilImpl1 : NMSUtil {
         is NBTTagByteArray12 -> NbtByteArray(nbtTagByteArrayGetter.get<ByteArray>(nmsData).copyOf())
         is NBTTagIntArray12 -> NbtIntArray(nbtTagIntArrayGetter.get<IntArray>(nmsData).copyOf())
         is NBTTagLongArray12 -> NbtLongArray(nbtTagLongArrayGetter!!.get<LongArray>(nmsData).copyOf())
-        is NBTTagList12 -> NbtList<NbtTag>().apply { nbtTagListGetter.get<List<Any>>(nmsData).forEach { add(fromNms(it)) } }
+        is NBTTagList12 -> NbtList().apply { nbtTagListGetter.get<List<Any>>(nmsData).forEach { add(fromNms(it)) } }
         is NBTTagCompound12 -> NbtCompound().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nmsData).forEach { put(it.key, fromNms(it.value)) } }
         else -> throw UnsupportedOperationException("NmsNBTTag cannot convert to NBTTag: $nmsData")
     }

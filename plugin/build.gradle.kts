@@ -1,5 +1,5 @@
 plugins {
-    id("io.izzel.taboolib") version taboolibPluginVersion
+    alias(libs.plugins.taboolib)
 }
 
 subprojects {
@@ -12,8 +12,8 @@ subprojects {
 
         // 版本参数设置
         version {
-            taboolib = taboolibVersion
-            coroutines = coroutineVersion
+            taboolib = rootProject.libs.versions.taboolib.get()
+            coroutines = rootProject.libs.versions.coroutines.get()
             skipKotlinRelocate = true
         }
 
@@ -26,7 +26,7 @@ subprojects {
             // Isolated Mode
             enableIsolatedClassloader = true
             // Common Modules
-            taboolibModules.forEach { install(it) }
+            rootProject.libs.bundles.taboolib.get().forEach { install(it.name) }
         }
 
         description {

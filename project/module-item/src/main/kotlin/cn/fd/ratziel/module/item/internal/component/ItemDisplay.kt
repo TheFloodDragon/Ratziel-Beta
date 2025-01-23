@@ -74,7 +74,7 @@ data class ItemDisplay(
 
         override fun detransform(data: ItemData): ItemDisplay = ItemDisplay().apply {
             data.read<NbtString>(ItemSheet.DISPLAY_NAME) { this.setName(it.content) }
-            data.read<NbtList<*>>(ItemSheet.DISPLAY_LORE) {
+            data.read<NbtList>(ItemSheet.DISPLAY_LORE) {
                 this.setLore(it.content.mapNotNull { line -> (line as? NbtString)?.content })
             }
             data.read<NbtString>(ItemSheet.DISPLAY_LOCAL_NAME) { this.setLocalizedName(it.content) }

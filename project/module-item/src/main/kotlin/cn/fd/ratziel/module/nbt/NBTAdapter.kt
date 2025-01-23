@@ -39,15 +39,15 @@ object NBTAdapter {
     }
 
     @JvmStatic
-    fun boxList(list: Iterable<*>): NbtList<NbtTag> = NbtList.of(list.mapNotNull { it?.let(::box) })
+    fun boxList(list: Iterable<*>): NbtList = NbtList.of(list.mapNotNull { it?.let(::box) })
 
     @JvmStatic
-    fun boxList(list: Array<*>): NbtList<NbtTag> = NbtList.of(list.mapNotNull { it?.let(::box) })
+    fun boxList(list: Array<*>): NbtList = NbtList.of(list.mapNotNull { it?.let(::box) })
 
     @JvmStatic
     fun unbox(target: NbtTag): Any = when (target) {
         is NbtCompound -> unboxMap(target)
-        is NbtList<*> -> target.map { unbox(it) }
+        is NbtList -> target.map { unbox(it) }
         else -> target.content
     }
 

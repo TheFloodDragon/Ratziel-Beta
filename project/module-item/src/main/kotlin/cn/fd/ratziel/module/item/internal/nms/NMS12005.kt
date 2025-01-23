@@ -1,14 +1,14 @@
 package cn.fd.ratziel.module.item.internal.nms
 
-import cn.altawk.nbt.tag.NBTBase
 import cn.altawk.nbt.tag.NbtCompound
-import cn.altawk.nbt.tag.NBTHelper
-import cn.altawk.nbt.tag.NBTTagCompound
+import cn.fd.ratziel.module.nbt.NBTHelper
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DynamicOps
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.nbt.DynamicOpsNBT
+import net.minecraft.nbt.NBTBase
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.resources.RegistryOps
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer

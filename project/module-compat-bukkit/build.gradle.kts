@@ -1,6 +1,6 @@
 dependencies {
     compileCore(12004)
-    compileModule("module-compat-core")
+    compileOnly(projects.project.moduleCompatCore)
     // Local libraries
     compileOnly(fileTree("libs"))
 }

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.script.Bindings;
+import javax.script.ScriptContext;
 
 /**
  * ScriptEnvironment - 脚本环境
@@ -14,15 +15,25 @@ import javax.script.Bindings;
 public interface ScriptEnvironment {
 
     /**
+     * 获取脚本上下文
+     */
+    @NotNull
+    ScriptContext getContext();
+
+    /**
      * 获取脚本的所有绑定
      */
     @NotNull
-    Bindings getBindings();
+    default Bindings getBindings() {
+        return getContext().getBindings(ScriptContext.ENGINE_SCOPE);
+    }
 
     /**
      * 设置脚本的所有绑定
      */
-    void setBindings(@NotNull Bindings bindings);
+    default void setBindings(@NotNull Bindings bindings) {
+        getContext().setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+    }
 
     /**
      * 设置绑定内容

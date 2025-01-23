@@ -115,7 +115,7 @@ object NBTCommand {
         - 值2 (类型)
          */
         when (nbt) {
-            is NbtList<*> -> {
+            is NbtList -> {
                 nbt.content.let { list ->
                     if (list.isEmpty()) append(sender.asLangText("NBTFormat-List-Empty"))
                     else list.forEachIndexed { index, it ->

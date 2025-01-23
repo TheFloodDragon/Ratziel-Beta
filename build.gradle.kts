@@ -2,9 +2,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     `java-library`
-    kotlin("jvm") version libs.versions.kotlin
-    kotlin("plugin.serialization") version libs.versions.kotlin
-    id("com.gradleup.shadow") version shadowJarVersion
+    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.shadow)
 }
 
 subprojects {
@@ -40,17 +40,21 @@ subprojects {
 
         // 项目依赖
         if (parent?.name == "project") {
-            // Kotlin序列化工具
-            serialization()
-            // Kotlin协程工具
-            coroutine()
+            // Kotlin 序列化工具
+            compileOnly(rootProject.libs.kotlinx.serialization.json)
+            // Kotlin 协程工具
+            compileOnly(rootProject.libs.kotlinx.coroutines.core)
             // Adventure API
-            adventure()
-            // Taboolib通用模块
-            taboolibModules.forEach { compileTaboo(it) }
+            compileOnly(rootProject.libs.bundles.adventure)
+            // Taboolib 通用模块
+            compileOnly(rootProject.libs.bundles.taboolib)
             // 基本依赖
-            if (name != "module-core") compileModule("module-core")
-            if (name != "module-core" && name != "module-common") compileModule("module-common")
+            if (name != rootProject.projects.project.moduleCore.name) {
+                compileOnly(rootProject.projects.project.moduleCore)
+                if (name != rootProject.projects.project.moduleCommon.name) {
+                    compileOnly(rootProject.projects.project.moduleCommon)
+                }
+            }
         }
 
     }

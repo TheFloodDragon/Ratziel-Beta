@@ -1,4 +1,48 @@
 [versions]
+taboolib = "6.2.2"
+taboolibPlugin = "2.0.21"
+adventureApi = "4.18.0"
+adventurePlatform = "4.3.3"
 kotlin = "2.1.0"
+serialization = "1.8.0"
+coroutines = "1.10.1"
+shadow = "8.3.5"
 
 [libraries]
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventureApi" }
+adventure-text-serializer-gson = { group = "net.kyori", name = "adventure-text-serializer-gson", version.ref = "adventureApi" }
+adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventureApi" }
+adventure-text-serializer-legacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "adventureApi" }
+adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventurePlatform" }
+# Taboolib
+taboolib-common = { group = "io.izzel.taboolib", name = "common", version.ref = "taboolib" }
+taboolib-common-env = { group = "io.izzel.taboolib", name = "common-env", version.ref = "taboolib" }
+taboolib-common-util = { group = "io.izzel.taboolib", name = "common-util", version.ref = "taboolib" }
+taboolib-common-legacy-api = { group = "io.izzel.taboolib", name = "common-legacy-api", version.ref = "taboolib" }
+taboolib-common-platform-api = { group = "io.izzel.taboolib", name = "common-platform-api", version.ref = "taboolib" }
+taboolib-common-reflex = { group = "io.izzel.taboolib", name = "common-reflex", version.ref = "taboolib" }
+taboolib-basic-configuration = { group = "io.izzel.taboolib", name = "basic-configuration", version.ref = "taboolib" }
+taboolib-minecraft-chat = { group = "io.izzel.taboolib", name = "minecraft-chat", version.ref = "taboolib" }
+taboolib-minecraft-i18n = { group = "io.izzel.taboolib", name = "minecraft-i18n", version.ref = "taboolib" }
+taboolib-minecraft-command-helper = { group = "io.izzel.taboolib", name = "minecraft-command-helper", version.ref = "taboolib" }
+taboolib-minecraft-kether = { group = "io.izzel.taboolib", name = "minecraft-kether", version.ref = "taboolib" }
+taboolib-platform-bukkit = { group = "io.izzel.taboolib", name = "platform-bukkit", version.ref = "taboolib" }
+taboolib-platform-bukkit-impl = { group = "io.izzel.taboolib", name = "platform-bukkit-impl", version.ref = "taboolib" }
+taboolib-bukkit-nms = { group = "io.izzel.taboolib", name = "bukkit-nms", version.ref = "taboolib" }
+taboolib-bukkit-nms-stable = { group = "io.izzel.taboolib", name = "bukkit-nms-stable", version.ref = "taboolib" }
+taboolib-bukkit-xseries = { group = "io.izzel.taboolib", name = "bukkit-xseries", version.ref = "taboolib" }
+taboolib-bukkit-util = { group = "io.izzel.taboolib", name = "bukkit-util", version.ref = "taboolib" }
+taboolib-bukkit-hook = { group = "io.izzel.taboolib", name = "bukkit-hook", version.ref = "taboolib" }
+
+[bundles]
+adventure = ["adventure-api", "adventure-text-serializer-gson", "adventure-text-minimessage", "adventure-text-serializer-legacy", "adventure-platform-bukkit"]
+taboolib = ["taboolib-common", "taboolib-common-env", "taboolib-common-util", "taboolib-common-legacy-api", "taboolib-common-platform-api", "taboolib-common-reflex", "taboolib-basic-configuration", "taboolib-minecraft-chat", "taboolib-minecraft-i18n", "taboolib-minecraft-command-helper"]
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+taboolib = { id = "io.izzel.taboolib", version.ref = "taboolibPlugin" }

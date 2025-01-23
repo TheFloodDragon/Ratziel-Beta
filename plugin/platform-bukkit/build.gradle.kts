@@ -1,17 +1,17 @@
 dependencies {
     // Core / Common
-    shadowModule("module-core")
-    shadowModule("module-common")
+    implementation(projects.project.moduleCore)
+    implementation(projects.project.moduleCommon)
     // Platform - Bukkit
-    shadowModule("runtime-bukkit")
+    implementation(projects.project.runtimeBukkit)
     // Script
-    shadowModule("module-script")
+    implementation(projects.project.moduleScript)
     // Compat
-    tabooModule("module-compat-inject")
-    shadowModule("module-compat-core")
-    shadowModule("module-compat-bukkit")
+    implementation(projects.project.moduleCompatCore)
+    taboo(projects.project.moduleCompatInject)
+    implementation(projects.project.moduleCompatBukkit)
     // Extension - Item
-    shadowModule("module-item")
+    implementation(projects.project.moduleItem)
 }
 
 taboolib {

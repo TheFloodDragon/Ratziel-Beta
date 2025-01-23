@@ -43,9 +43,9 @@ object JavaScriptExecutor : ScriptExecutor {
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
         if (script is CompilableScript) {
             val compiled = script.compiled
-            if (compiled != null) return compiled.eval(environment.bindings)
+            if (compiled != null) return compiled.eval(environment.context)
         }
-        return newEngine().eval(script.content, environment.bindings)
+        return newEngine().eval(script.content, environment.context)
     }
 
     /**

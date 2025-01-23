@@ -62,7 +62,7 @@ object NBTSerializer : KSerializer<NbtTag> {
         fun serializeToJson(target: NbtTag): JsonElement = when (target) {
             // 特殊类型序列化
             is NbtCompound -> serializeToJsonObject(target)
-            is NbtList<*> -> serializeToJsonArray(target)
+            is NbtList -> serializeToJsonArray(target)
             // 基础类型序列化
             else -> JsonPrimitive(serializeToString(target))
         }
@@ -72,26 +72,26 @@ object NBTSerializer : KSerializer<NbtTag> {
          */
         fun serializeToString(target: NbtTag): String = when (target) {
             // Basic
-            is NbtByte -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.BYTE.simpleName
-            is NbtShort -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.SHORT.simpleName
-            is NbtInt -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.INT.simpleName
-            is NbtLong -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.LONG.simpleName
-            is NbtFloat -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.FLOAT.simpleName
-            is NbtDouble -> target.content.toString() + EXACT_TYPE_CHAR + NBTType.DOUBLE.simpleName
-            is NbtString -> target.content + EXACT_TYPE_CHAR + NBTType.STRING.simpleName
+            is NbtByte -> target.content.toString() + EXACT_TYPE_CHAR + NbtType.BYTE.name
+            is NbtShort -> target.content.toString() + EXACT_TYPE_CHAR + NbtType.SHORT.name
+            is NbtInt -> target.content.toString() + EXACT_TYPE_CHAR + NbtType.INT.name
+            is NbtLong -> target.content.toString() + EXACT_TYPE_CHAR + NbtType.LONG.name
+            is NbtFloat -> target.content.toString() + EXACT_TYPE_CHAR + NbtType.FLOAT.name
+            is NbtDouble -> target.content.toString() + EXACT_TYPE_CHAR + NbtType.DOUBLE.name
+            is NbtString -> target.content + EXACT_TYPE_CHAR + NbtType.STRING.name
             // Array
-            is NbtIntArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.INT_ARRAY.simpleName
-            is NbtByteArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.BYTE_ARRAY.simpleName
-            is NbtLongArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NBTType.LONG_ARRAY.simpleName
+            is NbtIntArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NbtType.INT_ARRAY.name
+            is NbtByteArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NbtType.BYTE_ARRAY.name
+            is NbtLongArray -> target.content.joinToString(ELEMENT_SEPARATOR) { it.toString() } + EXACT_TYPE_CHAR + NbtType.LONG_ARRAY.name
             // Special Type
-            is NbtCompound -> serializeToJsonObject(target).toString() + EXACT_TYPE_CHAR + NBTType.COMPOUND.simpleName
-            is NbtList<*> -> serializeToJsonArray(target).toString() + EXACT_TYPE_CHAR + NBTType.LIST.simpleName
+            is NbtCompound -> serializeToJsonObject(target).toString() + EXACT_TYPE_CHAR + NbtType.COMPOUND.name
+            is NbtList -> serializeToJsonArray(target).toString() + EXACT_TYPE_CHAR + NbtType.LIST.name
             else -> throw UnsupportedTypeException(target.type)
         }
 
         fun serializeToJsonObject(target: NbtCompound) = buildJsonObject { target.forEach { put(it.key, serializeToJson(it.value)) } }
 
-        fun serializeToJsonArray(target: NbtList<*>) = buildJsonArray { target.forEach { add(serializeToJson(it)) } }
+        fun serializeToJsonArray(target: NbtList) = buildJsonArray { target.forEach { add(serializeToJson(it)) } }
 
         /**
          * 反序列化精确类型
@@ -103,7 +103,7 @@ object NBTSerializer : KSerializer<NbtTag> {
             val dataStr = target.substringBeforeLast(EXACT_TYPE_CHAR)
 
             // 匹配类型
-            val type = NBTType.entries.find { it.names.contains(typeStr) } ?: return adaptString(target)
+            val type = NbtType.entries.find { it.name == typeStr } ?: return adaptString(target)
 
             return convertBasicString(dataStr, type)
                 ?: convertArrayString(dataStr, type)
@@ -113,29 +113,29 @@ object NBTSerializer : KSerializer<NbtTag> {
 
         private fun adaptString(str: String) = NBTAdapter.box(str.adapt())
 
-        private fun convertBasicString(str: String, type: NBTType) = when (type) {
-            NBTType.BYTE -> NbtByte(str.toByte())
-            NBTType.DOUBLE -> NbtDouble(str.toDouble())
-            NBTType.SHORT -> NbtShort(str.toShort())
-            NBTType.LONG -> NbtLong(str.toLong())
-            NBTType.FLOAT -> NbtFloat(str.toFloat())
-            NBTType.INT -> NbtInt(str.toInt())
-            NBTType.STRING -> NbtString(str)
+        private fun convertBasicString(str: String, type: NbtType) = when (type) {
+            NbtType.BYTE -> NbtByte(str.toByte())
+            NbtType.DOUBLE -> NbtDouble(str.toDouble())
+            NbtType.SHORT -> NbtShort(str.toShort())
+            NbtType.LONG -> NbtLong(str.toLong())
+            NbtType.FLOAT -> NbtFloat(str.toFloat())
+            NbtType.INT -> NbtInt(str.toInt())
+            NbtType.STRING -> NbtString(str)
             else -> null
         }
 
-        private fun convertArrayString(str: String, type: NBTType) =
+        private fun convertArrayString(str: String, type: NbtType) =
             str.split(ELEMENT_SEPARATOR).let { array ->
                 when (type) {
-                    NBTType.INT_ARRAY -> NbtIntArray(array.map { it.toInt() }.toIntArray())
-                    NBTType.BYTE_ARRAY -> NbtByteArray(array.map { it.toByte() }.toByteArray())
-                    NBTType.LONG_ARRAY -> NbtLongArray(array.map { it.toLong() }.toLongArray())
+                    NbtType.INT_ARRAY -> NbtIntArray(array.map { it.toInt() }.toIntArray())
+                    NbtType.BYTE_ARRAY -> NbtByteArray(array.map { it.toByte() }.toByteArray())
+                    NbtType.LONG_ARRAY -> NbtLongArray(array.map { it.toLong() }.toLongArray())
                     else -> null
                 }
             }
 
-        private fun convertSpecialString(str: String, type: NBTType) =
-            if (type == NBTType.COMPOUND || type == NBTType.LIST) deserializeFromJson(Json.parseToJsonElement(str)) else null
+        private fun convertSpecialString(str: String, type: NbtType) =
+            if (type == NbtType.COMPOUND || type == NbtType.LIST) deserializeFromJson(Json.parseToJsonElement(str)) else null
 
     }
 
