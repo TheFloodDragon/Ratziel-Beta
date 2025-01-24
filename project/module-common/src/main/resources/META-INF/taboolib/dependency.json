@@ -1,0 +1,220 @@
+[
+  {
+    "value": "org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.0",
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0",
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-api:4.18.0",
+    "test": [
+      "net.kyori.adventure.text.Component"
+    ],
+    "transitive": true,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-key:4.18.0",
+    "test": [
+      "net.kyori.adventure.key.Key"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-text-serializer-gson:4.18.0",
+    "test": [
+      "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-text-minimessage:4.18.0",
+    "test": [
+      "net.kyori.adventure.text.minimessage.MiniMessage"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-text-serializer-legacy:4.18.0",
+    "test": [
+      "net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-platform-api:4.3.4",
+    "test": [
+      "net.kyori.adventure.platform.AudienceProvider"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-platform-bukkit:4.3.4",
+    "test": [
+      "net.kyori.adventure.platform.bukkit.BukkitAudience"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-text-serializer-bungeecord:4.3.4",
+    "test": [
+      "net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-nbt:4.18.0",
+    "test": [
+      "net.kyori.adventure.nbt.BinaryTag"
+    ],
+    "transitive": true,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-platform-facet:4.3.4",
+    "test": [
+      "net.kyori.adventure.platform.facet.FacetAudience"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-platform-viaversion:4.18.0",
+    "test": [
+      "net.kyori.adventure.platform.viaversion.ViaFacet"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-text-serializer-json:4.18.0",
+    "test": [
+      "net.kyori.adventure.text.serializer.json.JSONComponentSerializer"
+    ],
+    "transitive": true,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-text-serializer-json-legacy-impl:4.18.0",
+    "test": [
+      "net.kyori.adventure.text.serializer.json.legacyimpl.NBTLegacyHoverEventSerializer"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-text-serializer-gson-legacy-impl:4.18.0",
+    "test": [
+      "net.kyori.adventure.text.serializer.gson.legacyimpl.NBTLegacyHoverEventSerializer"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  }
+]

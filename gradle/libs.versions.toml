@@ -2,7 +2,7 @@
 taboolib = "6.2.2"
 taboolibPlugin = "2.0.21"
 adventureApi = "4.18.0"
-adventurePlatform = "4.3.3"
+adventurePlatform = "4.3.4"
 kotlin = "2.1.0"
 serialization = "1.8.0"
 coroutines = "1.10.1"
