@@ -1,4 +1,3 @@
-import org.gradle.api.Project
 import java.net.URL
 
 val isoInstantFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z")
@@ -17,9 +16,3 @@ val systemIP: String
 
 val String.escapedVersion
     get() = this.replace(Regex("[._-]"), "")
-
-fun Project.getProperty(vararg names: String): String? {
-    names.forEach { name ->
-        this.findProperty(name)?.let { return it.toString() }
-    }; return null
-}

@@ -12,5 +12,5 @@ taboolib {
 }
 
 tasks.shadowJar {
-    archiveFileName.set("$rootName-$rootVersion.jar")
+    archiveFileName.set("${rootProject.name}-$version.jar")
 }

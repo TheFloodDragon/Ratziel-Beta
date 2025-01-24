@@ -37,7 +37,7 @@ tasks {
         dependencies {
             exclude(project(":project:module-compat-inject"))
         }
-        archiveFileName.set("$rootName-Bukkit-$rootVersion.jar")
+        archiveFileName.set("${rootProject.name}-Bukkit-$version.jar")
     }
     jar { dependsOn(project(":project:module-compat-inject").tasks.jar) }
 }

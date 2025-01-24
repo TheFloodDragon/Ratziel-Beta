@@ -30,7 +30,7 @@ subprojects {
         }
 
         description {
-            name(rootName)
+            name(rootProject.name)
 
             desc("Advanced Minecraft Comprehensive Control")
 
@@ -68,7 +68,11 @@ subprojects {
                     it.moduleGroup == "io.izzel.taboolib"
                 }
             }
-            combineFiles.forEach { append(it) }
+            setOf(
+                "settings.yml",
+                "lang/zh_CN.yml",
+                "lang/en_US.yml"
+            ).forEach { append(it) }
         }
         build { dependsOn(shadowJar) }
     }

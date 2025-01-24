@@ -84,20 +84,17 @@ subprojects {
         // Options
         archiveAppendix.set("")
         archiveClassifier.set("")
-        archiveVersion.set(rootVersion)
+        archiveVersion.set(version.toString())
         destinationDirectory.set(file("$rootDir/outs"))
         // Taboolib
-        relocate("taboolib", "$rootGroup.taboolib")
+        relocate("taboolib", "${rootProject.group}.taboolib")
         // NBT
-        relocate("cn.altawk.nbt.", "$rootGroup.module.nbt.")
+        relocate("cn.altawk.nbt.", "${rootProject.group}.module.nbt.")
         // Kotlin
 //        relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
 //        relocate("kotlinx.coroutines.", "kotlinx${kotlinVersion.escapedVersion}.coroutines${coroutineVersion.escapedVersion}.")
 //        relocate("kotlinx.serialization.", "kotlinx${kotlinVersion.escapedVersion}.serialization${serializationVersion.escapedVersion}.")
     }
-
-    group = rootGroup
-    version = rootVersion
 
 }
 
