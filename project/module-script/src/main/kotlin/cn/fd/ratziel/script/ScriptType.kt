@@ -21,8 +21,8 @@ enum class ScriptType(
     vararg val alias: String
 ) {
 
-    JAVASCRIPT(JavaScriptExecutor, "js", "JavaScript", "javascript", "java-script", "JS", "Js"),
-    KETHER(KetherExecutor, "Kether", "kether", "ke", "ks"),
+    JAVASCRIPT(null, "js", "JavaScript", "javascript", "java-script", "JS", "Js"),
+    KETHER(null, "Kether", "kether", "ke", "ks"),
     JEXL(null, "Jexl", "jexl", "Jexl3", "jexl3"),
     KOTLIN_SCRIPTING(null, "Kotlin", "kotlin", "kts", "KTS");
 
