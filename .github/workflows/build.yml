@@ -1,41 +1,28 @@
 name: Plugin Build
 
-# 触发条件
 on:
-  # 手动触发
   workflow_dispatch:
-  # 推送时触发
   push:
 
-# 环境变量
 env:
   GITHUB_REPO: ${{ github.repository }}
   GITHUB_USER: ${{ github.actor }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-# 任务
 jobs:
   build:
-    # 检查提交信息
     if: contains(github.event.head_commit.message, '[skip]') == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      - name: Cache Gradle Packages
-        uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}-Build-Cache
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-      - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@v3
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: adopt
           java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
       - name: Build
