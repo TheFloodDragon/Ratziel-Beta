@@ -44,10 +44,7 @@ subprojects {
 
             // Nodes
             @Suppress("UNCHECKED_CAST")
-            arrayOf(
-                bukkitNodes as HashMap<String, Any>,
-                bungeeNodes as HashMap<String, Any>
-            ).forEach {
+            arrayOf(bukkitNodes, bungeeNodes).map { it as MutableMap<Any, Any> }.forEach {
                 // Build Info
                 it["built-date"] = currentISODate
                 it["built-by"] = systemUserName

@@ -3,9 +3,6 @@
 .idea
 .kotlin
 build
+bin
 # Output
 outs
-# Wiki
-.docusaurus
-node_modules
-package-lock.json

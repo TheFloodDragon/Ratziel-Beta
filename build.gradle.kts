@@ -96,6 +96,8 @@ subprojects {
 //        relocate("kotlinx.serialization.", "kotlinx${kotlinVersion.escapedVersion}.serialization${serializationVersion.escapedVersion}.")
     }
 
+    buildDirClean()
+
 }
 
 buildDirClean()

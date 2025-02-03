@@ -1,6 +1,6 @@
 [
   {
-    "value": "org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.0",
+    "value": "org.jetbrains.kotlinx:kotlinx-serialization-core:$serialization",
     "transitive": false,
     "ignoreOptional": true,
     "ignoreException": false,
@@ -11,7 +11,7 @@
     "external": true
   },
   {
-    "value": "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0",
+    "value": "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization",
     "transitive": false,
     "ignoreOptional": true,
     "ignoreException": false,
@@ -22,7 +22,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-api:4.18.0",
+    "value": "net.kyori:adventure-api:$adventureApi",
     "test": [
       "net.kyori.adventure.text.Component"
     ],
@@ -36,7 +36,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-key:4.18.0",
+    "value": "net.kyori:adventure-key:$adventureApi",
     "test": [
       "net.kyori.adventure.key.Key"
     ],
@@ -50,7 +50,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-text-serializer-gson:4.18.0",
+    "value": "net.kyori:adventure-text-serializer-gson:$adventureApi",
     "test": [
       "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer"
     ],
@@ -64,7 +64,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-text-minimessage:4.18.0",
+    "value": "net.kyori:adventure-text-minimessage:$adventureApi",
     "test": [
       "net.kyori.adventure.text.minimessage.MiniMessage"
     ],
@@ -78,7 +78,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-text-serializer-legacy:4.18.0",
+    "value": "net.kyori:adventure-text-serializer-legacy:$adventureApi",
     "test": [
       "net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer"
     ],
@@ -92,7 +92,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-platform-api:4.3.4",
+    "value": "net.kyori:adventure-platform-api:$adventurePlatform",
     "test": [
       "net.kyori.adventure.platform.AudienceProvider"
     ],
@@ -106,7 +106,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-platform-bukkit:4.3.4",
+    "value": "net.kyori:adventure-platform-bukkit:$adventurePlatform",
     "test": [
       "net.kyori.adventure.platform.bukkit.BukkitAudience"
     ],
@@ -120,7 +120,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-text-serializer-bungeecord:4.3.4",
+    "value": "net.kyori:adventure-text-serializer-bungeecord:$adventurePlatform",
     "test": [
       "net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer"
     ],
@@ -134,7 +134,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-nbt:4.18.0",
+    "value": "net.kyori:adventure-nbt:$adventureApi",
     "test": [
       "net.kyori.adventure.nbt.BinaryTag"
     ],
@@ -148,7 +148,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-platform-facet:4.3.4",
+    "value": "net.kyori:adventure-platform-facet:$adventurePlatform",
     "test": [
       "net.kyori.adventure.platform.facet.FacetAudience"
     ],
@@ -162,7 +162,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-platform-viaversion:4.18.0",
+    "value": "net.kyori:adventure-platform-viaversion:$adventureApi",
     "test": [
       "net.kyori.adventure.platform.viaversion.ViaFacet"
     ],
@@ -176,7 +176,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-text-serializer-json:4.18.0",
+    "value": "net.kyori:adventure-text-serializer-json:$adventureApi",
     "test": [
       "net.kyori.adventure.text.serializer.json.JSONComponentSerializer"
     ],
@@ -190,7 +190,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-text-serializer-json-legacy-impl:4.18.0",
+    "value": "net.kyori:adventure-text-serializer-json-legacy-impl:$adventureApi",
     "test": [
       "net.kyori.adventure.text.serializer.json.legacyimpl.NBTLegacyHoverEventSerializer"
     ],
@@ -204,7 +204,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-text-serializer-gson-legacy-impl:4.18.0",
+    "value": "net.kyori:adventure-text-serializer-gson-legacy-impl:$adventureApi",
     "test": [
       "net.kyori.adventure.text.serializer.gson.legacyimpl.NBTLegacyHoverEventSerializer"
     ],
