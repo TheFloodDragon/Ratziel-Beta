@@ -4,7 +4,7 @@ package cn.fd.ratziel.module.item.feature.action.provided
 
 import cn.fd.ratziel.module.item.RatzielItem
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
-import cn.fd.ratziel.script.SimpleScriptEnv
+import cn.fd.ratziel.script.impl.SimpleScriptEnv
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action.*
 import org.bukkit.event.entity.EntityDamageByEntityEvent

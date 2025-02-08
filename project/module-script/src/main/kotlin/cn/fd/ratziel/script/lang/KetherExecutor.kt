@@ -3,7 +3,7 @@ package cn.fd.ratziel.script.lang
 import cn.fd.ratziel.script.api.ScriptContent
 import cn.fd.ratziel.script.api.ScriptEnvironment
 import cn.fd.ratziel.script.api.ScriptExecutor
-import cn.fd.ratziel.script.internal.BasicScriptContent
+import cn.fd.ratziel.script.impl.SimpleScriptContent
 import taboolib.module.kether.KetherShell
 import taboolib.module.kether.ScriptOptions
 
@@ -15,7 +15,7 @@ import taboolib.module.kether.ScriptOptions
  */
 object KetherExecutor : ScriptExecutor {
 
-    override fun build(script: String) = BasicScriptContent(script, this)
+    override fun build(script: String) = SimpleScriptContent(script, this)
 
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
         return KetherShell.eval(script.content, ScriptOptions.new { vars(environment.bindings) })

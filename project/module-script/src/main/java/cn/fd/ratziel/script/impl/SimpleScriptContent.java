@@ -1,18 +1,18 @@
-package cn.fd.ratziel.script.internal;
+package cn.fd.ratziel.script.impl;
 
 import cn.fd.ratziel.script.api.ScriptContent;
 import cn.fd.ratziel.script.api.ScriptExecutor;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * BasicScriptContent
+ * SimpleScriptContent
  *
  * @author TheFloodDragon
  * @since 2024/10/4 20:11
  */
-public class BasicScriptContent implements ScriptContent {
+public class SimpleScriptContent implements ScriptContent {
 
-    public BasicScriptContent(@NotNull String content, @NotNull ScriptExecutor executor) {
+    public SimpleScriptContent(@NotNull String content, @NotNull ScriptExecutor executor) {
         this.content = content;
         this.executor = executor;
     }

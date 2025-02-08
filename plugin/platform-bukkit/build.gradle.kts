@@ -19,7 +19,7 @@ taboolib {
         // Platform - Bukkit
         install("platform-bukkit", "platform-bukkit-impl")
         // Bukkit - Basic
-        install("bukkit-hook", "bukkit-util", "bukkit-fake-op", "bukkit-xseries")
+        install("bukkit-hook", "bukkit-util", "bukkit-fake-op", "bukkit-xseries", "minecraft-metrics")
         // NMS
         install("bukkit-nms", "bukkit-nms-stable")
         // Script

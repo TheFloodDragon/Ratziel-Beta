@@ -1,0 +1,107 @@
+[
+  {
+    "value": "org.jetbrains.intellij.deps:trove4j:1.0.20200330",
+    "test": [
+      "gnu.trove.TObjectHashingStrategy"
+    ],
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
+    "test": [
+      "kotlin.reflect.jvm.ReflectLambdaKt"
+    ],
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion",
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlin:kotlin-script-runtime:$kotlinVersion",
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlin:kotlin-scripting-common:$kotlinVersion",
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlin:kotlin-scripting-jvm:$kotlinVersion",
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlinVersion",
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:$kotlinVersion",
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:$kotlinVersion",
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  }
+]

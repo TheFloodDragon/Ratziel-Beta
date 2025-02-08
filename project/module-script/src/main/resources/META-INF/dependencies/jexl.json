@@ -1,0 +1,16 @@
+[
+  {
+    "value": "org.apache.commons:commons-jexl3:$jexlVersion",
+    "test": [
+      "org.apache.commons.jexl3.JexlEngine"
+    ],
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  }
+]

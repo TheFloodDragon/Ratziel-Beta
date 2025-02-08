@@ -4,7 +4,9 @@ import cn.fd.ratziel.script.api.CompilableScript
 import cn.fd.ratziel.script.api.ScriptContent
 import cn.fd.ratziel.script.api.ScriptEnvironment
 import cn.fd.ratziel.script.api.ScriptExecutor
-import cn.fd.ratziel.script.internal.CompilableScriptContent
+import cn.fd.ratziel.script.impl.CachedScriptContent
+import cn.fd.ratziel.script.internal.Initializable
+import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.function.warning
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -16,7 +18,7 @@ import javax.script.*
  * @author TheFloodDragon
  * @since 2024/10/4 20:05
  */
-object JavaScriptExecutor : ScriptExecutor {
+object JavaScriptExecutor : ScriptExecutor, Initializable {
 
     /**
      * 全局绑定键列表
@@ -28,8 +30,8 @@ object JavaScriptExecutor : ScriptExecutor {
      * @param compile 是否启用编译
      * @param async 若编译启用, 是否异步编译
      */
-    fun build(script: String, compile: Boolean = true, async: Boolean = true): CompilableScriptContent {
-        val sc = CompilableScriptContent(script, this)
+    fun build(script: String, compile: Boolean = true, async: Boolean = true): CachedScriptContent {
+        val sc = CachedScriptContent(script, this)
         if (compile && sc.future == null) {
             sc.future = if (async) {
                 CompletableFuture.supplyAsync { compile(script) }
@@ -65,5 +67,9 @@ object JavaScriptExecutor : ScriptExecutor {
         ScriptEngineManager(this::class.java.classLoader).getEngineByName("js")
             .apply { setBindings(globalBindings, ScriptContext.GLOBAL_SCOPE) } // 设置全局绑定键
             ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript Language")
+
+    override fun initialize() {
+        RuntimeEnv.ENV_DEPENDENCY.loadFromLocalFile(this::class.java.classLoader.getResource("META-INF/dependencies/nashorn.json"))
+    }
 
 }

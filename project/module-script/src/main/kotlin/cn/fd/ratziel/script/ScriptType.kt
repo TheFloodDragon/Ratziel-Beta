@@ -2,7 +2,7 @@ package cn.fd.ratziel.script
 
 import cn.fd.ratziel.script.api.ScriptExecutor
 import cn.fd.ratziel.script.lang.JavaScriptExecutor
-import cn.fd.ratziel.script.lang.KetherExecutor
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * ScriptTypes - 脚本类型
@@ -10,41 +10,68 @@ import cn.fd.ratziel.script.lang.KetherExecutor
  * @author TheFloodDragon
  * @since 2024/7/14 21:35
  */
-enum class ScriptType(
+interface ScriptType {
+
+    /**
+     * 是否启用脚本
+     */
+    var enabled: Boolean
+
     /**
      * 执行器
      */
-    val executor: ScriptExecutor?,
+    var executor: ScriptExecutor?
+
     /**
      * 别名
      */
-    vararg val alias: String
-) {
-
-    JAVASCRIPT(null, "js", "JavaScript", "javascript", "java-script", "JS", "Js"),
-    KETHER(null, "Kether", "kether", "ke", "ks"),
-    JEXL(null, "Jexl", "jexl", "Jexl3", "jexl3"),
-    KOTLIN_SCRIPTING(null, "Kotlin", "kotlin", "kts", "KTS");
+    val alias: Array<out String>
 
     /**
      * 获取执行器, 若不存在则直接抛出异常
      */
-    val executorOrThrow get() = executor ?: throw UnsupportedOperationException("There's no executor of $name.")
+    val executorOrThrow get() = executor ?: throw UnsupportedOperationException("There's no executor of $this.")
 
     companion object {
+
+        /** JavaScript **/
+        val JAVASCRIPT = register(JavaScriptExecutor, "js", "javascript")
+
+        /** Kether **/
+        val KETHER = register(null, "kether", "ke", "ks")
+
+        /** Jexl **/
+        val JEXL = register(null, "jexl", "jexl3")
+
+        /** Kotlin Scripting **/
+        val KOTLIN_SCRIPTING = register(null, "kotlin", "kts")
+
+        /**
+         * 脚本类型注册表
+         */
+        @JvmStatic
+        val registry = CopyOnWriteArrayList<ScriptType>()
+
+        /**
+         * 匹配脚本类型
+         */
+        @JvmStatic
+        fun match(name: String): ScriptType? = registry.find { it.enabled && it.alias.contains(name.lowercase()) }
 
         /**
          * 匹配脚本类型 (无法找到时抛出异常)
          */
         @JvmStatic
         fun matchOrThrow(name: String): ScriptType =
-            match(name) ?: throw IllegalArgumentException("Couldn't find ScriptLanguage with id: $name")
+            match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
 
-        /**
-         * 匹配脚本类型
-         */
-        @JvmStatic
-        fun match(name: String): ScriptType? = entries.find { it.alias.contains(name) }
+        internal fun register(executor: ScriptExecutor?, vararg alias: String) =
+            object : ScriptType {
+                override var enabled = false
+                override var executor = executor
+                override val alias = alias
+                override fun toString() = "ScriptType(enabled=${this.enabled}, executor=${this.executor}, alias=${this.alias.contentToString()})"
+            }.also { registry.add(it) }
 
     }
 

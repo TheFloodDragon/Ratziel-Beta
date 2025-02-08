@@ -1,4 +1,4 @@
-package cn.fd.ratziel.script;
+package cn.fd.ratziel.script.impl;
 
 import cn.fd.ratziel.script.api.ScriptEnvironment;
 import org.jetbrains.annotations.NotNull;

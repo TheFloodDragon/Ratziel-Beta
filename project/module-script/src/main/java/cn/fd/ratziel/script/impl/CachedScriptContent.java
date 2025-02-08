@@ -1,4 +1,4 @@
-package cn.fd.ratziel.script.internal;
+package cn.fd.ratziel.script.impl;
 
 import cn.fd.ratziel.script.api.CompilableScript;
 import cn.fd.ratziel.script.api.ScriptExecutor;
@@ -9,14 +9,14 @@ import javax.script.CompiledScript;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * CompilableScriptContent
+ * CachedScriptContent
  *
  * @author TheFloodDragon
  * @since 2024/10/4 20:19
  */
-public class CompilableScriptContent extends BasicScriptContent implements CompilableScript {
+public class CachedScriptContent extends SimpleScriptContent implements CompilableScript {
 
-    public CompilableScriptContent(@NotNull String content, @NotNull ScriptExecutor executor) {
+    public CachedScriptContent(@NotNull String content, @NotNull ScriptExecutor executor) {
         super(content, executor);
     }
 

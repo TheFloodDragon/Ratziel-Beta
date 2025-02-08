@@ -1,0 +1,14 @@
+{
+  "value": "org.openjdk.nashorn:nashorn-core:$nashornVersion",
+  "test": [
+    "org.openjdk.nashorn.api.scripting.NashornScriptEngine"
+  ],
+  "transitive": true,
+  "ignoreOptional": false,
+  "ignoreException": false,
+  "scopes": [
+    "compile",
+    "runtime"
+  ],
+  "external": true
+}

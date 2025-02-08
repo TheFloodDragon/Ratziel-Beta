@@ -8,7 +8,18 @@ dependencies {
     // Kether: Taboolib
     compileOnly(libs.taboolib.minecraft.kether)
     // JavaScript: Nashorn Engine
-    compileOnly("org.openjdk.nashorn:nashorn-core:15.4")
+    compileOnly(libs.nashorn)
     // Jexl3: Apache
-    compileOnly("org.apache.commons:commons-jexl3:3.4.0")
+    compileOnly(libs.jexl)
+}
+
+// 资源处理
+tasks.processResources {
+    filesMatching("**/*.json") {
+        expand(
+            "kotlinVersion" to rootProject.libs.versions.kotlin.get(),
+            "nashornVersion" to rootProject.libs.versions.nashorn.get(),
+            "jexlVersion" to rootProject.libs.versions.jexl.get(),
+        )
+    }
 }

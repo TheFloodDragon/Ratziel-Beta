@@ -1,12 +1,14 @@
 [versions]
-taboolib = "6.2.2"
+taboolib = "6.2.3"
 taboolibPlugin = "2.0.21"
 adventureApi = "4.18.0"
 adventurePlatform = "4.3.4"
 kotlin = "2.1.0"
 serialization = "1.8.0"
 coroutines = "1.10.1"
-shadow = "8.3.5"
+shadowPlugin = "8.3.5"
+nashorn = "15.4"
+jexl = "3.4.0"
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -17,6 +19,8 @@ adventure-text-serializer-gson = { group = "net.kyori", name = "adventure-text-s
 adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventureApi" }
 adventure-text-serializer-legacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "adventureApi" }
 adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventurePlatform" }
+nashorn = { group = "org.openjdk.nashorn", name = "nashorn-core", version.ref = "nashorn" }
+jexl = { group = "org.apache.commons", name = "commons-jexl3", version.ref = "jexl" }
 # Taboolib
 taboolib-common = { group = "io.izzel.taboolib", name = "common", version.ref = "taboolib" }
 taboolib-common-env = { group = "io.izzel.taboolib", name = "common-env", version.ref = "taboolib" }
@@ -29,6 +33,7 @@ taboolib-minecraft-chat = { group = "io.izzel.taboolib", name = "minecraft-chat"
 taboolib-minecraft-i18n = { group = "io.izzel.taboolib", name = "minecraft-i18n", version.ref = "taboolib" }
 taboolib-minecraft-command-helper = { group = "io.izzel.taboolib", name = "minecraft-command-helper", version.ref = "taboolib" }
 taboolib-minecraft-kether = { group = "io.izzel.taboolib", name = "minecraft-kether", version.ref = "taboolib" }
+taboolib-minecraft-metrics = { group = "io.izzel.taboolib", name = "minecraft-metrics", version.ref = "taboolib" }
 taboolib-platform-bukkit = { group = "io.izzel.taboolib", name = "platform-bukkit", version.ref = "taboolib" }
 taboolib-platform-bukkit-impl = { group = "io.izzel.taboolib", name = "platform-bukkit-impl", version.ref = "taboolib" }
 taboolib-bukkit-nms = { group = "io.izzel.taboolib", name = "bukkit-nms", version.ref = "taboolib" }
@@ -44,5 +49,5 @@ taboolib = ["taboolib-common", "taboolib-common-env", "taboolib-common-util", "t
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadowPlugin" }
 taboolib = { id = "io.izzel.taboolib", version.ref = "taboolibPlugin" }
