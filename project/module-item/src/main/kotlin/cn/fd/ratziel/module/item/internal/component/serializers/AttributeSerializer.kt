@@ -20,6 +20,6 @@ object AttributeSerializer : KSerializer<Attribute> {
 
     override fun serialize(encoder: Encoder, value: Attribute) = encoder.encodeString(value.key.key)
 
-    override fun deserialize(decoder: Decoder) = MetaMatcher.matchAttribute(decoder.decodeString()).toBukkit()
+    override fun deserialize(decoder: Decoder) = MetaMatcher.matchAttribute(decoder.decodeString()).get()!!
 
 }

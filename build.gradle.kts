@@ -22,16 +22,10 @@ subprojects {
         maven("http://sacredcraft.cn:8081/repository/releases") { isAllowInsecureProtocol = true }
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
+        // JitPack
+        maven("https://jitpack.io")
         // OSS
         maven("https://s01.oss.sonatype.org/content/groups/public/")
-        // NBT (Github Packages)
-        maven {
-            url = uri("https://maven.pkg.github.com/TheFloodDragon/nbt")
-            credentials {
-                username = project.findProperty("github.user") as String? ?: System.getenv("GITHUB_USER")
-                password = project.findProperty("github.token") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
     }
 
     dependencies {
@@ -75,7 +69,8 @@ subprojects {
     kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_1_8
-            freeCompilerArgs.add("-Xallow-unstable-dependencies")
+            freeCompilerArgs.addAll("-Xallow-unstable-dependencies", "-Xwhen-guards", "-Xnon-local-break-continue")
+            extraWarnings.set(true)
         }
     }
 

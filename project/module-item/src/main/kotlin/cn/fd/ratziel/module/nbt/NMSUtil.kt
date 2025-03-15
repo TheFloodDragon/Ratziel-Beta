@@ -49,7 +49,7 @@ class NMSUtilImpl2 : NMSUtil {
 
     override fun inferType(nmsData: Any): NbtType {
         val nmsId = (nmsData as NbtBase).id
-        return NbtType.from(nmsId)!!
+        return NbtType.of(nmsId)!!
     }
 
     override fun toNms(data: NbtTag): NbtBase = when (data) {

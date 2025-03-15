@@ -1,6 +1,6 @@
 [
   {
-    "value": "org.jetbrains.kotlinx:kotlinx-serialization-core:$serialization",
+    "value": "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:$serialization",
     "transitive": false,
     "ignoreOptional": true,
     "ignoreException": false,
@@ -11,7 +11,7 @@
     "external": true
   },
   {
-    "value": "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization",
+    "value": "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$serialization",
     "transitive": false,
     "ignoreOptional": true,
     "ignoreException": false,
@@ -162,7 +162,7 @@
     "external": true
   },
   {
-    "value": "net.kyori:adventure-platform-viaversion:$adventureApi",
+    "value": "net.kyori:adventure-platform-viaversion:$adventurePlatform",
     "test": [
       "net.kyori.adventure.platform.viaversion.ViaFacet"
     ],

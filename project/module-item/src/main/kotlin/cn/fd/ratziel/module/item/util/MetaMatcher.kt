@@ -7,9 +7,9 @@ import cn.fd.ratziel.module.item.SimpleMaterial
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import org.bukkit.attribute.AttributeModifier
 import taboolib.common.util.Strings
+import taboolib.library.xseries.XAttribute
 import taboolib.library.xseries.XEnchantment
 import taboolib.library.xseries.XMaterial
-import taboolib.module.nms.BukkitAttribute
 import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrNull
 import org.bukkit.enchantments.Enchantment as BukkitEnchantment
@@ -48,10 +48,10 @@ object MetaMatcher {
      * 匹配物品属性修饰符
      */
     @JvmStatic
-    fun matchAttribute(source: String): BukkitAttribute {
+    fun matchAttribute(source: String): XAttribute {
         val name = clean(source)
-        return BukkitAttribute.parse(name)
-            ?: BukkitAttribute.entries.maxBy { Strings.similarDegree(it.name, name) }
+        return XAttribute.of(name).getOrNull()
+            ?: XAttribute.getValues().maxBy { Strings.similarDegree(it.name(), name) }
     }
 
     /**
