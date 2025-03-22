@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.NMSItemStack
+import cn.fd.ratziel.module.item.internal.ItemSheet
 import cn.fd.ratziel.module.nbt.NBTHelper
 import cn.fd.ratziel.module.nbt.NBTTagCompound
 import cn.fd.ratziel.module.nbt.NBTTagCompound12

@@ -3,8 +3,8 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.module.item.SimpleMaterial
-import cn.fd.ratziel.module.item.SimpleMaterial.Companion.asBukkit
+import cn.fd.ratziel.module.item.impl.SimpleMaterial
+import cn.fd.ratziel.module.item.impl.SimpleMaterial.Companion.asBukkit
 import cn.fd.ratziel.module.item.api.BukkitItemStack
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
@@ -13,7 +13,6 @@ import cn.altawk.nbt.tag.NbtCompound
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.unsafeInstance
 import taboolib.library.reflex.ReflexClass
-import taboolib.library.reflex.StaticSrc
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass

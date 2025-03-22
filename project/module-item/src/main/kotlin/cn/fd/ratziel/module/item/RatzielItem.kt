@@ -7,7 +7,8 @@ import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.feature.service.GlobalServiceManager
-import cn.fd.ratziel.module.item.internal.nms.ItemSheet
+import cn.fd.ratziel.module.item.impl.SimpleNode
+import cn.fd.ratziel.module.item.internal.ItemSheet
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.handle
 import cn.fd.ratziel.module.item.util.read

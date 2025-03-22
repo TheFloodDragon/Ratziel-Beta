@@ -1,14 +1,29 @@
 {
-  "CUSTOM_DATA": {
-    "0": "custom_data"
-  },
-  "DISPLAY_NAME": {
+  "ItemDisplay.name": {
     "0": "display.Name",
     "12005": "custom_name"
   },
-  "DISPLAY_LORE": {
+  "ItemDisplay.localizedName": {
+    "0": "display.LocName",
+    "12005": "item_name"
+  },
+  "ItemDisplay.lore": {
     "0": "display.Lore",
     "12005": "lore"
+  },
+  "ItemDurability.maxDurability": {
+    "0": "max_damage"
+  },
+  "ItemDurability.repairCost": {
+    "0": "RepairCost",
+    "12005": "repair_cost"
+  },
+  "ItemDurability.unbreakable": {
+    "0": "Unbreakable",
+    "12005": "unbreakable"
+  },
+  "CUSTOM_DATA": {
+    "0": "custom_data"
   },
   "ENCHANTMENTS": {
     "0": "Enchantments",
@@ -22,21 +37,9 @@
     "11400": "CustomModelData",
     "12005": "custom_model_data"
   },
-  "REPAIR_COST": {
-    "0": "RepairCost",
-    "12005": "repair_cost"
-  },
   "DAMAGE": {
     "0": "Damage",
     "12005": "damage"
-  },
-  "UNBREAKABLE": {
-    "0": "Unbreakable",
-    "12005": "unbreakable"
-  },
-  "DISPLAY_LOCAL_NAME": {
-    "0": "display.LocName",
-    "12005": "item_name"
   },
   "DYED_COLOR": {
     "0": "display.color",
@@ -45,9 +48,6 @@
   "POTION_COLOR": {
     "0": "CustomPotionColor",
     "12005": "potion_contents.custom_color"
-  },
-  "MAX_DAMAGE": {
-    "0": "max_damage"
   },
   "MAX_STACK_SIZE": {
     "0": "max_stack_size"

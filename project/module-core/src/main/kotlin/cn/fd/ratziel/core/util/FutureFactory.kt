@@ -61,9 +61,9 @@ class FutureFactory<T>(
         }
     }
 
-    fun thenAccept(action: Consumer<List<T>> = Consumer {}) = thenApply { action.accept(it) }
+    fun thenAccept(action: Consumer<List<T>> = Consumer { _ -> }) = thenApply { action.accept(it) }
 
-    fun thenRun(action: Runnable = Runnable {}) = thenApply { action.run() }
+    fun thenRun(action: Runnable = Runnable {}) = thenApply { _ -> action.run() }
 
     /**
      * 等待所有任务完成 (阻塞)

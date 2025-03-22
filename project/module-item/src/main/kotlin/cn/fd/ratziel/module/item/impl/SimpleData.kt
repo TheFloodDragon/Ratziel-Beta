@@ -1,9 +1,8 @@
-package cn.fd.ratziel.module.item
+package cn.fd.ratziel.module.item.impl
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * SimpleData
@@ -15,11 +14,11 @@ data class SimpleData(
     /**
      * 物品材料
      */
-    override var material: ItemMaterial = ItemMaterial.EMPTY,
+    override var material: ItemMaterial = ItemMaterial.Companion.EMPTY,
     /**
-     * 物品NBT
+     * 物品标签
      */
-    override var tag: NbtCompound = NbtCompound(ConcurrentHashMap()),
+    override var tag: NbtCompound = NbtCompound(),
     /**
      * 物品数量
      */
@@ -35,7 +34,7 @@ data class SimpleData(
      * 合并数据
      */
     override fun merge(other: ItemData) {
-        if (other.material != ItemMaterial.EMPTY) this.material = other.material
+        if (other.material != ItemMaterial.Companion.EMPTY) this.material = other.material
         if (other.amount >= 1) this.amount = other.amount
         this.tag.merge(other.tag)
     }

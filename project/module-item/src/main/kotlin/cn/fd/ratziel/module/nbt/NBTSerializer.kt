@@ -23,13 +23,13 @@ object NBTSerializer : KSerializer<NbtTag> {
     override fun serialize(encoder: Encoder, value: NbtTag) {
         if (encoder is JsonEncoder)
             encoder.encodeJsonElement(Converter.serializeToJson(value))
-        else throw UnsupportedTypeException(encoder)
+        else super.serialize(encoder, value)
     }
 
     override fun deserialize(decoder: Decoder): NbtTag {
-        if (decoder is JsonDecoder)
-            return Converter.deserializeFromJson(decoder.decodeJsonElement())
-        else throw UnsupportedTypeException(decoder)
+        return if (decoder is JsonDecoder)
+            Converter.deserializeFromJson(decoder.decodeJsonElement())
+        else super.deserialize(decoder)
     }
 
     object Converter {

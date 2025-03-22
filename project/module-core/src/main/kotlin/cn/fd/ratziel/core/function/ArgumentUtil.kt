@@ -1,4 +1,6 @@
-package cn.fd.ratziel.function
+package cn.fd.ratziel.core.function
+
+import cn.fd.ratziel.function.ArgumentContext
 
 inline fun <reified T : Any> ArgumentContext.pop() = pop(T::class.java)
 

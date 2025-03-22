@@ -1,10 +1,10 @@
 package cn.fd.ratziel.module.item.builder
 
+import cn.fd.ratziel.core.serialization.ContextualSerializer
 import cn.fd.ratziel.function.ArgumentContext
-import cn.fd.ratziel.module.item.api.builder.ItemSerializer
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonTransformingSerializer
 
 /**
  * SectionTransforming
@@ -12,17 +12,16 @@ import kotlinx.serialization.json.JsonElement
  * @author TheFloodDragon
  * @since 2024/10/1 14:56
  */
-class SectionTransforming<T : Any>(
-    val serializer: KSerializer<T>,
-    val json: Json
-) : ItemSerializer<T>, KSerializer<T> by serializer {
+open class SectionTransforming<T : Any>(val serializer: KSerializer<T>) : ContextualSerializer<T>, JsonTransformingSerializer<T>(serializer) {
 
-    override fun serialize(component: T, context: ArgumentContext): JsonElement {
-        return json.encodeToJsonElement(serializer, component)
+    override fun accept(context: ArgumentContext) = object : SectionTransforming<T>(serializer) {
+        override fun transformDeserialize(element: JsonElement): JsonElement {
+            return DefaultSectionResolver.resolve(element, context)
+        }
     }
 
-    override fun deserialize(element: JsonElement, context: ArgumentContext): T {
-        return json.decodeFromJsonElement(serializer, DefaultSectionResolver.resolve(element, context))
+    override fun toString(): String {
+        return "SectionTransforming(serializer=$serializer)"
     }
 
 }

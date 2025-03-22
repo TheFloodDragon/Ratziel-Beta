@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.feature.action.provided
 
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.function.ArgumentContext
-import cn.fd.ratziel.function.SimpleArgumentContext
+import cn.fd.ratziel.core.function.SimpleArgumentContext
 import cn.fd.ratziel.module.item.api.action.TriggerType
 import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.script.impl.SimpleScriptEnv

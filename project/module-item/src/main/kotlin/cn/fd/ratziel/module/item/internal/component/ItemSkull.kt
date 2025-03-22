@@ -2,11 +2,11 @@
 
 package cn.fd.ratziel.module.item.internal.component
 
-import cn.fd.ratziel.module.item.BukkitMaterial
-import cn.fd.ratziel.module.item.SimpleMaterial
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.ItemTransformer
+import cn.fd.ratziel.module.item.impl.BukkitMaterial
+import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.internal.nms.RefItemMeta
 import cn.fd.ratziel.module.item.util.SkullData
 import cn.fd.ratziel.module.item.util.SkullUtil

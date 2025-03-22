@@ -1,9 +1,9 @@
-package cn.fd.ratziel.module.item
+package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.module.item.api.ItemNode
 
 /**
- * SimpleNode - [ItemNode] 实现
+ * SimpleNode - [cn.fd.ratziel.module.item.api.ItemNode] 实现
  *
  * @author TheFloodDragon
  * @since 2024/3/16 11:53
@@ -13,6 +13,6 @@ data class SimpleNode(
     override val parent: ItemNode
 ) : ItemNode {
 
-    constructor(name: String) : this(name, ItemNode.ROOT)
+    constructor(name: String) : this(name, ItemNode.Companion.ROOT)
 
 }

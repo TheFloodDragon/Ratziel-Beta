@@ -16,7 +16,7 @@ fun <T> CommandComponent.executeAsync(
     function: (sender: T, context: CommandContext<T>, argument: String) -> Unit,
 ) = this.execute(bind) { sender, context, argument ->
     // 获取锁 (公平锁)
-    val lock = commandLocks.computeIfAbsent(function.hashCode()) { ReentrantLock(true) }
+    val lock = commandLocks.computeIfAbsent(function.hashCode()) { _ -> ReentrantLock(true) }
     CompletableFuture.runAsync {
         lock.lock() // 上锁
         function.invoke(sender, context, argument) // 执行方法

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item
 
+import cn.altawk.nbt.NbtFormat
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
@@ -8,9 +9,12 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.builder.SectionTransforming
-import cn.fd.ratziel.module.item.internal.component.*
+import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
+import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
+import cn.fd.ratziel.module.item.internal.component.HideFlag
+import cn.fd.ratziel.module.item.internal.component.ItemDisplay
+import cn.fd.ratziel.module.item.internal.component.ItemDurability
 import cn.fd.ratziel.module.item.internal.component.serializers.*
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.nbt.NBTSerializer
@@ -56,6 +60,9 @@ object ItemElement : ElementHandler {
      */
     val scope = CoroutineScope(CoroutineName("ItemHandler") + executor.asCoroutineDispatcher())
 
+    /**
+     * [Json]
+     */
     val json = Json(baseJson) {
         serializersModule += SerializersModule {
             // Common Serializers
@@ -69,12 +76,19 @@ object ItemElement : ElementHandler {
         }
     }
 
+    /**
+     * [NbtFormat]
+     */
+    val nbt = NbtFormat {
+        nameDeterminer = NbtNameDeterminer
+    }
+
     init {
         // 注册默认组件
-        ItemRegistry.register(ItemDisplay::class.java, create(), ItemDisplay)
-        ItemRegistry.register(ItemDurability::class.java, create(), ItemDurability)
-        ItemRegistry.register(ItemSundry::class.java, create(), ItemSundry)
-        ItemRegistry.register(ItemSkull::class.java, create(), ItemSkull)
+        register<ItemDisplay>()
+        register<ItemDurability>()
+//        register<ItemSundry>()
+//        register<ItemSkull>()
     }
 
     override fun handle(element: Element) {
@@ -90,6 +104,11 @@ object ItemElement : ElementHandler {
         val bi = ri.bukkitStack
         println(bi)
 
+        println("---------------")
+        val durability = ItemDurability(1000, 13, false)
+        val tag = nbt.encodeToNbtTag(ItemDurability.serializer(), durability)
+        println(tag)
+
         // 注册
         ItemManager.registry[element.name] = generator
     }
@@ -100,6 +119,8 @@ object ItemElement : ElementHandler {
         ItemManager.registry.clear()
     }
 
-    private inline fun <reified T : Any> create() = SectionTransforming(serializer<T>(), json)
+    private inline fun <reified T : Any> register() {
+        ItemRegistry.register(T::class.java, SectionTransforming(serializer<T>()))
+    }
 
 }

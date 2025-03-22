@@ -3,7 +3,7 @@ package cn.fd.ratziel.core.element.service
 import cn.fd.ratziel.core.Priority
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.util.priority
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.ConcurrentSkipListSet
 
 
 /**
@@ -17,7 +17,7 @@ class ElementHandlerGroup {
     /**
      * 处理器表
      */
-    val handlers: MutableList<Priority<ElementHandler>> = CopyOnWriteArrayList()
+    val handlers: MutableCollection<Priority<ElementHandler>> = ConcurrentSkipListSet(compareBy { it.priority })
 
     /**
      * 注册元素处理器
@@ -27,6 +27,6 @@ class ElementHandlerGroup {
     /**
      * 取消注册元素处理器
      */
-    fun unregister(handler: ElementHandler) = handlers.removeIf { it.value.equals(handler) }
+    fun unregister(handler: ElementHandler) = handlers.removeIf { it.value == handler }
 
 }

@@ -1,20 +1,26 @@
-package cn.fd.ratziel.module.item.builder
+package cn.fd.ratziel.module.item.impl.builder
 
+import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.serialization.ContextualSerializer
 import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.core.util.digest
 import cn.fd.ratziel.function.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.RatzielItem
-import cn.fd.ratziel.module.item.SimpleData
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
+import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.util.MetaMatcher
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -24,10 +30,10 @@ import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
 
 /**
- * DefaultItemGenerator
+ * DefaultGenerator
  *
  * @author TheFloodDragon
- * @since 2024/4/13 17:34
+ * @since 2025/3/22 15:32
  */
 class DefaultGenerator(
     /**
@@ -61,13 +67,14 @@ class DefaultGenerator(
             selectBasic(element, data)
 
             // 生成任务列表
-            val tasks: List<Job> = ItemRegistry.getSortedList().map {
-                @Suppress("UNCHECKED_CAST")
-                createTask(this@async, it as ItemRegistry.Integrated<Any>, element, context, data)
-            }
+            val tasks = ItemRegistry.registry.map { createTask(this@async, it, element, context) }
 
-            // 等待所有任务完成
-            tasks.joinAll()
+            // 等待所有任务完成, 后合并数据
+            for (tag in tasks.awaitAll()) {
+                if (tag != null && tag is NbtCompound) {
+                    data.tag.merge(tag, false)
+                }
+            }
 
             // 合成最终结果
             val version = origin.property.toString().digest()
@@ -82,32 +89,34 @@ class DefaultGenerator(
 
     /**
      * 创建任务
-     * 流程: 反序列化 -> 转化数据 (应用到 [sourceData])
      */
     fun createTask(
         scope: CoroutineScope,
-        integrated: ItemRegistry.Integrated<Any>,
+        integrated: ItemRegistry.Integrated<*>,
         element: JsonElement,
-        context: ArgumentContext,
-        data: ItemData
-    ) = scope.launch {
-        // 第一步: 反序列成物品组件
-        val serializer = integrated.serializer
+        context: ArgumentContext
+    ): Deferred<NbtTag?> = scope.async {
+        // 获取序列化器
+        @Suppress("UNCHECKED_CAST")
+        val originSerializer = (integrated as ItemRegistry.Integrated<Any>).serializer
+        val serializer = if (originSerializer is ContextualSerializer) originSerializer.accept(context) else originSerializer
+        // 第一步: 解码成物品组件
         val component = try {
-            serializer.deserialize(element, context)
+            // 解码
+            ItemElement.json.decodeFromJsonElement(serializer, element)
         } catch (ex: Exception) {
-            severe("Failed to deserialize element by \"$serializer!\"! Source element: $element")
+            severe("Failed to deserialize element by '$serializer!'! Source element: $element")
             ex.printStackTrace()
-            return@launch
+            return@async null
         }
-        // 第二步: 转化数据
-        val transformer = integrated.transformer
+        // 第二步: 编码成物品数据
         try {
-            // 应用数据
-            transformer.transform(data, component)
+            // 编码
+            return@async ItemElement.nbt.encodeToNbtTag(serializer, component)
         } catch (ex: Exception) {
-            severe("Failed to transform component by \"$transformer\"! Source component: $component")
+            severe("Failed to transform component by '$serializer'! Source component: $component")
             ex.printStackTrace()
+            return@async null
         }
     }
 

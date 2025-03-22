@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item
+package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import taboolib.library.reflex.ReflexClass
@@ -102,7 +102,7 @@ value class SimpleMaterial(private val ref: BukkitMaterial) : ItemMaterial {
          * private final int id
          */
         private val bukkitIdField by lazy {
-            ReflexClass.of(BukkitMaterial::class.java, false).structure.getField("id")
+            ReflexClass.Companion.of(BukkitMaterial::class.java, false).structure.getField("id")
         }
 
     }

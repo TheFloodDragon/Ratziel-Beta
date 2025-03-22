@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.api.builder
 
+import cn.fd.ratziel.core.function.SimpleArgumentContext
 import cn.fd.ratziel.function.ArgumentContext
-import cn.fd.ratziel.function.SimpleArgumentContext
 
 /**
  * SectionTagResolver

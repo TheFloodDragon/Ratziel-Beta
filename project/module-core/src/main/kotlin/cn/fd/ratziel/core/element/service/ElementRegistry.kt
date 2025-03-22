@@ -19,7 +19,7 @@ object ElementRegistry {
      * 元素注册表
      */
     @JvmStatic
-    val registry: ConcurrentHashMap<ElementType, ElementHandlerGroup> = ConcurrentHashMap()
+    val registry: MutableMap<ElementType, ElementHandlerGroup> = ConcurrentHashMap()
 
     /**
      * 注册元素类型
@@ -31,7 +31,7 @@ object ElementRegistry {
     fun register(type: ElementType, handler: ElementHandler, priority: Byte = 0) = register(type).register(handler, priority)
 
     @JvmStatic
-    fun register(type: ElementType) = registry.computeIfAbsent(type) { ElementHandlerGroup() }
+    fun register(type: ElementType) = registry.computeIfAbsent(type) { _ -> ElementHandlerGroup() }
 
     @JvmStatic
     fun register(
@@ -89,10 +89,10 @@ object ElementRegistry {
      * @param type 元素类型
      */
     @JvmStatic
-    fun getHandlersWithPriority(type: ElementType): List<Priority<ElementHandler>> = registry[type]?.handlers ?: emptyList()
+    fun getHandlersWithPriority(type: ElementType): Collection<Priority<ElementHandler>> = registry[type]?.handlers ?: emptyList()
 
     @JvmStatic
-    fun getHandlersWithPriority(): List<Priority<ElementHandler>> = registry.values.flatMap { it.handlers }
+    fun getHandlersWithPriority(): Collection<Priority<ElementHandler>> = registry.values.flatMap { it.handlers }
 
     /**
      * 获取元素类型

@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.item.api.ItemData
  * @author TheFloodDragon
  * @since 2024/6/24 13:59
  */
+@Deprecated("Will be removed in the future")
 interface ItemTransformer<T> {
 
     /**

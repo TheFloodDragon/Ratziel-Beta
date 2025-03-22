@@ -2,8 +2,8 @@
 
 package cn.fd.ratziel.module.item.util
 
-import cn.fd.ratziel.module.item.BukkitMaterial
-import cn.fd.ratziel.module.item.SimpleMaterial
+import cn.fd.ratziel.module.item.impl.BukkitMaterial
+import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import org.bukkit.attribute.AttributeModifier
 import taboolib.common.util.Strings

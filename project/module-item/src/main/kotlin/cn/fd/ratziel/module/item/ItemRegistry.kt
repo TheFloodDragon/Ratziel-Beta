@@ -1,8 +1,7 @@
 package cn.fd.ratziel.module.item
 
-import cn.fd.ratziel.module.item.api.builder.ItemSerializer
-import cn.fd.ratziel.module.item.api.builder.ItemTransformer
-import java.util.concurrent.ConcurrentHashMap
+import kotlinx.serialization.KSerializer
+import java.util.concurrent.ConcurrentSkipListSet
 
 /**
  * ItemRegistry - 物品注册表
@@ -15,17 +14,16 @@ object ItemRegistry {
     /**
      * 组件对象类型 - 组件集成构建器
      */
-    internal val registry: MutableMap<Class<*>, Integrated<*>> = ConcurrentHashMap()
+    val registry: MutableCollection<Integrated<*>> = ConcurrentSkipListSet(compareBy { it.priority })
 
     /**
      * 注册组件
      *
      * @param serializer 组件序列化器
-     * @param transformer 组件转换器
      */
-    fun <T> register(type: Class<T>, serializer: ItemSerializer<T>, transformer: ItemTransformer<T>) {
-        val integrated = Integrated(serializer, transformer)
-        registry[type] = integrated
+    fun <T> register(type: Class<T>, serializer: KSerializer<T>, priority: Int = 0) {
+        val integrated = Integrated(type, serializer, priority)
+        registry.add(integrated)
     }
 
     /**
@@ -33,41 +31,20 @@ object ItemRegistry {
      */
     fun <T> get(type: Class<T>): Integrated<T> {
         @Suppress("UNCHECKED_CAST")
-        return registry[type] as Integrated<T>
+        return (registry.find { it.type == type }
+            ?: throw NoSuchElementException("Cannot find '$type' in registry.")) as Integrated<T>
     }
 
-    /**
-     * 获取组件序列化器
-     */
-    fun <T> getSerializer(type: Class<T>): ItemSerializer<T> {
-        return get(type).serializer
-    }
+    inline fun <reified T> get(): Integrated<T> = get(T::class.java)
 
     /**
-     * 获取组件转换器
-     */
-    fun <T> getTransformer(type: Class<T>): ItemSerializer<T> {
-        return get(type).serializer
-    }
-
-    /**
-     * 获取优先级排序后的集成构建器列表
-     */
-    fun getSortedList(): List<Integrated<*>> {
-        return registry.values.sortedBy { it.priority }
-    }
-
-    /**
-     * 集成 [ItemSerializer] 和 [ItemTransformer]
-     *
      * @param serializer 序列化器
-     * @param transformer 转换器
      * @param priority 优先级
      */
     class Integrated<T>(
-        val serializer: ItemSerializer<T>,
-        val transformer: ItemTransformer<T>,
+        val type: Class<T>,
+        val serializer: KSerializer<T>,
         val priority: Int = 0
-    ) : ItemSerializer<T> by serializer, ItemTransformer<T> by transformer
+    )
 
 }

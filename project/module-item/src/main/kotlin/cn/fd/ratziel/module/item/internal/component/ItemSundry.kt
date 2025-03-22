@@ -3,21 +3,13 @@
 
 package cn.fd.ratziel.module.item.internal.component
 
-import cn.altawk.nbt.tag.NbtInt
-import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.builder.ItemTransformer
 import cn.fd.ratziel.module.item.internal.component.serializers.AttributeModifierSerializer
 import cn.fd.ratziel.module.item.internal.component.serializers.AttributeSerializer
 import cn.fd.ratziel.module.item.internal.component.serializers.HideFlagSerializer
-import cn.fd.ratziel.module.item.internal.nms.ItemSheet
-import cn.fd.ratziel.module.item.internal.nms.RefItemMeta
-import cn.fd.ratziel.module.item.util.read
-import cn.fd.ratziel.module.item.util.write
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import org.bukkit.inventory.EquipmentSlot
-import taboolib.module.nms.MinecraftVersion
 
 typealias HideFlag = @Serializable(HideFlagSerializer::class) org.bukkit.inventory.ItemFlag
 typealias Attribute = @Serializable(AttributeSerializer::class) org.bukkit.attribute.Attribute
@@ -78,45 +70,45 @@ data class ItemSundry(
     fun removeAttributeModifiers(slot: EquipmentSlot) =
         bukkitAttributes?.forEach { (key, value) -> value.forEach { if (it.slot == slot) bukkitAttributes?.get(key)?.remove(it) } }
 
-    companion object : ItemTransformer<ItemSundry> {
-
-        override fun transform(data: ItemData, component: ItemSundry) {
-            val itemMeta = RefItemMeta.of(RefItemMeta.META_ITEM)
-            // HideFlags
-            val flags = component.hideFlags?.toTypedArray()
-            if (flags != null) itemMeta.handle.addItemFlags(*flags)
-            // BukkitAttributes
-            component.bukkitAttributes?.forEach { (key, value) ->
-                value.forEach { itemMeta.handle.addAttributeModifier(key, it) }
-            }
-            // Merge
-            data.tag = itemMeta.applyToTag(data.tag)
-            // CustomModelData (1.14+)
-            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                data.write(ItemSheet.CUSTOM_MODEL_DATA, component.customModelData?.let { NbtInt(it) })
-            }
-        }
-
-        override fun detransform(data: ItemData): ItemSundry = ItemSundry().apply {
-            val itemMeta = RefItemMeta.of(RefItemMeta.META_ITEM, data.tag)
-            // HideFlags
-            val hideFlags = itemMeta.handle.itemFlags
-            if (hideFlags.isNotEmpty()) {
-                addHideFlags(*hideFlags.toTypedArray())
-            }
-            // BukkitAttributes
-            val bukkitAttributes = itemMeta.handle.attributeModifiers
-            if (bukkitAttributes != null && !bukkitAttributes.isEmpty) {
-                bukkitAttributes.forEach { key, value -> addAttributeModifiers(key, value) }
-            }
-            // CustomModelData (1.14+)
-            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
-                data.read<NbtInt>(ItemSheet.CUSTOM_MODEL_DATA) {
-                    customModelData = it.content
-                }
-            }
-        }
-
-    }
+//    companion object : ItemTransformer<ItemSundry> {
+//
+//        override fun transform(data: ItemData, component: ItemSundry) {
+//            val itemMeta = RefItemMeta.of(RefItemMeta.META_ITEM)
+//            // HideFlags
+//            val flags = component.hideFlags?.toTypedArray()
+//            if (flags != null) itemMeta.handle.addItemFlags(*flags)
+//            // BukkitAttributes
+//            component.bukkitAttributes?.forEach { (key, value) ->
+//                value.forEach { itemMeta.handle.addAttributeModifier(key, it) }
+//            }
+//            // Merge
+//            data.tag = itemMeta.applyToTag(data.tag)
+//            // CustomModelData (1.14+)
+//            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
+//                data.write(ItemSheet.CUSTOM_MODEL_DATA, component.customModelData?.let { NbtInt(it) })
+//            }
+//        }
+//
+//        override fun detransform(data: ItemData): ItemSundry = ItemSundry().apply {
+//            val itemMeta = RefItemMeta.of(RefItemMeta.META_ITEM, data.tag)
+//            // HideFlags
+//            val hideFlags = itemMeta.handle.itemFlags
+//            if (hideFlags.isNotEmpty()) {
+//                addHideFlags(*hideFlags.toTypedArray())
+//            }
+//            // BukkitAttributes
+//            val bukkitAttributes = itemMeta.handle.attributeModifiers
+//            if (bukkitAttributes != null && !bukkitAttributes.isEmpty) {
+//                bukkitAttributes.forEach { key, value -> addAttributeModifiers(key, value) }
+//            }
+//            // CustomModelData (1.14+)
+//            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_14)) {
+//                data.read<NbtInt>(ItemSheet.CUSTOM_MODEL_DATA) {
+//                    customModelData = it.content
+//                }
+//            }
+//        }
+//
+//    }
 
 }
