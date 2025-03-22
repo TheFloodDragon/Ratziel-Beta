@@ -1,7 +1,6 @@
-package cn.fd.ratziel.module.item.internal
+package cn.fd.ratziel.module.item.impl
 
-import cn.fd.ratziel.module.item.impl.SimpleNode
-import cn.fd.ratziel.module.item.internal.ItemSheet.Mapper.mappings
+import cn.fd.ratziel.module.item.impl.ItemSheet.Mapper.mappings
 import kotlinx.serialization.json.*
 import taboolib.common.LifeCycle
 import taboolib.common.io.runningResources
@@ -49,7 +48,7 @@ object ItemSheet {
         fun initialize(path: String) {
             // Read from resources
             val bytes = runningResources[path] ?: throw IllegalStateException("File not found: $path!")
-            val json = Json.parseToJsonElement(bytes.toString(Charsets.UTF_8))
+            val json = Json.Default.parseToJsonElement(bytes.toString(Charsets.UTF_8))
             // Analyze to map
             mappings = buildMap {
                 for ((id, verMap) in json.jsonObject) {

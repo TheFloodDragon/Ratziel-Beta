@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.builder
+package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.module.item.api.builder.SectionTagResolver
 import taboolib.common.LifeCycle

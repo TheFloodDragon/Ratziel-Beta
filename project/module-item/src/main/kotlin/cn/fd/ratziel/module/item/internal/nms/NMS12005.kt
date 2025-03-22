@@ -210,7 +210,7 @@ private object DataDynamicOps : DynamicOps<NbtTag> {
         } else if (data2 !is NbtString) {
             return DataResult.error({ "key is not a string: $data2" }, data1)
         } else {
-            val newMap = (data1 as? NbtCompound)?.clone() ?: NbtCompound()
+            val newMap = data1.clone()
             newMap[data2.content] = data3
             return DataResult.success(newMap)
         }

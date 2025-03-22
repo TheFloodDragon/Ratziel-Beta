@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
 
-package cn.fd.ratziel.module.item.internal.component.serializers
+package cn.fd.ratziel.module.item.impl.serialization.serializers
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer

@@ -5,7 +5,6 @@ import cn.fd.ratziel.module.nbt.NBTHelper
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
 import taboolib.library.reflex.ClassConstructor
-import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass

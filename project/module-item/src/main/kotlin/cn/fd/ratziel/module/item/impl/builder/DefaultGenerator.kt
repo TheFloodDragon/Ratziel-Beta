@@ -1,13 +1,13 @@
-package cn.fd.ratziel.module.item.internal.builder
+package cn.fd.ratziel.module.item.impl.builder
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.ContextualSerializer
 import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.core.util.digest
-import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.RatzielItem
@@ -17,8 +17,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.util.MetaMatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.future.asCompletableFuture
@@ -55,21 +53,26 @@ class DefaultGenerator(
     fun buildAsync(data: ItemData, context: ArgumentContext): CompletableFuture<NeoItem> {
         // 生成物品唯一标识符
         val identifier = SimpleIdentifier(origin.name)
-
-        // 呼出开始生成的事件
         val element = origin.property
-        ItemGenerateEvent.Pre(identifier, this, element, context).call()
-
         // 处理最终结果 (异步)
         return ItemElement.scope.async {
+            // 呼出开始生成的事件
+            ItemGenerateEvent.Pre(identifier, this@DefaultGenerator, context, element, data).call()
 
             // 确定最基础的
             selectBasic(element, data)
 
             // 生成任务列表
-            val tasks = ItemRegistry.registry.map { createTask(this@async, it, element, context) }
+            val tasks = ItemRegistry.registry.map {
+                async {
+                    val tag = runTask(it, element, context)
+                    val event = ItemGenerateEvent.DataGenerate(identifier, this@DefaultGenerator, context, it.type, tag)
+                    event.call()
+                    event.generatedTag
+                }
+            }
 
-            // 等待所有任务完成, 后合并数据
+            // 等待所有任务完成, 然后合并数据
             for (tag in tasks.awaitAll()) {
                 if (tag != null && tag is NbtCompound) {
                     data.tag.merge(tag, false)
@@ -78,24 +81,23 @@ class DefaultGenerator(
 
             // 合成最终结果
             val version = origin.property.toString().digest()
-            val item = RatzielItem.of(RatzielItem.Info(identifier, version), data)
+            val result = RatzielItem.of(RatzielItem.Info(identifier, version), data)
 
             // 呼出生成结束的事件
-            val event = ItemGenerateEvent.Post(item.id, this@DefaultGenerator, item, context)
+            val event = ItemGenerateEvent.Post(result.id, this@DefaultGenerator, context, result)
             event.call()
             event.item // 返回最终结果
         }.asCompletableFuture()
     }
 
     /**
-     * 创建任务
+     * 执行任务
      */
-    fun createTask(
-        scope: CoroutineScope,
+    fun runTask(
         integrated: ItemRegistry.Integrated<*>,
         element: JsonElement,
         context: ArgumentContext
-    ): Deferred<NbtTag?> = scope.async {
+    ): NbtTag? {
         // 获取序列化器
         @Suppress("UNCHECKED_CAST")
         val originSerializer = (integrated as ItemRegistry.Integrated<Any>).serializer
@@ -107,29 +109,33 @@ class DefaultGenerator(
         } catch (ex: Exception) {
             severe("Failed to deserialize element by '$serializer!'! Source element: $element")
             ex.printStackTrace()
-            return@async null
+            return null
         }
         // 第二步: 编码成物品数据
         try {
             // 编码
-            return@async ItemElement.nbt.encodeToNbtTag(serializer, component)
+            return ItemElement.nbt.encodeToNbtTag(serializer, component)
         } catch (ex: Exception) {
             severe("Failed to transform component by '$serializer'! Source component: $component")
             ex.printStackTrace()
-            return@async null
+            return null
         }
     }
 
-    /**
-     * 确定材料类型
-     */
-    fun selectBasic(element: JsonElement, data: ItemData) {
-        // 材料设置
-        val name = ((element as? JsonObject)?.getBy(materialNames) as? JsonPrimitive)?.contentOrNull
-        if (name != null) data.material = MetaMatcher.matchMaterial(name)
-    }
+    companion object {
 
-    @JvmField
-    val materialNames = listOf("material", "mat", "materials", "mats")
+        @JvmStatic
+        private val materialNames = listOf("material", "mat", "materials", "mats")
+
+        /**
+         * 确定材料类型
+         */
+        private fun selectBasic(element: JsonElement, data: ItemData) {
+            // 材料设置
+            val name = ((element as? JsonObject)?.getBy(materialNames) as? JsonPrimitive)?.contentOrNull
+            if (name != null) data.material = MetaMatcher.matchMaterial(name)
+        }
+
+    }
 
 }

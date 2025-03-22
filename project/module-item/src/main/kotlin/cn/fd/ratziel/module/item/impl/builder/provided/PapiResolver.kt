@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.builder.provided
+package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.platform.bukkit.util.player
 import cn.fd.ratziel.core.function.ArgumentContext

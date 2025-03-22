@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package cn.fd.ratziel.module.item.internal.action.provided
+package cn.fd.ratziel.module.item.impl.action.provided
 
 import cn.fd.ratziel.module.item.RatzielItem
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent

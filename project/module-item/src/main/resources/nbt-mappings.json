@@ -1,14 +1,14 @@
 {
   "ItemDisplay.name": {
-    "0": "display.Name",
+    "0": "Name",
     "12005": "custom_name"
   },
   "ItemDisplay.localizedName": {
-    "0": "display.LocName",
+    "0": "LocName",
     "12005": "item_name"
   },
   "ItemDisplay.lore": {
-    "0": "display.Lore",
+    "0": "Lore",
     "12005": "lore"
   },
   "ItemDurability.maxDurability": {

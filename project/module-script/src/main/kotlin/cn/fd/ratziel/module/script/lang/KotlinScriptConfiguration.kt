@@ -6,7 +6,6 @@ import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvmhost.jsr223.configureProvidedPropertiesFromJsr223Context
 import kotlin.script.experimental.jvmhost.jsr223.importAllBindings
 import kotlin.script.experimental.jvmhost.jsr223.jsr223
-import kotlin.script.experimental.util.PropertiesCollection.Builder.invoke
 
 /**
  * KotlinScriptConfiguration

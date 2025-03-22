@@ -1,11 +1,11 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 @file:Suppress("DEPRECATION", "SpellCheckingInspection")
 
-package cn.fd.ratziel.module.item.internal.component
+package cn.fd.ratziel.module.item.impl.component
 
-import cn.fd.ratziel.module.item.internal.component.serializers.AttributeModifierSerializer
-import cn.fd.ratziel.module.item.internal.component.serializers.AttributeSerializer
-import cn.fd.ratziel.module.item.internal.component.serializers.HideFlagSerializer
+import cn.fd.ratziel.module.item.impl.serialization.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.module.item.impl.serialization.serializers.AttributeSerializer
+import cn.fd.ratziel.module.item.impl.serialization.serializers.HideFlagSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames

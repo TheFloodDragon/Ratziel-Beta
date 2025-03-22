@@ -16,7 +16,7 @@ import java.util.*
  * @author TheFloodDragon
  * @since 2023/10/5 14:45
  */
-class EnhancedListSerializer<T : Any>(serializer: KSerializer<T>) : JsonTransformingSerializer<List<T>>(ListSerializer(serializer)) {
+class EnhancedListSerializer<T>(serializer: KSerializer<T>) : JsonTransformingSerializer<List<T>>(ListSerializer(serializer)) {
 
     /**
      * 换行符

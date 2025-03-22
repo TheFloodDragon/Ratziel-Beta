@@ -5,17 +5,19 @@ import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
+import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
+import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.internal.builder.SectionTransforming
-import cn.fd.ratziel.module.item.internal.builder.DefaultGenerator
+import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
+import cn.fd.ratziel.module.item.impl.component.HideFlag
+import cn.fd.ratziel.module.item.impl.component.ItemDisplay
+import cn.fd.ratziel.module.item.impl.component.ItemDurability
+import cn.fd.ratziel.module.item.impl.serialization.SectionTransforming
+import cn.fd.ratziel.module.item.impl.serialization.serializers.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
-import cn.fd.ratziel.module.item.internal.component.HideFlag
-import cn.fd.ratziel.module.item.internal.component.ItemDisplay
-import cn.fd.ratziel.module.item.internal.component.ItemDurability
-import cn.fd.ratziel.module.item.internal.component.serializers.*
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.nbt.NBTSerializer
 import kotlinx.coroutines.CoroutineName
@@ -23,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.serializer
 import org.bukkit.attribute.Attribute
@@ -65,6 +68,8 @@ object ItemElement : ElementHandler {
      */
     val json = Json(baseJson) {
         serializersModule += SerializersModule {
+            // Basic Serializers
+            contextual(EnhancedListSerializer(MessageComponentSerializer))
             // Common Serializers
             contextual(NbtTag::class, NBTSerializer)
             contextual(ItemMaterial::class, ItemMaterialSerializer)

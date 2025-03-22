@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.builder
+package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.core.function.ArgumentContext

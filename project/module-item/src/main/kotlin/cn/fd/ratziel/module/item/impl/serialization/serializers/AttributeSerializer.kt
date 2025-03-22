@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.component.serializers
+package cn.fd.ratziel.module.item.impl.serialization.serializers
 
 import cn.fd.ratziel.module.item.util.MetaMatcher
 import kotlinx.serialization.KSerializer

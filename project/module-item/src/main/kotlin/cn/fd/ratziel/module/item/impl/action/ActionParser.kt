@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.action
+package cn.fd.ratziel.module.item.impl.action
 
 import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
