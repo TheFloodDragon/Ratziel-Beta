@@ -1,0 +1,24 @@
+package cn.fd.ratziel.module.script.lang
+
+import cn.fd.ratziel.module.script.api.ScriptContent
+import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.impl.SimpleScriptContent
+import taboolib.module.kether.KetherShell
+import taboolib.module.kether.ScriptOptions
+
+/**
+ * KetherExecutor
+ *
+ * @author TheFloodDragon
+ * @since 2024/7/14 21:40
+ */
+object KetherExecutor : ScriptExecutor {
+
+    override fun build(script: String) = SimpleScriptContent(script, this)
+
+    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
+        return KetherShell.eval(script.content, ScriptOptions.new { vars(environment.bindings) })
+    }
+
+}

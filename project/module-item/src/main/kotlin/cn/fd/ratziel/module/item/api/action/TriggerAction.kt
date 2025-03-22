@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api.action
 
-import cn.fd.ratziel.function.ArgumentContext
+import cn.fd.ratziel.core.function.ArgumentContext
 
 /**
  * TriggerAction - 由触发器触发的动作

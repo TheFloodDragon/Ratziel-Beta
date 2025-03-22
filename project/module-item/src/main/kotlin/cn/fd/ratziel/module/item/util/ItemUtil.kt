@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.item.util
 
+import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.internal.command.inferEquipmentSlot
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
-import cn.altawk.nbt.tag.NbtCompound
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import taboolib.platform.util.isAir

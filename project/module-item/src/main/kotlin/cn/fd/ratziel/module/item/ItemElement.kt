@@ -9,8 +9,8 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.builder.SectionTransforming
-import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
+import cn.fd.ratziel.module.item.internal.builder.SectionTransforming
+import cn.fd.ratziel.module.item.internal.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.component.HideFlag
 import cn.fd.ratziel.module.item.internal.component.ItemDisplay

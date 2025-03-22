@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.serialization
 
-import cn.fd.ratziel.function.ArgumentContext
+import cn.fd.ratziel.core.function.ArgumentContext
 import kotlinx.serialization.KSerializer
 
 /**

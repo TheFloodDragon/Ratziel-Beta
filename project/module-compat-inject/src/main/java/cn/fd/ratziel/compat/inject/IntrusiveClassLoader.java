@@ -3,11 +3,6 @@ package cn.fd.ratziel.compat.inject;
 import cn.fd.ratziel.core.util.ClassProvider;
 import taboolib.common.classloader.IsolatedClassLoader;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-
 /**
  * IntrusiveClassLoader
  *
