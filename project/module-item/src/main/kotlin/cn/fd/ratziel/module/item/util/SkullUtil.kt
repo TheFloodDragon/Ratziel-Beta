@@ -1,8 +1,9 @@
 package cn.fd.ratziel.module.item.util
 
+import cn.altawk.nbt.NbtEncoder
+import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.BukkitItemStack
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
-import cn.altawk.nbt.tag.NbtCompound
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -44,7 +45,7 @@ object SkullUtil {
      * 生成纯头颅数据的 [BukkitItemStack]
      */
     fun generateSkullItem(value: String): BukkitItemStack {
-        return BukkitSkull.applySkull(value) { null }
+        return BukkitSkull.applySkull(value)
     }
 
     /**
@@ -76,7 +77,9 @@ class SkullData(val item: BukkitItemStack) {
         }
 
         override fun serialize(encoder: Encoder, value: SkullData) {
-            encoder.encodeString(SkullUtil.getSkullValue(value.meta))
+            if (encoder is NbtEncoder) {
+                encoder.encodeNbtTag(value.tag)
+            } else encoder.encodeString(SkullUtil.getSkullValue(value.meta))
         }
 
     }

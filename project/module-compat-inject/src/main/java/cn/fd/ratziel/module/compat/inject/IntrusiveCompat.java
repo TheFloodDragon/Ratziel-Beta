@@ -1,7 +1,6 @@
-package cn.fd.ratziel.compat.inject;
+package cn.fd.ratziel.module.compat.inject;
 
 import taboolib.common.PrimitiveSettings;
-import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.library.reflex.UnsafeAccess;
 
 import java.lang.invoke.MethodHandle;

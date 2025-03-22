@@ -33,10 +33,10 @@ data class SimpleData(
     /**
      * 合并数据
      */
-    override fun merge(other: ItemData) {
+    override fun merge(other: ItemData, replace: Boolean) {
         if (other.material != ItemMaterial.Companion.EMPTY) this.material = other.material
         if (other.amount >= 1) this.amount = other.amount
-        this.tag.merge(other.tag)
+        this.tag.merge(other.tag, replace)
     }
 
 }

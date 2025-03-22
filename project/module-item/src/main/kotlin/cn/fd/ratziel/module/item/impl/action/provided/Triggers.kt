@@ -4,9 +4,9 @@ import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SimpleArgumentContext
 import cn.fd.ratziel.module.item.api.action.TriggerType
-import cn.fd.ratziel.module.item.internal.action.ActionManager
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
+import cn.fd.ratziel.module.item.impl.action.ActionManager
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 
 /**
  * Triggers
@@ -49,7 +49,8 @@ enum class Triggers(
 
     fun trigger(identifier: Identifier, environment: ScriptEnvironment) = trigger(identifier, SimpleArgumentContext(environment))
 
-    fun trigger(identifier: Identifier, envAction: ScriptEnvironment.() -> Unit) = trigger(identifier, SimpleScriptEnv()
-        .also { envAction(it) })
+    fun trigger(identifier: Identifier, envAction: ScriptEnvironment.() -> Unit) = trigger(
+        identifier, SimpleScriptEnv()
+            .also { envAction(it) })
 
 }

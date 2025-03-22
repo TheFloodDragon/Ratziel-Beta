@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.NMSItemStack
-import cn.fd.ratziel.module.item.impl.ItemSheet
 import cn.fd.ratziel.module.nbt.NBTHelper
 import cn.fd.ratziel.module.nbt.NBTTagCompound
 import cn.fd.ratziel.module.nbt.NBTTagCompound12
@@ -130,14 +129,14 @@ class NMSItemImpl1 : NMSItem() {
     override fun getCustomTag(nmsItem: Any): NbtCompound? {
         val nmsTag = nmsTagField.get(nmsItem) ?: return null
         @Suppress("UNCHECKED_CAST") val map = srcMapField.get(nmsTag) as? MutableMap<String, Any> ?: return null
-        val customTag = map[ItemSheet.CUSTOM_DATA.name] as? NBTTagCompound12 ?: return null
+        val customTag = map["custom_data"] as? NBTTagCompound12 ?: return null
         return NBTHelper.fromNms(customTag) as NbtCompound
     }
 
     override fun setCustomTag(nmsItem: Any, tag: NbtCompound) {
         val nmsTag = nmsTagField.get(nmsItem) ?: return
         @Suppress("UNCHECKED_CAST") val map = srcMapField.get(nmsTag) as? MutableMap<String, Any> ?: return
-        map[ItemSheet.CUSTOM_DATA.name] = NBTHelper.toNms(tag)
+        map["custom_data"] = NBTHelper.toNms(tag)
     }
 
     override fun copyItem(nmsItem: Any): Any {

@@ -21,8 +21,6 @@ object ItemSheet {
 
     val mappingsReversed: Map<String, Pair<String, String>> get() = Mapper.mappingsReversed
 
-    val CUSTOM_DATA = SimpleNode("custom_data")
-
     @Awake(LifeCycle.LOAD)
     fun init() {
         Mapper.initialize(path)

@@ -2,6 +2,11 @@
 
 package cn.fd.ratziel.module.item.impl.component
 
+import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.api.builder.DataProcessor
+import cn.fd.ratziel.module.item.impl.BukkitMaterial
+import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.util.SkullData
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -22,27 +27,15 @@ data class ItemSkull(
     var skullTexture: SkullData? = null
 ) {
 
-//    companion object : ItemTransformer<ItemSkull> {
-//
-//        @JvmField
-//        val PLAYER_HEAD: ItemMaterial = SimpleMaterial(BukkitMaterial.PLAYER_HEAD)
-//
-//        override fun transform(data: ItemData, component: ItemSkull) {
-//            // 当源数据的材料不为空并且是头颅时
-//            if (!data.material.isEmpty() && data.material != PLAYER_HEAD) return
-//            // 转换头颅数据
-//            val skullData = component.skullTexture ?: return
-//            // 重新设置材料
-//            data.material = PLAYER_HEAD
-//            // 应用数据标签
-//            data.tag.merge(skullData.tag, true)
-//        }
-//
-//        override fun detransform(data: ItemData): ItemSkull {
-//            val meta = RefItemMeta.new(RefItemMeta.META_SKULL, data.tag)
-//            return ItemSkull(SkullUtil.fetchSkullData(meta))
-//        }
-//
-//    }
+    companion object : DataProcessor {
+
+        @JvmField
+        val PLAYER_HEAD: ItemMaterial = SimpleMaterial(BukkitMaterial.PLAYER_HEAD)
+
+        override fun process(data: ItemData) = data.apply {
+            if (tag.isNotEmpty()) material = PLAYER_HEAD
+        }
+
+    }
 
 }

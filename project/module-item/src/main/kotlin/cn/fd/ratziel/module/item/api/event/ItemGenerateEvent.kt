@@ -59,9 +59,9 @@ open class ItemGenerateEvent(
          */
         val componentType: Class<*>,
         /**
-         * 生成的 [NbtTag]
+         * 生成的 [ItemData]
          */
-        var generatedTag: NbtTag?
+        var generated: ItemData?
     ) : ItemGenerateEvent(identifier, generator, context)
 
     /**

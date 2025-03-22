@@ -1,7 +1,8 @@
 package cn.fd.ratziel.module.item
 
+import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import kotlinx.serialization.KSerializer
-import java.util.concurrent.ConcurrentSkipListSet
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * ItemRegistry - 物品注册表
@@ -12,17 +13,22 @@ import java.util.concurrent.ConcurrentSkipListSet
 object ItemRegistry {
 
     /**
-     * 组件对象类型 - 组件集成构建器
+     * 组件集成注册表
      */
-    val registry: MutableCollection<Integrated<*>> = ConcurrentSkipListSet(compareBy { it.priority })
+    val registry: MutableCollection<Integrated<*>> = CopyOnWriteArraySet()
 
     /**
      * 注册组件
      *
      * @param serializer 组件序列化器
      */
-    fun <T> register(type: Class<T>, serializer: KSerializer<T>, priority: Int = 0) {
-        val integrated = Integrated(type, serializer, priority)
+    fun <T> register(
+        type: Class<T>,
+        serializer: KSerializer<T>,
+        processor: DataProcessor = DataProcessor.NoProcess,
+        priority: Int = 0
+    ) {
+        val integrated = Integrated(type, serializer, processor, priority)
         registry.add(integrated)
     }
 
@@ -44,7 +50,8 @@ object ItemRegistry {
     class Integrated<T>(
         val type: Class<T>,
         val serializer: KSerializer<T>,
-        val priority: Int = 0
+        val processor: DataProcessor,
+        val priority: Int,
     )
 
 }

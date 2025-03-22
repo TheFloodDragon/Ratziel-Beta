@@ -4,11 +4,11 @@ import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtString
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.SimpleIdentifier
+import cn.fd.ratziel.module.item.RatzielItem.Companion.isRatzielItem
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
-import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
 import cn.fd.ratziel.module.item.impl.SimpleNode
-import cn.fd.ratziel.module.item.impl.ItemSheet
+import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.handle
 import cn.fd.ratziel.module.item.util.read
@@ -51,7 +51,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
          * 物品数据节点
          */
         @JvmField
-        val RATZIEL_DATA_NODE = SimpleNode("Ratziel", ItemSheet.CUSTOM_DATA)
+        val RATZIEL_DATA_NODE = SimpleNode("Ratziel", SimpleNode("custom_data"))
 
         /**
          * @return [RatzielItem]
@@ -163,7 +163,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
             @JvmStatic
             fun write(info: Info, data: ItemData) = data.handle(INTERNAL_NODE) {
                 // 写入类型
-                put(INFO_TYPE.name, NbtString(info.type.toString()))
+                put(INFO_TYPE.name, NbtString(info.type.content))
                 // 写入版本信息
                 put(INFO_HASH.name, NbtString(info.hash))
             }

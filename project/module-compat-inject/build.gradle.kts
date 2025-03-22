@@ -1,1 +1,3 @@
-dependencies {}
+dependencies {
+    compileOnly(projects.project.moduleCompatCore)
+}

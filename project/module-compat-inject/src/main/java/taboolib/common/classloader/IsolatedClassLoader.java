@@ -28,7 +28,7 @@ public class IsolatedClassLoader extends URLClassLoader {
             delegateClass.getMethod("init").invoke(delegateObject);
             // Start - Support for IntrusiveClassLoader
             // Load Injector
-            Class<?> injectClass = Class.forName("cn.fd.ratziel.compat.inject.IntrusiveCompat", false, INSTANCE);
+            Class<?> injectClass = Class.forName("cn.fd.ratziel.module.compat.inject.IntrusiveCompat", false, INSTANCE);
             // Inject
             java.lang.reflect.Method injectMethod = injectClass.getDeclaredMethod("inject");
             java.lang.reflect.Constructor<?> injectConstructor = injectClass.getDeclaredConstructor(ClassLoader.class, ClassLoader.class);

@@ -11,10 +11,12 @@ import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.component.HideFlag
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import cn.fd.ratziel.module.item.impl.component.ItemDurability
+import cn.fd.ratziel.module.item.impl.component.ItemSkull
 import cn.fd.ratziel.module.item.impl.serialization.SectionTransforming
 import cn.fd.ratziel.module.item.impl.serialization.serializers.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
@@ -90,10 +92,9 @@ object ItemElement : ElementHandler {
 
     init {
         // 注册默认组件
-        register<ItemDisplay>()
+        register<ItemDisplay>(ItemDisplay.Companion)
         register<ItemDurability>()
-//        register<ItemSundry>()
-//        register<ItemSkull>()
+        register<ItemSkull>(ItemSkull.Companion)
     }
 
     override fun handle(element: Element) {
@@ -109,11 +110,6 @@ object ItemElement : ElementHandler {
         val bi = ri.bukkitStack
         println(bi)
 
-        println("---------------")
-        val durability = ItemDurability(1000, 13, false)
-        val tag = nbt.encodeToNbtTag(ItemDurability.serializer(), durability)
-        println(tag)
-
         // 注册
         ItemManager.registry[element.name] = generator
     }
@@ -124,8 +120,8 @@ object ItemElement : ElementHandler {
         ItemManager.registry.clear()
     }
 
-    private inline fun <reified T : Any> register() {
-        ItemRegistry.register(T::class.java, SectionTransforming(serializer<T>()))
+    private inline fun <reified T : Any> register(processor: DataProcessor = DataProcessor.NoProcess) {
+        ItemRegistry.register(T::class.java, SectionTransforming(serializer<T>()), processor)
     }
 
 }

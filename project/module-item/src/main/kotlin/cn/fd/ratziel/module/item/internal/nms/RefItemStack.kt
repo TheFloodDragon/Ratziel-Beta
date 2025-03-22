@@ -112,13 +112,13 @@ class RefItemStack private constructor(
     /**
      * 合并数据
      */
-    override fun merge(other: ItemData) {
+    override fun merge(other: ItemData, replcae: Boolean) {
         if (other.material != ItemMaterial.EMPTY) this.material = other.material
         if (other.amount >= 1) this.amount = other.amount
         if (other is RefItemStack) {
             NMSItem.INSTANCE.mergeTag(this.nmsStack ?: return, other.nmsStack ?: return)
         } else {
-            this.tag = this.tag.merge(other.tag)
+            this.tag = this.tag.merge(other.tag, replcae)
         }
     }
 

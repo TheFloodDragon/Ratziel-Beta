@@ -5,11 +5,12 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
-import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
+import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.builder.DataProcessor
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
-import taboolib.common.platform.function.registerBukkitListener
 import taboolib.module.nms.MinecraftVersion
 
 /**
@@ -34,7 +35,7 @@ data class ItemDisplay(
      * 物品描述
      */
     @JsonNames("lores")
-    var lore: List<MessageComponent>? = null,
+    var lore: @Contextual List<MessageComponent>? = null,
 ) {
 
     /**
@@ -58,16 +59,12 @@ data class ItemDisplay(
         this.lore = lore.map { Message.buildMessage(it) }
     }
 
-    companion object {
+    companion object : DataProcessor {
 
-        init {
+        override fun process(data: ItemData) = data.apply {
             // 低版本支持 (1.20.5-)
-            if (MinecraftVersion.isLower(12005)) {
-                registerBukkitListener(ItemGenerateEvent.DataGenerate::class.java) { event ->
-                    if (event.componentType != ItemDisplay::class.java) return@registerBukkitListener
-                    val originTag = event.generatedTag ?: return@registerBukkitListener
-                    event.generatedTag = NbtCompound { put("display", originTag) }
-                }
+            if (MinecraftVersion.versionId < 12005) {
+                tag = NbtCompound { put("display", tag) }
             }
         }
 

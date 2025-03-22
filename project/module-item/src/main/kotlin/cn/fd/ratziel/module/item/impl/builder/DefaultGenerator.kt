@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
@@ -63,19 +62,19 @@ class DefaultGenerator(
             selectBasic(element, data)
 
             // 生成任务列表
-            val tasks = ItemRegistry.registry.map {
+            val tasks = ItemRegistry.registry.sortedBy { it.priority }.asReversed().map {
                 async {
-                    val tag = runTask(it, element, context)
+                    val tag = runTask(it, element, context, data)
                     val event = ItemGenerateEvent.DataGenerate(identifier, this@DefaultGenerator, context, it.type, tag)
                     event.call()
-                    event.generatedTag
+                    event.generated
                 }
             }
 
             // 等待所有任务完成, 然后合并数据
-            for (tag in tasks.awaitAll()) {
-                if (tag != null && tag is NbtCompound) {
-                    data.tag.merge(tag, false)
+            for (generated in tasks.awaitAll()) {
+                if (generated != null) {
+                    data.merge(generated, true)
                 }
             }
 
@@ -96,8 +95,9 @@ class DefaultGenerator(
     fun runTask(
         integrated: ItemRegistry.Integrated<*>,
         element: JsonElement,
-        context: ArgumentContext
-    ): NbtTag? {
+        context: ArgumentContext,
+        refer: ItemData
+    ): ItemData? {
         // 获取序列化器
         @Suppress("UNCHECKED_CAST")
         val originSerializer = (integrated as ItemRegistry.Integrated<Any>).serializer
@@ -114,12 +114,16 @@ class DefaultGenerator(
         // 第二步: 编码成物品数据
         try {
             // 编码
-            return ItemElement.nbt.encodeToNbtTag(serializer, component)
+            val tag = ItemElement.nbt.encodeToNbtTag(serializer, component)
+            if (tag is NbtCompound) {
+                // 处理结果数据
+                return integrated.processor.process(SimpleData(refer.material, tag, refer.amount))
+            }
         } catch (ex: Exception) {
             severe("Failed to transform component by '$serializer'! Source component: $component")
             ex.printStackTrace()
-            return null
         }
+        return null
     }
 
     companion object {

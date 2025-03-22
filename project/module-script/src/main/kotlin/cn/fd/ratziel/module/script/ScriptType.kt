@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.lang.JavaScriptExecutor
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * ScriptTypes - 脚本类型
@@ -34,23 +34,27 @@ interface ScriptType {
 
     companion object {
 
-        /** JavaScript **/
-        val JAVASCRIPT = register(JavaScriptExecutor, "js", "javascript")
-
-        /** Kether **/
-        val KETHER = register(null, "kether", "ke", "ks")
-
-        /** Jexl **/
-        val JEXL = register(null, "jexl", "jexl3")
-
-        /** Kotlin Scripting **/
-        val KOTLIN_SCRIPTING = register(null, "kotlin", "kts")
-
         /**
          * 脚本类型注册表
          */
         @JvmStatic
-        val registry = CopyOnWriteArrayList<ScriptType>()
+        val registry: MutableSet<ScriptType> = CopyOnWriteArraySet()
+
+        /** JavaScript **/
+        @JvmStatic
+        val JAVASCRIPT = register(JavaScriptExecutor, "js", "javascript")
+
+        /** Kether **/
+        @JvmStatic
+        val KETHER = register(null, "kether", "ke", "ks")
+
+        /** Jexl **/
+        @JvmStatic
+        val JEXL = register(null, "jexl", "jexl3")
+
+        /** Kotlin Scripting **/
+        @JvmStatic
+        val KOTLIN_SCRIPTING = register(null, "kotlin", "kts")
 
         /**
          * 匹配脚本类型
@@ -71,7 +75,7 @@ interface ScriptType {
                 override var executor = executor
                 override val alias = alias
                 override fun toString() = "ScriptType(enabled=${this.enabled}, executor=${this.executor}, alias=${this.alias.contentToString()})"
-            }.also { registry.add(it) }
+            }.also { this.registry.add(it) }
 
     }
 

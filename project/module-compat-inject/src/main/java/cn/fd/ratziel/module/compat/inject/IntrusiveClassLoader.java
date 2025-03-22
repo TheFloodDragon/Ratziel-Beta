@@ -1,6 +1,6 @@
-package cn.fd.ratziel.compat.inject;
+package cn.fd.ratziel.module.compat.inject;
 
-import cn.fd.ratziel.core.util.ClassProvider;
+import cn.fd.ratziel.module.compat.util.ClassProvider;
 import taboolib.common.classloader.IsolatedClassLoader;
 
 /**
