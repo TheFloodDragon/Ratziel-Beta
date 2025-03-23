@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item.impl.action
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.action.TriggerAction
 import cn.fd.ratziel.module.item.api.action.TriggerType
-import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.core.function.block.ExecutableBlock
 
 /**
  * ExecutableAction - 可执行的动作

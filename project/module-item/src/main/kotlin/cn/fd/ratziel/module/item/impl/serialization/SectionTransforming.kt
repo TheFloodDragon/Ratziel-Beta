@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.serialization
 
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.serialization.ContextualSerializer
+import cn.fd.ratziel.core.function.ContextualSerializer
 import cn.fd.ratziel.module.item.impl.builder.DefaultSectionResolver
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.encoding.Decoder

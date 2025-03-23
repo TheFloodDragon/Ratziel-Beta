@@ -3,7 +3,6 @@ package cn.fd.ratziel.common.message
 import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_END
 import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_START
-import cn.fd.ratziel.core.serialization.isJsonObject
 import cn.fd.ratziel.core.util.replaceNonEscaped
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
@@ -54,10 +53,11 @@ object Message {
      * 基本消息构建
      */
     @JvmStatic
-    fun buildMessage(source: String?, vararg tagResolver: TagResolver): Component = source?.let {
-        if (it.isJsonObject()) transformFromJson(it)
-        else parseAdventure(it, *tagResolver)
-    } ?: Component.empty()
+    fun buildMessage(source: String?, vararg tagResolver: TagResolver): Component {
+        val text = source ?: return Component.empty()
+        val parsed = parseAdventure(text, *tagResolver)
+        return parsed
+    }
 
     /**
      * Taboolib消息解析

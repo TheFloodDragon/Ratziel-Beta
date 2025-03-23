@@ -33,6 +33,6 @@ object Settings {
     /**
      * 配置项 - 是否启用文件监听
      */
-    val listenFiles get() = conf["Workspaces.listen"]?.toString()?.toBooleanStrictOrNull() ?: true
+    val listenFiles get() = conf["Workspaces.listen"]?.toString()?.toBooleanStrictOrNull() != false
 
 }

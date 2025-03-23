@@ -1,12 +1,12 @@
 package cn.fd.ratziel.module.script.block.provided
 
 import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.function.block.ExecutableBlock
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
-import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
@@ -31,7 +31,7 @@ class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
 
     object Parser : BlockParser {
 
-        const val MARK_TOGGLE = "\$"
+        const val MARK_TOGGLE = '\$'
 
         override fun parse(element: JsonElement): ScriptBlock? {
             return parseWith(element, matchExecutor(element))
@@ -56,7 +56,7 @@ class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
                 // 检查开头
                 if (!key.startsWith(MARK_TOGGLE, ignoreCase = true)) return@firstNotNullOfOrNull null
                 // 匹配类型
-                val type = ScriptType.Companion.match(key.drop(MARK_TOGGLE.length)) ?: return@firstNotNullOfOrNull null
+                val type = ScriptType.Companion.match(key.drop(1)) ?: return@firstNotNullOfOrNull null
                 // 获取脚本执行器
                 type.executor
             } ?: ScriptManager.default.executorOrThrow

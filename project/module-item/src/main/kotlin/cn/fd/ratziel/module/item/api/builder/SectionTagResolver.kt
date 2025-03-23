@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.core.function.SimpleArgumentContext
+import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.core.function.ArgumentContext
 
 /**
@@ -24,6 +24,6 @@ interface SectionTagResolver {
     /**
      * 解析元素 (不带参数)
      */
-    fun resolve(element: List<String>): String? = resolve(element, SimpleArgumentContext())
+    fun resolve(element: List<String>): String? = resolve(element, SimpleContext())
 
 }

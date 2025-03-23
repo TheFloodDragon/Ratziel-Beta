@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.block
 
+import cn.fd.ratziel.core.function.block.ExecutableBlock
 import kotlinx.serialization.json.JsonElement
 
 /**

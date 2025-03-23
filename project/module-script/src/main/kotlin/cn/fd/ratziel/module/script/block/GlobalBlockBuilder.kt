@@ -1,12 +1,12 @@
 package cn.fd.ratziel.module.script.block
 
 import cn.fd.ratziel.core.Priority
-import cn.fd.ratziel.module.script.block.provided.ConditionBlock
+import cn.fd.ratziel.core.function.block.ExecutableBlock
+import cn.fd.ratziel.module.script.block.provided.ConditionBlockParser
 import cn.fd.ratziel.module.script.block.provided.MultiLineBlock
 import cn.fd.ratziel.module.script.block.provided.PrimitiveBlock
 import cn.fd.ratziel.module.script.block.provided.ScriptBlock
 import kotlinx.serialization.json.JsonElement
-import java.util.*
 
 /**
  * GlobalBlockBuilder
@@ -19,14 +19,14 @@ object GlobalBlockBuilder : BlockParser {
     /**
      * 语句块解析器注册表
      */
-    val registry: MutableSet<Priority<BlockParser>> = TreeSet(compareBy { it.priority })
+    val registry: MutableList<Priority<BlockParser>> = ArrayList()
 
     /**
      * 构建语句块
      * 无法解析时抛出异常
      */
     override fun parse(element: JsonElement): ExecutableBlock {
-        for (p in registry) {
+        for (p in registry.sortedBy { it.priority }) {
             // 解析器
             val parser = p.value
             // 开始解析
@@ -57,7 +57,7 @@ object GlobalBlockBuilder : BlockParser {
     init {
         // 注册
         register(ScriptBlock.Parser, 10)
-        register(ConditionBlock.Parser, 20)
+        register(ConditionBlockParser, 20)
         register(MultiLineBlock.Parser, 50)
         register(PrimitiveBlock.Parser, 126)
     }

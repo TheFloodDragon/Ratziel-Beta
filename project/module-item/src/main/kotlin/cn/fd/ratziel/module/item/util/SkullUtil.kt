@@ -1,9 +1,8 @@
 package cn.fd.ratziel.module.item.util
 
-import cn.altawk.nbt.NbtEncoder
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.BukkitItemStack
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.internal.nms.RefItemMeta
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -65,7 +64,7 @@ class SkullData(val item: BukkitItemStack) {
     }
 
     val tag: NbtCompound by lazy {
-        RefItemStack.of(item).tag
+        RefItemMeta.of(RefItemMeta.META_SKULL).applyToTag(NbtCompound())
     }
 
     companion object : KSerializer<SkullData> {
@@ -77,9 +76,7 @@ class SkullData(val item: BukkitItemStack) {
         }
 
         override fun serialize(encoder: Encoder, value: SkullData) {
-            if (encoder is NbtEncoder) {
-                encoder.encodeNbtTag(value.tag)
-            } else encoder.encodeString(SkullUtil.getSkullValue(value.meta))
+            encoder.encodeString(SkullUtil.getSkullValue(value.meta))
         }
 
     }

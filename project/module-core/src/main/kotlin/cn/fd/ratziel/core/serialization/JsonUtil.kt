@@ -36,18 +36,6 @@ fun JsonObject.getBy(names: Iterable<String>): JsonElement? {
 }
 
 /**
- * 可变化
- */
-fun Map<String, JsonElement>.asMutable(): MutableJsonObject = if (this is MutableJsonObject) this else MutableJsonObject().also { it.putAll(this) }
-
-/**
- * 处理 [JsonObject]
- * @action 处理动作, 会接受原来的 [JsonObject]
- * @return 一个新的 [JsonObject]
- */
-inline fun JsonObject.handle(action: MutableJsonObject.(JsonObject) -> Unit): JsonObject = JsonObject(this.asMutable().also { action(it, this) })
-
-/**
  * 将 [JsonElement] 转为为纯原生对象形式
  * @see [JsonHelper.toBasic]
  */
@@ -63,7 +51,7 @@ inline fun JsonElement.mapPrimitives(action: Function<JsonPrimitive, JsonElement
  * 合并目标
  * @see [JsonHelper.merge]
  */
-inline fun JsonObject.merge(target: JsonObject, replace: Boolean = true): JsonObject = JsonHelper.merge(this.asMutable(), target, replace).asImmutable()
+inline fun JsonObject.merge(target: JsonObject, replace: Boolean = true): JsonObject = JsonHelper.merge(this, target, replace)
 
 /**
  * 简易的 [JsonObject] 检查

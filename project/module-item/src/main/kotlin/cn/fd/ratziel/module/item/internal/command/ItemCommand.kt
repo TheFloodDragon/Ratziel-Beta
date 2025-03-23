@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.internal.command
 
-import cn.fd.ratziel.core.function.SimpleArgumentContext
+import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import org.bukkit.entity.Player
@@ -60,7 +60,7 @@ object ItemCommand {
         // 获取物品生成器
         val generator = ItemManager.registry[id] ?: return CompletableFuture.completedFuture(null)
         // 上下文参数
-        val args = SimpleArgumentContext().apply { add(player) }
+        val args = SimpleContext().apply { add(player) }
         // 开始生成物品
         generator.build(args).thenAccept {
             // 将生成结果打包成 BukkitItemStack

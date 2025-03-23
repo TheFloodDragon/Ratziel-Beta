@@ -4,9 +4,9 @@ import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.api.ElementHandler
-import cn.fd.ratziel.core.function.SimpleArgumentContext
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
+import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.script.block.GlobalBlockBuilder
+import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import taboolib.common.LifeCycle
 
 /**
@@ -26,7 +26,7 @@ object ActionElement : ElementHandler {
         element.property.let { json ->
             val block = GlobalBlockBuilder.parse(json)
             println(block)
-            val result = block.execute(SimpleArgumentContext(SimpleScriptEnv()))
+            val result = block.execute(SimpleContext(SimpleScriptEnv()))
             println(result)
         }
     }

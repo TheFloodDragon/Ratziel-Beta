@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.core.function.SimpleArgumentContext
+import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.NeoItem
 import java.util.concurrent.CompletableFuture
@@ -17,7 +17,7 @@ interface ItemGenerator {
      * 构建物品
      * @return [CompletableFuture] - [NeoItem]
      */
-    fun build(): CompletableFuture<out NeoItem> = build(SimpleArgumentContext())
+    fun build(): CompletableFuture<out NeoItem> = build(SimpleContext())
 
     /**
      * 构建物品 (带参数)

@@ -27,19 +27,21 @@ object JsonHelper {
      * 合并目标
      * @param replace 是否替换原有的
      */
-    fun merge(source: MutableJsonObject, target: JsonObject, replace: Boolean = true): MutableJsonObject = source.also { map ->
-        target.forEach { (key, targetValue) ->
+    fun merge(source: JsonObject, target: JsonObject, replace: Boolean = true): JsonObject {
+        val map = source.toMutableMap()
+        for ((key, targetValue) in target) {
             // 获取自身的数据
             val ownValue = map[key]
             // 如果自身数据不存在, 或者允许替换, 则直接替换, 反则跳出循环
             map[key] = when (targetValue) {
                 // 目标值为 Compound 类型
-                is JsonObject -> (ownValue as? JsonObject)?.asMutable()
-                    ?.let { merge(it, targetValue, replace) }?.asImmutable() // 同类型合并
+                is JsonObject -> (ownValue as? JsonObject)
+                    ?.let { merge(it, targetValue, replace) } // 同类型合并
                 // 目标值为基础类型
                 else -> null
-            } ?: if (ownValue == null || replace) targetValue else return@forEach
+            } ?: if (ownValue == null || replace) targetValue else continue
         }
+        return JsonObject(map)
     }
 
     /**

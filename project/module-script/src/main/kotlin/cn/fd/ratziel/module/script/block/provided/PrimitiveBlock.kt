@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.script.block.provided
 
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.script.block.BlockParser
-import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.core.function.block.ExecutableBlock
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull

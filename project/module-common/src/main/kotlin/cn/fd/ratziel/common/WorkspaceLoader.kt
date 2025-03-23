@@ -39,7 +39,7 @@ object WorkspaceLoader {
         Settings.workspacePaths.forEach { path ->
             WorkspaceManager.initializeWorkspace(path, true)
         }
-    }.also { sender.sendLang("Workspace-Inited", WorkspaceManager.workspaces.size, it.inWholeMilliseconds) }
+    }.also { sender.sendLang("Workspace-Initiated", WorkspaceManager.workspaces.size, it.inWholeMilliseconds) }
 
     /**
      * 加载工作空间中的元素
@@ -70,7 +70,7 @@ object WorkspaceLoader {
             // 评估器开始评估
             evaluator.evaluate().thenAccept {
                 val time = loadTime.plus(it) // 计算最终时间 = 加载时间 + 评估时间
-                sender.sendLang("Workspace-Finished", evaluator.evaluatedElements.size, time.inWholeMilliseconds)
+                sender.sendLang("Workspace-Loaded", evaluator.evaluatedElements.size, time.inWholeMilliseconds)
                 WorkspaceLoadEvent.End().call() // 事件 - 结束加载
                 result.complete(time) // 完成最后任务
             }

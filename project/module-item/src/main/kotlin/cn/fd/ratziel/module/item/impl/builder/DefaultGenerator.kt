@@ -4,7 +4,7 @@ import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.serialization.ContextualSerializer
+import cn.fd.ratziel.core.function.ContextualSerializer
 import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.core.util.digest
 import cn.fd.ratziel.module.item.ItemElement

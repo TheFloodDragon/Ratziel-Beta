@@ -4,12 +4,12 @@ import cn.fd.ratziel.core.function.exception.ArgumentNotFoundException
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- * SimpleArgumentContext
+ * SimpleContext
  *
  * @author TheFloodDragon
  * @since 2024/6/28 16:19
  */
-open class SimpleArgumentContext(
+open class SimpleContext(
     val list: MutableList<Any>
 ) : ArgumentContext {
 

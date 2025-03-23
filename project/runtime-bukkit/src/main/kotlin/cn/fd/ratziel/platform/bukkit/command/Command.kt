@@ -35,17 +35,11 @@ object Command {
     val reload = subCommand {
         executeAsync<ProxyCommandSender> { sender, _, _ ->
             measureTimeMillis {
-                /**
-                 * 重载配置
-                 */
+                // 重载配置
                 Settings.conf.reload()
-                /**
-                 * 重载语言
-                 */
+                // 重载语言
                 Language.reload()
-                /**
-                 * 重载工作空间
-                 */
+                // 重载工作空间
                 WorkspaceLoader.reload(sender)
             }.let {
                 sender.sendLang("Plugin-Reloaded", it)
