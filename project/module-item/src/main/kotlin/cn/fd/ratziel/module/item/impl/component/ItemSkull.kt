@@ -34,8 +34,8 @@ data class ItemSkull(
 
         override fun process(data: ItemData) = data.apply {
             if (tag.isNotEmpty()) {
-                material = PLAYER_HEAD
-                tag = tag["head"]!! as NbtCompound // 释放
+                material = PLAYER_HEAD // 设置材质
+                tag = tag[ItemSkull::head.name]!! as NbtCompound // 内联释放
             }
         }
 
