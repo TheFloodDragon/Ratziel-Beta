@@ -1,8 +1,11 @@
 package cn.fd.ratziel.module.item.util
 
+import cn.altawk.nbt.NbtDecoder
+import cn.altawk.nbt.NbtEncoder
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.BukkitItemStack
 import cn.fd.ratziel.module.item.internal.nms.RefItemMeta
+import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -10,6 +13,7 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import org.bukkit.inventory.meta.SkullMeta
+import taboolib.library.xseries.XMaterial
 import taboolib.platform.util.BukkitSkull
 import java.util.concurrent.ConcurrentHashMap
 
@@ -54,6 +58,15 @@ object SkullUtil {
         return BukkitSkull.getSkullValue(skullMeta)
     }
 
+    /**
+     * 读取头颅数据
+     */
+    fun getSkullData(tag: NbtCompound): SkullData {
+        val item = RefItemStack.of(XMaterial.PLAYER_HEAD.parseItem()!!)
+        item.tag = tag
+        return SkullData(item.bukkitStack)
+    }
+
 }
 
 @Serializable(SkullData.Companion::class)
@@ -72,11 +85,17 @@ class SkullData(val item: BukkitItemStack) {
         override val descriptor = PrimitiveSerialDescriptor("item.SkullData", PrimitiveKind.STRING)
 
         override fun deserialize(decoder: Decoder): SkullData {
-            return SkullUtil.fetchSkullData(decoder.decodeString())
+            if (decoder is NbtDecoder) {
+                val tag = decoder.decodeNbtTag()
+                if (tag !is NbtCompound) throw IllegalStateException("Invalid NBT tag: '$tag'")
+                return SkullUtil.getSkullData(tag)
+            } else return SkullUtil.fetchSkullData(decoder.decodeString())
         }
 
         override fun serialize(encoder: Encoder, value: SkullData) {
-            encoder.encodeString(SkullUtil.getSkullValue(value.meta))
+            if (encoder is NbtEncoder) {
+                encoder.encodeNbtTag(value.tag)
+            } else encoder.encodeString(SkullUtil.getSkullValue(value.meta))
         }
 
     }

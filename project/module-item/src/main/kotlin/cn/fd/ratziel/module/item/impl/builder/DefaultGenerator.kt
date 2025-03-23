@@ -107,7 +107,7 @@ class DefaultGenerator(
             // 解码
             ItemElement.json.decodeFromJsonElement(serializer, element)
         } catch (ex: Exception) {
-            severe("Failed to deserialize element by '$serializer!'! Source element: $element")
+            severe("Failed to deserialize element by '$serializer!'!")
             ex.printStackTrace()
             return null
         }
