@@ -1,5 +1,7 @@
 package cn.fd.ratziel.module.script.internal
 
+import taboolib.library.configuration.ConfigurationSection
+
 /**
  * Initializable
  *
@@ -11,6 +13,6 @@ internal interface Initializable {
     /**
      * 初始化函数
      */
-    fun initialize()
+    fun initialize(settings: ConfigurationSection)
 
 }

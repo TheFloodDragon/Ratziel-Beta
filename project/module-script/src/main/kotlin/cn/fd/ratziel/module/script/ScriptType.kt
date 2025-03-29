@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.lang.JavaScriptExecutor
+import cn.fd.ratziel.module.script.lang.KetherExecutor
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -11,6 +12,11 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @since 2024/7/14 21:35
  */
 interface ScriptType {
+
+    /**
+     * 脚本名称
+     */
+    val name: String
 
     /**
      * 是否启用脚本
@@ -42,25 +48,25 @@ interface ScriptType {
 
         /** JavaScript **/
         @JvmStatic
-        val JAVASCRIPT = register(JavaScriptExecutor, "js", "javascript")
+        val JAVASCRIPT = register(JavaScriptExecutor, "JavaScript", "Js")
 
         /** Kether **/
         @JvmStatic
-        val KETHER = register(null, "kether", "ke", "ks")
+        val KETHER = register(KetherExecutor, "Kether", "ke", "ks")
 
         /** Jexl **/
         @JvmStatic
-        val JEXL = register(null, "jexl", "jexl3")
+        val JEXL = register(null, "Jexl", "Jexl3")
 
         /** Kotlin Scripting **/
         @JvmStatic
-        val KOTLIN_SCRIPTING = register(null, "kotlin", "kts")
+        val KOTLIN_SCRIPTING = register(null, "KotlinScripting", "Kotlin", "kts")
 
         /**
          * 匹配脚本类型
          */
         @JvmStatic
-        fun match(name: String): ScriptType? = registry.find { it.enabled && it.alias.contains(name.lowercase()) }
+        fun match(name: String): ScriptType? = registry.find { it.name == name || it.alias.contains(name) }
 
         /**
          * 匹配脚本类型 (无法找到时抛出异常)
@@ -69,12 +75,13 @@ interface ScriptType {
         fun matchOrThrow(name: String): ScriptType =
             match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
 
-        internal fun register(executor: ScriptExecutor?, vararg alias: String) =
+        private fun register(executor: ScriptExecutor?, vararg alias: String) =
             object : ScriptType {
+                override val name = alias.first()
                 override var enabled = false
                 override var executor = executor
-                override val alias = alias
-                override fun toString() = "ScriptType(enabled=${this.enabled}, executor=${this.executor}, alias=${this.alias.contentToString()})"
+                override val alias = alias.drop(1).toTypedArray()
+                override fun toString() = "ScriptType(name=$name, enabled=$enabled, executor=$executor, alias=${this.alias.contentToString()})"
             }.also { this.registry.add(it) }
 
     }

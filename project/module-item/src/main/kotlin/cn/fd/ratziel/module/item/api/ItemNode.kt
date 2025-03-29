@@ -6,6 +6,7 @@ package cn.fd.ratziel.module.item.api
  * @author TheFloodDragon
  * @since 2024/3/16 10:43
  */
+@Deprecated("This class is deprecated", ReplaceWith("NbtPath.Node"))
 interface ItemNode {
 
     /**

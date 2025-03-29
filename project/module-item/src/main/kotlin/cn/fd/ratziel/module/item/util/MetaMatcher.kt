@@ -2,17 +2,17 @@
 
 package cn.fd.ratziel.module.item.util
 
-import cn.fd.ratziel.module.item.impl.BukkitMaterial
-import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.impl.SimpleMaterial
+import org.bukkit.Material
 import org.bukkit.attribute.AttributeModifier
+import org.bukkit.enchantments.Enchantment
 import taboolib.common.util.Strings
 import taboolib.library.xseries.XAttribute
 import taboolib.library.xseries.XEnchantment
 import taboolib.library.xseries.XMaterial
 import taboolib.type.BukkitEquipment
 import kotlin.jvm.optionals.getOrNull
-import org.bukkit.enchantments.Enchantment as BukkitEnchantment
 import org.bukkit.inventory.ItemFlag as HideFlag
 
 /**
@@ -27,11 +27,11 @@ object MetaMatcher {
      * 匹配物品魔咒
      */
     @JvmStatic
-    fun matchEnchantment(source: String): BukkitEnchantment {
+    fun matchEnchantment(source: String): Enchantment {
         val name = clean(source)
-        return BukkitEnchantment.getByName(name) // BukkitEnchantment match
-            ?: XEnchantment.matchXEnchantment(name).getOrNull()?.enchant // XEnchantment match
-            ?: BukkitEnchantment.values().maxBy { Strings.similarDegree(it.name, name) } // Similar
+        return XEnchantment.of(name).getOrNull()?.get() // XSeries match
+            ?: Enchantment.getByName(name) // Bukkit match
+            ?: Enchantment.values().maxBy { Strings.similarDegree(it.name, name) } // Similar
     }
 
     /**
@@ -86,11 +86,11 @@ object MetaMatcher {
     @JvmStatic
     fun matchMaterial(source: String): ItemMaterial {
         val name = clean(source)
-        // 尝试匹配准确名称
-        val exactName: String? =
-            BukkitMaterial.getMaterial(name)?.name  // BukkitMaterial Match
-                ?: XMaterial.matchXMaterial(name).getOrNull()?.name // XMaterial Match
-        return if (exactName != null) SimpleMaterial(exactName)
+        // 尝试匹配准确材料
+        val matched: Material? =
+            XMaterial.matchXMaterial(name).getOrNull()?.get() // XMaterial Match
+                ?: Material.getMaterial(name) // BukkitMaterial Match
+        return if (matched != null) SimpleMaterial(matched)
         else SimpleMaterial.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value // Similar
     }
 

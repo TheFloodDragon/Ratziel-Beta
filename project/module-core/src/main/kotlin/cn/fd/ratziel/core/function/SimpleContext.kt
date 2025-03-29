@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.function
 
-import cn.fd.ratziel.core.function.exception.ArgumentNotFoundException
+import cn.fd.ratziel.core.exception.ArgumentNotFoundException
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -16,7 +16,7 @@ open class SimpleContext(
     constructor(vararg values: Any) : this(CopyOnWriteArrayList<Any>().apply { addAll(values) })
 
     override fun <T> pop(type: Class<T>): T & Any {
-        return popOrNull(type) ?: throw ArgumentNotFoundException(type);
+        return popOrNull(type) ?: throw ArgumentNotFoundException(type)
     }
 
     override fun <T> popOr(type: Class<T>, def: T & Any): T & Any {

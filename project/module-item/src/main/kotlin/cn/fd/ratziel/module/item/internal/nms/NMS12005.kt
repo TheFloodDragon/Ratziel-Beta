@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.module.nbt.NBTAdapter
-import cn.fd.ratziel.module.nbt.NBTHelper
 import com.mojang.datafixers.util.Pair
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
@@ -10,9 +9,6 @@ import com.mojang.serialization.DynamicOps
 import com.mojang.serialization.MapLike
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
-import net.minecraft.nbt.DynamicOpsNBT
-import net.minecraft.nbt.NBTBase
-import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.resources.RegistryOps
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer
@@ -63,13 +59,6 @@ abstract class NMS12005 {
             if (MinecraftVersion.versionId >= 12005) nmsProxy<NMS12005>() else throw UnsupportedOperationException("NMS12005 is only available after Minecraft 1.20.5!")
         }
 
-        /**
-         * [net.minecraft.core.component.DataComponentPatch]
-         */
-        val DATA_COMPONENT_PATCH_CLASS by lazy {
-            nmsClass("DataComponentPatch")
-        }
-
     }
 
 }
@@ -77,24 +66,24 @@ abstract class NMS12005 {
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class NMS12005Impl : NMS12005() {
 
-    fun <T> parse0(codec: Codec<T>, obj: NBTTagCompound): T? {
-        val result = codec.parse(access.createSerializationContext(DynamicOpsNBT.INSTANCE), obj)
+    fun <T> parse0(codec: Codec<T>, obj: NbtTag): T? {
+        val result = codec.parse(access.createSerializationContext(DataDynamicOps), obj)
         val opt = result.resultOrPartial { error("Failed to parse: $it") }
         return if (opt.isPresent) opt.get() else null
     }
 
-    fun <T> save0(codec: Codec<T>, obj: T): NBTBase? {
-        val result = codec.encodeStart(access.createSerializationContext(DynamicOpsNBT.INSTANCE), obj)
+    fun <T> save0(codec: Codec<T>, obj: T): NbtTag? {
+        val result = codec.encodeStart(access.createSerializationContext(DataDynamicOps), obj)
         val opt = result.resultOrPartial { error("Failed to save: $it") }
         return if (opt.isPresent) opt.get() else null
     }
 
     fun <T> parseFromTag(codec: Codec<T>, tag: NbtCompound): T? {
-        return parse0(codec, NBTHelper.toNms(tag) as NBTTagCompound)
+        return parse0(codec, tag)
     }
 
     fun <T> saveToTag(codec: Codec<T>, obj: T): NbtCompound? {
-        return save0(codec, obj)?.let { NBTHelper.fromNms(it as NBTTagCompound) as NbtCompound }
+        return save0(codec, obj) as? NbtCompound
     }
 
     override fun parsePatch(tag: NbtCompound): Any? = parseFromTag(DataComponentPatch.CODEC, tag)

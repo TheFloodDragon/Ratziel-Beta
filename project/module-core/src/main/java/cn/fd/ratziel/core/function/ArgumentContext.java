@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.function;
 
-import cn.fd.ratziel.core.function.exception.ArgumentNotFoundException;
+import cn.fd.ratziel.core.exception.ArgumentNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

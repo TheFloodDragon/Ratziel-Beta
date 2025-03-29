@@ -1,0 +1,21 @@
+Script:
+  # 默认使用的脚本语言
+  default: JavaScript
+  languages:
+    # JavaScript 脚本语言
+    JavaScript:
+      # 是否启用
+      enabled: true
+      # 使用的脚本引擎
+      engine: nashorn
+    # Kotlin Scripting
+    KotlinScripting:
+      enabled: false
+    # Kether
+    Kether:
+      enabled: true
+      # 是否启用宽容解析
+      tolerance: true
+    # Jexl
+    Jexl:
+      enabled: false

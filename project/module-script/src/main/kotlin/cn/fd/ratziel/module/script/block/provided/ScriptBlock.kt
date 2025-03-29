@@ -59,7 +59,7 @@ class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
                 val type = ScriptType.Companion.match(key.drop(1)) ?: return@firstNotNullOfOrNull null
                 // 获取脚本执行器
                 type.executor
-            } ?: ScriptManager.default.executorOrThrow
+            } ?: ScriptManager.defaultLanguage.executorOrThrow
 
     }
 

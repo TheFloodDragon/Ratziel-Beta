@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.item.api.ItemNode
  * @author TheFloodDragon
  * @since 2024/3/16 11:53
  */
+@Deprecated("This class is deprecated", ReplaceWith("NbtPath.Node"))
 data class SimpleNode(
     override val name: String,
     override val parent: ItemNode

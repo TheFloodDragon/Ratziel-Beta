@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.script.impl.CachedScriptContent
 import cn.fd.ratziel.module.script.internal.Initializable
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.function.warning
+import taboolib.library.configuration.ConfigurationSection
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import javax.script.*
@@ -68,7 +69,7 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
             .apply { setBindings(globalBindings, ScriptContext.GLOBAL_SCOPE) } // 设置全局绑定键
             ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript Language")
 
-    override fun initialize() {
+    override fun initialize(settings: ConfigurationSection) {
         RuntimeEnv.ENV_DEPENDENCY.loadFromLocalFile(this::class.java.classLoader.getResource("META-INF/dependencies/nashorn.json"))
     }
 

@@ -12,6 +12,9 @@ interface ContextualSerializer<T> : KSerializer<T> {
 
     /**
      * 接受上下文
+     *
+     * @param context 要接受的上下文
+     * @return 一个新的序列化器 [KSerializer]
      */
     fun accept(context: ArgumentContext): KSerializer<T>
 
