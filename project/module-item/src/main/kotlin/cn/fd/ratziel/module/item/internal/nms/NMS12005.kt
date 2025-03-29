@@ -111,7 +111,10 @@ class NMS12005Impl : NMS12005() {
      */
     object DataDynamicOps : DynamicOps<NbtTag> {
 
-        override fun empty() = NbtCompound()
+        // 伪 NbtEnd
+        val NbtEnd = NbtCompound()
+
+        override fun empty() = NbtEnd
 
         override fun <U> convertTo(ops: DynamicOps<U>, data: NbtTag): U = when (data.type.id.toInt()) {
             0 -> ops.empty()
@@ -191,7 +194,7 @@ class NMS12005Impl : NMS12005() {
         } else DataResult.error { "Not a map: $tag" }
 
         override fun mergeToMap(data1: NbtTag, data2: NbtTag, data3: NbtTag): DataResult<NbtTag> {
-            if (data1 !is NbtCompound) {
+            if (data1 !is NbtCompound && data1 !== NbtEnd) {
                 return DataResult.error({ "mergeToMap called with not a map: $data1" }, data1)
             } else if (data2 !is NbtString) {
                 return DataResult.error({ "key is not a string: $data2" }, data1)
@@ -223,7 +226,7 @@ class NMS12005Impl : NMS12005() {
             is NbtByteArray -> ByteListCollector(data.content.toMutableList())
             is NbtIntArray -> IntListCollector(data.content.toMutableList())
             is NbtLongArray -> LongListCollector(data.content.toMutableList())
-            else -> null
+            else -> if (data === NbtEnd) InitialListCollector else null
         }
 
         class HeterogenousListCollector(val result: NbtList = NbtList()) : ListCollector {
@@ -269,17 +272,17 @@ class NMS12005Impl : NMS12005() {
                 else HeterogenousListCollector(NbtList().apply { values.forEach { add(wrapElement(NbtLong(it))) } }).accept(data)
         }
 
-        interface ListCollector {
-            fun accept(data: NbtTag): ListCollector
-            fun result(): NbtTag
-            fun acceptAll(iterable: Iterable<NbtTag>) = acceptAll(iterable.iterator())
-            fun acceptAll(iterator: Iterator<NbtTag>): ListCollector {
-                var collector = this
-                iterator.forEach { collector = collector.accept(it) }
-                return collector
-            }
-        }
-
     }
 
+}
+
+interface ListCollector {
+    fun accept(data: NbtTag): ListCollector
+    fun result(): NbtTag
+    fun acceptAll(iterable: Iterable<NbtTag>) = acceptAll(iterable.iterator())
+    fun acceptAll(iterator: Iterator<NbtTag>): ListCollector {
+        var collector = this
+        iterator.forEach { collector = collector.accept(it) }
+        return collector
+    }
 }

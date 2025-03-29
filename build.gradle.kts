@@ -70,7 +70,6 @@ subprojects {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_1_8
             freeCompilerArgs.addAll("-Xallow-unstable-dependencies", "-Xwhen-guards", "-Xnon-local-break-continue")
-            extraWarnings.set(true)
         }
     }
 

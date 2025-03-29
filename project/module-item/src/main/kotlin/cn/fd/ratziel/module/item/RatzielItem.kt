@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item
 
 import cn.altawk.nbt.NbtPath
+import cn.altawk.nbt.NbtPath.NameNode
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtString
 import cn.fd.ratziel.core.Identifier
@@ -50,7 +51,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
          * 物品数据节点
          */
         @JvmField
-        val RATZIEL_DATA_PATH = NbtPath("custom_data.Ratziel")
+        val RATZIEL_DATA_PATH = NbtPath(NbtPath.NameNode("custom_data"), NbtPath.NameNode("Ratziel"))
 
         /**
          * @return [RatzielItem]
@@ -126,7 +127,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
              * 专有信息节点
              */
             @JvmStatic
-            private val INTERNAL_PATH = NbtPath("custom_data.Ratziel.internal")
+            private val INTERNAL_PATH = RATZIEL_DATA_PATH.plus(NbtPath.NameNode("internal"))
 
             /**
              * 内部信息 - [id]
