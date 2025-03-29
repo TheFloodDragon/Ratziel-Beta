@@ -125,7 +125,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
             /**
              * 专有信息节点
              */
-            @JvmField
+            @JvmStatic
             private val INTERNAL_PATH = NbtPath("custom_data.Ratziel.internal")
 
             /**

@@ -18,7 +18,7 @@ import cn.altawk.nbt.tag.NbtTag
 /**
  * 读取 [NbtTag]
  */
-inline fun NbtCompound.read(path: NbtPath): NbtTag? = NbtHelper.read(this, path)
+inline fun NbtCompound.read(path: NbtPath, create: Boolean = true): NbtTag? = NbtHelper.read(this, path, create)
 
 
 /**
