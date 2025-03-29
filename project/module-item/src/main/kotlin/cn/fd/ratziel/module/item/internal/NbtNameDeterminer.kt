@@ -19,7 +19,7 @@ internal object NbtNameDeterminer : SerialNameDeterminer {
     }
 
     override fun mapName(elementName: String, descriptor: SerialDescriptor): String {
-        val address = ItemSheet.mappingsReversed[elementName] ?: return elementName
+        val address = ItemSheet.mappings.inverse()[elementName] ?: return elementName
         val parent = descriptor.serialName.substringAfterLast('.')
         return if (address.first == parent) address.second else elementName
     }

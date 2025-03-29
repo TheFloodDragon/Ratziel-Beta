@@ -146,8 +146,6 @@ class NMSUtilImpl1 : NMSUtil {
             val map = nbtTagCompoundGetter.get<MutableMap<String, Any>>(src)
             data.forEach { map[it.key] = toNms(it.value) }
         }
-
-        else -> throw UnsupportedOperationException("NBTTag cannot convert to NmsNBTTag: $data")
     }
 
     override fun fromNms(nmsData: Any): NbtTag = when (nmsData) {

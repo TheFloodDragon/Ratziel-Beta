@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item
 
+import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtString
 import cn.fd.ratziel.core.Identifier
@@ -7,12 +8,10 @@ import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.RatzielItem.Companion.isRatzielItem
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
-import cn.fd.ratziel.module.item.impl.SimpleNode
 import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
-import cn.fd.ratziel.module.item.util.handle
-import cn.fd.ratziel.module.item.util.read
-import cn.fd.ratziel.module.nbt.readString
+import cn.fd.ratziel.module.nbt.handle
+import cn.fd.ratziel.module.nbt.read
 import org.bukkit.inventory.ItemStack
 import taboolib.platform.util.isAir
 
@@ -51,7 +50,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
          * 物品数据节点
          */
         @JvmField
-        val RATZIEL_DATA_NODE = SimpleNode("Ratziel", SimpleNode("custom_data"))
+        val RATZIEL_DATA_PATH = NbtPath("custom_data.Ratziel")
 
         /**
          * @return [RatzielItem]
@@ -90,16 +89,15 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
          */
         @JvmStatic
         fun isRatzielItem(itemStack: ItemStack): Boolean {
-            return isRatzielItem(RefItemStack.of(itemStack).customTag)
+            return isRatzielItem(RefItemStack.of(itemStack).tag)
         }
 
         /**
-         * 检查目标自定义标签数据, 判断是否为 [RatzielItem]
+         * 检查目标标签, 判断是否为 [RatzielItem]
          */
         @JvmStatic
-        fun isRatzielItem(customTag: NbtCompound?): Boolean {
-            val proprietary = customTag?.get(RATZIEL_DATA_NODE.name) as? NbtCompound
-            return proprietary?.containsKey(Info.INTERNAL_NODE.name) ?: false
+        fun isRatzielItem(tag: NbtCompound): Boolean {
+            return tag.read(RATZIEL_DATA_PATH, false) is NbtCompound
         }
 
     }
@@ -128,19 +126,17 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
              * 专有信息节点
              */
             @JvmField
-            val INTERNAL_NODE = SimpleNode("internal", RATZIEL_DATA_NODE)
+            private val INTERNAL_PATH = NbtPath("custom_data.Ratziel.internal")
 
             /**
              * 内部信息 - [id]
              */
-            @JvmField
-            val INFO_TYPE = SimpleNode("type", INTERNAL_NODE)
+            private const val INFO_TYPE = "type"
 
             /**
              * 内部信息 - [hash]
              */
-            @JvmField
-            val INFO_HASH = SimpleNode("hash", INTERNAL_NODE)
+            private const val INFO_HASH = "hash"
 
             /**
              * 从 [ItemData] 中读取信息
@@ -148,24 +144,24 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
             @JvmStatic
             fun read(data: ItemData): Info? {
                 // 获取内部信息
-                val internal = data.read<NbtCompound>(INTERNAL_NODE) ?: return null
+                val internal = data.tag.read(INTERNAL_PATH) as? NbtCompound ?: return null
                 // 读取类型
-                val type = internal.readString(INFO_TYPE.name) ?: return null
+                val type = internal[INFO_TYPE] as? NbtString ?: return null
                 // 读取版本信息
-                val hash = internal.readString(INFO_HASH.name) ?: return null
+                val hash = internal[INFO_HASH] as? NbtString ?: return null
                 // 构造信息对象
-                return Info(type, hash)
+                return Info(type.content, hash.content)
             }
 
             /**
              * 将信息写入到 [ItemData]
              */
             @JvmStatic
-            fun write(info: Info, data: ItemData) = data.handle(INTERNAL_NODE) {
+            fun write(info: Info, data: ItemData) = data.tag.handle(INTERNAL_PATH) {
                 // 写入类型
-                put(INFO_TYPE.name, NbtString(info.type.content))
+                put(INFO_TYPE, NbtString(info.type.content))
                 // 写入版本信息
-                put(INFO_HASH.name, NbtString(info.hash))
+                put(INFO_HASH, NbtString(info.hash))
             }
 
         }

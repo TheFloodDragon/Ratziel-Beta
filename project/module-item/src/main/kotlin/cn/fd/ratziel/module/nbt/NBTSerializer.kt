@@ -111,7 +111,7 @@ object NBTSerializer : KSerializer<NbtTag> {
                 ?: throw UnsupportedTypeException(type)
         }
 
-        private fun adaptString(str: String) = NBTAdapter.box(str.adapt())
+        private fun adaptString(str: String) = NbtAdapter.box(str.adapt())
 
         private fun convertBasicString(str: String, type: NbtType) = when (type) {
             NbtType.BYTE -> NbtByte(str.toByte())

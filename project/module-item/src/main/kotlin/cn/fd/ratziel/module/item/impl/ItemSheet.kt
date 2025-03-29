@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.module.item.impl.ItemSheet.Mapper.mappings
+import com.google.common.collect.BiMap
+import com.google.common.collect.HashBiMap
 import kotlinx.serialization.json.*
 import taboolib.common.LifeCycle
 import taboolib.common.io.runningResources
@@ -15,15 +17,11 @@ import taboolib.module.nms.MinecraftVersion
  */
 object ItemSheet {
 
-    var path: String = "nbt-mappings.json"
-
-    val mappings: Map<Pair<String, String>, String> get() = Mapper.mappings
-
-    val mappingsReversed: Map<String, Pair<String, String>> get() = Mapper.mappingsReversed
+    val mappings: BiMap<Pair<String, String>, String> get() = Mapper.mappings
 
     @Awake(LifeCycle.LOAD)
-    fun init() {
-        Mapper.initialize(path)
+    private fun initialize() {
+        Mapper.initialize("nbt-mappings.json")
     }
 
     /**
@@ -34,10 +32,7 @@ object ItemSheet {
      */
     private object Mapper {
 
-        lateinit var mappings: Map<Pair<String, String>, String>
-            private set
-
-        lateinit var mappingsReversed: Map<String, Pair<String, String>>
+        lateinit var mappings: BiMap<Pair<String, String>, String>
             private set
 
         /**
@@ -48,7 +43,7 @@ object ItemSheet {
             val bytes = runningResources[path] ?: throw IllegalStateException("File not found: $path!")
             val json = Json.Default.parseToJsonElement(bytes.toString(Charsets.UTF_8))
             // Analyze to map
-            mappings = buildMap {
+            mappings = HashBiMap.create<Pair<String, String>, String>().apply {
                 for ((id, verMap) in json.jsonObject) {
                     try {
                         val split = id.split('.')
@@ -58,8 +53,6 @@ object ItemSheet {
                     }
                 }
             }
-            // 对调 Key 和 Value 形成 mappingsReversed
-            mappingsReversed = buildMap { mappings.forEach { put(it.value, it.key) } }
         }
 
         fun matchVersion(json: JsonElement): String = when (json) {

@@ -24,7 +24,7 @@ object ScriptManager {
     /**
      * 初始化脚本系统
      */
-    @Awake(LifeCycle.CONST)
+    @Awake(LifeCycle.INIT)
     private fun initialize() {
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!

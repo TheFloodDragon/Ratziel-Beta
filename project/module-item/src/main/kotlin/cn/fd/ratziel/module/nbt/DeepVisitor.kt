@@ -10,27 +10,12 @@ import java.util.function.Consumer
 /**
  * [DeepVisitor] 系列方法
  */
+@Deprecated("Will be removed")
 inline fun NbtCompound.getDeep(node: String) = DeepVisitor.getDeep(this, node)
+@Deprecated("Will be removed")
 inline fun NbtCompound.putDeep(node: String, value: NbtTag, checkList: Boolean = true) = DeepVisitor.putDeep(this, node, value, checkList)
+@Deprecated("Will be removed")
 inline fun NbtCompound.removeDeep(node: String) = DeepVisitor.removeDeep(this, node)
-
-/**
- * 读取指定类型的数据
- */
-@Deprecated("Will be removed")
-inline fun <reified T : NbtTag> NbtCompound.read(nodes: String, action: Consumer<T>) = (this.read(nodes) as? T)?.let { action.accept(it) }
-
-/**
- * 读取数据
- */
-@Deprecated("Will be removed")
-inline fun NbtCompound.read(nodes: String): NbtTag? = DeepVisitor.read(this, nodes)
-
-/**
- * 写入数据
- */
-@Deprecated("Will be removed")
-inline fun NbtCompound.write(nodes: String, value: NbtTag?) = value?.let { DeepVisitor.write(this, nodes, it) }
 
 /**
  * 深度获取NBT数据
@@ -50,40 +35,6 @@ object DeepVisitor {
     const val LIST_INDEX_START = "["
 
     const val LIST_INDEX_END = "]"
-
-    @Deprecated("Will be removed")
-    fun write(data: NbtCompound, nodes: String, value: NbtTag) {
-        if (nodes.contains(DEEP_SEPARATION)) {
-            write(data, nodes.split(DEEP_SEPARATION).iterator(), value)
-        } else data[nodes] = value
-    }
-
-    @Deprecated("Will be removed")
-    fun read(data: NbtCompound, nodes: String): NbtTag? {
-        return if (nodes.contains(DEEP_SEPARATION)) {
-            read(data, nodes.split(DEEP_SEPARATION))
-        } else data[nodes]
-    }
-
-    @Deprecated("Will be removed")
-    fun write(data: NbtCompound, nodes: Iterator<String>, value: NbtTag) {
-        var find = data
-        while (nodes.hasNext()) {
-            val node = nodes.next()
-            if (nodes.hasNext()) {
-                find = find.computeIfAbsent(node) { NbtCompound() } as? NbtCompound ?: return
-            } else find[node] = value
-        }
-    }
-
-    @Deprecated("Will be removed")
-    fun read(data: NbtTag, nodes: Iterable<String>): NbtTag? {
-        var find: NbtTag = data
-        for (n in nodes) {
-            find = (data as? NbtCompound)?.get(n) ?: return null
-        }
-        return find
-    }
 
     fun setSafely(data: NbtList, index: Int, value: NbtTag) {
         if (index == data.size) data.add(value) else data[index] = value

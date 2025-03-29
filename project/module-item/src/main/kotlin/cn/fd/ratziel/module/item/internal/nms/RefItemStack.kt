@@ -4,10 +4,8 @@ package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import cn.fd.ratziel.module.item.api.BukkitItemStack
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.api.StackData
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.impl.SimpleMaterial.Companion.asBukkit
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack.Companion.nmsClass
@@ -18,6 +16,7 @@ import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
+import org.bukkit.inventory.ItemStack as BukkitItemStack
 
 /**
  * RefItemStack
@@ -31,7 +30,7 @@ class RefItemStack private constructor(
      * 确保 CraftItemStack.handle 不为空
      */
     private var handle: BukkitItemStack
-) : StackData {
+) : ItemData {
 
     constructor() : this(newObc() as BukkitItemStack)
 
@@ -50,19 +49,6 @@ class RefItemStack private constructor(
         }
         set(value) {
             NMSItem.INSTANCE.setTag(nmsStack ?: return, value)
-        }
-
-    /**
-     * 物品自定义标签数据
-     * @see NMSItem.getCustomTag
-     * @see NMSItem.setCustomTag
-     */
-    override var customTag: NbtCompound?
-        get() {
-            return NMSItem.INSTANCE.getCustomTag(nmsStack ?: return null)
-        }
-        set(value) {
-            NMSItem.INSTANCE.setCustomTag(nmsStack ?: return, value ?: return)
         }
 
     /**
@@ -116,7 +102,7 @@ class RefItemStack private constructor(
         if (other.material != ItemMaterial.EMPTY) this.material = other.material
         if (other.amount >= 1) this.amount = other.amount
         if (other is RefItemStack) {
-            NMSItem.INSTANCE.mergeTag(this.nmsStack ?: return, other.nmsStack ?: return)
+            NMSItem.INSTANCE.applyComponents(this.nmsStack ?: return, other.nmsStack ?: return)
         } else {
             this.tag = this.tag.merge(other.tag, replcae)
         }
@@ -125,12 +111,12 @@ class RefItemStack private constructor(
     /**
      * 获取NMS形式实例 [net.minecraft.world.item.ItemStack]
      */
-    override val nmsStack: Any? get() = InternalUtil.obcHandleField.get(handle)
+    val nmsStack: Any? get() = InternalUtil.obcHandleField.get(handle)
 
     /**
      * Bukkit形式实例 ([BukkitItemStack])
      */
-    override val bukkitStack: BukkitItemStack get() = handle
+    val bukkitStack: BukkitItemStack get() = handle
 
     companion object {
 
@@ -138,14 +124,10 @@ class RefItemStack private constructor(
         fun of(item: Any): RefItemStack = ofNullable(item) ?: throw UnsupportedTypeException(item::class.java)
 
         @JvmStatic
-        fun of(data: StackData): RefItemStack = RefItemStack((data.nmsStack?.let { newObc(it) } ?: newObc(data.bukkitStack)) as BukkitItemStack)
-
-        @JvmStatic
         fun ofNullable(item: Any): RefItemStack? = when {
             isObcClass(item::class.java) -> item // CraftItemStack
             isNmsClass(item::class.java) -> newObc(item) // net.minecraft.world.item.ItemStack
             item is BukkitItemStack -> newObc(item) // an impl of interface BukkitItemStack, but not CraftItemStack
-            item is StackData -> item.nmsStack?.let { newObc(item) } ?: newObc(item.bukkitStack)
             item is ItemData -> RefItemStack().apply { merge(item) }.handle
             else -> null // Unsupported Type
         }?.let { RefItemStack(it as BukkitItemStack) }

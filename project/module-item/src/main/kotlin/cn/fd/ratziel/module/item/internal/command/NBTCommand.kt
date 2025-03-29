@@ -139,7 +139,7 @@ object NBTCommand {
                         newLine(); repeat(level) { append(retractComponent) } // 缩进
                     }
                     append(componentKey(sender, deep, slot)) // 添加键
-                    append(nbtAsComponent(sender, NBTAdapter.box(value), level + 1, slot, deep, isFirst = false))
+                    append(nbtAsComponent(sender, NbtAdapter.box(value), level + 1, slot, deep, isFirst = false))
                     first = false
                 }
             }

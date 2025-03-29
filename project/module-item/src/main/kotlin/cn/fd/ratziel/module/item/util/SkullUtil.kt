@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.util
 import cn.altawk.nbt.NbtDecoder
 import cn.altawk.nbt.NbtEncoder
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.api.BukkitItemStack
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -11,6 +10,7 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import taboolib.library.xseries.XMaterial
 import taboolib.platform.util.BukkitSkull
@@ -44,9 +44,9 @@ object SkullUtil {
     }
 
     /**
-     * 生成纯头颅数据的 [BukkitItemStack]
+     * 生成纯头颅数据的 [ItemStack]
      */
-    fun generateSkullItem(value: String): BukkitItemStack {
+    fun generateSkullItem(value: String): ItemStack {
         return BukkitSkull.applySkull(value)
     }
 
@@ -69,7 +69,7 @@ object SkullUtil {
 }
 
 @Serializable(SkullData.Companion::class)
-class SkullData(val item: BukkitItemStack) {
+class SkullData(val item: ItemStack) {
 
     val meta: SkullMeta by lazy {
         item.itemMeta!! as SkullMeta

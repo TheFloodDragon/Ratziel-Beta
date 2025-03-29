@@ -27,7 +27,7 @@ object KetherExecutor : ScriptExecutor, Initializable {
     override fun initialize(settings: ConfigurationSection) {
         try {
             Kether
-        } catch (ex: ClassNotFoundException) {
+        } catch (ex: Exception) {
             throw RuntimeException("Kether Environment does not initialized!", ex)
         }
         // 宽容解析

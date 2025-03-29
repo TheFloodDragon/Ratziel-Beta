@@ -4,12 +4,12 @@ import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 
 /**
- * NBTAdapter
+ * NbtAdapter
  *
  * @author TheFloodDragon
  * @since 2024/3/15 20:13
  */
-object NBTAdapter {
+object NbtAdapter {
 
     @JvmStatic
     fun box(target: Any): NbtTag = when (target) {
