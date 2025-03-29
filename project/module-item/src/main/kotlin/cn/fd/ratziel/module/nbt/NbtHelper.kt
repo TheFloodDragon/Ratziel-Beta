@@ -11,7 +11,7 @@ import cn.altawk.nbt.tag.NbtTag
  * @author TheFloodDragon
  * @since 2024/8/12 19:41
  */
-object NbtHelper : NMSUtil by NMSUtil.INSTANCE {
+object NbtHelper {
 
     /**
      * 通过路径获取 [NbtCompound] 并进行处理

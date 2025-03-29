@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item
 
 import cn.altawk.nbt.NbtPath
-import cn.altawk.nbt.NbtPath.NameNode
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtString
 import cn.fd.ratziel.core.Identifier
@@ -9,6 +8,7 @@ import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.RatzielItem.Companion.isRatzielItem
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
+import cn.fd.ratziel.module.item.impl.ItemSheet
 import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.nbt.handle
@@ -51,7 +51,10 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
          * 物品数据节点
          */
         @JvmField
-        val RATZIEL_DATA_PATH = NbtPath(NbtPath.NameNode("custom_data"), NbtPath.NameNode("Ratziel"))
+        val RATZIEL_DATA_PATH = NbtPath(
+            NbtPath.NameNode(ItemSheet.CUSTOM_DATA_COMPONENT),
+            NbtPath.NameNode("Ratziel")
+        )
 
         /**
          * @return [RatzielItem]

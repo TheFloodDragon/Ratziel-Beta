@@ -19,6 +19,9 @@ object ItemSheet {
 
     val mappings: BiMap<Pair<String, String>, String> get() = Mapper.mappings
 
+    /** 自定义数据组件名称 **/
+    const val CUSTOM_DATA_COMPONENT = "custom_data"
+
     @Awake(LifeCycle.LOAD)
     private fun initialize() {
         Mapper.initialize("nbt-mappings.json")

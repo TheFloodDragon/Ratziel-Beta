@@ -1,6 +1,8 @@
-package cn.fd.ratziel.module.nbt
+package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.*
+import cn.fd.ratziel.core.exception.UnsupportedTypeException
+import net.minecraft.server.v1_12_R1.NBTBase
 import taboolib.library.reflex.UnsafeAccess
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
@@ -12,12 +14,7 @@ import java.lang.invoke.MethodHandle
  * @author TheFloodDragon
  * @since 2024/9/1 12:41
  */
-interface NMSUtil {
-
-    /**
-     * 判断类型
-     */
-    fun inferType(nmsData: Any): NbtType
+interface NMSNbt {
 
     /**
      * [NbtTag] to [NBTTagCompound]
@@ -33,8 +30,8 @@ interface NMSUtil {
 
         val INSTANCE by lazy {
             if (MinecraftVersion.versionId >= 12005)
-                nmsProxy<NMSUtil>("{name}Impl2")
-            else nmsProxy<NMSUtil>("{name}Impl1")
+                nmsProxy<NMSNbt>("{name}Impl2")
+            else nmsProxy<NMSNbt>("{name}Impl1")
         }
 
     }
@@ -45,12 +42,7 @@ interface NMSUtil {
  * 1.20.5+
  */
 @Suppress("unused")
-class NMSUtilImpl2 : NMSUtil {
-
-    override fun inferType(nmsData: Any): NbtType {
-        val nmsId = (nmsData as NbtBase).id
-        return NbtType.of(nmsId)!!
-    }
+class NMSNbtImpl2 : NMSNbt {
 
     override fun toNms(data: NbtTag): NbtBase = when (data) {
         is NbtString -> NBTTagString.valueOf(data.content)
@@ -65,7 +57,6 @@ class NMSUtilImpl2 : NMSUtil {
         is NbtLongArray -> NBTTagLongArray(data.content.copyOf())
         is NbtList -> NBTTagList().apply { data.forEach { add(toNms(it)) } }
         is NbtCompound -> NBTTagCompound().apply { data.forEach { put(it.key, toNms(it.value)) } }
-        else -> throw UnsupportedOperationException("NBTTag cannot convert to NmsNBTTag: $data")
     }
 
     override fun fromNms(nmsData: Any): NbtTag = when (nmsData) {
@@ -79,9 +70,9 @@ class NMSUtilImpl2 : NMSUtil {
         is NBTTagByteArray -> NbtByteArray(nmsData.asByteArray.copyOf())
         is NBTTagIntArray -> NbtIntArray(nmsData.asIntArray.copyOf())
         is NBTTagLongArray -> NbtLongArray(nmsData.asLongArray.copyOf())
-        is NBTTagList -> NbtList().apply { nmsData.forEach { add(fromNms(it)) } }
-        is NBTTagCompound -> NbtCompound().apply { nmsData.allKeys.forEach { put(it, fromNms(nmsData.get(it)!!)) } }
-        else -> throw UnsupportedOperationException("NmsNBTTag cannot convert to NBTTag: $nmsData")
+        is NBTTagList -> NbtList { nmsData.forEach { add(fromNms(it)) } }
+        is NBTTagCompound -> NbtCompound { nmsData.allKeys.forEach { put(it, fromNms(nmsData.get(it)!!)) } }
+        else -> throw UnsupportedTypeException(nmsData::class.java)
     }
 
 }
@@ -92,7 +83,7 @@ class NMSUtilImpl2 : NMSUtil {
  * 代码参考自: Taboolib/nms-tag-legacy
  */
 @Suppress("unused")
-class NMSUtilImpl1 : NMSUtil {
+class NMSNbtImpl1 : NMSNbt {
 
     val nbtTagCompoundGetter = unreflectGetter(NBTTagCompound12::class.java, if (MinecraftVersion.isUniversal) "x" else "map")
     val nbtTagListGetter = unreflectGetter(NBTTagList12::class.java, if (MinecraftVersion.isUniversal) "c" else "list")
@@ -111,11 +102,6 @@ class NMSUtilImpl1 : NMSUtil {
     } else null
 
     val new = MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_15)
-
-    override fun inferType(nmsData: Any): NbtType {
-        val nmsId = (nmsData as NbtBase12).typeId
-        return NbtType.entries.find { it.id == nmsId }!!
-    }
 
     override fun toNms(data: NbtTag): Any = when (data) {
         is NbtString -> if (new) NBTTagString15.a(data.content) else NBTTagString12(data.content)
