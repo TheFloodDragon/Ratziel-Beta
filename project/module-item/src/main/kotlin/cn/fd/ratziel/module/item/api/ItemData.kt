@@ -26,21 +26,8 @@ interface ItemData {
     var amount: Int
 
     /**
-     * 合并数据
-     */
-    fun merge(other: ItemData, replace: Boolean = true)
-
-    /**
      * 克隆数据
      */
     fun clone(): ItemData
-
-    object Empty : ItemData {
-        override var material: ItemMaterial get() = ItemMaterial.EMPTY; set(_) = Unit
-        override var tag: NbtCompound get() = NbtCompound(); set(_) = Unit
-        override var amount: Int get() = 0; set(_) = Unit
-        override fun merge(other: ItemData, replace: Boolean) = Unit
-        override fun clone() = this
-    }
 
 }

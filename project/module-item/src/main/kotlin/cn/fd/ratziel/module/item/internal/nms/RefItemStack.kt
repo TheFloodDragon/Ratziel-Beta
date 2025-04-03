@@ -3,11 +3,10 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
-import cn.fd.ratziel.module.item.impl.SimpleMaterial.Companion.asBukkit
+import cn.fd.ratziel.module.item.impl.SimpleMaterial.Companion.toBukkit
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack.Companion.nmsClass
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack.Companion.obcClass
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
@@ -32,11 +31,7 @@ class RefItemStack private constructor(
     private var handle: BukkitItemStack
 ) : ItemData {
 
-    constructor() : this(newObc() as BukkitItemStack)
-
-    constructor(material: ItemMaterial) : this() {
-        this.material = material
-    }
+    private constructor() : this(newObc() as BukkitItemStack)
 
     /**
      * 物品总标签数据
@@ -61,7 +56,7 @@ class RefItemStack private constructor(
         }
         set(value) {
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
-                handle.type = value.asBukkit()
+                handle.type = value.toBukkit()
             } else {
                 InternalUtil.obcSetMaterialMethodLegacy.invoke(handle, material.id)
             }
@@ -96,19 +91,6 @@ class RefItemStack private constructor(
     override fun clone() = RefItemStack(InternalUtil.obcCloneMethod.invoke(handle) as BukkitItemStack)
 
     /**
-     * 合并数据
-     */
-    override fun merge(other: ItemData, replcae: Boolean) {
-        if (other.material != ItemMaterial.EMPTY) this.material = other.material
-        if (other.amount >= 1) this.amount = other.amount
-        if (other is RefItemStack) {
-            NMSItem.INSTANCE.applyComponents(this.nmsStack ?: return, other.nmsStack ?: return)
-        } else {
-            this.tag = this.tag.merge(other.tag, replcae)
-        }
-    }
-
-    /**
      * 获取NMS形式实例 [net.minecraft.world.item.ItemStack]
      */
     val nmsStack: Any? get() = InternalUtil.obcHandleField.get(handle)
@@ -120,17 +102,38 @@ class RefItemStack private constructor(
 
     companion object {
 
+        /**
+         * 创建一个材质为 [material] 的 [RefItemStack]
+         */
         @JvmStatic
-        fun of(item: Any): RefItemStack = ofNullable(item) ?: throw UnsupportedTypeException(item::class.java)
+        fun of(material: ItemMaterial) = RefItemStack().also { it.material = material }
 
+        /**
+         * 通过 [ItemData] 创建一个 [RefItemStack]
+         *
+         * @param copyTag 是否复制标签 (默认不复制)
+         */
         @JvmStatic
-        fun ofNullable(item: Any): RefItemStack? = when {
-            isObcClass(item::class.java) -> item // CraftItemStack
-            isNmsClass(item::class.java) -> newObc(item) // net.minecraft.world.item.ItemStack
-            item is BukkitItemStack -> newObc(item) // an impl of interface BukkitItemStack, but not CraftItemStack
-            item is ItemData -> RefItemStack().apply { merge(item) }.handle
-            else -> null // Unsupported Type
-        }?.let { RefItemStack(it as BukkitItemStack) }
+        fun of(data: ItemData, copyTag: Boolean = false) = RefItemStack().apply {
+            this.material = data.material
+            this.tag = if (copyTag) data.tag.clone() else data.tag
+            this.amount = data.amount
+        }
+
+        /**
+         * 通过 [BukkitItemStack] 创建一个 [RefItemStack]
+         */
+        @JvmStatic
+        fun of(itemStack: BukkitItemStack) =
+            if (isObcClass(itemStack::class.java)) {
+                RefItemStack(itemStack)  // CraftItemStack
+            } else RefItemStack(newObc(itemStack) as BukkitItemStack) // an impl of interface BukkitItemStack, but not CraftItemStack
+
+        /**
+         * 通过 [net.minecraft.world.item.ItemStack] 创建一个 [RefItemStack]
+         */
+        @JvmStatic
+        fun ofNms(nmsItem: Any) = RefItemStack(newObc(nmsItem) as BukkitItemStack)
 
         /**
          * nms.ItemStack
@@ -151,7 +154,7 @@ class RefItemStack private constructor(
          * private CraftItemStack(net.minecraft.world.item.ItemStack item) {
          *     this.handle = item;
          * }
-         * 而在 [BukkitMaterial] 为 AIR 时, handle 为 null,
+         * 而在 [org.bukkit.Material] 为 AIR 时, handle 为 null,
          * 所以直接通过 [unsafeInstance] 构造了
          */
         @JvmStatic
@@ -165,7 +168,7 @@ class RefItemStack private constructor(
         fun newObc(nmsItem: Any) = obcClass.invokeConstructor(nmsItem)
 
         /**
-         * 创建一个空的 [NMSItemStack]
+         * 创建一个空的 [net.minecraft.world.item.ItemStack]
          * private ItemStack(@Nullable Void void_)
          */
         @JvmStatic
@@ -203,7 +206,7 @@ class RefItemStack private constructor(
 
     }
 
-    internal object InternalUtil {
+    private object InternalUtil {
 
         @JvmStatic
         val nmsItemStackEmptyConstructor by lazy {

@@ -4,7 +4,6 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.util.SkullData
@@ -30,7 +29,7 @@ data class ItemSkull(
 
     companion object : DataProcessor {
 
-        val PLAYER_HEAD: ItemMaterial = SimpleMaterial(XMaterial.PLAYER_HEAD)
+        val PLAYER_HEAD = SimpleMaterial(XMaterial.PLAYER_HEAD)
 
         override fun process(data: ItemData) = data.apply {
             if (tag.isNotEmpty()) {

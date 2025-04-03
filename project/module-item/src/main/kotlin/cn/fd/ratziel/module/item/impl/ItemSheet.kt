@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.impl
 
-import cn.fd.ratziel.module.item.impl.ItemSheet.Mapper.mappings
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import kotlinx.serialization.json.*
@@ -13,18 +12,19 @@ import taboolib.module.nms.MinecraftVersion
  * ItemSheet - 物品NBT标签映射表
  *
  * @author TheFloodDragon
- * @since 2023/11/4 11:41
+ * @since 2025/4/4 1:04
  */
 object ItemSheet {
 
-    val mappings: BiMap<Pair<String, String>, String> get() = Mapper.mappings
+    lateinit var mappings: BiMap<Pair<String, String>, String>
+        private set
 
     /** 自定义数据组件名称 **/
     const val CUSTOM_DATA_COMPONENT = "custom_data"
 
     @Awake(LifeCycle.LOAD)
     private fun initialize() {
-        Mapper.initialize("nbt-mappings.json")
+        mappings = Mapper.initialize("nbt-mappings.json")
     }
 
     /**
@@ -33,20 +33,17 @@ object ItemSheet {
      * @author TheFloodDragon
      * @since 2024/4/30 20:25
      */
-    private object Mapper {
-
-        lateinit var mappings: BiMap<Pair<String, String>, String>
-            private set
+    object Mapper {
 
         /**
-         * Initialize [mappings] from [path]
+         * Initialize from [path]
          */
-        fun initialize(path: String) {
+        fun initialize(path: String): BiMap<Pair<String, String>, String> {
             // Read from resources
             val bytes = runningResources[path] ?: throw IllegalStateException("File not found: $path!")
-            val json = Json.Default.parseToJsonElement(bytes.toString(Charsets.UTF_8))
+            val json = Json.parseToJsonElement(bytes.toString(Charsets.UTF_8))
             // Analyze to map
-            mappings = HashBiMap.create<Pair<String, String>, String>().apply {
+            return HashBiMap.create<Pair<String, String>, String>().apply {
                 for ((id, verMap) in json.jsonObject) {
                     try {
                         val split = id.split('.')

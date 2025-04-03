@@ -90,7 +90,7 @@ value class SimpleMaterial(private val ref: Material) : ItemMaterial {
         /**
          * 将 [ItemMaterial] 转换为 [Material] 形式
          */
-        fun ItemMaterial.asBukkit(): Material = if (this is SimpleMaterial) this.ref else findBukkit(this.name) ?: Material.AIR
+        fun ItemMaterial.toBukkit(): Material = if (this is SimpleMaterial) this.ref else findBukkit(this.name) ?: Material.AIR
 
         /**
          * 通过反射获取 [id], 因为 [Material] 不会获取老版物品的 [id]

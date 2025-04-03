@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
+import taboolib.common.platform.function.debug
 import taboolib.library.reflex.ReflexClass
 
 /**
@@ -17,7 +17,9 @@ class SectionTagRegister : ClassVisitor(10) {
 
     override fun visitStart(clazz: ReflexClass) {
         if (clazz.hasInterface(SectionTagResolver::class.java)) {
-            DefaultSectionResolver.resolvers.add(findInstance(clazz) as SectionTagResolver)
+            val resolver = findInstance(clazz) as SectionTagResolver
+            DefaultSectionResolver.resolvers.add(resolver)
+            debug("    REGISTRY#DefaultSectionResolver.resolvers: + $resolver")
         }
     }
 

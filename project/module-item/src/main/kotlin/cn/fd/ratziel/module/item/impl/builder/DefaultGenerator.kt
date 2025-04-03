@@ -74,7 +74,11 @@ class DefaultGenerator(
             // 等待所有任务完成, 然后合并数据
             for (generated in tasks.awaitAll()) {
                 if (generated != null) {
-                    data.merge(generated, true)
+                    // 重新设置材质
+                    val mat = generated.material
+                    if (mat != data.material) data.material = mat
+                    // 合并标签
+                    data.tag.merge(generated.tag, true)
                 }
             }
 
@@ -111,24 +115,30 @@ class DefaultGenerator(
             ex.printStackTrace()
             return null
         }
-        // 第二步: 编码成物品数据
-        try {
+        // 第二步: 编码成组件数据
+        val tag = try {
             // 编码
-            val tag = ItemElement.nbt.encodeToNbtTag(serializer, component)
-            if (tag is NbtCompound) {
-                // 处理结果数据
-                return integrated.processor.process(SimpleData(refer.material, tag, refer.amount))
-            }
+            ItemElement.nbt.encodeToNbtTag(serializer, component)
         } catch (ex: Exception) {
             severe("Failed to transform component by '$serializer'! Source component: $component")
             ex.printStackTrace()
+            return null
+        }
+        // 第三步: 处理组件数据
+        if (tag is NbtCompound) {
+            val processor = integrated.processor
+            try {
+                return processor.process(SimpleData(refer.material, tag))
+            } catch (ex: Exception) {
+                severe("Failed to process data by '$processor'!")
+                ex.printStackTrace()
+            }
         }
         return null
     }
 
     companion object {
 
-        @JvmStatic
         private val materialNames = listOf("material", "mat", "materials", "mats")
 
         /**

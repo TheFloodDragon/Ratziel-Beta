@@ -51,11 +51,6 @@ abstract class NMSItem {
      */
     abstract fun copyItem(nmsItem: Any): Any
 
-    /**
-     * 合并内部标签数据 (浅合并)
-     */
-    abstract fun applyComponents(source: Any, target: Any)
-
     companion object {
 
         val INSTANCE by lazy {
@@ -124,10 +119,6 @@ class NMSItemImpl2 : NMSItem() {
         return (nmsItem as NMSItemStack).copy()
     }
 
-    override fun applyComponents(source: Any, target: Any) {
-        (source as NMSItemStack).applyComponents((target as NMSItemStack).components)
-    }
-
 }
 
 /**
@@ -169,13 +160,6 @@ class NMSItemImpl1 : NMSItem() {
 
     override fun copyItem(nmsItem: Any): Any {
         return nmsCloneMethod.invoke(nmsItem)!!
-    }
-
-    override fun applyComponents(source: Any, target: Any) {
-        val targetTag = getTag(target) ?: return
-        val sourceTag = getTag(source) ?: return
-        sourceTag.mergeShallow(targetTag, true)
-        setTag(sourceTag, targetTag)
     }
 
     /**

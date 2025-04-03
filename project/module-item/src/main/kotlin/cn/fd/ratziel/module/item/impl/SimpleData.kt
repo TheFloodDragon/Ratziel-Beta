@@ -14,7 +14,7 @@ data class SimpleData(
     /**
      * 物品材料
      */
-    override var material: ItemMaterial = ItemMaterial.Companion.EMPTY,
+    override var material: ItemMaterial = ItemMaterial.EMPTY,
     /**
      * 物品标签
      */
@@ -29,14 +29,5 @@ data class SimpleData(
      * 克隆数据
      */
     override fun clone() = this.copy()
-
-    /**
-     * 合并数据
-     */
-    override fun merge(other: ItemData, replace: Boolean) {
-        if (other.material != ItemMaterial.Companion.EMPTY) this.material = other.material
-        if (other.amount >= 1) this.amount = other.amount
-        this.tag.merge(other.tag, replace)
-    }
 
 }

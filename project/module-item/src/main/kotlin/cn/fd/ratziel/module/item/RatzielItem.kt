@@ -29,7 +29,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
     /**
      * 物品标识符
      */
-    val id: Identifier get() = info.type
+    val id: Identifier get() = info.identity
 
     /**
      * 物品信息
@@ -50,12 +50,12 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
     /**
      * 读取指定数据
      */
-    operator override fun get(name: String): NbtTag? = (data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)?.get(name)
+    override fun get(name: String): NbtTag? = (data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)?.get(name)
 
     /**
      * 写入指定数据
      */
-    operator override fun set(name: String, tag: NbtTag) = data.tag.handle(RATZIEL_DATA_PATH) { put(name, tag) }
+    override fun set(name: String, tag: NbtTag) = data.tag.handle(RATZIEL_DATA_PATH) { put(name, tag) }
 
     companion object {
 
@@ -129,18 +129,18 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
      */
     data class Info(
         /**
-         * 物品类型
+         * 物品身份标识
          */
-        val type: Identifier,
+        val identity: Identifier,
         /**
          * 物品版本信息 (生成此物品时的元素哈希)
          */
         val hash: String
     ) {
 
-        constructor(type: String, hash: String) : this(SimpleIdentifier(type), hash)
+        constructor(identifier: String, hash: String) : this(SimpleIdentifier(identifier), hash)
 
-        constructor(type: Identifier, hash: Int) : this(type, hash.toString())
+        constructor(identifier: Identifier, hash: Int) : this(identifier, hash.toString())
 
         companion object {
 
@@ -153,7 +153,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
             /**
              * 内部信息 - [id]
              */
-            private const val INFO_TYPE = "type"
+            private const val INFO_ID = "identity"
 
             /**
              * 内部信息 - [hash]
@@ -168,7 +168,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
                 // 获取内部信息
                 val internal = data.tag.read(INTERNAL_PATH) as? NbtCompound ?: return null
                 // 读取类型
-                val type = internal[INFO_TYPE] as? NbtString ?: return null
+                val type = internal[INFO_ID] as? NbtString ?: return null
                 // 读取版本信息
                 val hash = internal[INFO_HASH] as? NbtString ?: return null
                 // 构造信息对象
@@ -181,7 +181,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
             @JvmStatic
             fun write(info: Info, data: ItemData) = data.tag.handle(INTERNAL_PATH) {
                 // 写入类型
-                put(INFO_TYPE, NbtString(info.type.content))
+                put(INFO_ID, NbtString(info.identity.content))
                 // 写入版本信息
                 put(INFO_HASH, NbtString(info.hash))
             }
