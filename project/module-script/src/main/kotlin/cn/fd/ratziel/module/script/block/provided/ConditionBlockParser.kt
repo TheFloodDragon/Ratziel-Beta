@@ -20,7 +20,7 @@ object ConditionBlockParser : RecursingBlockParser {
         val valueThen = element["then"]
         val valueElse = element["else"]
         return ConditionBlock(
-            parser.parse(valueIf)!!,
+            listOf(parser.parse(valueIf)!!),
             valueThen?.let { parser.parse(it) },
             valueElse?.let { parser.parse(it) }
         )

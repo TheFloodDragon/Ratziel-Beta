@@ -27,7 +27,7 @@ object NbtHelper {
      * 通过路径读取 [NbtTag]
      */
     @JvmStatic
-    fun read(tag: NbtCompound, path: Iterable<NbtPath.Node>, create: Boolean = true): NbtTag? {
+    fun read(tag: NbtCompound, path: Iterable<NbtPath.Node>, create: Boolean = false): NbtTag? {
         var result: NbtTag = tag
         for (node in path) {
             when (node) {

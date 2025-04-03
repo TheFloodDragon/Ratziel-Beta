@@ -3,9 +3,11 @@ package cn.fd.ratziel.module.item
 import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtString
+import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.RatzielItem.Companion.isRatzielItem
+import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.ItemSheet
@@ -22,7 +24,12 @@ import taboolib.platform.util.isAir
  * @author TheFloodDragon
  * @since 2024/5/2 22:05
  */
-open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem {
+open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem, DataHolder {
+
+    /**
+     * 物品标识符
+     */
+    val id: Identifier get() = info.type
 
     /**
      * 物品信息
@@ -36,25 +43,36 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
         protected set
 
     /**
-     * 物品标识符
-     */
-    val id: Identifier get() = info.type
-
-    /**
      * 物品服务
      */
     override val service get() = GlobalServiceManager[id]
 
+    /**
+     * 读取指定数据
+     */
+    operator override fun get(name: String): NbtTag? = (data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)?.get(name)
+
+    /**
+     * 写入指定数据
+     */
+    operator override fun set(name: String, tag: NbtTag) = data.tag.handle(RATZIEL_DATA_PATH) { put(name, tag) }
+
     companion object {
+
+        /**
+         * 物品节点
+         */
+        @JvmField
+        val RATZIEL_PATH = NbtPath(
+            NbtPath.NameNode(ItemSheet.CUSTOM_DATA_COMPONENT),
+            NbtPath.NameNode("Ratziel")
+        )
 
         /**
          * 物品数据节点
          */
         @JvmField
-        val RATZIEL_DATA_PATH = NbtPath(
-            NbtPath.NameNode(ItemSheet.CUSTOM_DATA_COMPONENT),
-            NbtPath.NameNode("Ratziel")
-        )
+        val RATZIEL_DATA_PATH = RATZIEL_PATH.plus(NbtPath.NameNode("data"))
 
         /**
          * @return [RatzielItem]
@@ -101,7 +119,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
          */
         @JvmStatic
         fun isRatzielItem(tag: NbtCompound): Boolean {
-            return tag.read(RATZIEL_DATA_PATH, false) is NbtCompound
+            return tag.read(RATZIEL_PATH, false) is NbtCompound
         }
 
     }
@@ -130,7 +148,7 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
              * 专有信息节点
              */
             @JvmStatic
-            private val INTERNAL_PATH = RATZIEL_DATA_PATH.plus(NbtPath.NameNode("internal"))
+            private val INTERNAL_PATH = RATZIEL_PATH.plus(NbtPath.NameNode("internal"))
 
             /**
              * 内部信息 - [id]
