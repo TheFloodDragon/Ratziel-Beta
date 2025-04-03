@@ -46,6 +46,7 @@ object ItemRegistry {
     /**
      * @param serializer 序列化器
      * @param priority 优先级
+     * @param processor 物品数据处理器
      */
     class Integrated<T>(
         val type: Class<T>,

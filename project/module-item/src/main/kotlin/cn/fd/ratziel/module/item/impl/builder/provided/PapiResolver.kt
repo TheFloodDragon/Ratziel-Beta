@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.platform.bukkit.util.player
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.module.item.api.builder.SectionTagResolver
+import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
 import taboolib.platform.compat.replacePlaceholder
 
 /**

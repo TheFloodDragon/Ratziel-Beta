@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.module.item.api.builder.SectionTagResolver
+import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake

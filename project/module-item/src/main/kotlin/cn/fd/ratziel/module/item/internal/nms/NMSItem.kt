@@ -1,12 +1,11 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.altawk.nbt.tag.putCompound
 import cn.fd.ratziel.module.item.impl.ItemSheet
-import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.PatchedDataComponentMap
+import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.item.component.CustomData
@@ -53,7 +52,7 @@ abstract class NMSItem {
     abstract fun copyItem(nmsItem: Any): Any
 
     /**
-     * 合并内部标签数据
+     * 合并内部标签数据 (浅合并)
      */
     abstract fun applyComponents(source: Any, target: Any)
 
@@ -83,25 +82,29 @@ class NMSItemImpl2 : NMSItem() {
         ReflexClass.of(NMSItemStack::class.java).getField("components", remap = true)
     }
 
+    val ops get() = CraftRegistry.getMinecraftRegistry().createSerializationContext(DynamicOpsNBT.INSTANCE)
+
     override fun getTag(nmsItem: Any): NbtCompound? {
-        try {
-            val nmsTag = (nmsItem as NMSItemStack).save(CraftRegistry.getMinecraftRegistry())
-            return NMSNbt.INSTANCE.fromNms(nmsTag) as? NbtCompound
-        } catch (e: IllegalStateException) {
-            return null // Empty ItemStack
-        }
+        val patch = (nmsItem as NMSItemStack).componentsPatch
+        val nmsTag = DataComponentPatch.CODEC.encodeStart(ops, patch).resultOrPartial {
+            error("Failed to save: $it")
+        }.getOrNull() ?: return null
+        return NMSNbt.INSTANCE.fromNms(nmsTag) as? NbtCompound
     }
 
     override fun setTag(nmsItem: Any, tag: NbtCompound) {
         val nmsTag = NMSNbt.INSTANCE.toNms(tag) as NBTBase
-        val handle = NMSItemStack.parse(CraftRegistry.getMinecraftRegistry(), nmsTag).getOrNull()
-        // 原物品组件
+        // 解析成 DataComponentPatch
+        val patch = DataComponentPatch.CODEC.parse(ops, nmsTag).resultOrPartial {
+            error("Failed to parse: $it")
+        }.getOrNull() ?: return
+        // 源物品组件
         val components = (nmsItem as NMSItemStack).components
         // 源物品的组件不为空
         if (components is PatchedDataComponentMap) {
-            components.restorePatch(handle?.componentsPatch ?: DataComponentPatch.EMPTY)
+            components.restorePatch(patch)
         } else { // 源物品组件为空
-            val newPatchedMap = PatchedDataComponentMap(handle?.components ?: DataComponentMap.EMPTY)
+            val newPatchedMap = PatchedDataComponentMap.fromPatch(nmsItem.prototype, patch)
             componentsField.set(nmsItem, newPatchedMap) // 直接设置
         }
     }
@@ -153,7 +156,7 @@ class NMSItemImpl1 : NMSItem() {
     override fun setCustomTag(nmsItem: Any, tag: NbtCompound) {
         val nmsTag = nmsTagField.get(nmsItem) as? NBTTagCompound12 ?: return
         @Suppress("UNCHECKED_CAST") val map = srcMapField.get(nmsTag) as? MutableMap<String, Any>
-        val newTag = if (map != null) {
+        if (map != null) {
             // 直接对源标签操作
             map[ItemSheet.CUSTOM_DATA_COMPONENT] = NMSNbt.INSTANCE.toNms(tag)
         } else {

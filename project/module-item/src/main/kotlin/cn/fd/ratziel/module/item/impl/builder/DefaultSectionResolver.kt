@@ -1,9 +1,8 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.util.splitNonEscaped
-import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.exception.ArgumentNotFoundException
-import cn.fd.ratziel.module.item.api.builder.SectionTagResolver
+import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.util.splitNonEscaped
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import taboolib.common.platform.function.severe
