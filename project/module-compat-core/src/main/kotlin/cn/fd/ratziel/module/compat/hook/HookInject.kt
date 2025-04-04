@@ -8,7 +8,7 @@ import taboolib.common.LifeCycle
  * @author TheFloodDragon
  * @since 2024/2/17 12:05
  */
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class HookInject(
     val lifeCycle: LifeCycle = LifeCycle.ENABLE

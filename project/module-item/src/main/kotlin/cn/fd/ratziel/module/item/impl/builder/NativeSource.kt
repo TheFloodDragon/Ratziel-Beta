@@ -8,13 +8,14 @@ import cn.fd.ratziel.core.util.digest
 import cn.fd.ratziel.module.item.RatzielItem
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemSource
+import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.util.MetaMatcher
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 
 /**
- * NativeSource - Ratziel 原生物品源
+ * NativeSource - Ratziel 原生物品源 (不经过注册机制)
  *
  * @author TheFloodDragon
  * @since 2025/4/4 14:24
@@ -23,7 +24,7 @@ object NativeSource : ItemSource {
 
     val materialNames = listOf("material", "mat", "materials", "mats")
 
-    override fun generateItem(element: Element, sourceData: ItemData, context: ArgumentContext): RatzielItem? {
+    fun generateItem(element: Element, sourceData: ItemData): RatzielItem? {
         // 生成物品唯一标识符
         val identifier = SimpleIdentifier(element.name)
         // 确定版本
@@ -38,6 +39,10 @@ object NativeSource : ItemSource {
 
         // 创建物品
         return RatzielItem.of(info, sourceData)
+    }
+
+    override fun generateItem(element: Element, context: ArgumentContext): RatzielItem? {
+        return generateItem(element, SimpleData())
     }
 
 }

@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.internal.compat
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.getBy
-import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
@@ -24,7 +23,7 @@ object AzureFlowSource : ItemSource {
 
     val alias = listOf("af", "AzureFlow")
 
-    override fun generateItem(element: Element, sourceData: ItemData, context: ArgumentContext): NeoItem? {
+    override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
         // 获取名称
         val property = (element.property as? JsonObject) ?: return null
         val name = (property.getBy(alias) as? JsonPrimitive)?.contentOrNull ?: return null
@@ -34,7 +33,7 @@ object AzureFlowSource : ItemSource {
         val itemStack = afItem.virtualItemStack(context.player() as? Player)
         // 提取数据
         val data = RefItemStack.exactData(itemStack)
-        return CompatItem("AzureFlow", data)
+        return CompatItem(AzureFlowHook.pluginName, data)
     }
 
 }

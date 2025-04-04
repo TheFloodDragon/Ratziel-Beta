@@ -3,3 +3,7 @@ Workspaces:
   filter: '^(?![#!]).*\.(?i)(yaml|yml|toml|tml|json|conf)$'
   paths:
     - 'plugins/Ratziel/workspace'
+
+Message:
+  # 是否在消息组件序列化的过程中默认取消斜体
+  non-italic-by-default: true

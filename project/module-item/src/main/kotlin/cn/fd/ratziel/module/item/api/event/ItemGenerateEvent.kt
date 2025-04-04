@@ -1,9 +1,7 @@
 package cn.fd.ratziel.module.item.api.event
 
-import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import kotlinx.serialization.json.JsonElement
@@ -41,23 +39,6 @@ open class ItemGenerateEvent(
          * 物品元素
          */
         val element: JsonElement
-    ) : ItemGenerateEvent(identifier, generator, context)
-
-    /**
-     * 通过组件生成 [NbtTag] 后触发
-     */
-    class DataGenerate(
-        identifier: Identifier,
-        generator: ItemGenerator,
-        context: ArgumentContext,
-        /**
-         * 组件的类型
-         */
-        val componentType: Class<*>,
-        /**
-         * 生成的 [ItemData]
-         */
-        var generated: ItemData?
     ) : ItemGenerateEvent(identifier, generator, context)
 
     /**

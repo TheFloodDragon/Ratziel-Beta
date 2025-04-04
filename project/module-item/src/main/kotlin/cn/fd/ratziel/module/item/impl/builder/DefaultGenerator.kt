@@ -41,24 +41,23 @@ class DefaultGenerator(
      */
     fun buildAsync(sourceData: ItemData, context: ArgumentContext) = ItemElement.scope.async {
         // 生成基本物品
-        val item = NativeSource.generateItem(origin, sourceData, context) ?: throw IllegalStateException("Failed to generate item source!")
+        val item = NativeSource.generateItem(origin, sourceData) ?: throw IllegalStateException("Failed to generate item source!")
 
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(item.id, this@DefaultGenerator, context, origin.property).call()
 
-        // 生成任务列表
-        val tasks = ItemRegistry.registry.sortedBy { it.priority }.asReversed().map {
-            async {
-                val tag = runTask(it, origin.property, context, item.data)
-                val event = ItemGenerateEvent.DataGenerate(item.id, this@DefaultGenerator, context, it.type, tag)
-                event.call()
-                event.generated
-            }
+        // 原生任务: 组件 -> 数据
+        val nativeTasks = ItemRegistry.registry.map {
+            async { runTask(it, origin.property, context, item.data) }
+        }
+        // 源任务: 物品源 -> 解析 -> 数据
+        val sourcedTasks = ItemRegistry.sources.map {
+            async { it.generateItem(origin, context)?.data }
         }
 
-        val firstMat = item.data.material
         // 等待所有任务完成, 然后合并数据
-        for (generated in tasks.awaitAll()) {
+        val firstMat = item.data.material
+        for (generated in nativeTasks.plus(sourcedTasks).awaitAll()) {
             if (generated != null) {
                 // 重新设置材质
                 val nextMat = generated.material

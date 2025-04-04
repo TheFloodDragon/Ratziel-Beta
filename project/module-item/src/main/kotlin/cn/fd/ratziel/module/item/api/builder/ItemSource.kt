@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 
 /**
@@ -17,9 +16,8 @@ interface ItemSource {
      * 生成基本物品
      *
      * @param element 物品元素
-     * @param sourceData 物品源数据
      * @param context 上下文
      */
-    fun generateItem(element: Element, sourceData: ItemData, context: ArgumentContext): NeoItem?
+    fun generateItem(element: Element, context: ArgumentContext): NeoItem?
 
 }

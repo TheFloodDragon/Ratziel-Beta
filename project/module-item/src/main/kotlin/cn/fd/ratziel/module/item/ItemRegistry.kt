@@ -1,8 +1,9 @@
 package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
+import cn.fd.ratziel.module.item.api.builder.ItemSource
 import kotlinx.serialization.KSerializer
-import java.util.concurrent.CopyOnWriteArraySet
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * ItemRegistry - 物品注册表
@@ -15,7 +16,12 @@ object ItemRegistry {
     /**
      * 组件集成注册表
      */
-    val registry: MutableCollection<Integrated<*>> = CopyOnWriteArraySet()
+    val registry: MutableList<Integrated<*>> = CopyOnWriteArrayList()
+
+    /**
+     * 物品源注册表
+     */
+    val sources: MutableList<ItemSource> = CopyOnWriteArrayList()
 
     /**
      * 注册组件
@@ -26,9 +32,8 @@ object ItemRegistry {
         type: Class<T>,
         serializer: KSerializer<T>,
         processor: DataProcessor = DataProcessor.NoProcess,
-        priority: Int = 0
     ) {
-        val integrated = Integrated(type, serializer, processor, priority)
+        val integrated = Integrated(type, serializer, processor)
         registry.add(integrated)
     }
 
@@ -45,14 +50,12 @@ object ItemRegistry {
 
     /**
      * @param serializer 序列化器
-     * @param priority 优先级
      * @param processor 物品数据处理器
      */
     class Integrated<T>(
         val type: Class<T>,
         val serializer: KSerializer<T>,
         val processor: DataProcessor,
-        val priority: Int,
     )
 
 }

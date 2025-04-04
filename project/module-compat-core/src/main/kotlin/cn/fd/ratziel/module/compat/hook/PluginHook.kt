@@ -14,8 +14,8 @@ interface PluginHook {
     val pluginName: String
 
     /**
-     * 判断插件是否可挂钩
+     * 插件是否挂钩
      */
-    fun isHookable(): Boolean
+    val isHooked: Boolean
 
 }

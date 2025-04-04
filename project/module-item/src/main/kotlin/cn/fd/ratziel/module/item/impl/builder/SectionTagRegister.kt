@@ -16,7 +16,7 @@ import taboolib.library.reflex.ReflexClass
 class SectionTagRegister : ClassVisitor(10) {
 
     override fun visitStart(clazz: ReflexClass) {
-        if (clazz.hasInterface(SectionTagResolver::class.java)) {
+        if (SectionTagResolver::class.java.isAssignableFrom(clazz.toClass())) {
             val resolver = findInstance(clazz) as SectionTagResolver
             DefaultSectionResolver.resolvers.add(resolver)
             debug("注册表 DefaultSectionResolver#resolvers 注册了新的解析器: $resolver")
