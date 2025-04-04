@@ -6,17 +6,11 @@ import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.console
-import taboolib.library.reflex.Reflex.Companion.unsafeInstance
+import taboolib.library.reflex.ClassAnnotation
+import taboolib.library.reflex.ClassMethod
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.lang.sendLang
-import java.io.File
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
-import java.net.JarURLConnection
-import java.net.URISyntaxException
 import java.util.*
-import java.util.function.BiConsumer
-import java.util.jar.JarFile
 
 /**
  * HookManager
@@ -56,20 +50,6 @@ object HookManager {
         if (hook is ManagedPluginHook) hook.bindProvider?.let { hookClassLoader.removeProvider(it) }
     }
 
-    fun <T : ManagedPluginHook> buildHookClasses(hookClass: Class<T>) =
-        classNamesInJar.mapNotNull { name ->
-            name.takeIf { it.startsWith(hookClass.`package`.name) && !it.startsWith(hookClass.name) }
-        }.toTypedArray()
-
-    /**
-     * 通过 [HookInject] 对类进行依赖注入
-     */
-    fun inject(clazz: Class<*>, action: BiConsumer<HookInject, Method>) =
-        clazz.methods.forEach {
-            if (it.isAnnotationPresent(HookInject::class.java))
-                action.accept(it.getAnnotation(HookInject::class.java), it)
-        }
-
     @Awake(LifeCycle.LOAD)
     fun hookInject() {
         // 在 LOAD, ENABLE, ACTIVE, DISABLE 时分别注入
@@ -87,17 +67,19 @@ object HookManager {
                     } else Collections.singletonList(hook::class.java)
 
                     for (clazz in classes) {
-                        inject(clazz) { anno, method ->
+                        inject(clazz) { reflexClass, method, anno ->
                             // 生命周期不匹配时返回
-                            if (anno.lifeCycle != lifeCycle) return@inject
+                            if (anno.property<LifeCycle>("lifeCycle") != lifeCycle) return@inject
                             // 尝试执行, 错误时输出信息并取消注册
                             try {
-                                val instance =
-                                    if (Modifier.isStatic(method.modifiers)) null
-                                    else ReflexClass.of(clazz).getField("INSTANCE", findToParent = false, remap = false).get()
-                                        ?: runCatching { clazz.getConstructor().newInstance() }.getOrNull()
-                                        ?: clazz.unsafeInstance()
-                                method.invoke(instance)
+                                if (method.isStatic) {
+                                    method.invokeStatic()
+                                } else {
+                                    val instance = reflexClass.getInstance {
+                                        Class.forName(it, false, clazz::class.java.classLoader)
+                                    }
+                                    method.invoke(instance!!)
+                                }
                             } catch (ex: Exception) {
                                 unregister(hook) // 取消注册
                                 console().sendLang("Plugin-Compat-Failed", hook.pluginName)
@@ -115,28 +97,14 @@ object HookManager {
     }
 
     /**
-     * 当前插件Jar文件内所有的类名
+     * 通过 [HookInject] 对类进行依赖注入
      */
-    val classNamesInJar: List<String> by lazy {
-        val classNames = LinkedList<String>()
-        val url = TabooLib::class.java.protectionDomain.codeSource.location
-        val srcFile = try {
-            File(url.toURI())
-        } catch (_: IllegalArgumentException) {
-            File((url.openConnection() as JarURLConnection).jarFileURL.toURI())
-        } catch (_: URISyntaxException) {
-            File(url.path)
+    fun inject(clazz: Class<*>, action: (ReflexClass, ClassMethod, ClassAnnotation) -> Unit) {
+        val reflexClass = ReflexClass.of(clazz, false)
+        for (method in reflexClass.structure.methods) {
+            val anno = method.getAnnotationIfPresent(HookInject::class.java) ?: continue
+            action(reflexClass, method, anno)
         }
-        if (srcFile.isFile) {
-            JarFile(srcFile).stream().filter { it.name.endsWith(".class") }.forEach {
-                classNames += it.name.replace('/', '.').substringBeforeLast(".class")
-            }
-        } else {
-            srcFile.walkTopDown().filter { it.extension == "class" }.forEach {
-                classNames += it.path.substringAfter(srcFile.path).drop(1).replace('/', '.').substringBeforeLast(".class")
-            }
-        }
-        return@lazy classNames
     }
 
 }

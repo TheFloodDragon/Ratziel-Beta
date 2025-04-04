@@ -27,6 +27,6 @@ object TrChatHook : ManagedPluginHook {
         else null
     }
 
-    override val managedClasses = HookManager.buildHookClasses(this::class.java)
+    override val managedClasses = arrayOf("cn.fd.ratziel.module.compat.hook.impl.trchat.TrChatListener")
 
 }
