@@ -5,6 +5,7 @@ package cn.fd.ratziel.module.item.internal.nms
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.impl.SimpleMaterial.Companion.toBukkit
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack.Companion.nmsClass
@@ -134,6 +135,14 @@ class RefItemStack private constructor(
          */
         @JvmStatic
         fun ofNms(nmsItem: Any) = RefItemStack(newObc(nmsItem) as BukkitItemStack)
+
+        /**
+         * 从 [itemStack] 中提取 [ItemData]
+         */
+        fun exactData(itemStack: BukkitItemStack): ItemData {
+            val ref = of(itemStack)
+            return SimpleData(ref.material, ref.tag, ref.amount)
+        }
 
         /**
          * nms.ItemStack

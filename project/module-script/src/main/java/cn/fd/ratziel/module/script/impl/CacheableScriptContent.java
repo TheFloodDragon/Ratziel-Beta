@@ -9,14 +9,15 @@ import javax.script.CompiledScript;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * CachedScriptContent
+ * CacheableScriptContent
+ * 可缓存编译后的脚本
  *
  * @author TheFloodDragon
  * @since 2024/10/4 20:19
  */
-public class CachedScriptContent extends SimpleScriptContent implements CompilableScript {
+public class CacheableScriptContent extends SimpleScriptContent implements CompilableScript {
 
-    public CachedScriptContent(@NotNull String content, @NotNull ScriptExecutor executor) {
+    public CacheableScriptContent(@NotNull String content, @NotNull ScriptExecutor executor) {
         super(content, executor);
     }
 

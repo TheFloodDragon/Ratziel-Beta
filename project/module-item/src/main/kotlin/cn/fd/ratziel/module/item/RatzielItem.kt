@@ -6,7 +6,6 @@ import cn.altawk.nbt.tag.NbtString
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.SimpleIdentifier
-import cn.fd.ratziel.module.item.RatzielItem.Companion.isRatzielItem
 import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
@@ -24,23 +23,21 @@ import taboolib.platform.util.isAir
  * @author TheFloodDragon
  * @since 2024/5/2 22:05
  */
-open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem, DataHolder {
+class RatzielItem private constructor(
+    /**
+     * 物品信息
+     */
+    val info: Info,
+    /**
+     * 物品数据
+     */
+    override val data: ItemData
+) : NeoItem, DataHolder {
 
     /**
      * 物品标识符
      */
     val id: Identifier get() = info.identity
-
-    /**
-     * 物品信息
-     */
-    val info: Info = info
-
-    /**
-     * 物品数据
-     */
-    final override var data: ItemData = data
-        protected set
 
     /**
      * 物品服务
@@ -75,6 +72,9 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
         val RATZIEL_DATA_PATH = RATZIEL_PATH.plus(NbtPath.NameNode("data"))
 
         /**
+         * 由 [ItemData] 创建 [RatzielItem]
+         * 同时会向 [data] 中写入 [info]
+         *
          * @return [RatzielItem]
          */
         @JvmStatic
@@ -84,9 +84,20 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
         }
 
         /**
+         * 由 [ItemData] 创建 [RatzielItem]
+         *
+         * @return 若目标不是 [RatzielItem], 返回空
+         */
+        @JvmStatic
+        fun of(data: ItemData): RatzielItem? {
+            val info = Info.read(data) ?: return null
+            return of(info, data)
+        }
+
+        /**
          * 将目标 [ItemStack] 转为 [RatzielItem]
          *
-         * @return 若目标不满足 [isRatzielItem], 则返回空
+         * @return 若目标不是 [RatzielItem], 返回空
          */
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
@@ -96,30 +107,23 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
         }
 
         /**
-         * 将目标 [ItemData] 转为 [RatzielItem]
+         * 检查 [ItemData], 判断是否具有 专有信息 [Info]
          *
-         * @return 若目标不满足 [isRatzielItem], 则返回空
+         * @return 目标是否为 [RatzielItem]
          */
         @JvmStatic
-        fun of(itemData: ItemData): RatzielItem? {
-            val info = Info.read(itemData) ?: return null
-            return RatzielItem(info, itemData)
+        fun isRatzielItem(data: ItemData): Boolean {
+            return Info.read(data) != null
         }
 
         /**
-         * 判断目标 [ItemStack] 是否为 [RatzielItem]
+         * 检查 [ItemStack], 判断是否具有 专有信息 [Info]
+         *
+         * @return 目标是否为 [RatzielItem]
          */
         @JvmStatic
         fun isRatzielItem(itemStack: ItemStack): Boolean {
-            return isRatzielItem(RefItemStack.of(itemStack).tag)
-        }
-
-        /**
-         * 检查目标标签, 判断是否为 [RatzielItem]
-         */
-        @JvmStatic
-        fun isRatzielItem(tag: NbtCompound): Boolean {
-            return tag.read(RATZIEL_PATH, false) is NbtCompound
+            return isRatzielItem(RefItemStack.of(itemStack))
         }
 
     }
@@ -139,8 +143,6 @@ open class RatzielItem private constructor(info: Info, data: ItemData) : NeoItem
     ) {
 
         constructor(identifier: String, hash: String) : this(SimpleIdentifier(identifier), hash)
-
-        constructor(identifier: Identifier, hash: Int) : this(identifier, hash.toString())
 
         companion object {
 

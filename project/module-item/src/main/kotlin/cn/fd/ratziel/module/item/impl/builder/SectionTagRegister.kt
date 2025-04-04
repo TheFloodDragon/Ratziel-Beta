@@ -19,7 +19,7 @@ class SectionTagRegister : ClassVisitor(10) {
         if (clazz.hasInterface(SectionTagResolver::class.java)) {
             val resolver = findInstance(clazz) as SectionTagResolver
             DefaultSectionResolver.resolvers.add(resolver)
-            debug("    REGISTRY#DefaultSectionResolver.resolvers: + $resolver")
+            debug("注册表 DefaultSectionResolver#resolvers 注册了新的解析器: $resolver")
         }
     }
 

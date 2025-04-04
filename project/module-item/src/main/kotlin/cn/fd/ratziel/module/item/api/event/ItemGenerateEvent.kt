@@ -40,11 +40,7 @@ open class ItemGenerateEvent(
         /**
          * 物品元素
          */
-        val element: JsonElement,
-        /**
-         * 物品数据
-         */
-        val data: ItemData
+        val element: JsonElement
     ) : ItemGenerateEvent(identifier, generator, context)
 
     /**

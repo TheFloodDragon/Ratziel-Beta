@@ -32,6 +32,7 @@ object KotlinScriptConfiguration {
             acceptedLocations(ScriptAcceptedLocation.Everywhere)
         }
     }) {
+        @Suppress("unused")
         private fun readResolve(): Any = Compilation
     }
 
@@ -41,6 +42,7 @@ object KotlinScriptConfiguration {
     object Evaluation : ScriptEvaluationConfiguration({
         refineConfigurationBeforeEvaluate(::configureProvidedPropertiesFromJsr223Context)
     }) {
+        @Suppress("unused")
         private fun readResolve(): Any = Evaluation
     }
 

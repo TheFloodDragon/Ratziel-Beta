@@ -1,12 +1,12 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.item.api.NeoItem
 import java.util.concurrent.CompletableFuture
 
 /**
- * ItemGenerator - 物品构生成器
+ * ItemGenerator - 物品生成器
  *
  * @author TheFloodDragon
  * @since 2023/10/28 12:20

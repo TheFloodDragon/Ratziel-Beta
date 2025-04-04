@@ -4,7 +4,7 @@ import cn.fd.ratziel.module.script.api.CompilableScript
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
-import cn.fd.ratziel.module.script.impl.CachedScriptContent
+import cn.fd.ratziel.module.script.impl.CacheableScriptContent
 import cn.fd.ratziel.module.script.internal.Initializable
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.function.warning
@@ -31,8 +31,8 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
      * @param compile 是否启用编译
      * @param async 若编译启用, 是否异步编译
      */
-    fun build(script: String, compile: Boolean = true, async: Boolean = true): CachedScriptContent {
-        val sc = CachedScriptContent(script, this)
+    fun build(script: String, compile: Boolean = true, async: Boolean = true): CacheableScriptContent {
+        val sc = CacheableScriptContent(script, this)
         if (compile && sc.future == null) {
             sc.future = if (async) {
                 CompletableFuture.supplyAsync { compile(script) }

@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
-import cn.fd.ratziel.platform.bukkit.util.player
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
+import cn.fd.ratziel.platform.bukkit.util.player
 import taboolib.platform.compat.replacePlaceholder
 
 /**
@@ -11,9 +11,7 @@ import taboolib.platform.compat.replacePlaceholder
  * @author TheFloodDragon
  * @since 2024/8/16 19:26
  */
-object PapiResolver : SectionTagResolver {
-
-    override val names = arrayOf("papi", "p")
+object PapiResolver : SectionTagResolver("papi", "p") {
 
     override fun resolve(element: List<String>, context: ArgumentContext): String? {
         // 获取玩家

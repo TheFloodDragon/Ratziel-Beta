@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.function.SimpleContext
 
 /**
  * SectionTagResolver
@@ -9,21 +8,16 @@ import cn.fd.ratziel.core.function.SimpleContext
  * @author TheFloodDragon
  * @since 2024/8/13 14:44
  */
-interface SectionTagResolver {
-
+abstract class SectionTagResolver(
     /**
      * 解析器名称
      */
-    val names: Array<String>
+    vararg val names: String
+) {
 
     /**
-     * 解析元素 (带参数)
+     * 解析元素
      */
-    fun resolve(element: List<String>, context: ArgumentContext): String?
-
-    /**
-     * 解析元素 (不带参数)
-     */
-    fun resolve(element: List<String>): String? = resolve(element, SimpleContext())
+    abstract fun resolve(element: List<String>, context: ArgumentContext): String?
 
 }
