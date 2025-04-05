@@ -23,7 +23,7 @@ object PapiResolver : SectionTagResolver("papi", "p") {
             else -> return null
         }
         // 处理Papi变量
-        return content.replacePlaceholder(player)
+        return "%$content%".replacePlaceholder(player)
     }
 
 }

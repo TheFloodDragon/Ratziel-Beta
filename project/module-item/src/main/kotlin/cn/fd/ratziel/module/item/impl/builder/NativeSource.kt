@@ -34,8 +34,8 @@ object NativeSource : ItemSource {
         val info = RatzielItem.Info(identifier, version)
 
         // 确定第一物品材料类型
-        val name = (property.getBy(materialNames) as? JsonPrimitive)?.contentOrNull ?: return null
-        sourceData.material = MetaMatcher.matchMaterial(name)
+        val name = (property.getBy(materialNames) as? JsonPrimitive)?.contentOrNull
+        if (name !=null) sourceData.material = MetaMatcher.matchMaterial(name)
 
         // 创建物品
         return RatzielItem.of(info, sourceData)
