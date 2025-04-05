@@ -1,9 +1,13 @@
 package cn.fd.ratziel.module.item.internal.command
 
+import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.module.item.util.getItemBySlot
 import cn.fd.ratziel.module.item.util.modifyTag
-import cn.fd.ratziel.module.nbt.*
+import cn.fd.ratziel.module.nbt.NBTSerializer
+import cn.fd.ratziel.module.nbt.NbtAdapter
+import cn.fd.ratziel.module.nbt.delete
+import cn.fd.ratziel.module.nbt.write
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
@@ -62,14 +66,14 @@ object NBTCommand {
                 dynamic("value") {
                     execute<ProxyPlayer> { player, ctx, _ ->
                         // 获取基本信息
-                        val node = ctx.args()[2]
+                        val path = NbtPath(ctx.args()[2])
                         val rawValue = ctx.args()[3]
-                        player.cast<Player>().inventory.getItemBySlot(ctx.args()[1])?.modifyTag {
+                        player.cast<Player>().inventory.getItemBySlot(ctx.args()[1])?.modifyTag { tag ->
                             val value = NBTSerializer.Converter.deserializeFromString(rawValue)
-                            it.putDeep(node, value)
+                            tag.write(path, value, true)
                             player.sendLang(
                                 "NBTAction-Set",
-                                node, asString(value),
+                                path.toString(), asString(value),
                                 translateType(player, value).toLegacyText()
                             )
                         } ?: player.sendLang("NBTAction-EmptyTag")
@@ -89,10 +93,10 @@ object NBTCommand {
             dynamic("node") {
                 execute<ProxyPlayer> { player, ctx, _ ->
                     // 获取基本信息
-                    val rawNode = ctx.args()[2]
-                    player.cast<Player>().inventory.getItemBySlot(ctx.args()[1])?.modifyTag {
-                        it.removeDeep(rawNode)
-                        player.sendLang("NBTAction-Remove", rawNode)
+                    val path = NbtPath(ctx.args()[2])
+                    player.cast<Player>().inventory.getItemBySlot(ctx.args()[1])?.modifyTag { tag ->
+                        tag.delete(path)
+                        player.sendLang("NBTAction-Remove", path.toString())
                     } ?: player.sendLang("NBTAction-EmptyTag")
                 }
             }
@@ -119,7 +123,7 @@ object NBTCommand {
                 nbt.content.let { list ->
                     if (list.isEmpty()) append(sender.asLangText("NBTFormat-List-Empty"))
                     else list.forEachIndexed { index, it ->
-                        val deep = nodeDeep + DeepVisitor.LIST_INDEX_START + index + DeepVisitor.LIST_INDEX_END
+                        val deep = "$nodeDeep[$index]"
                         newLine(); repeat(level) { append(retractComponent) } // 缩进
                         append(sender.asLangText("NBTFormat-Retract-List")) // 列表前缀
                         append(nbtAsComponent(sender, it, level + 1, slot, deep))
@@ -134,7 +138,7 @@ object NBTCommand {
             is NbtCompound -> {
                 var first = isFirst
                 nbt.forEach { (shallow, value) ->
-                    val deep = if (nodeDeep == null) shallow else nodeDeep + DeepVisitor.DEEP_SEPARATION + shallow // 深层节点的合成
+                    val deep = if (nodeDeep == null) shallow else "$nodeDeep.$shallow" // 深层节点的合成
                     if (!first) {
                         newLine(); repeat(level) { append(retractComponent) } // 缩进
                     }
@@ -158,7 +162,7 @@ object NBTCommand {
         sender: ProxyCommandSender,
         nodeDeep: String?,
         slot: String,
-        nodeShallow: String? = nodeDeep?.substringAfterLast(DeepVisitor.DEEP_SEPARATION),
+        nodeShallow: String? = nodeDeep?.substringAfterLast("."),
     ) = getTypeJson(sender, "NBTFormat-Entry-Key")
         .buildMessage(sender, nodeShallow.toString(), slot, nodeDeep.toString())
 

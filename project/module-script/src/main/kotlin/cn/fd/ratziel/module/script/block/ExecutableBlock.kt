@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.function.block
+package cn.fd.ratziel.module.script.block
 
 import cn.fd.ratziel.core.function.ArgumentContext
 

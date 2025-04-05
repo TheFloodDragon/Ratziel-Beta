@@ -69,7 +69,7 @@ subprojects {
     kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_1_8
-            freeCompilerArgs.addAll("-Xallow-unstable-dependencies", "-Xwhen-guards", "-Xnon-local-break-continue")
+            freeCompilerArgs.addAll("-Xallow-unstable-dependencies")
         }
     }
 

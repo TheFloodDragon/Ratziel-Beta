@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.nbt
 
+import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
 import cn.fd.ratziel.core.util.adapt
@@ -50,8 +51,9 @@ object NBTSerializer : KSerializer<NbtTag> {
                 is JsonArray -> NbtList.of(json.map { deserializeFromJson(it, NbtCompound()) })
                 is JsonObject -> source.also { tag ->
                     json.forEach {
-                        val newSource = tag.getDeep(it.key) as? NbtCompound ?: NbtCompound()
-                        tag.putDeep(it.key, deserializeFromJson(it.value, newSource))
+                        val path =NbtPath(it.key)
+                        val newSource = tag.read(path) as? NbtCompound ?: NbtCompound()
+                        tag.write(path, deserializeFromJson(it.value, newSource))
                     }
                 }
             }

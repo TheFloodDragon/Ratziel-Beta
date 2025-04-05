@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl.serialization.serializers
+package cn.fd.ratziel.module.item.impl.component.serializers
 
 import cn.fd.ratziel.module.item.impl.component.HideFlag
 import cn.fd.ratziel.module.item.util.MetaMatcher

@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.action
 
 import cn.fd.ratziel.core.serialization.getBy
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
-import cn.fd.ratziel.module.script.block.GlobalBlockBuilder
+import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.severe
@@ -36,7 +36,7 @@ object ActionParser {
                 continue
             }
             // 构建脚本块
-            val block = GlobalBlockBuilder.parse(raw.value)
+            val block = ScriptBlockBuilder.parse(raw.value)
             // 创建脚本动作, 放入表中
             map[type] = ExecutableAction(block)
         }

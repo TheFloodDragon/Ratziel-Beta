@@ -13,12 +13,9 @@ import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
-import cn.fd.ratziel.module.item.impl.component.HideFlag
-import cn.fd.ratziel.module.item.impl.component.ItemDisplay
-import cn.fd.ratziel.module.item.impl.component.ItemDurability
-import cn.fd.ratziel.module.item.impl.component.ItemSkull
-import cn.fd.ratziel.module.item.impl.serialization.SectionTransforming
-import cn.fd.ratziel.module.item.impl.serialization.serializers.*
+import cn.fd.ratziel.module.item.impl.builder.SectionTransforming
+import cn.fd.ratziel.module.item.impl.component.*
+import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.nbt.NBTSerializer
@@ -30,8 +27,6 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.serializer
-import org.bukkit.attribute.Attribute
-import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.LifeCycle
 import taboolib.common.platform.event.SubscribeEvent
