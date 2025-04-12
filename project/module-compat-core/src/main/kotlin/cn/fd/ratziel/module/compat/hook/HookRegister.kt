@@ -15,8 +15,8 @@ import taboolib.library.reflex.ReflexClass
 class HookRegister : ClassVisitor(10) {
 
     override fun visitStart(clazz: ReflexClass) {
-        if (PluginHook::class.java.isAssignableFrom(clazz.toClass())) {
-            HookManager.register(findInstance(clazz) as PluginHook)
+        if (clazz.hasInterface(PluginHook::class.java)) {
+            HookManager.register((findInstance(clazz) ?: return) as PluginHook)
         }
     }
 

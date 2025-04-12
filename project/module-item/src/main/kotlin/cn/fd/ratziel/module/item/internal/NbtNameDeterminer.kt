@@ -11,6 +11,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
  * @since 2025/3/22 16:35
  */
 internal object NbtNameDeterminer : SerialNameDeterminer {
+
     override fun determineName(index: Int, descriptor: SerialDescriptor): String {
         val parent = descriptor.serialName.substringAfterLast('.')
         val elementName = descriptor.getElementName(index)
@@ -23,4 +24,5 @@ internal object NbtNameDeterminer : SerialNameDeterminer {
         val parent = descriptor.serialName.substringAfterLast('.')
         return if (address.first == parent) address.second else elementName
     }
+
 }

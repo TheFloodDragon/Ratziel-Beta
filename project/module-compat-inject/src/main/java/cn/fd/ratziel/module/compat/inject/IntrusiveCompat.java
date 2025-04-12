@@ -14,8 +14,8 @@ import java.lang.invoke.MethodHandle;
 public final class IntrusiveCompat {
 
     private IntrusiveCompat(ClassLoader pluginClassLoader, ClassLoader globalClassLoader) {
-        this.PLUGIN_CLASS_LOADER = pluginClassLoader;
-        this.GLOBAL_CLASS_LOADER = globalClassLoader;
+        PLUGIN_CLASS_LOADER = pluginClassLoader;
+        GLOBAL_CLASS_LOADER = globalClassLoader;
     }
 
     public static ClassLoader PLUGIN_CLASS_LOADER;

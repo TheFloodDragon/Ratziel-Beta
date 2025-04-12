@@ -1,8 +1,10 @@
 Workspaces:
-  listen: true # 若开启则会监听工作空间内的文件变化,并自动重新加载变化文件
-  filter: '^(?![#!]).*\.(?i)(yaml|yml|toml|tml|json|conf)$'
-  paths:
-    - 'plugins/Ratziel/workspace'
+  # 默认工作空间
+  default:
+    # 若开启则会监听工作空间内的文件变化,并自动重新加载变化文件
+    listen: true
+    filter: '^(?![#!]).*\.(?i)(yaml|yml|toml|tml|json|conf)$'
+    path: 'plugins/Ratziel/workspace'
 
 Message:
   # 是否在消息组件序列化的过程中默认取消斜体

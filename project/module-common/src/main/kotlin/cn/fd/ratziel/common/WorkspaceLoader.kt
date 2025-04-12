@@ -1,6 +1,5 @@
 package cn.fd.ratziel.common
 
-import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.element.ElementEvaluator
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
@@ -34,17 +33,14 @@ object WorkspaceLoader {
     /**
      * 初始化工作空间
      */
-    fun init(sender: ProxyCommandSender) = measureTime {
-        WorkspaceManager.workspaces.clear() // 清空工作空间
-        Settings.workspacePaths.forEach { path ->
-            WorkspaceManager.initializeWorkspace(path, true)
-        }
+    private fun init(sender: ProxyCommandSender) = measureTime {
+        WorkspaceManager.initializeAllWorkspace()
     }.also { sender.sendLang("Workspace-Initiated", WorkspaceManager.workspaces.size, it.inWholeMilliseconds) }
 
     /**
      * 加载工作空间中的元素
      */
-    fun load(sender: ProxyCommandSender): CompletableFuture<Duration> {
+    private fun load(sender: ProxyCommandSender): CompletableFuture<Duration> {
         WorkspaceLoadEvent.Start().call() // 事件 - 开始加载
         val timeMark = TimeSource.Monotonic.markNow() // 开始记录时间
         val result = CompletableFuture<Duration>()
@@ -53,15 +49,19 @@ object WorkspaceLoader {
         lastEvaluator = evaluator
         // 创建任务工厂
         FutureFactory {
-            for (file in WorkspaceManager.getFilteredFiles()) {
-                submitAsync(executor) {
-                    try {
-                        // 加载元素文件
-                        DefaultElementLoader.load(file).onEach {
-                            evaluator.submitWith(it) // 提交到评估器
+            // 加载所有工作空间
+            for (workspace in WorkspaceManager.workspaces) {
+                // 加载工作空间内的文件
+                for (file in workspace.files) {
+                    submitAsync(executor) {
+                        try {
+                            // 加载元素文件
+                            DefaultElementLoader.load(file).onEach {
+                                evaluator.submitWith(it) // 提交到评估器
+                            }
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
                         }
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
                     }
                 }
             }

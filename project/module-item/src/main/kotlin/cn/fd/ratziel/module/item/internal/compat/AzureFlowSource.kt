@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.platform.bukkit.util.player
 import io.rokuko.azureflow.api.AzureFlowAPI
+import io.rokuko.azureflow.features.item.AzureFlowItem
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
@@ -21,7 +22,7 @@ import org.bukkit.entity.Player
  */
 object AzureFlowSource : ItemSource {
 
-    val alias = listOf("af", "AzureFlow")
+    private val alias = listOf("af", "AzureFlow")
 
     override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
         // 获取名称
@@ -29,7 +30,7 @@ object AzureFlowSource : ItemSource {
         val name = (property.getBy(alias) as? JsonPrimitive)?.contentOrNull ?: return null
         // 生成物品
         val factory = AzureFlowAPI.getFactory(name) ?: return null
-        val afItem = factory.build()
+        val afItem = factory.build() as? AzureFlowItem ?: return null
         val itemStack = afItem.virtualItemStack(context.player() as? Player)
         // 提取数据
         val data = RefItemStack.exactData(itemStack)

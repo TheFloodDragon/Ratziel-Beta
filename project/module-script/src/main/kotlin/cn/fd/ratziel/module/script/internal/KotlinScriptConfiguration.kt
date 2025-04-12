@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.script.lang
+package cn.fd.ratziel.module.script.internal
 
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.jvm.JvmDependencyFromClassLoader

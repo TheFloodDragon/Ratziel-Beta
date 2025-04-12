@@ -66,7 +66,9 @@ interface ScriptType {
          * 匹配脚本类型
          */
         @JvmStatic
-        fun match(name: String): ScriptType? = registry.find { it.name == name || it.alias.contains(name) }
+        fun match(name: String): ScriptType? = registry.find { s ->
+            s.name.equals(name, true) || s.alias.any { it.equals(name, true) }
+        }
 
         /**
          * 匹配脚本类型 (无法找到时抛出异常)
@@ -75,12 +77,12 @@ interface ScriptType {
         fun matchOrThrow(name: String): ScriptType =
             match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
 
-        private fun register(executor: ScriptExecutor?, vararg alias: String) =
+        private fun register(executor: ScriptExecutor?, name: String, vararg alias: String) =
             object : ScriptType {
-                override val name = alias.first()
+                override val name = name
                 override var enabled = false
                 override var executor = executor
-                override val alias = alias.drop(1).toTypedArray()
+                override val alias = alias
                 override fun toString() = "ScriptType(name=$name, enabled=$enabled, executor=$executor, alias=${this.alias.contentToString()})"
             }.also { this.registry.add(it) }
 

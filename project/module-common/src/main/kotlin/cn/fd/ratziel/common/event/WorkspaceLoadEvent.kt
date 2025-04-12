@@ -8,7 +8,7 @@ import taboolib.common.event.InternalEvent
  * @author TheFloodDragon
  * @since 2024/4/4 21:13
  */
-open class WorkspaceLoadEvent : InternalEvent() {
+sealed class WorkspaceLoadEvent : InternalEvent() {
     class Start : WorkspaceLoadEvent()
     class End : WorkspaceLoadEvent()
 }

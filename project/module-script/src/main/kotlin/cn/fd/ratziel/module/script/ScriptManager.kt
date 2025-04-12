@@ -5,6 +5,7 @@ import cn.fd.ratziel.module.script.internal.Initializable
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.severe
+import javax.script.ScriptEngineManager
 
 
 /**
@@ -20,6 +21,11 @@ object ScriptManager {
      */
     var defaultLanguage = ScriptType.JAVASCRIPT
         private set
+
+    /**
+     * 公共的 [ScriptEngineManager]
+     */
+    val engineManager by lazy { ScriptEngineManager(this::class.java.classLoader) }
 
     /**
      * 初始化脚本系统

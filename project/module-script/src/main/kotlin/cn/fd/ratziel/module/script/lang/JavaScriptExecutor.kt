@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.lang
 
+import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.CompilableScript
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
@@ -64,10 +65,13 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
         return null
     }
 
-    fun newEngine(): ScriptEngine =
-        ScriptEngineManager(this::class.java.classLoader).getEngineByName("js")
-            .apply { setBindings(globalBindings, ScriptContext.GLOBAL_SCOPE) } // 设置全局绑定键
+    fun newEngine(): ScriptEngine {
+        val engine = ScriptManager.engineManager.getEngineByName("js")
             ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript Language")
+        // 设置全局绑定键
+        engine.setBindings(globalBindings, ScriptContext.GLOBAL_SCOPE)
+        return engine
+    }
 
     override fun initialize(settings: ConfigurationSection) {
         RuntimeEnv.ENV_DEPENDENCY.loadFromLocalFile(this::class.java.classLoader.getResource("META-INF/dependencies/nashorn.json"))

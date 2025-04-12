@@ -20,7 +20,7 @@ object KetherExecutor : ScriptExecutor, Initializable {
 
     override fun build(script: String) = SimpleScriptContent(script, this)
 
-    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
+    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any {
         return KetherShell.eval(script.content, ScriptOptions.new { vars(environment.bindings) })
     }
 
