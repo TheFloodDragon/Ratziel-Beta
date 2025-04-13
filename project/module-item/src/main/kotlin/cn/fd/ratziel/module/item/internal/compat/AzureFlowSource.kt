@@ -30,8 +30,7 @@ object AzureFlowSource : ItemSource {
         val name = (property.getBy(alias) as? JsonPrimitive)?.contentOrNull ?: return null
         // 生成物品
         val factory = AzureFlowAPI.getFactory(name) ?: return null
-        val afItem = factory.build() as? AzureFlowItem ?: return null
-        val itemStack = afItem.virtualItemStack(context.player() as? Player)
+        val itemStack = factory.build().itemStack(context.player() as? Player)
         // 提取数据
         val data = RefItemStack.exactData(itemStack)
         return CompatItem(AzureFlowHook.pluginName, data)
