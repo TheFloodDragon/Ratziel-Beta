@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.compat.inject;
 
+import taboolib.common.LifeCycle;
 import taboolib.common.PrimitiveSettings;
 import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.common.platform.Awake;
@@ -15,9 +16,6 @@ import java.lang.invoke.MethodHandle;
  * @since 2024/3/23 22:10
  */
 public final class IntrusiveCompat {
-
-    private IntrusiveCompat() {
-    }
 
     public static ClassLoader PLUGIN_CLASS_LOADER;
 
@@ -39,8 +37,8 @@ public final class IntrusiveCompat {
         }
     }
 
-    @Awake
-    private void inject() throws Throwable {
+    @Awake(LifeCycle.CONST)
+    private static void inject() throws Throwable {
         // 类加载器
         PLUGIN_CLASS_LOADER = IsolatedClassLoader.INSTANCE.getParent();
         GLOBAL_CLASS_LOADER = PLUGIN_CLASS_LOADER.getParent();

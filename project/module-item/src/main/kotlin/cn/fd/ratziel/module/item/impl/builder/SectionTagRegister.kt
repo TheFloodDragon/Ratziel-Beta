@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.impl.builder
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
-import taboolib.common.platform.function.debug
 import taboolib.library.reflex.ReflexClass
 
 /**
@@ -17,9 +16,8 @@ class SectionTagRegister : ClassVisitor(10) {
 
     override fun visitStart(clazz: ReflexClass) {
         if (SectionTagResolver::class.java.isAssignableFrom(clazz.toClass())) {
-            val resolver = findInstance(clazz) as SectionTagResolver
+            val resolver = findInstance(clazz) as? SectionTagResolver ?: return
             DefaultSectionResolver.resolvers.add(resolver)
-            debug("注册表 DefaultSectionResolver#resolvers 注册了新的解析器: $resolver")
         }
     }
 

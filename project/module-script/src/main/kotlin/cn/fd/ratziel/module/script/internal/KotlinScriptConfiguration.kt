@@ -20,6 +20,7 @@ object KotlinScriptConfiguration {
     /**
      * [ScriptCompilationConfiguration]
      */
+    @Ghost
     object Compilation : ScriptCompilationConfiguration({
         refineConfiguration {
             beforeCompiling(::configureProvidedPropertiesFromJsr223Context)
@@ -41,6 +42,7 @@ object KotlinScriptConfiguration {
     /**
      * [ScriptEvaluationConfiguration]
      */
+    @Ghost
     object Evaluation : ScriptEvaluationConfiguration({
         refineConfigurationBeforeEvaluate(::configureProvidedPropertiesFromJsr223Context)
     }) {
