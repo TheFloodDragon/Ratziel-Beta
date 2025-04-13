@@ -6,7 +6,7 @@ adventurePlatform = "4.3.4"
 kotlin = "2.1.0"
 serialization = "1.8.0"
 coroutines = "1.10.1"
-shadowPlugin = "8.3.5"
+shadowPlugin = "9.0.0-beta12"
 nashorn = "15.4"
 jexl = "3.4.0"
 

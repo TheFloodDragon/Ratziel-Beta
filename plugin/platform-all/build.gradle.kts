@@ -2,15 +2,10 @@
 val platforms = arrayOf("platform-bukkit").map { project(":plugin:$it") }
 
 dependencies {
-    platforms.forEach { taboo(project(":plugin:${it.name}", "shadow")) }
-}
-
-taboolib {
-    env {
-        platforms.flatMap { it.taboolib.env.modules }.forEach { install(it) }
-    }
+    platforms.forEach { implementation(it) }
 }
 
 tasks.shadowJar {
+    dependsOn(platforms[0].tasks.shadowJar)
     archiveFileName.set("${rootProject.name}-$version.jar")
 }

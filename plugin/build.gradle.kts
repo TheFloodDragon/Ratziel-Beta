@@ -59,7 +59,6 @@ subprojects {
     tasks {
         shadowJar {
             dependsOn(taboolibMainTask)
-            from(taboolibMainTask.get().inJar)
             dependencies {
                 exclude {
                     it.moduleGroup == "io.izzel.taboolib"

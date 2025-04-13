@@ -8,7 +8,7 @@ dependencies {
     implementation(projects.project.moduleScript)
     // Compat
     implementation(projects.project.moduleCompatCore)
-    taboo(projects.project.moduleCompatInject)
+    implementation(projects.project.moduleCompatInject)
     // Extension - Item
     implementation(projects.project.moduleItem)
 }
@@ -31,12 +31,7 @@ taboolib {
     }
 }
 
-tasks {
-    shadowJar {
-        dependencies {
-            exclude(project(":project:module-compat-inject"))
-        }
-        archiveFileName.set("${rootProject.name}-Bukkit-$version.jar")
-    }
-    jar { dependsOn(project(":project:module-compat-inject").tasks.jar) }
+tasks.shadowJar {
+    from(zipTree(tasks.taboolibMainTask.get().inJar))
+    archiveFileName.set("${rootProject.name}-Bukkit-$version.jar")
 }
