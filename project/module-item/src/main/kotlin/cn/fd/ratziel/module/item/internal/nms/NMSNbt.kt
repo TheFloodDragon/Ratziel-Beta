@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.core.exception.UnsupportedTypeException
-import net.minecraft.server.v1_12_R1.NBTBase
 import taboolib.library.reflex.UnsafeAccess
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
@@ -85,23 +84,23 @@ class NMSNbtImpl2 : NMSNbt {
 @Suppress("unused")
 class NMSNbtImpl1 : NMSNbt {
 
-    val nbtTagCompoundGetter = unreflectGetter(NBTTagCompound12::class.java, if (MinecraftVersion.isUniversal) "x" else "map")
-    val nbtTagListGetter = unreflectGetter(NBTTagList12::class.java, if (MinecraftVersion.isUniversal) "c" else "list")
-    val nbtTagListTypeSetter = unreflectSetter(NBTTagList12::class.java, if (MinecraftVersion.isUniversal) "w" else "type")
-    val nbtTagByteGetter = unreflectGetter(NBTTagByte12::class.java, if (MinecraftVersion.isUniversal) "x" else "data")
-    val nbtTagShortGetter = unreflectGetter(NBTTagShort12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagIntGetter = unreflectGetter(NBTTagInt12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagLongGetter = unreflectGetter(NBTTagLong12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagFloatGetter = unreflectGetter(NBTTagFloat12::class.java, if (MinecraftVersion.isUniversal) "w" else "data")
-    val nbtTagDoubleGetter = unreflectGetter(NBTTagDouble12::class.java, if (MinecraftVersion.isUniversal) "w" else "data")
-    val nbtTagStringGetter = unreflectGetter(NBTTagString12::class.java, if (MinecraftVersion.isUniversal) "A" else "data")
-    val nbtTagByteArrayGetter = unreflectGetter(NBTTagByteArray12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagIntArrayGetter = unreflectGetter(NBTTagIntArray12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagLongArrayGetter = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
-        unreflectGetter(NBTTagLongArray12::class.java, if (MinecraftVersion.isUniversal) "c" else "b")
+    private val nbtTagCompoundGetter = getter(NBTTagCompound12::class.java, if (MinecraftVersion.isUniversal) "x" else "map")
+    private val nbtTagListGetter = getter(NBTTagList12::class.java, if (MinecraftVersion.isUniversal) "c" else "list")
+    private val nbtTagListTypeSetter = setter(NBTTagList12::class.java, if (MinecraftVersion.isUniversal) "w" else "type")
+    private val nbtTagByteGetter = getter(NBTTagByte12::class.java, if (MinecraftVersion.isUniversal) "x" else "data")
+    private val nbtTagShortGetter = getter(NBTTagShort12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
+    private val nbtTagIntGetter = getter(NBTTagInt12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
+    private val nbtTagLongGetter = getter(NBTTagLong12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
+    private val nbtTagFloatGetter = getter(NBTTagFloat12::class.java, if (MinecraftVersion.isUniversal) "w" else "data")
+    private val nbtTagDoubleGetter = getter(NBTTagDouble12::class.java, if (MinecraftVersion.isUniversal) "w" else "data")
+    private val nbtTagStringGetter = getter(NBTTagString12::class.java, if (MinecraftVersion.isUniversal) "A" else "data")
+    private val nbtTagByteArrayGetter = getter(NBTTagByteArray12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
+    private val nbtTagIntArrayGetter = getter(NBTTagIntArray12::class.java, if (MinecraftVersion.isUniversal) "c" else "data")
+    private val nbtTagLongArrayGetter = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
+        getter(NBTTagLongArray12::class.java, if (MinecraftVersion.isUniversal) "c" else "b")
     } else null
 
-    val new = MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_15)
+    private val new = MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_15)
 
     override fun toNms(data: NbtTag): Any = when (data) {
         is NbtString -> if (new) NBTTagString15.a(data.content) else NBTTagString12(data.content)
@@ -122,7 +121,7 @@ class NMSNbtImpl1 : NMSNbt {
             if (dataList.isNotEmpty()) {
                 dataList.forEach { list.add(toNms(it)) }
                 // 修改 NBTTagList 的类型，不改他妈这条 List 作废，天坑。。。
-                nbtTagListTypeSetter.set(src, dataList.first().type.id.toByte())
+                nbtTagListTypeSetter.set(src, dataList.first().type.id)
             }
         }
 
@@ -150,11 +149,11 @@ class NMSNbtImpl1 : NMSNbt {
         else -> throw UnsupportedOperationException("NmsNBTTag cannot convert to NBTTag: $nmsData")
     }
 
-    private fun unreflectGetter(type: Class<*>, name: String): MethodHandle {
+    private fun getter(type: Class<*>, name: String): MethodHandle {
         return UnsafeAccess.lookup.unreflectGetter(type.getDeclaredField(name).apply { isAccessible = true })
     }
 
-    private fun unreflectSetter(type: Class<*>, name: String): MethodHandle {
+    private fun setter(type: Class<*>, name: String): MethodHandle {
         return UnsafeAccess.lookup.unreflectSetter(type.getDeclaredField(name).apply { isAccessible = true })
     }
 
@@ -165,7 +164,6 @@ class NMSNbtImpl1 : NMSNbt {
 
 }
 
-typealias NbtBase12 = net.minecraft.server.v1_12_R1.NBTBase
 typealias NBTTagCompound12 = net.minecraft.server.v1_12_R1.NBTTagCompound
 typealias NBTTagList12 = net.minecraft.server.v1_12_R1.NBTTagList
 typealias NBTTagByte12 = net.minecraft.server.v1_12_R1.NBTTagByte

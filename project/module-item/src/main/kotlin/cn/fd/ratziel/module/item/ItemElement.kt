@@ -7,7 +7,7 @@ import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.api.ElementHandler
+import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.baseJson
 import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.item.api.ItemMaterial

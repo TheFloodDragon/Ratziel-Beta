@@ -1,7 +1,7 @@
 package cn.fd.ratziel.common.event
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.api.ElementHandler
+import cn.fd.ratziel.core.element.ElementHandler
 import taboolib.common.event.CancelableInternalEvent
 
 /**

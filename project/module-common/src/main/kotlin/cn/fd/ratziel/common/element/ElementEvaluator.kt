@@ -3,7 +3,7 @@ package cn.fd.ratziel.common.element
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementIdentifier
-import cn.fd.ratziel.core.element.api.ElementHandler
+import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.service.ElementRegistry
 import cn.fd.ratziel.core.util.FutureFactory
 import taboolib.common.LifeCycle

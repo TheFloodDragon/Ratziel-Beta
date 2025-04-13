@@ -11,15 +11,13 @@ import cn.fd.ratziel.core.element.service.ElementRegistry
  */
 object ElementMatcher {
 
-    const val SEPARATOR = ':'
-
     /**
      * 元素类型表达式匹配
      * 表达式格式:
      *    命名空间:类型名称(或别名)
      */
     fun matchType(expression: String): ElementType {
-        val split = expression.split(SEPARATOR)
+        val split = expression.split(':')
         return when {
             // 命名空间:类型名称(或别名)
             split.size >= 2 -> matchAll(split[0], split[1])
@@ -53,7 +51,6 @@ object ElementMatcher {
     fun matchName(
         name: String,
         types: Set<ElementType> = ElementRegistry.getAllElementTypes(),
-    ): ElementType? = types.find { it.appellations.contains(name) }
-
+    ): ElementType? = types.find { it.name == name || it.alias.contains(name) }
 
 }

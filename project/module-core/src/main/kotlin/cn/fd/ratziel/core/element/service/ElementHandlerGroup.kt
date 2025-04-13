@@ -1,9 +1,9 @@
 package cn.fd.ratziel.core.element.service
 
 import cn.fd.ratziel.core.Priority
-import cn.fd.ratziel.core.element.api.ElementHandler
+import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.util.priority
-import java.util.concurrent.ConcurrentSkipListSet
+import java.util.concurrent.CopyOnWriteArrayList
 
 
 /**
@@ -17,7 +17,7 @@ class ElementHandlerGroup {
     /**
      * 处理器表
      */
-    val handlers: MutableCollection<Priority<ElementHandler>> = ConcurrentSkipListSet(compareBy { it.priority })
+    val handlers: MutableCollection<Priority<ElementHandler>> = CopyOnWriteArrayList()
 
     /**
      * 注册元素处理器

@@ -8,6 +8,7 @@ import net.minecraft.core.component.PatchedDataComponentMap
 import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.resources.RegistryOps
 import net.minecraft.world.item.component.CustomData
 import org.bukkit.craftbukkit.v1_20_R4.CraftRegistry
 import taboolib.library.reflex.ReflexClass
@@ -77,7 +78,7 @@ class NMSItemImpl2 : NMSItem() {
         ReflexClass.of(NMSItemStack::class.java).getField("components", remap = true)
     }
 
-    val ops get() = CraftRegistry.getMinecraftRegistry().createSerializationContext(DynamicOpsNBT.INSTANCE)
+    val ops: RegistryOps<NBTBase> get() = CraftRegistry.getMinecraftRegistry().createSerializationContext(DynamicOpsNBT.INSTANCE)
 
     override fun getTag(nmsItem: Any): NbtCompound? {
         val patch = (nmsItem as NMSItemStack).componentsPatch

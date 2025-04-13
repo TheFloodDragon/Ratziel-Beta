@@ -4,6 +4,7 @@ import cn.fd.ratziel.core.exception.ArgumentNotFoundException
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.JsonHelper
 import cn.fd.ratziel.core.util.splitNonEscaped
+import cn.fd.ratziel.platform.bukkit.util.player
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -11,6 +12,7 @@ import kotlinx.serialization.json.buildJsonObject
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
+import taboolib.platform.compat.replacePlaceholder
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -71,13 +73,26 @@ object DefaultSectionResolver {
             // 读取标签, 拼接字符串片段并返回
             return reader.readToFlatten(element).joinToString("") {
                 // 如果标签片段
-                if (it.isVariable) {
+                val text = if (it.isVariable) {
                     // 解析标签
                     val handled = resolveTag(it.text, context)
                     // 处理无误时返回处理结果, 反则返回完整标签片段
                     handled ?: (reader.start + it.text + reader.end)
                 } else it.text // 原文本
+                resolveOther(text, context) // 解析其他内容
             }
+        }
+
+        /**
+         * 解析其他的
+         */
+        fun resolveOther(text: String, context: ArgumentContext): String {
+            val player = context.player()
+            if (player != null) {
+                // PlaceholderAPI 变量
+                return text.replacePlaceholder(player)
+            }
+            return text
         }
 
         /**

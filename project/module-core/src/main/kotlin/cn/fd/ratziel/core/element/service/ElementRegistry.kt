@@ -1,8 +1,7 @@
 package cn.fd.ratziel.core.element.service
 
-import cn.fd.ratziel.core.Priority
+import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.ElementType
-import cn.fd.ratziel.core.element.api.ElementHandler
 import cn.fd.ratziel.core.util.sortPriority
 import java.util.concurrent.ConcurrentHashMap
 
@@ -79,20 +78,16 @@ object ElementRegistry {
      * @param type 元素类型
      */
     @JvmStatic
-    fun getHandlersByType(type: ElementType): List<ElementHandler> = getHandlersWithPriority(type).sortPriority()
+    fun getHandlersByType(type: ElementType): List<ElementHandler> {
+        val handlers = registry[type]?.handlers ?: return emptyList()
+        return handlers.sortPriority()
+    }
 
     @JvmStatic
-    fun getHandlers(): List<ElementHandler> = getHandlersWithPriority().sortPriority()
-
-    /**
-     * 获取处理器 (带优先级)
-     * @param type 元素类型
-     */
-    @JvmStatic
-    fun getHandlersWithPriority(type: ElementType): Collection<Priority<ElementHandler>> = registry[type]?.handlers ?: emptyList()
-
-    @JvmStatic
-    fun getHandlersWithPriority(): Collection<Priority<ElementHandler>> = registry.values.flatMap { it.handlers }
+    fun getAllHandlers(): List<ElementHandler> {
+        val handlers = registry.values.flatMap { it.handlers }
+        return handlers.sortPriority()
+    }
 
     /**
      * 获取元素类型

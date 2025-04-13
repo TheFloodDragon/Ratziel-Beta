@@ -44,9 +44,8 @@ public final class IntrusiveClassLoader extends ClassLoader {
     }
 
     @Override
-    public @Nullable URL getResource(String name) {
-        URL url = super.getResource(name);
-        return url == null ? IsolatedClassLoader.INSTANCE.getResource(name) : url;
+    public @Nullable URL findResource(String name) {
+        return IsolatedClassLoader.INSTANCE.getResource(name);
     }
 
     public static Class<?> loadClassOrNull(ClassLoader loader, String name) {

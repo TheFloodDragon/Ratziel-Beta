@@ -18,11 +18,6 @@ class ElementType(
     val alias: Array<String> = emptyArray()
 ) {
 
-    /**
-     * 元素类型名称包括别名
-     */
-    val appellations = alias.plus(name)
-
     override fun toString() = "ElementType(space=$space, name=$name, alias=${alias.joinToString(", ", "[", "]")})"
 
     override fun equals(other: Any?) = other is ElementType && this.space == other.space && this.name == other.name

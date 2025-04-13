@@ -9,7 +9,6 @@ dependencies {
     // Compat
     implementation(projects.project.moduleCompatCore)
     taboo(projects.project.moduleCompatInject)
-    implementation(projects.project.moduleCompatBukkit)
     // Extension - Item
     implementation(projects.project.moduleItem)
 }

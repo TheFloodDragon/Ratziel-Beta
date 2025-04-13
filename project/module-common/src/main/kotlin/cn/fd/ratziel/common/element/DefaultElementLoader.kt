@@ -2,7 +2,6 @@ package cn.fd.ratziel.common.element
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementIdentifier
-import cn.fd.ratziel.core.element.api.ElementLoader
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -19,9 +18,9 @@ import java.io.File
  * @author TheFloodDragon
  * @since 2023/8/22 16:38
  */
-object DefaultElementLoader : ElementLoader {
+object DefaultElementLoader {
 
-    override fun load(file: File): List<Element> {
+    fun load(file: File): List<Element> {
         try {
             // 从文件中加载配置
             val config = Configuration.loadFromFile(file)

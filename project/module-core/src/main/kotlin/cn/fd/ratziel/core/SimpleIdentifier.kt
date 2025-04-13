@@ -1,10 +1,6 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package cn.fd.ratziel.core
 
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-import kotlin.uuid.toKotlinUuid
+import cn.fd.ratziel.core.util.randomUuid
 
 /**
  * SimpleIdentifier
@@ -15,11 +11,7 @@ import kotlin.uuid.toKotlinUuid
 @JvmInline
 value class SimpleIdentifier(override val content: String) : Identifier {
 
-    constructor() : this(Uuid.random())
-
-    constructor(uuid: Uuid) : this(uuid.toHexString())
-
-    constructor(uuid: java.util.UUID) : this(uuid.toKotlinUuid())
+    constructor() : this(randomUuid())
 
     override fun toString() = "SimpleIdentifier($content)"
 

@@ -1,17 +1,18 @@
 package cn.fd.ratziel.core.util
 
-import taboolib.common.io.digest
-import java.util.*
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 /**
- * 加密 (默认SHA-256)
+ * 随机 UUID
  */
-fun String.digest() = digest(DEFAULT_ALGORITHM)
+@Suppress("NOTHING_TO_INLINE")
+@OptIn(ExperimentalUuidApi::class)
+inline fun randomUuid() = Uuid.random().toHexString()
 
-const val DEFAULT_ALGORITHM = "SHA-256"
-
-fun randomUUID() = UUID.randomUUID().toString().replace("-", "").lowercase()
-
+/**
+ * 默认转义字符
+ */
 const val ESCAPE_CHAR = "\\"
 
 /**

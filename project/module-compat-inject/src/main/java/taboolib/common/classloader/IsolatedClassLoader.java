@@ -26,18 +26,6 @@ public class IsolatedClassLoader extends URLClassLoader {
             Class<?> delegateClass = Class.forName("taboolib.common.PrimitiveLoader", false, INSTANCE);
             Object delegateObject = delegateClass.getConstructor().newInstance();
             delegateClass.getMethod("init").invoke(delegateObject);
-            // Start - Support for IntrusiveClassLoader
-            // Load Injector
-            Class<?> injectClass = Class.forName("cn.fd.ratziel.module.compat.inject.IntrusiveCompat", false, INSTANCE);
-            // Inject
-            java.lang.reflect.Method injectMethod = injectClass.getDeclaredMethod("inject");
-            java.lang.reflect.Constructor<?> injectConstructor = injectClass.getDeclaredConstructor(ClassLoader.class, ClassLoader.class);
-            injectMethod.setAccessible(true);
-            injectConstructor.setAccessible(true);
-            ClassLoader pluginClassLoader = INSTANCE.getParent();
-            ClassLoader globalClassLoader = pluginClassLoader.getParent();
-            injectMethod.invoke(injectConstructor.newInstance(pluginClassLoader, globalClassLoader));
-            // End - Support for IntrusiveClassLoader
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

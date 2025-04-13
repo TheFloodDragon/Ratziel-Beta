@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.internal
 
+import taboolib.common.platform.Ghost
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.jvm.JvmDependencyFromClassLoader
 import kotlin.script.experimental.jvm.jvm
@@ -13,6 +14,7 @@ import kotlin.script.experimental.jvmhost.jsr223.jsr223
  * @author TheFloodDragon
  * @since 2024/7/15 19:11
  */
+@Ghost
 object KotlinScriptConfiguration {
 
     /**
