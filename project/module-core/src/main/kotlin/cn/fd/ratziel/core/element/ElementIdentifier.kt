@@ -28,8 +28,8 @@ class ElementIdentifier(
 
     override fun toString() = "ElementIdentifier(name=$name, type=$type, path=${file?.path})"
 
-    override fun equals(other: Any?) = other is ElementIdentifier && this.name == other.name && this.type == other.type && this.file == other.file
+    override fun equals(other: Any?) = other is ElementIdentifier && this.name == other.name && this.type == other.type
 
-    override fun hashCode() = 31 * (31 * name.hashCode() + type.hashCode()) + file.hashCode()
+    override fun hashCode() = 31 * (31 * name.hashCode() + type.hashCode())
 
 }

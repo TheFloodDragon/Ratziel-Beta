@@ -1,6 +1,7 @@
 package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
+import cn.fd.ratziel.common.element.ElementMatcher
 import cn.fd.ratziel.core.util.findInJar
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
@@ -64,8 +65,14 @@ object WorkspaceManager {
         val files = folder.walk().filter { it.isFile && it.name.matches(filter) }
         // 是否监听
         val listen = settings.getBoolean("listen", true)
+        // 使用文件名称
+        val useFileName = settings.getBoolean("use-filename", false)
+        // 统一元素类型
+        val unifiedType = settings.getString("unified-type")
+            ?.takeUnless { it.equals("None", true) }
+            ?.let { ElementMatcher.matchTypeOrNull(it) }
         // 创建工作空间
-        return Workspace(folder, files, listen)
+        return Workspace(folder, files, listen, useFileName, unifiedType)
     }
 
     /**

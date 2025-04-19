@@ -1,13 +1,14 @@
 package cn.fd.ratziel.common
 
-import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.element.ElementEvaluator
+import cn.fd.ratziel.common.element.ElementLoader
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.core.util.FutureFactory
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
+import taboolib.common5.FileWatcher
 import taboolib.module.lang.sendLang
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
@@ -48,24 +49,38 @@ object WorkspaceLoader {
         val evaluator = ElementEvaluator(executor)
         lastEvaluator = evaluator
         // 创建任务工厂
-        FutureFactory {
-            // 加载所有工作空间
-            for (workspace in WorkspaceManager.workspaces) {
-                // 加载工作空间内的文件
-                for (file in workspace.files) {
-                    submitAsync(executor) {
-                        try {
-                            // 加载元素文件
-                            DefaultElementLoader.load(file).onEach {
-                                evaluator.submitWith(it) // 提交到评估器
+        val tasks = FutureFactory<Unit>()
+        // 加载所有工作空间
+        for (workspace in WorkspaceManager.workspaces) {
+            // 加载工作空间内的文件
+            for (file in workspace.files) {
+                // 监听自动重载
+                if (workspace.listen) {
+                    FileWatcher.INSTANCE.addSimpleListener(file) {
+                        val elements = ElementLoader.load(workspace, file)
+                        for (element in elements) {
+                            try {
+                                evaluator.handleElement(element)
+                            } catch (ex: Exception) {
+                                ex.printStackTrace()
                             }
-                        } catch (ex: Exception) {
-                            ex.printStackTrace()
                         }
                     }
                 }
+                tasks.submitAsync(executor) {
+                    try {
+                        // 加载元素文件
+                        ElementLoader.load(workspace, file).onEach { element ->
+                            evaluator.submitWith(element) // 提交到评估器
+                        }
+                    } catch (ex: Exception) {
+                        ex.printStackTrace()
+                    }
+                }
             }
-        }.thenRun {
+        }
+        // 所有任务结束后执行
+        tasks.thenRun {
             val loadTime = timeMark.elapsedNow() // 加载所耗费的时间
             // 评估器开始评估
             evaluator.evaluate().thenAccept {

@@ -18,21 +18,6 @@ import java.util.*
  */
 class EnhancedListSerializer<T>(serializer: KSerializer<T>) : JsonTransformingSerializer<List<T>>(ListSerializer(serializer)) {
 
-    /**
-     * 换行符
-     */
-    val newLineSign: Array<String> = DEFAULT_NEWLINE_SIGN
-
-    /**
-     *  删行符
-     */
-    val removeLineSign: Array<String> = DEFAULT_REMOVE_LINE_SIGN
-
-    /**
-     * 忽略大小写
-     */
-    val ignoreCase: Boolean = true
-
     override fun transformDeserialize(element: JsonElement): JsonElement = JsonArray(enhanceBuild(element))
 
     /**
@@ -43,16 +28,16 @@ class EnhancedListSerializer<T>(serializer: KSerializer<T>) : JsonTransformingSe
             when {
                 element is JsonArray -> element.forEach { enhanceBuild(it, list) }
                 element is JsonPrimitive && element.jsonPrimitive.isString ->
-                    element.content.splitNonEscaped(*newLineSign, ignoreCase = this.ignoreCase).forEach { origin ->
+                    element.content.splitNonEscaped(*NEWLINE_SIGN, ignoreCase = true).forEach { origin ->
                         // (去掉 "\{rl}" 后的字符串) 是否包含任意删行符
-                        val contain = removeLineSign.any {
-                            origin.removeAll(ESCAPE_CHAR + it, ignoreCase).contains(it, ignoreCase)
+                        val contain = REMOVE_LINE_SIGN.any {
+                            origin.removeAll(ESCAPE_CHAR + it, true).contains(it, true)
                         }
                         // 若不包含,则添加进去
                         if (!contain) {
                             var result = origin
                             // 去除转义: 替换 "\{rl}" 为 "{rl}"
-                            removeLineSign.forEach {
+                            REMOVE_LINE_SIGN.forEach {
                                 result = result.replace(ESCAPE_CHAR + it, it)
                             }
                             // 添加
@@ -68,11 +53,11 @@ class EnhancedListSerializer<T>(serializer: KSerializer<T>) : JsonTransformingSe
 
         // 默认换行符
         @JvmStatic
-        val DEFAULT_NEWLINE_SIGN = arrayOf("\\n", "{nl}")
+        val NEWLINE_SIGN = arrayOf("\\n", "{nl}")
 
         // 默认删行符
         @JvmStatic
-        val DEFAULT_REMOVE_LINE_SIGN = arrayOf("{rl}", "{dl}")
+        val REMOVE_LINE_SIGN = arrayOf("{rl}", "{dl}")
 
     }
 

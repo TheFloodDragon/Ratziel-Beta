@@ -16,6 +16,15 @@ object ElementMatcher {
      *    命名空间:类型名称(或别名)
      */
     fun matchType(expression: String): ElementType {
+        return matchTypeOrNull(expression) ?: error("Unknown element type: \"$expression\" !")
+    }
+
+    /**
+     * 元素类型表达式匹配
+     * 表达式格式:
+     *    命名空间:类型名称(或别名)
+     */
+    fun matchTypeOrNull(expression: String): ElementType? {
         val split = expression.split(':')
         return when {
             // 命名空间:类型名称(或别名)
@@ -24,7 +33,7 @@ object ElementMatcher {
             split.size == 1 -> matchName(split[0])
             // 错误的表达式
             else -> null
-        } ?: error("Unknown element type: \"$expression\" !")
+        }
     }
 
     /**

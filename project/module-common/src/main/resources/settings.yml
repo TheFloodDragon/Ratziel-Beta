@@ -5,6 +5,10 @@ Workspaces:
     listen: true
     filter: '^(?![#!]).*\.(?i)(yaml|yml|toml|tml|json|conf)$'
     path: 'plugins/Ratziel/workspace'
+    # 是否使用文件名称当做元素名称
+    use-filename: false
+    # 统一元素类型 (None 代表不统一)
+    unified-type: None
 
 Message:
   # 是否在消息组件序列化的过程中默认取消斜体

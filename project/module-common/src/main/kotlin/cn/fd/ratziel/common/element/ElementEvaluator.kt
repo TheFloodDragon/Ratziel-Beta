@@ -39,7 +39,7 @@ class ElementEvaluator(val executor: Executor) {
     fun evaluate(): CompletableFuture<Duration> {
         val cycleTasks = FutureFactory<Duration>()
         // 遍历生命周期创建周期任务
-        for ((lifeCycle, tasks) in evaluations.entries) {
+        for ((lifeCycle, tasks) in evaluations) {
             // 创建周期任务回调
             val future = CompletableFuture<Duration>().also { cycleTasks.add(it) }
             // 注册周期任务
@@ -57,7 +57,7 @@ class ElementEvaluator(val executor: Executor) {
         // 开始记录时间
         val timeMark = TimeSource.Monotonic.markNow()
         // 创建工厂收集任务
-        val factory = FutureFactory<Throwable?>()
+        val factory = FutureFactory<Result<Element>>()
         // 遍历任务单个处理
         tasks.forEach { task ->
             factory += handleTask(task) // 提交任务
@@ -66,38 +66,6 @@ class ElementEvaluator(val executor: Executor) {
             // 完成后完成传入任务, 返回时间
             future.complete(timeMark.elapsedNow())
         }
-    }
-
-    /**
-     * 调用 [ElementHandler] 处理 [Element]
-     * @return [CompletableFuture] - 过程的中可能存在的异常
-     */
-    fun handleTask(task: EvaluationTask): CompletableFuture<Throwable?> {
-        // 创建处理任务
-        val future = CompletableFuture<Throwable?>()
-        // 处理函数 (非立即执行)
-        val function = Runnable {
-            try {
-                val element = task.element
-                // 处理元素
-                task.handler.handle(element)
-                // 缓存评估过的元素
-                evaluatedElements[element.identifier] = element
-                // 完成任务
-                future.complete(null)
-            } catch (ex: Throwable) {
-                severe("Couldn't handle element by ${task.handler}!")
-                ex.printStackTrace()
-                future.complete(ex) // 异常时返回(尽管已经处理过了)
-            }
-        }
-        // 异步 & 同步 处理
-        if (task.config.async) {
-            CompletableFuture.runAsync(function, executor)
-        } else {
-            function.run()
-        }
-        return future // 返回任务
     }
 
     /**
@@ -119,27 +87,65 @@ class ElementEvaluator(val executor: Executor) {
      */
     class EvaluationTask(val element: Element, val handler: ElementHandler, val config: ElementConfig)
 
-    companion object {
 
-        /**
-         * 获取[ElementHandler]的[ElementConfig]
-         */
-        fun findConfig(handler: ElementHandler): ElementConfig {
-            // 分析注解
-            val handlerClass = handler::class.java
-            val annoClass = ElementConfig::class.java
-            val method = handlerClass.getMethod("handle", Element::class.java)
-            val config = when {
-                // 处理函数注解
-                method.isAnnotationPresent(annoClass) -> method.getAnnotation(annoClass)
-                // 类注解
-                handlerClass.isAnnotationPresent(annoClass) -> handlerClass.getAnnotation(annoClass)
-                // 默认配置
-                else -> ElementConfig()
+    /**
+     * 直接处理元素
+     */
+    fun handleElement(element: Element) {
+        val handler = ElementRegistry[element.type]
+        val task = EvaluationTask(element, handler, findConfig(handler))
+        handleTask(task)
+    }
+
+    /**
+     * 调用 [ElementHandler] 处理 [Element]
+     * @return [CompletableFuture] - 过程的中可能存在的异常
+     */
+    fun handleTask(task: EvaluationTask): CompletableFuture<Result<Element>> {
+        // 创建处理任务
+        val future = CompletableFuture<Result<Element>>()
+        // 处理函数 (非立即执行)
+        val function = Runnable {
+            try {
+                val element = task.element
+                // 处理元素
+                task.handler.handle(element)
+                // 缓存评估过的元素
+                evaluatedElements[element.identifier] = element
+                // 完成任务
+                future.complete(Result.success(element))
+            } catch (ex: Throwable) {
+                severe("Couldn't handle element by ${task.handler}!")
+                ex.printStackTrace()
+                future.complete(Result.failure(ex)) // 异常时返回(尽管已经处理过了)
             }
-            return config
         }
+        // 异步 & 同步 处理
+        if (task.config.async) {
+            CompletableFuture.runAsync(function, executor)
+        } else {
+            function.run()
+        }
+        return future // 返回任务
+    }
 
+    /**
+     * 获取[ElementHandler]的[ElementConfig]
+     */
+    private fun findConfig(handler: ElementHandler): ElementConfig {
+        // 分析注解
+        val handlerClass = handler::class.java
+        val annoClass = ElementConfig::class.java
+        val method = handlerClass.getMethod("handle", Element::class.java)
+        val config = when {
+            // 处理函数注解
+            method.isAnnotationPresent(annoClass) -> method.getAnnotation(annoClass)
+            // 类注解
+            handlerClass.isAnnotationPresent(annoClass) -> handlerClass.getAnnotation(annoClass)
+            // 默认配置
+            else -> ElementConfig()
+        }
+        return config
     }
 
 }
