@@ -43,7 +43,7 @@ data class ItemSkull(
 
     internal object Serializer : NbtTransformingSerializer<ItemSkull>(generatedSerializer(), true) {
 
-        override fun transformDeserialize(tag: NbtTag): NbtTag {
+        override fun transformSerialize(tag: NbtTag): NbtTag {
             if (tag is NbtCompound) {
                 val unfolded = tag[ItemSkull::head.name]
                 if (unfolded != null) return unfolded

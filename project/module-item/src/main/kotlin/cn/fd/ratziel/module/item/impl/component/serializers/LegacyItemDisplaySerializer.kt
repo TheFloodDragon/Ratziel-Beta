@@ -19,7 +19,7 @@ class LegacyItemDisplaySerializer(
     serializer: KSerializer<ItemDisplay>
 ) : NbtTransformingSerializer<ItemDisplay>(serializer, true) {
 
-    override fun transformSerialize(tag: NbtTag): NbtTag {
+    override fun transformDeserialize(tag: NbtTag): NbtTag {
         if (tag is NbtCompound) {
             val unfolded = tag["display"]
             if (unfolded != null) return unfolded
@@ -27,7 +27,7 @@ class LegacyItemDisplaySerializer(
         return super.transformSerialize(tag)
     }
 
-    override fun transformDeserialize(tag: NbtTag): NbtTag {
+    override fun transformSerialize(tag: NbtTag): NbtTag {
         return NbtCompound { put("display", tag) }
     }
 
