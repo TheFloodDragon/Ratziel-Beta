@@ -57,8 +57,8 @@ object ElementLoader {
             val list = ArrayList<Element>()
             for (entry in json) {
                 val value = entry.value as? JsonObject
-                val pair = value?.let { parseType(workspace, it) }
-                if (pair != null) {
+                if (value != null) {
+                    val pair = parseType(workspace, value) ?: continue
                     val element = Element(entry.key, pair.first, file, pair.second)
                     list.add(element)
                 } else warning("Cannot infer element type from: $value")

@@ -1,11 +1,11 @@
 package cn.fd.ratziel.common.element.registry
 
-import cn.fd.ratziel.common.element.ElementRegistry
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.ElementType
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
+import taboolib.common.platform.function.severe
 import taboolib.library.reflex.ReflexClass
 
 /**
@@ -25,9 +25,13 @@ class ElementRegister : ClassVisitor(0) {
             anno.property<List<String>>("alias", emptyList()).toTypedArray()
         )
         if (clazz.hasInterface(ElementHandler::class.java)) {
-            // 获取实例
-            val handler = findInstance(clazz) as ElementHandler
-            ElementRegistry.register(type, handler)
+            try {
+                val handler = findInstance(clazz) as ElementHandler
+                ElementRegistry.register(type, handler)
+            } catch (e: Exception) {
+                severe("Failed to register element '$type'! Its handler: ${clazz.simpleName}")
+                e.printStackTrace()
+            }
         }
     }
 

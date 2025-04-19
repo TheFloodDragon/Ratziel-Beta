@@ -46,7 +46,12 @@ public final class IntrusiveCompat {
         // 隔离模式下注入类加载器
         if (PrimitiveSettings.IS_ISOLATED_MODE) {
             SETTER.bindTo(PLUGIN_CLASS_LOADER).invokeWithArguments(INTRUSIVE_CLASSLOADER);
-            IOKt.debug("侵入性类加载器已注入");
+            IOKt.debug(
+                    "侵入性类加载器已注入:",
+                    "    P | " + PLUGIN_CLASS_LOADER,
+                    "    G | " + GLOBAL_CLASS_LOADER,
+                    "    I | " + PLUGIN_CLASS_LOADER.getParent()
+            );
         }
     }
 

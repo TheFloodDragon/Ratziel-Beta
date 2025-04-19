@@ -1,4 +1,4 @@
-package cn.fd.ratziel.common.element
+package cn.fd.ratziel.common.element.registry
 
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.ElementType

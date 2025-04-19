@@ -57,13 +57,13 @@ object WorkspaceLoader {
                 // 监听自动重载
                 if (workspace.listen) {
                     FileWatcher.INSTANCE.addSimpleListener(file) {
-                        val elements = ElementLoader.load(workspace, file)
-                        for (element in elements) {
-                            try {
-                                evaluator.handleElement(element)
-                            } catch (ex: Exception) {
-                                ex.printStackTrace()
-                            }
+                        try {
+                            val elements = ElementLoader.load(workspace, file)
+                            for (element in elements) evaluator.handleElement(element)
+                            sender.sendLang("Element-File-Reload-Succeed", file.name)
+                        } catch (ex: Exception) {
+                            sender.sendLang("Element-File-Reload-Failed", file.name)
+                            ex.printStackTrace()
                         }
                     }
                 }

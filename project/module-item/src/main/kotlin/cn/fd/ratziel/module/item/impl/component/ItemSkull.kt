@@ -21,7 +21,7 @@ import taboolib.library.xseries.XMaterial
  * @author TheFloodDragon
  * @since 2024/10/1 13:48
  */
-@Serializable(ItemSkull.Companion::class)
+@Serializable(ItemSkull.Serializer::class)
 @KeepGeneratedSerializer
 data class ItemSkull(
     /**
@@ -31,13 +31,17 @@ data class ItemSkull(
     var head: SkullData? = null
 ) {
 
-    companion object : NbtTransformingSerializer<ItemSkull>(ItemSkull.generatedSerializer()), DataProcessor {
+    companion object : DataProcessor {
 
         override fun process(data: ItemData) = data.apply {
             if (tag.isNotEmpty()) {
                 material = SimpleMaterial(XMaterial.PLAYER_HEAD) // 设置材质
             }
         }
+
+    }
+
+    internal object Serializer : NbtTransformingSerializer<ItemSkull>(generatedSerializer()) {
 
         override fun transformDeserialize(tag: NbtTag): NbtTag {
             if (tag is NbtCompound) {

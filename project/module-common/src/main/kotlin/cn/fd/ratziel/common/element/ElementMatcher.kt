@@ -1,5 +1,6 @@
 package cn.fd.ratziel.common.element
 
+import cn.fd.ratziel.common.element.registry.ElementRegistry
 import cn.fd.ratziel.core.element.ElementType
 
 /**
