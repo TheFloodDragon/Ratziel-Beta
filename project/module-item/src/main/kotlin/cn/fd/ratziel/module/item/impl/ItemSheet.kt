@@ -64,7 +64,7 @@ object ItemSheet {
             is JsonNull -> null
             is JsonPrimitive -> json.content
             else -> null
-        } ?: throw IllegalStateException("Unable to match version!")
+        } ?: "" // 返回空字符串, 代表不支持
 
     }
 

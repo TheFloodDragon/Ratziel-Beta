@@ -1,5 +1,5 @@
 dependencies {
-    implementation("com.github.TheFloodDragon.nbt:nbt-jvm:0.1.1") { isTransitive = false }
+    implementation("com.github.Altawk.nbt:nbt-jvm:1.0.0") { isTransitive = false }
     compileOnly(libs.taboolib.platform.bukkit)
     compileOnly(libs.taboolib.platform.bukkit.impl)
     compileOnly(libs.taboolib.bukkit.nms)

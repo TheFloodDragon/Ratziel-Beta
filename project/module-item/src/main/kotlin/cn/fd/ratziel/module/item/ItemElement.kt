@@ -30,6 +30,7 @@ import kotlinx.serialization.serializer
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.LifeCycle
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.module.nms.MinecraftVersion
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -75,6 +76,10 @@ object ItemElement : ElementHandler {
             contextual(HideFlag::class, HideFlagSerializer)
             contextual(Attribute::class, AttributeSerializer)
             contextual(AttributeModifier::class, AttributeModifierSerializer)
+            // ItemDisplay 1.20.5- Support
+            if (MinecraftVersion.versionId < 12005) {
+                contextual(LegacyItemDisplaySerializer(ItemDisplay.serializer()))
+            }
         }
     }
 
@@ -87,7 +92,7 @@ object ItemElement : ElementHandler {
 
     init {
         // 注册默认组件
-        register<ItemDisplay>(ItemDisplay.Companion)
+        register<ItemDisplay>()
         register<ItemDurability>()
         register<ItemSkull>(ItemSkull.Companion)
     }

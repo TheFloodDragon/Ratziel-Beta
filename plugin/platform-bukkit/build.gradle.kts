@@ -34,4 +34,5 @@ taboolib {
 tasks.shadowJar {
     from(zipTree(tasks.taboolibMainTask.get().inJar))
     archiveFileName.set("${rootProject.name}-Bukkit-$version.jar")
+    destinationDirectory.set(file("$rootDir/build")) // 暂时不输出
 }

@@ -16,7 +16,8 @@ internal object NbtNameDeterminer : SerialNameDeterminer {
         val parent = descriptor.serialName.substringAfterLast('.')
         val elementName = descriptor.getElementName(index)
         val mappedName = ItemSheet.mappings[parent to elementName]
-        return mappedName ?: elementName
+        // 空代表不支持, 返回 EOF 让他不编码
+        return mappedName?.ifEmpty { "\u0000" } ?: elementName
     }
 
     override fun mapName(elementName: String, descriptor: SerialDescriptor): String {

@@ -2,12 +2,15 @@
 
 package cn.fd.ratziel.module.item.impl.component
 
+import cn.altawk.nbt.NbtTransformingSerializer
 import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.util.SkullData
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KeepGeneratedSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import taboolib.library.xseries.XMaterial
@@ -18,7 +21,8 @@ import taboolib.library.xseries.XMaterial
  * @author TheFloodDragon
  * @since 2024/10/1 13:48
  */
-@Serializable
+@Serializable(ItemSkull.Companion::class)
+@KeepGeneratedSerializer
 data class ItemSkull(
     /**
      * 头颅材质数据
@@ -27,15 +31,20 @@ data class ItemSkull(
     var head: SkullData? = null
 ) {
 
-    companion object : DataProcessor {
-
-        val PLAYER_HEAD = SimpleMaterial(XMaterial.PLAYER_HEAD)
+    companion object : NbtTransformingSerializer<ItemSkull>(ItemSkull.generatedSerializer()), DataProcessor {
 
         override fun process(data: ItemData) = data.apply {
             if (tag.isNotEmpty()) {
-                material = PLAYER_HEAD // 设置材质
-                tag = tag[ItemSkull::head.name]!! as NbtCompound // 内联释放
+                material = SimpleMaterial(XMaterial.PLAYER_HEAD) // 设置材质
             }
+        }
+
+        override fun transformDeserialize(tag: NbtTag): NbtTag {
+            if (tag is NbtCompound) {
+                val unfolded = tag[ItemSkull::head.name]
+                if (unfolded != null) return unfolded
+            }
+            return super.transformDeserialize(tag)
         }
 
     }

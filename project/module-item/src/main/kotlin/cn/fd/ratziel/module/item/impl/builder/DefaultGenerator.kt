@@ -50,6 +50,7 @@ class DefaultGenerator(
         val nativeTasks = ItemRegistry.registry.map {
             async { runTask(it, origin.property, context, item.data) }
         }
+
         // 源任务: 物品源 -> 解析 -> 数据
         val sourcedTasks = ItemRegistry.sources.map {
             async { it.generateItem(origin, context)?.data }
@@ -57,7 +58,7 @@ class DefaultGenerator(
 
         // 等待所有任务完成, 然后合并数据
         val firstMat = item.data.material
-        for (generated in sourcedTasks.plus(nativeTasks).awaitAll()) {
+        for (generated in sourcedTasks.awaitAll().plus(nativeTasks.awaitAll().map { it.getOrNull() })) {
             if (generated != null) {
                 // 重新设置材质
                 val nextMat = generated.material
@@ -81,7 +82,7 @@ class DefaultGenerator(
         element: JsonElement,
         context: ArgumentContext,
         refer: ItemData
-    ): ItemData? {
+    ): Result<ItemData> {
         // 获取序列化器
         @Suppress("UNCHECKED_CAST")
         val serializer = (integrated as ItemRegistry.Integrated<Any>).serializer
@@ -93,7 +94,7 @@ class DefaultGenerator(
         } catch (ex: Exception) {
             severe("Failed to deserialize element by '$serializer'!")
             ex.printStackTrace()
-            return null
+            return Result.failure(ex)
         }
         // 第二步: 编码成组件数据
         val tag = try {
@@ -102,19 +103,21 @@ class DefaultGenerator(
         } catch (ex: Exception) {
             severe("Failed to transform component by '$serializer'! Source component: $component")
             ex.printStackTrace()
-            return null
+            return Result.failure(ex)
         }
         // 第三步: 处理组件数据
         if (tag is NbtCompound) {
             val processor = integrated.processor
             try {
-                return processor.process(SimpleData(refer.material, tag))
+                val processed = processor.process(SimpleData(refer.material, tag))
+                return Result.success(processed)
             } catch (ex: Exception) {
                 severe("Failed to process data by '$processor'!")
                 ex.printStackTrace()
+                return Result.failure(ex)
             }
         }
-        return null
+        return Result.failure(IllegalStateException("Unknown exception during data generation!"))
     }
 
 }

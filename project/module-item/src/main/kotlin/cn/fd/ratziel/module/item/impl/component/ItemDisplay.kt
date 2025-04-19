@@ -2,16 +2,12 @@
 
 package cn.fd.ratziel.module.item.impl.component
 
-import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
-import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
-import taboolib.module.nms.MinecraftVersion
 
 /**
  * ItemDisplay - 物品显示
@@ -57,17 +53,6 @@ data class ItemDisplay(
      */
     fun setLore(lore: Iterable<String>) {
         this.lore = lore.map { Message.buildMessage(it) }
-    }
-
-    companion object : DataProcessor {
-
-        override fun process(data: ItemData) = data.apply {
-            // 低版本支持 (1.20.5-)
-            if (MinecraftVersion.versionId < 12005) {
-                tag = NbtCompound { put("display", tag) }
-            }
-        }
-
     }
 
 }

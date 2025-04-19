@@ -59,7 +59,7 @@ class RatzielItem private constructor(
         /**
          * 物品节点
          */
-        @JvmField
+        @JvmStatic
         val RATZIEL_PATH = NbtPath(
             NbtPath.NameNode(ItemSheet.CUSTOM_DATA_COMPONENT),
             NbtPath.NameNode("Ratziel")
@@ -68,7 +68,7 @@ class RatzielItem private constructor(
         /**
          * 物品数据节点
          */
-        @JvmField
+        @JvmStatic
         val RATZIEL_DATA_PATH = RATZIEL_PATH.plus(NbtPath.NameNode("data"))
 
         /**
