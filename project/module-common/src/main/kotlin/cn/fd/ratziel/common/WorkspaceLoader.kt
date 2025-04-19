@@ -19,9 +19,9 @@ import kotlin.time.measureTime
 object WorkspaceLoader {
 
     /**
-     * 缓存的元素
+     * 元素评估器
      */
-    lateinit var lastEvaluator: ElementEvaluator
+    lateinit var currentEvaluator: ElementEvaluator
         private set
 
     /**
@@ -42,24 +42,24 @@ object WorkspaceLoader {
      * 加载工作空间中的元素
      */
     private fun load(sender: ProxyCommandSender): CompletableFuture<Duration> {
-        WorkspaceLoadEvent.Start().call() // 事件 - 开始加载
         val timeMark = TimeSource.Monotonic.markNow() // 开始记录时间
+        WorkspaceLoadEvent.Start().call() // 事件 - 开始加载
+        FileWatcher.INSTANCE.release() // 释放文件监听器
         val result = CompletableFuture<Duration>()
         // 创建评估器
-        val evaluator = ElementEvaluator(executor)
-        lastEvaluator = evaluator
+        currentEvaluator = ElementEvaluator(executor)
         // 创建任务工厂
         val tasks = FutureFactory<Unit>()
         // 加载所有工作空间
         for (workspace in WorkspaceManager.workspaces) {
             // 加载工作空间内的文件
             for (file in workspace.files) {
-                // 监听自动重载
+                // 监听自动重载的文件
                 if (workspace.listen) {
                     FileWatcher.INSTANCE.addSimpleListener(file) {
                         try {
                             val elements = ElementLoader.load(workspace, file)
-                            for (element in elements) evaluator.handleElement(element)
+                            for (element in elements) currentEvaluator.handleElement(element)
                             sender.sendLang("Element-File-Reload-Succeed", file.name)
                         } catch (ex: Exception) {
                             sender.sendLang("Element-File-Reload-Failed", file.name)
@@ -71,7 +71,7 @@ object WorkspaceLoader {
                     try {
                         // 加载元素文件
                         ElementLoader.load(workspace, file).onEach { element ->
-                            evaluator.submitWith(element) // 提交到评估器
+                            currentEvaluator.submitWith(element) // 提交到评估器
                         }
                     } catch (ex: Exception) {
                         ex.printStackTrace()
@@ -83,10 +83,10 @@ object WorkspaceLoader {
         tasks.thenRun {
             val loadTime = timeMark.elapsedNow() // 加载所耗费的时间
             // 评估器开始评估
-            evaluator.evaluate().thenAccept {
-                val time = loadTime.plus(it) // 计算最终时间 = 加载时间 + 评估时间
-                sender.sendLang("Workspace-Loaded", evaluator.evaluatedElements.size, time.inWholeMilliseconds)
+            currentEvaluator.evaluate().thenAccept {
                 WorkspaceLoadEvent.End().call() // 事件 - 结束加载
+                val time = loadTime.plus(it) // 计算最终时间 = 加载时间 + 评估时间
+                sender.sendLang("Workspace-Loaded", currentEvaluator.evaluatedElements.size, time.inWholeMilliseconds)
                 result.complete(time) // 完成最后任务
             }
         }

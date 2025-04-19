@@ -33,7 +33,7 @@ object CommandElement {
     val list = subCommand {
         executeAsync<ProxyCommandSender> { sender, _, _ ->
             sender.sendLang("Element-Header")
-            WorkspaceLoader.lastEvaluator.evaluatedElements.values.forEach {
+            WorkspaceLoader.currentEvaluator.evaluatedElements.values.forEach {
                 sender.sendLang("Element-Identifier-Format", it.name) // 名称
                 sender.sendLang(
                     "Element-Info-Format",
