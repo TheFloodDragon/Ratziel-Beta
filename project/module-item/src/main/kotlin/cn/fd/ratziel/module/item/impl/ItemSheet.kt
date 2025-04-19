@@ -45,12 +45,8 @@ object ItemSheet {
             // Analyze to map
             return HashBiMap.create<Pair<String, String>, String>().apply {
                 for ((id, verMap) in json.jsonObject) {
-                    try {
-                        val split = id.split('.')
-                        put(split[0] to split[1], matchVersion(verMap))
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                    val split = id.split('.')
+                    forcePut(split[0] to split[1], matchVersion(verMap))
                 }
             }
         }

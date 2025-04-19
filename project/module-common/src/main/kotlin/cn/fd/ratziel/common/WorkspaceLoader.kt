@@ -44,7 +44,6 @@ object WorkspaceLoader {
     private fun load(sender: ProxyCommandSender): CompletableFuture<Duration> {
         val timeMark = TimeSource.Monotonic.markNow() // 开始记录时间
         WorkspaceLoadEvent.Start().call() // 事件 - 开始加载
-        FileWatcher.INSTANCE.release() // 释放文件监听器
         val result = CompletableFuture<Duration>()
         // 创建评估器
         currentEvaluator = ElementEvaluator(executor)

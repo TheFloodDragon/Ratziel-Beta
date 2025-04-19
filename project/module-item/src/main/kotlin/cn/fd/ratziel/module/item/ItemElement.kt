@@ -23,6 +23,7 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.plus
@@ -76,10 +77,6 @@ object ItemElement : ElementHandler {
             contextual(HideFlag::class, HideFlagSerializer)
             contextual(Attribute::class, AttributeSerializer)
             contextual(AttributeModifier::class, AttributeModifierSerializer)
-            // ItemDisplay 1.20.5- Support
-            if (MinecraftVersion.versionId < 12005) {
-                contextual(LegacyItemDisplaySerializer(ItemDisplay.serializer()))
-            }
         }
     }
 
@@ -92,7 +89,12 @@ object ItemElement : ElementHandler {
 
     init {
         // 注册默认组件
-        register<ItemDisplay>()
+        if (MinecraftVersion.versionId >= 12005) {
+            register<ItemDisplay>()
+        } else {
+            // ItemDisplay 1.20.5- Support
+            register<ItemDisplay>(serializer = LegacyItemDisplaySerializer(ItemDisplay.serializer()))
+        }
         register<ItemDurability>()
         register<ItemSkull>(ItemSkull.Companion)
     }
@@ -120,8 +122,11 @@ object ItemElement : ElementHandler {
         ItemManager.registry.clear()
     }
 
-    private inline fun <reified T : Any> register(processor: DataProcessor = DataProcessor.NoProcess) {
-        ItemRegistry.register(T::class.java, SectionTransforming(serializer<T>()), processor)
+    private inline fun <reified T : Any> register(
+        processor: DataProcessor = DataProcessor.NoProcess,
+        serializer: KSerializer<T> = serializer<T>()
+    ) {
+        ItemRegistry.register(T::class.java, SectionTransforming(serializer), processor)
     }
 
 }
