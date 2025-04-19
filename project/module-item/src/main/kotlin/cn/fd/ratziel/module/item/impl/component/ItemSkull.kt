@@ -41,7 +41,7 @@ data class ItemSkull(
 
     }
 
-    internal object Serializer : NbtTransformingSerializer<ItemSkull>(generatedSerializer()) {
+    internal object Serializer : NbtTransformingSerializer<ItemSkull>(generatedSerializer(), true) {
 
         override fun transformDeserialize(tag: NbtTag): NbtTag {
             if (tag is NbtCompound) {
