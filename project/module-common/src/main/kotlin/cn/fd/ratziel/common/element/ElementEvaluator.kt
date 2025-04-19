@@ -2,9 +2,8 @@ package cn.fd.ratziel.common.element
 
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.ElementIdentifier
 import cn.fd.ratziel.core.element.ElementHandler
-import cn.fd.ratziel.core.element.service.ElementRegistry
+import cn.fd.ratziel.core.element.ElementIdentifier
 import cn.fd.ratziel.core.util.FutureFactory
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
@@ -106,9 +105,8 @@ class ElementEvaluator(val executor: Executor) {
      */
     fun submitWith(element: Element) {
         // 注册到处理器表
-        for (handler in ElementRegistry.getHandlersByType(element.type)) {
-            submitTask(EvaluationTask(element, handler, findConfig(handler)))
-        }
+        val handler = ElementRegistry[element.type]
+        submitTask(EvaluationTask(element, handler, findConfig(handler)))
     }
 
     /**

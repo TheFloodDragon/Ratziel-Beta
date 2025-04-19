@@ -37,7 +37,7 @@ interface ItemServiceRegistry {
 
     /**
      * 取消注册指定类型的服务
-     * @param type 服务类型l
+     * @param type 服务类型
      */
     fun unregister(type: Class<*>)
 

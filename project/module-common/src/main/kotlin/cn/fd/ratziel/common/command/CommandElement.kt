@@ -1,7 +1,7 @@
 package cn.fd.ratziel.common.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
-import cn.fd.ratziel.core.element.service.ElementRegistry
+import cn.fd.ratziel.common.element.ElementRegistry
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -61,7 +61,7 @@ object CommandElement {
                     "Element-Type-Info-Format",
                     type.name, // 名称
                     format(type.alias.toList()), // 别名
-                    format(ElementRegistry.getHandlersByType(type).map { it::class.java.name }) //处理器
+                    ElementRegistry[type]::class.java.name//处理器
                 )
             }
         }
