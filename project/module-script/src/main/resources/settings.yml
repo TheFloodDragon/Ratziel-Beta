@@ -8,9 +8,9 @@ Script:
       enabled: true
       # 使用的脚本引擎
       engine: nashorn
-    # Kotlin Scripting
-    KotlinScripting:
-      enabled: false
+      # 参数 (不知道就别改)
+      options:
+        - "Dnashorn.args=--language=es6"
     # Kether
     Kether:
       enabled: true
@@ -18,4 +18,7 @@ Script:
       tolerance: true
     # Jexl
     Jexl:
+      enabled: true
+    # Kotlin Scripting
+    KotlinScripting:
       enabled: false

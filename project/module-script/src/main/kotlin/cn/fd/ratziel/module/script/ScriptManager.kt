@@ -3,8 +3,10 @@ package cn.fd.ratziel.module.script
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.module.script.internal.Initializable
 import taboolib.common.LifeCycle
+import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.severe
+import java.util.concurrent.CopyOnWriteArrayList
 import javax.script.ScriptEngineManager
 
 
@@ -26,6 +28,11 @@ object ScriptManager {
      * 公共的 [ScriptEngineManager]
      */
     val engineManager by lazy { ScriptEngineManager(this::class.java.classLoader) }
+
+    /**
+     * 全局导入的类
+     */
+    val globalImports: MutableList<String> = CopyOnWriteArrayList()
 
     /**
      * 初始化脚本系统
@@ -54,6 +61,20 @@ object ScriptManager {
                 severe("Failed to enable script-language '${type.name}'!")
             }
         }
+
+        // 读取导入的类
+        val res = this::class.java.classLoader.getResource("script-default/default.imports")!!
+        val lines = res.readText(Charsets.UTF_8).trim().lines()
+        globalImports.addAll(lines)
+    }
+
+    /**
+     * 加载脚本语言的依赖
+     */
+    internal fun loadDependencies(name: String) {
+        RuntimeEnv.ENV_DEPENDENCY.loadFromLocalFile(
+            this::class.java.classLoader.getResource("META-INF/dependencies/$name.json")
+        )
     }
 
 }

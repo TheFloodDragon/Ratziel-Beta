@@ -2,8 +2,10 @@ package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.lang.JavaScriptExecutor
+import cn.fd.ratziel.module.script.lang.JexlScriptExecutor
 import cn.fd.ratziel.module.script.lang.KetherExecutor
 import java.util.concurrent.CopyOnWriteArraySet
+import java.util.function.Supplier
 
 /**
  * ScriptTypes - 脚本类型
@@ -26,7 +28,7 @@ interface ScriptType {
     /**
      * 执行器
      */
-    var executor: ScriptExecutor?
+    var executor: Supplier<ScriptExecutor?>
 
     /**
      * 别名
@@ -36,7 +38,7 @@ interface ScriptType {
     /**
      * 获取执行器, 若不存在则直接抛出异常
      */
-    val executorOrThrow get() = executor ?: throw UnsupportedOperationException("There's no executor of $this.")
+    val executorOrThrow get() = executor.get() ?: throw UnsupportedOperationException("There's no executor of language '$name'.")
 
     companion object {
 
@@ -48,19 +50,22 @@ interface ScriptType {
 
         /** JavaScript **/
         @JvmStatic
-        val JAVASCRIPT = register(JavaScriptExecutor, "JavaScript", "Js")
+        val JAVASCRIPT = register("JavaScript", "Js") { JavaScriptExecutor }
 
         /** Kether **/
+        @Suppress("unused")
         @JvmStatic
-        val KETHER = register(KetherExecutor, "Kether", "ke", "ks")
+        val KETHER = register("Kether", "ke", "ks") { KetherExecutor }
 
         /** Jexl **/
+        @Suppress("unused")
         @JvmStatic
-        val JEXL = register(null, "Jexl", "Jexl3")
+        val JEXL = register("Jexl", "Jexl3") { JexlScriptExecutor }
 
         /** Kotlin Scripting **/
+        @Suppress("unused")
         @JvmStatic
-        val KOTLIN_SCRIPTING = register(null, "KotlinScripting", "Kotlin", "kts")
+        val KOTLIN_SCRIPTING = register("KotlinScripting", "Kotlin", "kts") { null }
 
         /**
          * 匹配脚本类型
@@ -77,13 +82,13 @@ interface ScriptType {
         fun matchOrThrow(name: String): ScriptType =
             match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
 
-        private fun register(executor: ScriptExecutor?, name: String, vararg alias: String) =
+        private fun register(name: String, vararg alias: String, executor: Supplier<ScriptExecutor?>) =
             object : ScriptType {
                 override val name = name
                 override var enabled = false
                 override var executor = executor
                 override val alias = alias
-                override fun toString() = "ScriptType(name=$name, enabled=$enabled, executor=$executor, alias=${this.alias.contentToString()})"
+                override fun toString() = "ScriptType(name=$name, enabled=$enabled, alias=${this.alias.contentToString()})"
             }.also { this.registry.add(it) }
 
     }

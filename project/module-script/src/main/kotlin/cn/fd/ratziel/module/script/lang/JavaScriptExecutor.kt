@@ -1,18 +1,17 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.api.CompilableScript
-import cn.fd.ratziel.module.script.api.ScriptContent
-import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.api.ScriptExecutor
-import cn.fd.ratziel.module.script.impl.CacheableScriptContent
+import cn.fd.ratziel.module.script.internal.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.internal.Initializable
-import taboolib.common.env.RuntimeEnv
-import taboolib.common.platform.function.warning
+import org.openjdk.nashorn.api.scripting.NashornScriptEngine
+import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
+import org.openjdk.nashorn.internal.objects.Global
+import org.openjdk.nashorn.internal.objects.NativeJava
+import org.openjdk.nashorn.internal.objects.NativeJavaImporter
+import org.openjdk.nashorn.internal.runtime.NativeJavaPackage
 import taboolib.library.configuration.ConfigurationSection
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
-import javax.script.*
+import taboolib.library.reflex.ReflexClass
+import javax.script.ScriptEngine
 
 /**
  * JavaScriptExecutor
@@ -20,61 +19,78 @@ import javax.script.*
  * @author TheFloodDragon
  * @since 2024/10/4 20:05
  */
-object JavaScriptExecutor : ScriptExecutor, Initializable {
+object JavaScriptExecutor : EnginedScriptExecutor(), Initializable {
 
-    /**
-     * 全局绑定键列表
-     */
-    val globalBindings by lazy { SimpleBindings(ConcurrentHashMap()) }
+    private var options: Array<String> = emptyArray()
+    private var electedEngine: String? = null
 
-    /**
-     * 构建脚本
-     * @param compile 是否启用编译
-     * @param async 若编译启用, 是否异步编译
-     */
-    fun build(script: String, compile: Boolean = true, async: Boolean = true): CacheableScriptContent {
-        val sc = CacheableScriptContent(script, this)
-        if (compile && sc.future == null) {
-            sc.future = if (async) {
-                CompletableFuture.supplyAsync { compile(script) }
-            } else CompletableFuture.completedFuture(compile(script))
-        }
-        return sc
-    }
-
-    override fun build(script: String) = build(script, compile = true, async = true)
-
-    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
-        if (script is CompilableScript) {
-            val compiled = script.compiled
-            if (compiled != null) return compiled.eval(environment.context)
-        }
-        return newEngine().eval(script.content, environment.context)
-    }
-
-    /**
-     * 编译脚本
-     */
-    fun compile(script: String): CompiledScript? {
-        try {
-            return (newEngine() as Compilable).compile(script)
-        } catch (e: Exception) {
-            warning("Cannot compile script by '$this' ! Script content: $script")
-            e.printStackTrace()
-        }
-        return null
-    }
-
-    fun newEngine(): ScriptEngine {
-        val engine = ScriptManager.engineManager.getEngineByName("js")
-            ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript Language")
-        // 设置全局绑定键
-        engine.setBindings(globalBindings, ScriptContext.GLOBAL_SCOPE)
+    override fun newEngine(): ScriptEngine {
+        val engine = if (electedEngine.equals("nashorn", true)) {
+            newNashornEngine()
+        } else {
+            ScriptManager.engineManager.getEngineByName("js")
+        } ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript Language")
         return engine
     }
 
     override fun initialize(settings: ConfigurationSection) {
-        RuntimeEnv.ENV_DEPENDENCY.loadFromLocalFile(this::class.java.classLoader.getResource("META-INF/dependencies/nashorn.json"))
+        ScriptManager.loadDependencies("nashorn")
+        this.electedEngine = settings.getString("engine")
+        this.options = settings.getStringList("options").toTypedArray()
+    }
+
+    private fun newNashornEngine(): ScriptEngine? {
+        val factory = ScriptManager.engineManager.engineFactories.find {
+            it.engineName == "OpenJDK Nashorn"
+        } as? NashornScriptEngineFactory
+        val engine = factory?.getScriptEngine(options, this::class.java.classLoader)
+        // 导入默认
+        if (engine != null) NashornUtils.importDefaults(engine)
+        return engine
+    }
+
+    private object NashornUtils {
+
+        val defaultPackages: Array<String>
+
+        val defaultClasses: Array<String>
+
+        init {
+            val packages = ArrayList<String>()
+            val classes = ArrayList<String>()
+            for (import in ScriptManager.globalImports) {
+                if (import.endsWith(".*") || import.endsWith(".")) {
+                    packages.add(import)
+                } else {
+                    classes.add(import)
+                }
+            }
+            this.defaultPackages = packages.toTypedArray()
+            this.defaultClasses = classes.toTypedArray()
+        }
+
+        fun importDefaults(engine: ScriptEngine) {
+            val global = getGlobal(engine)
+            val packageImports = defaultPackages.map { NativeJavaPackage(it, global.objectPrototype) }
+            val classImports = defaultClasses.map { NativeJava.type(it, global.objectPrototype) }
+            val imports = (packageImports + classImports).toTypedArray()
+            val importer = nativeImporterConstructor.instance(imports, global)
+            Global.setJavaImporter(global, importer)
+        }
+
+        fun getGlobal(engine: ScriptEngine): Global {
+            return globalField.get(engine as NashornScriptEngine) as Global
+        }
+
+        private val globalField by lazy {
+            ReflexClass.of(NashornScriptEngine::class.java, false).getLocalField("global")
+        }
+
+        private val nativeImporterConstructor by lazy {
+            ReflexClass.of(NativeJavaImporter::class.java, false).structure
+                .getConstructorByType(Array::class.java, Global::class.java)
+        }
+
     }
 
 }
