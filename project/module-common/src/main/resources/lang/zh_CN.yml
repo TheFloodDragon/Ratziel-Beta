@@ -16,7 +16,8 @@ Plugin-Reloaded: '&8[&6R&8] &7插件已重载完毕 &8({0}ms)'
 # 工作空间
 Workspace-Initiated: '&8[&6R&8] &7已初始化 &a{0} &7个工作空间... 开始加载配置 &8({1}ms)'
 Workspace-Loaded: '&8[&6R&8] &7成功载入 &a{0} &7个有效元素... &8({1}ms)'
-Element-File-Reload-Failed: '&8[&6R&8] &c自动重载 &7{0} &c失败'
+Element-File-load-Failed: '&8[&6R&8] &c加载文件 &7{0} &c失败.'
+Element-File-Reload-Failed: '&8[&6R&8] &c自动重载 &7{0} &c失败.'
 Element-File-Reload-Succeed: '&8[&6R&8] &7自动载入了 &f{0} &7的更改.'
 
 # 元素

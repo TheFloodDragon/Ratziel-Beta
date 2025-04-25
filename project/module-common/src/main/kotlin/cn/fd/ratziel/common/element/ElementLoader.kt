@@ -21,7 +21,7 @@ import java.util.*
  */
 object ElementLoader {
 
-    fun load(workspace: Workspace, file: File): List<Element> {
+    fun load(workspace: Workspace, file: File): Result<List<Element>> {
         try {
             // 从文件中加载配置
             val config = Configuration.loadFromFile(file)
@@ -29,11 +29,11 @@ object ElementLoader {
             config.changeType(Type.JSON)
             val json = Json.parseToJsonElement(config.saveToString())
             // 一般解析
-            return this.parseElements(workspace, json, file)
+            return Result.success(this.parseElements(workspace, json, file))
         } catch (e: Exception) {
             severe("Failed to load element form file: ${file.name}")
             e.printStackTrace()
-            return emptyList() // 失败时返回空列表
+            return Result.failure(e)
         }
     }
 

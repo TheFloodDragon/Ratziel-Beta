@@ -1,6 +1,6 @@
 package cn.fd.ratziel.common.command
 
-import cn.fd.ratziel.common.WorkspaceLoader
+import cn.fd.ratziel.common.element.ElementEvaluator
 import cn.fd.ratziel.common.element.registry.ElementRegistry
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
@@ -33,7 +33,7 @@ object CommandElement {
     val list = subCommand {
         executeAsync<ProxyCommandSender> { sender, _, _ ->
             sender.sendLang("Element-Header")
-            WorkspaceLoader.currentEvaluator.evaluatedElements.values.forEach {
+            ElementEvaluator.evaluatedElements.values.forEach {
                 sender.sendLang("Element-Identifier-Format", it.name) // 名称
                 sender.sendLang(
                     "Element-Info-Format",

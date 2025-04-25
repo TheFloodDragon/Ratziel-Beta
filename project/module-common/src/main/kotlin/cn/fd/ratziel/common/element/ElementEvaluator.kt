@@ -1,18 +1,19 @@
 package cn.fd.ratziel.common.element
 
+import cn.fd.ratziel.common.element.ElementEvaluator.cycledEvaluations
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.ElementRegistry
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.ElementIdentifier
-import cn.fd.ratziel.core.util.FutureFactory
+import kotlinx.coroutines.*
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.Executor
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.function.Supplier
 import kotlin.time.Duration
 import kotlin.time.TimeSource
 
@@ -20,9 +21,20 @@ import kotlin.time.TimeSource
  * ElementEvaluator - 元素评估器
  *
  * @author TheFloodDragon
- * @since 2024/5/1 11:42
+ * @since 2025/4/25 21:32
  */
-class ElementEvaluator(val executor: Executor) {
+object ElementEvaluator {
+
+    /**
+     * 协程作用域
+     */
+    val scope = CoroutineScope(CoroutineName("ElementEvaluator") + Dispatchers.Default)
+
+    /**
+     * 周期性评估任务组表
+     */
+    val cycledEvaluations: MutableMap<LifeCycle, EvaluationGroup> = HashMap<LifeCycle, EvaluationGroup>()
+        .apply { for (cycle in LifeCycle.entries) put(cycle, EvaluationGroup()) } // 初始化任务组表
 
     /**
      * 加载过的元素表
@@ -30,108 +42,129 @@ class ElementEvaluator(val executor: Executor) {
     val evaluatedElements: MutableMap<ElementIdentifier, Element> = ConcurrentHashMap()
 
     /**
-     * 评估任务表
+     * 处理任务
      */
-    val evaluations: MutableMap<LifeCycle, MutableList<EvaluationTask>> = ConcurrentHashMap()
+    fun handleTask(task: EvaluationTask): Result<Element> {
+        return try {
+            val element = task.element
+            // 处理元素
+            task.handler.handle(element)
+            // 缓存加载过的元素
+            evaluatedElements[element.identifier] = element
+            // 完成任务
+            Result.success(element)
+        } catch (ex: Throwable) {
+            severe("Couldn't handle element by ${task.handler}!")
+            ex.printStackTrace()
+            Result.failure(ex)
+        }
+    }
 
     /**
-     * 开始评估
+     * 评估 [cycledEvaluations] 内的所有任务
+     *
+     * @return 返回 [java.util.concurrent.CompletableFuture], 包含处理总共耗时
      */
-    fun evaluate(): CompletableFuture<Duration> {
-        val cycleTasks = FutureFactory<Duration>()
+    fun evaluateCycled(): CompletableFuture<Duration> {
+        val cycleTasks = ArrayList<CompletableFuture<Duration>>()
         // 遍历生命周期创建周期任务
-        for ((lifeCycle, tasks) in evaluations) {
+        for ((lifeCycle, group) in cycledEvaluations) {
+            // 没任务直接下一个
+            if (group.evaluations.isEmpty()) continue
             // 创建周期任务回调
             val future = CompletableFuture<Duration>().also { cycleTasks.add(it) }
             // 注册周期任务
-            TabooLib.registerLifeCycleTask(lifeCycle, 10) { handleCycle(tasks, future) }
+            TabooLib.registerLifeCycleTask(lifeCycle, 10) {
+                // 开启阻塞协程
+                runBlocking {
+                    // 开始记录时间
+                    val timeMark = TimeSource.Monotonic.markNow()
+                    // 评估组内所有任务
+                    group.evaluate()
+                    // 完成并回传处理时间
+                    future.complete(timeMark.elapsedNow())
+                }
+            }
         }
-        return cycleTasks.thenApply { durations ->
+        return CompletableFuture.allOf(*cycleTasks.toTypedArray()).thenApply {
             // 合并时间
-            var duration = Duration.ZERO
-            durations.forEach { duration = duration.plus(it) }
+            var duration = Duration.Companion.ZERO
+            for (t in cycleTasks) {
+                duration = t.join() // 此时已经是所有任务结束后了
+            }
             duration
         }
     }
 
-    fun handleCycle(tasks: List<EvaluationTask>, future: CompletableFuture<Duration>) {
-        // 开始记录时间
-        val timeMark = TimeSource.Monotonic.markNow()
-        // 创建工厂收集任务
-        val factory = FutureFactory<Result<Element>>()
-        // 遍历任务单个处理
-        tasks.forEach { task ->
-            factory += handleTask(task) // 提交任务
-        }
-        factory.thenRun {
-            // 完成后完成传入任务, 返回时间
-            future.complete(timeMark.elapsedNow())
-        }
+    /**
+     * 提交周期评估任务
+     */
+    fun submitCycledTask(element: Element) {
+        val task = createTask(element)
+        // 注册到任务组里
+        val group = cycledEvaluations[task.config.lifeCycle]!!
+        group.evaluations.add(task)
     }
 
     /**
-     * 解析 [Element] 并提交评估任务
+     * 创建任务
      */
-    fun submitWith(element: Element) {
-        // 注册到处理器表
+    fun createTask(element: Element): EvaluationTask {
         val handler = ElementRegistry[element.type]
-        submitTask(EvaluationTask(element, handler, findConfig(handler)))
+        return EvaluationTask(element, handler, findConfig(handler))
     }
 
     /**
-     * 提交评估任务
+     * 清空
      */
-    fun submitTask(task: EvaluationTask) = evaluations.computeIfAbsent(task.config.lifeCycle) { CopyOnWriteArrayList() }.add(task)
+    fun clear() {
+        cycledEvaluations.forEach { it.value.evaluations.clear() }
+        evaluatedElements.clear()
+    }
+
+    /**
+     * 评估任务组
+     */
+    class EvaluationGroup(val evaluations: MutableCollection<EvaluationTask> = ConcurrentLinkedQueue()) {
+
+        suspend fun evaluate(): List<Result<Element>> {
+            // 异步任务列表
+            val asyncTasks = ArrayList<Deferred<Result<Element>>>()
+            // 同步任务列表
+            val syncTasks = ArrayList<Supplier<Result<Element>>>()
+            // 提交任务
+            for (task in evaluations) {
+                // 异步 & 同步 任务提交
+                if (task.config.async) {
+                    asyncTasks.add(scope.async { handleTask(task) })
+                } else {
+                    syncTasks.add(Supplier { handleTask(task) })
+                }
+            }
+            // 执行同步任务, 完成后取得结果
+            val syncResults = syncTasks.map { it.get() }
+            // 等待所有异步任务完成 (必须在同步之后再等待), 并返回结果
+            val asyncResults = awaitAll(*asyncTasks.toTypedArray())
+            // 返回最终结果
+            return syncResults + asyncResults
+        }
+
+    }
 
     /**
      * 评估任务
      */
-    class EvaluationTask(val element: Element, val handler: ElementHandler, val config: ElementConfig)
-
-
-    /**
-     * 直接处理元素
-     */
-    fun handleElement(element: Element) {
-        val handler = ElementRegistry[element.type]
-        val task = EvaluationTask(element, handler, findConfig(handler))
-        handleTask(task)
-    }
+    class EvaluationTask(
+        /** 要评估的元素 **/
+        val element: Element,
+        /** 元素处理器 **/
+        val handler: ElementHandler,
+        /** 元素配置 **/
+        val config: ElementConfig
+    )
 
     /**
-     * 调用 [ElementHandler] 处理 [Element]
-     * @return [CompletableFuture] - 过程的中可能存在的异常
-     */
-    fun handleTask(task: EvaluationTask): CompletableFuture<Result<Element>> {
-        // 创建处理任务
-        val future = CompletableFuture<Result<Element>>()
-        // 处理函数 (非立即执行)
-        val function = Runnable {
-            try {
-                val element = task.element
-                // 处理元素
-                task.handler.handle(element)
-                // 缓存评估过的元素
-                evaluatedElements[element.identifier] = element
-                // 完成任务
-                future.complete(Result.success(element))
-            } catch (ex: Throwable) {
-                severe("Couldn't handle element by ${task.handler}!")
-                ex.printStackTrace()
-                future.complete(Result.failure(ex)) // 异常时返回(尽管已经处理过了)
-            }
-        }
-        // 异步 & 同步 处理
-        if (task.config.async) {
-            CompletableFuture.runAsync(function, executor)
-        } else {
-            function.run()
-        }
-        return future // 返回任务
-    }
-
-    /**
-     * 获取[ElementHandler]的[ElementConfig]
+     * 获取 [ElementHandler] 的 [ElementConfig]
      */
     private fun findConfig(handler: ElementHandler): ElementConfig {
         // 分析注解

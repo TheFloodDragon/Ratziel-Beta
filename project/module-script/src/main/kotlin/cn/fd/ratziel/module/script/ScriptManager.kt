@@ -44,8 +44,10 @@ object ScriptManager {
         // 设置默认语言
         conf.getString("default")?.let { ScriptType.match(it) }?.also { defaultLanguage = it }
         // 初始化各个脚本类型
-        val settings = conf.getConfigurationSection("languages")!!
-        for (type in ScriptType.registry) {
+        val languages = conf.getConfigurationSection("languages")!!
+        for (key in languages.getKeys(false)) {
+            val type = ScriptType.match(key) ?: continue
+            val settings = languages.getConfigurationSection(key)!!
             type.enabled = settings.getBoolean("enabled", false)
             if (!type.enabled) continue // 禁用的直接跳过
             try {
@@ -53,12 +55,12 @@ object ScriptManager {
                 val executor = type.executorOrThrow
                 // 调用初始化函数
                 if (executor is Initializable) {
-                    executor.initialize(settings.getConfigurationSection(type.name)!!)
+                    executor.initialize(settings)
                 }
             } catch (ex: Exception) {
                 type.enabled = false // 禁用
-                ex.printStackTrace()
                 severe("Failed to enable script-language '${type.name}'!")
+                ex.printStackTrace()
             }
         }
 

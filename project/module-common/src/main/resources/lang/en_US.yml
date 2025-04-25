@@ -11,6 +11,7 @@ Plugin-Reloaded: '&8[&6R&8] &7Plugin has been reloaded &8({0}ms)'
 # Workspace
 Workspace-Initiated: '&8[&6R&8] &7Initialized &a{0} &7workspaces... Start loading files &8({1}ms)'
 Workspace-Loaded: '&8[&6R&8] &7Successfully loaded &a{0} &7valid element... &8({1}ms)'
+Element-File-load-Failed: '&8[&6R&8] &cLoading &7{0} &cfailed.'
 Element-File-Reload-Failed: '&8[&6R&8] &cAutomatically reloading &7{0} &cfailed.'
 Element-File-Reload-Succeed: '&8[&6R&8] &7Automatically loaded the changes of &f{0} &7.'
 
