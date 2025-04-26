@@ -6,9 +6,9 @@ Script:
     JavaScript:
       # 是否启用
       enabled: true
-      # 使用的脚本引擎
+      # 使用的脚本引擎 (Nashorn/GraalJS)
       engine: nashorn
-      # 参数 (不知道就别改)
+      # 参数 (不知道就别改, 仅 Nashorn)
       options:
         - "Dnashorn.args=--language=es6"
     # Kether

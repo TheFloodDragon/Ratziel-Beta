@@ -66,7 +66,7 @@ object ScriptManager {
 
         // 读取导入的类
         val res = this::class.java.classLoader.getResource("script-default/default.imports")!!
-        val lines = res.readText(Charsets.UTF_8).trim().lines()
+        val lines = res.readText(Charsets.UTF_8).trim().lines().filter { it.isNotEmpty() && it.isNotBlank() }
         globalImports.addAll(lines)
     }
 
