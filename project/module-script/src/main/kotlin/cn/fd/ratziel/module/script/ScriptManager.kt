@@ -39,6 +39,10 @@ object ScriptManager {
      */
     @Awake(LifeCycle.INIT)
     private fun initialize() {
+        // 读取导入的类
+        val res = this::class.java.classLoader.getResource("script-default/default.imports")!!
+        val lines = res.readText(Charsets.UTF_8).trim().lines().filter { it.isNotBlank() }
+        globalImports.addAll(lines)
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!
         // 设置默认语言
@@ -63,11 +67,6 @@ object ScriptManager {
                 ex.printStackTrace()
             }
         }
-
-        // 读取导入的类
-        val res = this::class.java.classLoader.getResource("script-default/default.imports")!!
-        val lines = res.readText(Charsets.UTF_8).trim().lines().filter { it.isNotEmpty() && it.isNotBlank() }
-        globalImports.addAll(lines)
     }
 
     /**

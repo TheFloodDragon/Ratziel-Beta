@@ -63,8 +63,7 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
             for (cls in JavaScriptExecutor.defaultClasses) {
                 appendLine("importClass($cls);")
             }
-            appendLine("// Default Imports Ended")
-            appendLine()
+            append("// Default Imports Ended")
         })
     }
 
