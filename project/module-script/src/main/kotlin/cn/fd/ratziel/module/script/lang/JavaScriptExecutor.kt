@@ -1,8 +1,9 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.api.ScriptContent
+import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
-import cn.fd.ratziel.module.script.internal.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.internal.Initializable
 import taboolib.library.configuration.ConfigurationSection
 import javax.script.ScriptEngine
@@ -13,9 +14,9 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 9:37
  */
-object JavaScriptExecutor : ScriptExecutor by JavaScriptExecutor.engine, Initializable {
+object JavaScriptExecutor : ScriptExecutor, Initializable {
 
-    private lateinit var engine: EnginedScriptExecutor
+    private lateinit var engine: ScriptExecutor
 
     override fun initialize(settings: ConfigurationSection) {
         // 读取引擎
@@ -30,6 +31,10 @@ object JavaScriptExecutor : ScriptExecutor by JavaScriptExecutor.engine, Initial
         }
         this.engine = engine
     }
+
+    override fun build(script: String) = engine.build(script)
+
+    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = engine.evaluate(script, environment)
 
     internal val defaultPackages: Array<String>
 
