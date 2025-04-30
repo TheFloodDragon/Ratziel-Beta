@@ -5,6 +5,7 @@ import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.internal.EnginedScriptExecutor
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
+import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
 /**
@@ -31,7 +32,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
 
     override fun newEngine(environment: ScriptEnvironment): ScriptEngine {
         val engine = GraalJSScriptEngine.create(null, builder)
-        engine.context = environment.context // 使用环境上下文
+        engine.context.getBindings(ScriptContext.ENGINE_SCOPE).putAll(environment.bindings) // 使用环境上下文
         JavaScriptExecutor.importDefaults(engine) // 导入默认
         return engine
     }
