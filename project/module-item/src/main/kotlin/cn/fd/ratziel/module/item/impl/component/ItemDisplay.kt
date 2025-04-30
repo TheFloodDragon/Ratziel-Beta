@@ -16,7 +16,7 @@ import kotlinx.serialization.json.JsonNames
  * @since 2024/3/16 11:27
  */
 @Serializable
-data class ItemDisplay(
+class ItemDisplay(
     /**
      * 物品名称
      */

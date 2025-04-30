@@ -89,14 +89,10 @@ object ItemElement : ElementHandler {
 
     init {
         // 注册默认组件
-        if (MinecraftVersion.versionId >= 12005) {
-            register<ItemDisplay>()
-        } else {
-            // ItemDisplay 1.20.5- Support
-            register<ItemDisplay>(serializer = LegacyItemDisplaySerializer(ItemDisplay.serializer()))
-        }
+        register(if (MinecraftVersion.versionId >= 12005) ItemDisplay.serializer() else LegacyItemDisplaySerializer)
         register<ItemDurability>()
-        register<ItemSkull>(ItemSkull.Companion)
+        register<ItemSkull>(processor = ItemSkull.Processor)
+        register<ItemHideFlag>()
     }
 
     override fun handle(element: Element) {
@@ -123,8 +119,8 @@ object ItemElement : ElementHandler {
     }
 
     private inline fun <reified T : Any> register(
+        serializer: KSerializer<T> = serializer<T>(),
         processor: DataProcessor = DataProcessor.NoProcess,
-        serializer: KSerializer<T> = serializer<T>()
     ) {
         ItemRegistry.register(T::class.java, SectionTransforming(serializer), processor)
     }

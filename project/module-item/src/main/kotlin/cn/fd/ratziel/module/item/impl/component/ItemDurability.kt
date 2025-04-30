@@ -13,7 +13,7 @@ import kotlinx.serialization.json.JsonNames
  * @since 2024/4/13 16:05
  */
 @Serializable
-data class ItemDurability(
+class ItemDurability(
     /**
      * 物品最大耐久
      */

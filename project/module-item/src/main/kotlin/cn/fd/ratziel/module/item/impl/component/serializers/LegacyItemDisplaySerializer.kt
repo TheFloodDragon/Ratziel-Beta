@@ -7,7 +7,6 @@ import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
 
 /**
  * LegacyItemDisplaySerializer - 1.20.5以下的低版本支持
@@ -15,9 +14,7 @@ import kotlinx.serialization.KSerializer
  * @author TheFloodDragon
  * @since 2025/4/19 15:11
  */
-class LegacyItemDisplaySerializer(
-    serializer: KSerializer<ItemDisplay>
-) : NbtTransformingSerializer<ItemDisplay>(serializer, true) {
+object LegacyItemDisplaySerializer : NbtTransformingSerializer<ItemDisplay>(ItemDisplay.serializer(), true) {
 
     override fun transformDeserialize(tag: NbtTag): NbtTag {
         if (tag is NbtCompound) {
