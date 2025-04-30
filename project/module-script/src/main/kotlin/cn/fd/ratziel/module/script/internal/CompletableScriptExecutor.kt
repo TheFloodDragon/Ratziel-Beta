@@ -23,7 +23,7 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
     /**
      * 编译脚本
      */
-    abstract fun compile(script: String): T
+    abstract fun compile(script: String, environment: ScriptEnvironment): T
 
     /**
      * 评估编译后的脚本
@@ -47,12 +47,12 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
      * @param compile 是否启用编译
      * @param async 若编译启用, 是否异步编译
      */
-    fun build(script: String, compile: Boolean = true, async: Boolean = true): CompletableScript<T> {
+    fun build(script: String, environment: ScriptEnvironment, compile: Boolean = true, async: Boolean = true): CompletableScript<T> {
         val sc = CompletableScript<T>(script, this)
         if (compile && sc.completed == null) {
             val func = Runnable {
                 try {
-                    val compiled = this.compile(script)
+                    val compiled = this.compile(script, environment)
                     sc.complete(compiled)
                 } catch (e: Exception) {
                     warning("Cannot compile script by '$this' ! Script content: $script")
@@ -67,8 +67,8 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
         return sc
     }
 
-    override fun build(script: String): ScriptContent {
-        return build(script, compile = true, async = true)
+    override fun build(script: String, environment: ScriptEnvironment): ScriptContent {
+        return build(script, environment, compile = true, async = true)
     }
 
 }

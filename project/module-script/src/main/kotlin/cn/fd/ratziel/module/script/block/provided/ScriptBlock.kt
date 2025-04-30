@@ -22,7 +22,7 @@ import kotlinx.serialization.json.JsonPrimitive
  */
 data class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
 
-    constructor(script: String, executor: ScriptExecutor) : this(executor.build(script))
+    constructor(script: String, executor: ScriptExecutor) : this(executor.build(script, SimpleScriptEnv()))
 
     override fun execute(context: ArgumentContext): Any? {
         val environment = context.scriptEnv() ?: SimpleScriptEnv()
@@ -34,12 +34,17 @@ data class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
         private const val MARK_TOGGLE = '\$'
 
         override fun parse(element: JsonElement, parser: BlockParser): ExecutableBlock? {
-            return if (element is JsonObject) {
-                val pair = find(element) ?: return null
-                this.parseBasic(pair.first, pair.second, parser)
-            } else {
-                this.parseBasic(element, ScriptManager.defaultLanguage.executorOrThrow, parser)
+            if (element is JsonObject && element.size == 1) {
+                val entry = element.entries.first()
+                val key = entry.key.trim()
+                // 检查开头 (是否为转换语言的)
+                if (key.startsWith(MARK_TOGGLE)) {
+                    val type = ScriptType.matchOrThrow(key.drop(1))
+                    return this.parseBasic(entry.value, type.executorOrThrow, parser)
+                }
             }
+
+            return this.parseBasic(element, ScriptManager.defaultLanguage.executorOrThrow, parser)
         }
 
         private fun parseBasic(element: JsonElement, executor: ScriptExecutor, parent: BlockParser): ExecutableBlock? {
@@ -47,18 +52,6 @@ data class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
                 return MultiLineBlock(element.map { parent.parse(it) ?: return null })
             } else if (element is JsonPrimitive) {
                 return ScriptBlock(element.content, executor)
-            }
-            return null
-        }
-
-        private fun find(element: JsonObject): Pair<JsonElement, ScriptExecutor>? {
-            element.firstNotNullOfOrNull {
-                val key = it.key.trim()
-                // 检查开头 (是否为转换语言的)
-                if (key.startsWith(MARK_TOGGLE)) {
-                    val type = ScriptType.matchOrThrow(key.drop(1))
-                    return it.value to type.executorOrThrow
-                }
             }
             return null
         }

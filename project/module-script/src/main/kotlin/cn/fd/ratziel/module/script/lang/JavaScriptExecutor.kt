@@ -32,7 +32,7 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
         this.engine = engine
     }
 
-    override fun build(script: String) = engine.build(script)
+    override fun build(script: String, environment: ScriptEnvironment) = engine.build(script, environment)
 
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = engine.evaluate(script, environment)
 
@@ -56,11 +56,11 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
 
     internal fun importDefaults(engine: ScriptEngine) {
         engine.eval(buildString {
-            append("load('nashorn:mozilla_compat.js');")
-            for (pkg in JavaScriptExecutor.defaultPackages) {
+            appendLine("load('nashorn:mozilla_compat.js');")
+            for (pkg in defaultPackages) {
                 appendLine("importPackage($pkg);")
             }
-            for (cls in JavaScriptExecutor.defaultClasses) {
+            for (cls in defaultClasses) {
                 appendLine("importClass($cls);")
             }
             append("// Default Imports Ended")
