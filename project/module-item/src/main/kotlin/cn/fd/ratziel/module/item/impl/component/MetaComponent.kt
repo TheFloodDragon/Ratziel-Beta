@@ -13,9 +13,9 @@ import org.bukkit.inventory.meta.ItemMeta
  * @author TheFloodDragon
  * @since 2025/4/30 19:31
  */
-open class MetaComponent<T : ItemMeta>(itemStack: ItemStack?, clone: Boolean = true) {
+open class MetaComponent<T : ItemMeta>(itemStack: ItemStack?) {
 
-    protected open val itemStack: ItemStack? = if (clone) itemStack?.clone() else itemStack
+    private val ref: RefItemStack? = itemStack?.let { RefItemStack.of(it) }
 
     /**
      * [ItemMeta]
@@ -23,10 +23,10 @@ open class MetaComponent<T : ItemMeta>(itemStack: ItemStack?, clone: Boolean = t
     var meta: T?
         get() {
             @Suppress("UNCHECKED_CAST")
-            return itemStack?.itemMeta as? T ?: throw IllegalStateException("Invalid meta!")
+            return ref?.bukkitStack?.itemMeta as? T ?: throw IllegalStateException("Invalid meta!")
         }
         set(value) {
-            itemStack?.itemMeta = value
+            ref?.bukkitStack?.itemMeta = value
         }
 
     /**
@@ -34,7 +34,7 @@ open class MetaComponent<T : ItemMeta>(itemStack: ItemStack?, clone: Boolean = t
      */
     val tag: NbtCompound
         get() {
-            return itemStack?.let { RefItemStack.of(it).tag } ?: NbtCompound()
+            return ref?.tag ?: NbtCompound()
         }
 
 }

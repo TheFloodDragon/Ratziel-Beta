@@ -16,6 +16,7 @@ import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
+import org.bukkit.Material as BukkitMaterial
 import org.bukkit.inventory.ItemStack as BukkitItemStack
 
 /**
@@ -29,7 +30,7 @@ class RefItemStack private constructor(
      * ItemStack处理对象 (CraftItemStack)
      * 确保 CraftItemStack.handle 不为空
      */
-    private var handle: BukkitItemStack
+    private var handle: BukkitItemStack,
 ) : ItemData {
 
     private constructor() : this(newObc() as BukkitItemStack)
@@ -108,6 +109,12 @@ class RefItemStack private constructor(
          */
         @JvmStatic
         fun of(material: ItemMaterial) = RefItemStack().also { it.material = material }
+
+        /**
+         * 创建一个材质为 [material] 的 [RefItemStack]
+         */
+        @JvmStatic
+        fun of(material: BukkitMaterial) = of(SimpleMaterial(material))
 
         /**
          * 通过 [ItemData] 创建一个 [RefItemStack]

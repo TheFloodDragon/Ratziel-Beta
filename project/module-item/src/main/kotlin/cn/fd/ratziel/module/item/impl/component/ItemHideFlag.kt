@@ -30,7 +30,7 @@ class ItemHideFlag(itemStack: ItemStack?) : MetaComponent<ItemMeta>(itemStack) {
                 ?.map { MetaMatcher.matchHideFlag((it as JsonPrimitive).content) }
                 ?: return ItemHideFlag(null)
 
-            val itemStack = XMaterial.AIR.parseItem()!!.apply {
+            val itemStack = XMaterial.STONE.parseItem()!!.apply {
                 itemMeta!!.addItemFlags(*flags.toTypedArray())
             }
 
@@ -45,7 +45,7 @@ class ItemHideFlag(itemStack: ItemStack?) : MetaComponent<ItemMeta>(itemStack) {
         }
 
         override fun decode(tag: NbtCompound): ItemHideFlag {
-            val ref = RefItemStack.of(XMaterial.AIR.parseItem()!!)
+            val ref = RefItemStack.of(XMaterial.STONE.get()!!)
             ref.tag = tag
             return ItemHideFlag(ref.bukkitStack)
         }

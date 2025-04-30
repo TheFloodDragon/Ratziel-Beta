@@ -45,7 +45,7 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
         val classes = ArrayList<String>()
         for (import in ScriptManager.globalImports) {
             if (import.endsWith(".*") || import.endsWith(".")) {
-                packages.add(import)
+                packages.add(import.substringBeforeLast('.'))
             } else {
                 classes.add(import)
             }

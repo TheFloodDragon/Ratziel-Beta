@@ -26,7 +26,7 @@ class NashornScriptExecutor(private val options: Array<String>) : EnginedScriptE
 
     override fun newEngine(environment: ScriptEnvironment): ScriptEngine {
         val engine = scriptEngineFactory?.getScriptEngine(*options)
-            ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript Language")
+            ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript(Nashorn) Language")
         engine.context = environment.context // 使用环境上下文
         JavaScriptExecutor.importDefaults(engine) // 导入默认
         return engine
