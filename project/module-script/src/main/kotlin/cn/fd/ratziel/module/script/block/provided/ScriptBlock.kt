@@ -5,7 +5,6 @@ import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptExecutor
-import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import cn.fd.ratziel.module.script.util.scriptEnv
@@ -20,7 +19,7 @@ import kotlinx.serialization.json.JsonPrimitive
  * @author TheFloodDragon
  * @since 2024/10/2 18:31
  */
- class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
+class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
 
     constructor(script: String, executor: ScriptExecutor) : this(executor.build(script))
 
@@ -29,11 +28,11 @@ import kotlinx.serialization.json.JsonPrimitive
         return script.executor.evaluate(script, environment)
     }
 
-    class Parser : BlockParser {
+    class Parser {
 
         var currentExecutor = ScriptManager.defaultLanguage.executorOrThrow
 
-        override fun parse(element: JsonElement, parser: BlockParser): ExecutableBlock? {
+        fun parse(element: JsonElement): ExecutableBlock? {
             if (element is JsonObject && element.size == 1) {
                 val entry = element.entries.first()
                 val key = entry.key.trim()
@@ -41,16 +40,19 @@ import kotlinx.serialization.json.JsonPrimitive
                 if (key.startsWith('\$')) {
                     val type = ScriptType.matchOrThrow(key.drop(1))
                     currentExecutor = type.executorOrThrow
-                    return this.parseBasic(entry.value, parser)
+                    return this.parseBasic(entry.value)
                 }
             }
 
-            return this.parseBasic(element, parser)
+            return this.parseBasic(element)
         }
 
-        private fun parseBasic(element: JsonElement, parent: BlockParser): ExecutableBlock? {
+        private fun parseBasic(element: JsonElement): ExecutableBlock? {
             if (element is JsonArray) {
-                return MultiLineBlock(element.map { parent.parse(it) ?: return null })
+                return ScriptBlock(
+                    element.map { (it as? JsonPrimitive)?.content ?: return null }
+                        .joinToString("\n"), currentExecutor
+                )
             } else if (element is JsonPrimitive) {
                 return ScriptBlock(element.content, currentExecutor)
             }

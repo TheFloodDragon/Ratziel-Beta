@@ -31,6 +31,7 @@ import kotlinx.serialization.serializer
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.LifeCycle
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.library.xseries.XItemFlag
 import taboolib.module.nms.MinecraftVersion
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -74,7 +75,7 @@ object ItemElement : ElementHandler {
             contextual(ItemMaterial::class, ItemMaterialSerializer)
             // Bukkit Serializers
             contextual(Enchantment::class, EnchantmentSerializer)
-            contextual(HideFlag::class, HideFlagSerializer)
+            contextual(XItemFlag::class, HideFlagSerializer)
             contextual(Attribute::class, AttributeSerializer)
             contextual(AttributeModifier::class, AttributeModifierSerializer)
         }

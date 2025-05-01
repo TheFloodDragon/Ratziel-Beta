@@ -20,7 +20,7 @@ object ActionParser {
     /**
      * 动作节点名称
      */
-    val nodeNames = listOf("action", "actions", "act", "acts")
+    val nodeNames = arrayOf("action", "actions", "act", "acts")
 
     /**
      * 从配置中解析成触发器表
@@ -47,7 +47,7 @@ object ActionParser {
     fun onGenerate(event: ItemGenerateEvent.Pre) {
         val element = event.element as? JsonObject ?: return
         // 获取原始动作
-        val raw = element.getBy(nodeNames) ?: return
+        val raw = element.getBy(*nodeNames) ?: return
         if (raw is JsonObject) {
             CompletableFuture.runAsync {
                 // 解析触发器表
@@ -55,7 +55,7 @@ object ActionParser {
                 // 加入到动作表中
                 ActionManager.actionMap[event.identifier] = triggerMap
             }
-        } else throw IllegalArgumentException("Incorrect action format!")
+        } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
     }
 
 }

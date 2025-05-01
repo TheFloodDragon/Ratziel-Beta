@@ -1,15 +1,19 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.module.item.impl.component
 
+import cn.altawk.nbt.NbtDecoder
+import cn.altawk.nbt.NbtEncoder
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.impl.component.serializers.MetaComponentSerializer
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
-import cn.fd.ratziel.module.item.util.MetaMatcher
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.KeepGeneratedSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonPrimitive
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.ItemMeta
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonNames
+import taboolib.library.xseries.XItemFlag
 import taboolib.library.xseries.XMaterial
 
 /**
@@ -19,35 +23,57 @@ import taboolib.library.xseries.XMaterial
  * @since 2025/4/30 21:55
  */
 @Serializable(ItemHideFlag.Serializer::class)
-class ItemHideFlag(itemStack: ItemStack?) : MetaComponent<ItemMeta>(itemStack) {
+@KeepGeneratedSerializer
+class ItemHideFlag(
+    /**
+     * 物品隐藏标签
+     */
+    @JsonNames("hideflag", "hideflags", "hideFlag")
+    var hideFlags: MutableSet<XItemFlag>? = null,
+) {
 
-    internal object Serializer : MetaComponentSerializer<ItemHideFlag>(
-        "hideFlags", "hideflag", "hideflag", "hideflags", "hideFlag"
-    ) {
+    /**
+     * 添加物品隐藏标签
+     */
+    fun addHideFlags(vararg flags: XItemFlag) {
+        // 初始化 HideFlags
+        if (hideFlags == null) {
+            hideFlags = HashSet()
+        }
+        hideFlags?.addAll(flags)
+    }
 
-        override fun decode(element: JsonElement?): ItemHideFlag {
-            val flags = (element as? JsonArray)
-                ?.map { MetaMatcher.matchHideFlag((it as JsonPrimitive).content) }
-                ?: return ItemHideFlag(null)
+    /**
+     * 删除物品隐藏标签
+     */
+    fun removeHideFlags(vararg flags: XItemFlag) {
+        hideFlags?.removeAll(flags)
+    }
 
-            val itemStack = XMaterial.STONE.parseItem()!!.apply {
-                itemMeta!!.addItemFlags(*flags.toTypedArray())
-            }
+    private object Serializer : KSerializer<ItemHideFlag> {
 
-            return ItemHideFlag(itemStack)
+        override val descriptor get() = generatedSerializer().descriptor
+
+        override fun serialize(encoder: Encoder, value: ItemHideFlag) {
+            if (encoder is NbtEncoder) {
+                val ref = RefItemStack.of(XMaterial.STONE)
+                val hideFlags = value.hideFlags
+                if (hideFlags != null) {
+                    for (hideFlag in hideFlags) {
+                        hideFlag.set(ref.bukkitStack)
+                    }
+                }
+                encoder.encodeNbtTag(ref.tag)
+            } else generatedSerializer().serialize(encoder, value)
         }
 
-        override fun encode(value: ItemHideFlag): JsonElement {
-            val flags = value.meta?.itemFlags
-                ?.map { JsonPrimitive(it.name) }
-                ?: emptyList()
-            return JsonArray(flags)
-        }
-
-        override fun decode(tag: NbtCompound): ItemHideFlag {
-            val ref = RefItemStack.of(XMaterial.STONE.get()!!)
-            ref.tag = tag
-            return ItemHideFlag(ref.bukkitStack)
+        override fun deserialize(decoder: Decoder): ItemHideFlag {
+            return if (decoder is NbtDecoder) {
+                val ref = RefItemStack.of(XMaterial.STONE)
+                ref.tag = decoder.decodeNbtTag() as? NbtCompound ?: return ItemHideFlag(null)
+                val flags = XItemFlag.HIDE_DYE.getFlags(ref.bukkitStack)?.toMutableSet()
+                ItemHideFlag(flags)
+            } else generatedSerializer().deserialize(decoder)
         }
 
     }

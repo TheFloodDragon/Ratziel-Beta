@@ -13,6 +13,7 @@ import cn.fd.ratziel.module.item.internal.nms.RefItemStack.Companion.obcClass
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.unsafeInstance
 import taboolib.library.reflex.ReflexClass
+import taboolib.library.xseries.XMaterial
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
@@ -115,6 +116,12 @@ class RefItemStack private constructor(
          */
         @JvmStatic
         fun of(material: BukkitMaterial) = of(SimpleMaterial(material))
+
+        /**
+         * 创建一个材质为 [material] 的 [RefItemStack]
+         */
+        @JvmStatic
+        fun of(material: XMaterial) = of(SimpleMaterial(material))
 
         /**
          * 通过 [ItemData] 创建一个 [RefItemStack]

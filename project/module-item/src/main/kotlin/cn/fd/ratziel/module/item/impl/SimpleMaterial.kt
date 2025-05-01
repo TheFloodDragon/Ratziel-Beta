@@ -20,7 +20,7 @@ value class SimpleMaterial(private val ref: Material) : ItemMaterial {
 
     constructor(id: Int) : this(findBukkit(id) ?: Material.AIR)
 
-    constructor(mat: XMaterial) : this(mat.name)
+    constructor(mat: XMaterial) : this(mat.get()!!)
 
     constructor(mat: ItemMaterial) : this(mat.name)
 

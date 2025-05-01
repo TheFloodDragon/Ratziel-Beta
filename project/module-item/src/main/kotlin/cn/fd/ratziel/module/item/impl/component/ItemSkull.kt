@@ -2,18 +2,17 @@
 
 package cn.fd.ratziel.module.item.impl.component
 
+import cn.altawk.nbt.NbtDecoder
+import cn.altawk.nbt.NbtEncoder
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
-import cn.fd.ratziel.module.item.impl.component.serializers.MetaComponentSerializer
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.*
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonNames
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import taboolib.library.xseries.XMaterial
@@ -27,7 +26,18 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 2024/10/1 13:48
  */
 @Serializable(ItemSkull.Serializer::class)
-class ItemSkull(itemStack: ItemStack?) : MetaComponent<SkullMeta>(itemStack) {
+@KeepGeneratedSerializer
+class ItemSkull(
+    @JsonNames("skull")
+    val head: String? = null,
+) {
+
+    @Transient
+    private val itemStack: ItemStack? = if (head != null) fetchSkull(head) else null
+
+    private val tag: NbtCompound? by lazy {
+        itemStack?.let { RefItemStack.of(it).tag }
+    }
 
     object Processor : DataProcessor {
         override fun process(data: ItemData) = data.apply {
@@ -47,7 +57,7 @@ class ItemSkull(itemStack: ItemStack?) : MetaComponent<SkullMeta>(itemStack) {
         /**
          * 获取头颅数据
          */
-        fun fetchSkullData(value: String): ItemStack {
+        fun fetchSkull(value: String): ItemStack {
             return CACHE.computeIfAbsent(value.trim()) { generateSkullItem(it) }.clone()
         }
 
@@ -68,30 +78,29 @@ class ItemSkull(itemStack: ItemStack?) : MetaComponent<SkullMeta>(itemStack) {
         /**
          * 读取头颅数据
          */
-        fun fetchSkullData(tag: NbtCompound): ItemStack {
-            val item = RefItemStack.of(XMaterial.PLAYER_HEAD.parseItem()!!)
-            item.tag = tag
-            return item.bukkitStack
+        fun getSkullValue(itemStack: ItemStack): String? {
+            val meta = itemStack.itemMeta as? SkullMeta ?: return null
+            return getSkullValue(meta)
         }
 
     }
 
-    internal object Serializer : MetaComponentSerializer<ItemSkull>(
-        "head", "skull"
-    ) {
+    private object Serializer : KSerializer<ItemSkull> {
 
-        override fun decode(element: JsonElement?): ItemSkull {
-            val value = (element as? JsonPrimitive)?.contentOrNull
-            return ItemSkull(if (value != null) fetchSkullData(value) else null)
+        override val descriptor get() = generatedSerializer().descriptor
+
+        override fun serialize(encoder: Encoder, value: ItemSkull) {
+            if (encoder is NbtEncoder) {
+                encoder.encodeNbtTag(value.tag ?: NbtCompound())
+            } else generatedSerializer().serialize(encoder, value)
         }
 
-        override fun encode(value: ItemSkull): JsonElement {
-            val value = value.meta?.let { getSkullValue(it) }
-            return if (value != null) JsonPrimitive(value) else JsonNull
-        }
-
-        override fun decode(tag: NbtCompound): ItemSkull {
-            return ItemSkull(fetchSkullData(tag))
+        override fun deserialize(decoder: Decoder): ItemSkull {
+            return if (decoder is NbtDecoder) {
+                val ref = RefItemStack.of(XMaterial.PLAYER_HEAD)
+                ref.tag = decoder.decodeNbtTag() as? NbtCompound ?: return ItemSkull(null)
+                ItemSkull(getSkullValue(ref.bukkitStack))
+            } else generatedSerializer().deserialize(decoder)
         }
 
     }

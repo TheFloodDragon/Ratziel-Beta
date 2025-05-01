@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.lang
 
+import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
@@ -34,7 +35,17 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = engine.evaluate(script, environment)
 
     internal fun importDefaults(engine: ScriptEngine) {
-        // TODO
+        engine.eval(buildString {
+            appendLine("// Import Start")
+            for (import in ScriptManager.globalImports) {
+                // 不导入包
+                if (import.endsWith(".") || import.endsWith("*")) continue
+                // 导入类
+                val clsName = import.substringAfterLast(".")
+                append("var $clsName = Java.type('$import')")
+            }
+            appendLine("// Import End")
+        })
     }
 
 }

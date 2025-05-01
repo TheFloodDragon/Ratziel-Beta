@@ -10,10 +10,11 @@ import org.bukkit.enchantments.Enchantment
 import taboolib.common.util.Strings
 import taboolib.library.xseries.XAttribute
 import taboolib.library.xseries.XEnchantment
+import taboolib.library.xseries.XItemFlag
 import taboolib.library.xseries.XMaterial
 import taboolib.type.BukkitEquipment
+import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
-import org.bukkit.inventory.ItemFlag as HideFlag
 
 /**
  * MetaMatcher
@@ -28,7 +29,7 @@ object MetaMatcher {
      */
     @JvmStatic
     fun matchEnchantment(source: String): Enchantment {
-        val name = clean(source)
+        val name = trim(source)
         return XEnchantment.of(name).getOrNull()?.get() // XSeries match
             ?: Enchantment.getByName(name) // Bukkit match
             ?: Enchantment.values().maxBy { Strings.similarDegree(it.name, name) } // Similar
@@ -39,7 +40,7 @@ object MetaMatcher {
      */
     @JvmStatic
     fun matchEquipment(source: String): BukkitEquipment {
-        val name = clean(source)
+        val name = trim(source)
         return BukkitEquipment.fromString(name)
             ?: BukkitEquipment.entries.maxBy { Strings.similarDegree(it.name, name) }
     }
@@ -49,7 +50,7 @@ object MetaMatcher {
      */
     @JvmStatic
     fun matchAttribute(source: String): XAttribute {
-        val name = clean(source)
+        val name = trim(source)
         return XAttribute.of(name).getOrNull()
             ?: XAttribute.getValues().maxBy { Strings.similarDegree(it.name(), name) }
     }
@@ -59,7 +60,7 @@ object MetaMatcher {
      */
     @JvmStatic
     fun matchAttributeOperation(source: String): AttributeModifier.Operation {
-        val name = clean(source)
+        val name = trim(source)
         return try {
             AttributeModifier.Operation.valueOf(name)
         } catch (_: IllegalArgumentException) {
@@ -71,12 +72,10 @@ object MetaMatcher {
      * 匹配物品(隐藏)标签
      */
     @JvmStatic
-    fun matchHideFlag(source: String): HideFlag {
-        val name = clean(source)
-        return try {
-            HideFlag.valueOf(name)
-        } catch (_: IllegalArgumentException) {
-            HideFlag.entries.maxBy { Strings.similarDegree(it.name, name) }
+    fun matchHideFlag(source: String): XItemFlag {
+        val name = trim(source)
+        return XItemFlag.of(name).getOrElse {
+            XItemFlag.entries.maxBy { Strings.similarDegree(it.name, name) }
         }
     }
 
@@ -85,7 +84,7 @@ object MetaMatcher {
      */
     @JvmStatic
     fun matchMaterial(source: String): ItemMaterial {
-        val name = clean(source)
+        val name = trim(source)
         // 尝试匹配准确材料
         val matched: Material? =
             XMaterial.matchXMaterial(name).getOrNull()?.get() // XMaterial Match
@@ -94,6 +93,6 @@ object MetaMatcher {
         else SimpleMaterial.materialsMap.maxBy { Strings.similarDegree(it.key, source) }.value // Similar
     }
 
-    private fun clean(source: String): String = source.uppercase().replace(" ", "_").replace('-', '_')
+    private fun trim(source: String): String = source.uppercase().replace(" ", "_").replace('-', '_')
 
 }

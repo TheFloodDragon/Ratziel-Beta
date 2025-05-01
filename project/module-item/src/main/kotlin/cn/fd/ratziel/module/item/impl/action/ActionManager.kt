@@ -28,7 +28,11 @@ object ActionManager {
 
     init {
         // 注册服务
-        NativeServiceRegistry.register(TriggerMap::class.java, { actionMap[it] }, { i, m -> actionMap[i] = m })
+        NativeServiceRegistry.register(
+            TriggerMap::class.java,
+            { actionMap[it] },
+            { i, m -> actionMap[i] = m }
+        )
     }
 
     /**

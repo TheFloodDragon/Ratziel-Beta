@@ -19,7 +19,9 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
     abstract fun newEngine(): ScriptEngine
 
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        return newEngine().eval(script, environment.context)
+        val engine = newEngine()
+        engine.context = environment.context // 使用环境上下文
+        return engine.eval(script)
     }
 
     override fun compile(script: String): CompiledScript {
