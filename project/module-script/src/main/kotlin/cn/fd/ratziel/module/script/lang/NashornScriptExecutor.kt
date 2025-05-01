@@ -25,7 +25,7 @@ object NashornScriptExecutor : EnginedScriptExecutor() {
 
     override fun newEngine(): ScriptEngine {
         val engine = scriptEngineFactory?.getScriptEngine(
-            "-Dnashorn.args=--language=es6",
+            arrayOf("-Dnashorn.args=--language=es6"), this::class.java.classLoader
         ) ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript(Nashorn) Language")
         JavaScriptExecutor.importDefaults(engine) // 导入默认
         return engine

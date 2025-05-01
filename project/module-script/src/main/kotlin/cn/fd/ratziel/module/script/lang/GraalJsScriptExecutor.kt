@@ -23,6 +23,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
      */
     val builder by lazy {
         Context.newBuilder("js")
+            .hostClassLoader(this::class.java.classLoader)
             .allowAllAccess(true) // 全开了算了
             .allowExperimentalOptions(true)
             .option("js.nashorn-compat", "true") // Nashorn 兼容模式

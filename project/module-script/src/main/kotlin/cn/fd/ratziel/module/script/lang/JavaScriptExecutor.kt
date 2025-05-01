@@ -34,17 +34,35 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
 
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = engine.evaluate(script, environment)
 
+    internal val defaultPackages: Array<String>
+
+    internal val defaultClasses: Array<String>
+
+    init {
+        val packages = ArrayList<String>()
+        val classes = ArrayList<String>()
+        for (import in ScriptManager.globalImports) {
+            if (import.endsWith("*") || import.endsWith(".")) {
+                packages.add(import.substringBeforeLast('.'))
+            } else {
+                classes.add(import)
+            }
+        }
+        this.defaultPackages = packages.toTypedArray()
+        this.defaultClasses = classes.toTypedArray()
+    }
+
     internal fun importDefaults(engine: ScriptEngine) {
         engine.eval(buildString {
-            appendLine("// Import Start")
-            for (import in ScriptManager.globalImports) {
-                // 不导入包
-                if (import.endsWith(".") || import.endsWith("*")) continue
-                // 导入类
-                val clsName = import.substringAfterLast(".")
-                append("var $clsName = Java.type('$import')")
+            appendLine("// Importing Start")
+            appendLine("load('nashorn:mozilla_compat.js');")
+            for (pkg in defaultPackages) {
+                appendLine("importPackage($pkg);")
             }
-            appendLine("// Import End")
+            for (cls in defaultClasses) {
+                appendLine("importClass($cls);")
+            }
+            appendLine("// Importing Ended")
         })
     }
 
