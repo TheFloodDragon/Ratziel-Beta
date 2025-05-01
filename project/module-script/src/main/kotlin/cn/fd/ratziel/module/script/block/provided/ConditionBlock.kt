@@ -12,10 +12,10 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/3/23 09:16
  */
-data class ConditionBlock(
+class ConditionBlock(
     val funcIf: ExecutableBlock,
     val funcThen: ExecutableBlock?,
-    val funcElse: ExecutableBlock?
+    val funcElse: ExecutableBlock?,
 ) : ExecutableBlock {
 
     override fun execute(context: ArgumentContext) {
@@ -24,7 +24,7 @@ data class ConditionBlock(
         else funcElse?.execute(context)
     }
 
-    companion object Parser : BlockParser {
+    object Parser : BlockParser {
 
         override fun parse(element: JsonElement, parser: BlockParser): ConditionBlock? {
             if (element !is JsonObject) return null

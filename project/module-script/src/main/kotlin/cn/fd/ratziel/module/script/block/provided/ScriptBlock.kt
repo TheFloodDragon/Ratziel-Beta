@@ -20,38 +20,39 @@ import kotlinx.serialization.json.JsonPrimitive
  * @author TheFloodDragon
  * @since 2024/10/2 18:31
  */
-data class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
+ class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
 
-    constructor(script: String, executor: ScriptExecutor) : this(executor.build(script, SimpleScriptEnv()))
+    constructor(script: String, executor: ScriptExecutor) : this(executor.build(script))
 
     override fun execute(context: ArgumentContext): Any? {
         val environment = context.scriptEnv() ?: SimpleScriptEnv()
         return script.executor.evaluate(script, environment)
     }
 
-    companion object Parser : BlockParser {
+    class Parser : BlockParser {
 
-        private const val MARK_TOGGLE = '\$'
+        var currentExecutor = ScriptManager.defaultLanguage.executorOrThrow
 
         override fun parse(element: JsonElement, parser: BlockParser): ExecutableBlock? {
             if (element is JsonObject && element.size == 1) {
                 val entry = element.entries.first()
                 val key = entry.key.trim()
                 // 检查开头 (是否为转换语言的)
-                if (key.startsWith(MARK_TOGGLE)) {
+                if (key.startsWith('\$')) {
                     val type = ScriptType.matchOrThrow(key.drop(1))
-                    return this.parseBasic(entry.value, type.executorOrThrow, parser)
+                    currentExecutor = type.executorOrThrow
+                    return this.parseBasic(entry.value, parser)
                 }
             }
 
-            return this.parseBasic(element, ScriptManager.defaultLanguage.executorOrThrow, parser)
+            return this.parseBasic(element, parser)
         }
 
-        private fun parseBasic(element: JsonElement, executor: ScriptExecutor, parent: BlockParser): ExecutableBlock? {
+        private fun parseBasic(element: JsonElement, parent: BlockParser): ExecutableBlock? {
             if (element is JsonArray) {
                 return MultiLineBlock(element.map { parent.parse(it) ?: return null })
             } else if (element is JsonPrimitive) {
-                return ScriptBlock(element.content, executor)
+                return ScriptBlock(element.content, currentExecutor)
             }
             return null
         }

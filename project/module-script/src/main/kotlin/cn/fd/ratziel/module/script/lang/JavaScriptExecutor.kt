@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.script.lang
 
-import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
@@ -21,22 +20,21 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
     override fun initialize(settings: ConfigurationSection) {
         // 读取引擎
         val selected = settings.getString("engine")
-        // 读取选项
-        val options = settings.getStringList("options").toTypedArray()
         // 创建脚本执行器
         val engine = when (selected?.lowercase()) {
-            "nashorn" -> NashornScriptExecutor(options)
+            "nashorn" -> NashornScriptExecutor
             "graaljs" -> GraalJsScriptExecutor
-            else -> NashornScriptExecutor(options)
+            else -> NashornScriptExecutor
         }
         this.engine = engine
     }
 
-    override fun build(script: String, environment: ScriptEnvironment) = engine.build(script, environment)
+    override fun build(script: String) = engine.build(script)
 
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = engine.evaluate(script, environment)
 
     internal fun importDefaults(engine: ScriptEngine) {
+        // TODO
     }
 
 }

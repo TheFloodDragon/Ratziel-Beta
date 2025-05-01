@@ -30,7 +30,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
         return engine.createScript(script).execute(WrappedJexlContext(environment.context))
     }
 
-    override fun compile(script: String, environment: ScriptEnvironment): JexlScript {
+    override fun compile(script: String): JexlScript {
         return engine.createScript(script)
     }
 
@@ -58,6 +58,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
             }
             this.scriptContext.getBindings(scope).put(name, value)
         }
+
     }
 
 }

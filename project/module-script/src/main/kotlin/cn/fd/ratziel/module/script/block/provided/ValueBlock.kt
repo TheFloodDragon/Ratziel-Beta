@@ -13,11 +13,11 @@ import kotlinx.serialization.json.contentOrNull
  * @author TheFloodDragon
  * @since 2025/4/5 12:00
  */
-data class ValueBlock(val value: Any?) : ExecutableBlock {
+class ValueBlock(val value: Any?) : ExecutableBlock {
 
     override fun execute(context: ArgumentContext) = value
 
-    companion object Parser : BlockParser {
+    object Parser : BlockParser {
 
         override fun parse(element: JsonElement, parser: BlockParser): ValueBlock? {
             return if (element is JsonPrimitive) ValueBlock(element.contentOrNull) else null

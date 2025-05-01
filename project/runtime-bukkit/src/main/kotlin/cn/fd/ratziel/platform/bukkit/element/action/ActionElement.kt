@@ -24,7 +24,7 @@ object ActionElement : ElementHandler {
 
     override fun handle(element: Element) {
         element.property.let { json ->
-            val block = ScriptBlockBuilder.parse(json)
+            val block = ScriptBlockBuilder.build(json)
             println(block)
             val result = block.execute(SimpleContext(SimpleScriptEnv()))
             println(result)

@@ -16,14 +16,14 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
     /**
      * 创建一个新的 [ScriptEngine]
      */
-    abstract fun newEngine(environment: ScriptEnvironment): ScriptEngine
+    abstract fun newEngine(): ScriptEngine
 
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        return newEngine(environment).eval(script, environment.context)
+        return newEngine().eval(script, environment.context)
     }
 
-    override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
-        return (this.newEngine(environment) as Compilable).compile(script)
+    override fun compile(script: String): CompiledScript {
+        return (this.newEngine() as Compilable).compile(script)
     }
 
     override fun evalCompiled(script: CompiledScript, environment: ScriptEnvironment): Any? {

@@ -1,11 +1,9 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.internal.EnginedScriptExecutor
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
-import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
 /**
@@ -30,9 +28,8 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
             .option("js.nashorn-compat", "true") // Nashorn 兼容模式
     }
 
-    override fun newEngine(environment: ScriptEnvironment): ScriptEngine {
+    override fun newEngine(): ScriptEngine {
         val engine = GraalJSScriptEngine.create(null, builder)
-        engine.context.getBindings(ScriptContext.ENGINE_SCOPE).putAll(environment.bindings) // 使用环境上下文
         JavaScriptExecutor.importDefaults(engine) // 导入默认
         return engine
     }

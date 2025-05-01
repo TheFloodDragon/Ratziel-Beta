@@ -36,7 +36,7 @@ object ActionParser {
                 continue
             }
             // 构建脚本块
-            val block = ScriptBlockBuilder.parse(raw.value)
+            val block = ScriptBlockBuilder.build(raw.value)
             // 创建脚本动作, 放入表中
             map[type] = ExecutableAction(block)
         }

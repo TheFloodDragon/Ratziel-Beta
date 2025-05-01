@@ -9,7 +9,7 @@ import cn.fd.ratziel.module.script.block.ExecutableBlock
  * @author TheFloodDragon
  * @since 2024/10/2 18:28
  */
-data class MultiLineBlock(val blocks: List<ExecutableBlock>) : ExecutableBlock {
+class MultiLineBlock(val blocks: List<ExecutableBlock>) : ExecutableBlock {
 
     private val first = blocks.first()
     private val others = blocks.drop(1)

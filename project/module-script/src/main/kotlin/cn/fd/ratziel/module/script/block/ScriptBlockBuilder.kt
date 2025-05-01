@@ -11,22 +11,16 @@ import kotlinx.serialization.json.JsonElement
  * @author TheFloodDragon
  * @since 2025/4/5 12:56
  */
-object ScriptBlockBuilder : BlockParser {
+class ScriptBlockBuilder : BlockParser {
 
     /**
      * 语句块解析器注册表
      */
     val registry: MutableList<BlockParser> = mutableListOf(
         ConditionBlock.Parser,
-        ScriptBlock.Parser,
+        ScriptBlock.Parser(),
         ValueBlock.Parser,
     )
-
-    /**
-     * 构建语句块
-     * 无法解析时抛出异常
-     */
-    fun build(element: JsonElement) = parse(element, this)
 
     override fun parse(element: JsonElement, parser: BlockParser): ExecutableBlock {
         for (p in registry) {
@@ -36,6 +30,19 @@ object ScriptBlockBuilder : BlockParser {
             if (block != null) return block
         }
         throw Exception("Cannot parse the element to block. Source: $element")
+    }
+
+    companion object {
+
+        /**
+         * 构建语句块
+         * 无法解析时抛出异常
+         */
+        fun build(element: JsonElement): ExecutableBlock {
+            val builder = ScriptBlockBuilder()
+            return builder.parse(element, builder)
+        }
+
     }
 
 }
