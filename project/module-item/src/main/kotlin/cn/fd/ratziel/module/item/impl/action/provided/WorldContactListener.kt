@@ -19,7 +19,7 @@ object WorldContactListener {
 
     /* 左右键交互 */
     val INTERACT_LEFT_CLICK = registerTrigger("onLeft", "left", "onLeftClick", "leftClick")
-    val INTERACT_RIGHT_CLICK = registerTrigger("onLeft", "left", "onLeftClick", "leftClick")
+    val INTERACT_RIGHT_CLICK = registerTrigger("onRight", "right", "onRightClick", "rightClick")
 
     /* 左右键交互具体事物 */
     val INTERACT_LEFT_CLICK_AIR = registerTrigger("onLeftAir", "left-air")
@@ -58,8 +58,6 @@ object WorldContactListener {
 
         // 分配处理器
         when {
-            event.isLeftClick -> trigger(INTERACT_LEFT_CLICK)
-            event.isRightClick -> trigger(INTERACT_RIGHT_CLICK)
             event.isLeftClickAir -> trigger(INTERACT_LEFT_CLICK_AIR)
             event.isRightClickAir -> trigger(INTERACT_RIGHT_CLICK_AIR)
 
@@ -85,6 +83,10 @@ object WorldContactListener {
                 val action = event.action as PlayerWorldContactEvent.Action.RightClickEntity
                 set("taget", action.entity)
             }
+
+            // Click (Must check at LAST)
+            event.isLeftClick -> trigger(INTERACT_LEFT_CLICK)
+            event.isRightClick -> trigger(INTERACT_RIGHT_CLICK)
         }
     }
 

@@ -23,7 +23,7 @@ import taboolib.platform.util.isAir
  * @author TheFloodDragon
  * @since 2024/5/2 22:05
  */
-class RatzielItem private constructor(
+data class RatzielItem private constructor(
     /**
      * 物品信息
      */
@@ -91,7 +91,7 @@ class RatzielItem private constructor(
         @JvmStatic
         fun of(data: ItemData): RatzielItem? {
             val info = Info.read(data) ?: return null
-            return of(info, data)
+            return RatzielItem(info, data)
         }
 
         /**
@@ -102,7 +102,7 @@ class RatzielItem private constructor(
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
             if (itemStack.isAir()) return null
-            val itemData = RefItemStack.of(itemStack)
+            val itemData = RefItemStack.exactData(itemStack)
             return of(itemData)
         }
 

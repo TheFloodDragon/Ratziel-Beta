@@ -18,7 +18,7 @@ object NbtHelper {
      * @param path 路径 (最后一个节点必须为 [NbtPath.NameNode])
      */
     @JvmStatic
-    fun handle(tag: NbtCompound, path: Iterable<NbtPath.Node>, create: Boolean, action: NbtCompound.() -> Unit) {
+    fun handle(tag: NbtTag, path: Iterable<NbtPath.Node>, create: Boolean, action: NbtCompound.() -> Unit) {
         val find = read(tag, path, create) as? NbtCompound ?: return
         action(find)
     }
@@ -27,7 +27,7 @@ object NbtHelper {
      * 通过路径读取 [NbtTag]
      */
     @JvmStatic
-    fun read(tag: NbtCompound, path: Iterable<NbtPath.Node>, create: Boolean): NbtTag? {
+    fun read(tag: NbtTag, path: Iterable<NbtPath.Node>, create: Boolean): NbtTag? {
         var result: NbtTag = tag
         for (node in path) {
             when (node) {
@@ -51,7 +51,7 @@ object NbtHelper {
      * 通过路径写入 [NbtTag]
      */
     @JvmStatic
-    fun write(tag: NbtCompound, path: Iterable<NbtPath.Node>, target: NbtTag, create: Boolean) {
+    fun write(tag: NbtTag, path: Iterable<NbtPath.Node>, target: NbtTag, create: Boolean) {
         val find = read(tag, path.drop(1), create)
         val last = path.last()
         if (find is NbtCompound && last is NbtPath.NameNode) {
@@ -65,7 +65,7 @@ object NbtHelper {
      * 删除指定路径的数据
      */
     @JvmStatic
-    fun delete(tag: NbtCompound, path: Iterable<NbtPath.Node>) {
+    fun delete(tag: NbtTag, path: Iterable<NbtPath.Node>) {
         val find = read(tag, path.drop(1), false)
         val last = path.last()
         if (find is NbtCompound && last is NbtPath.NameNode) {

@@ -20,7 +20,7 @@ object ItemSheet {
         private set
 
     /** 自定义数据组件名称 **/
-    const val CUSTOM_DATA_COMPONENT = "custom_data"
+    const val CUSTOM_DATA_COMPONENT = "minecraft:custom_data"
 
     @Awake(LifeCycle.LOAD)
     private fun initialize() {
