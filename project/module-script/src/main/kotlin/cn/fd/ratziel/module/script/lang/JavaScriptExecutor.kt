@@ -39,10 +39,10 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
             appendLine("// Importing Start")
             appendLine("load('nashorn:mozilla_compat.js');")
             for (pkg in ScriptManager.Imports.packages) {
-                appendLine("importPackage($pkg);")
+                appendLine("importPackage(Packages.$pkg);")
             }
             for (cls in ScriptManager.Imports.classes) {
-                appendLine("importClass($cls);")
+                appendLine("importClass(Java.type('$cls'));")
             }
             appendLine("// Importing Ended")
         })

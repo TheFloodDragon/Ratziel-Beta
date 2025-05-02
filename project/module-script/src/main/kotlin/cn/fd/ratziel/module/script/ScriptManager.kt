@@ -111,19 +111,21 @@ object ScriptManager {
          * 获取已经导入的类对象
          */
         fun getImportedClass(name: String): Class<*>? {
-            if (name !in classes) return null
-            return try {
-                Class.forName(name, false, this::class.java.classLoader)
-            } catch (_: ClassNotFoundException) {
-                null
+            for (fullName in classes) {
+                if(name != fullName.substringAfterLast('.')) continue
+                try {
+                    return Class.forName(fullName, false, this::class.java.classLoader)
+                } catch (_: ClassNotFoundException) {
+                }
             }
+            return null
         }
 
         fun initialize(imports: List<String>) {
             val packages = ArrayList<String>()
             val classes = ArrayList<String>()
             for (import in imports) {
-                if (import.endsWith("*") || import.endsWith(".")) {
+                if (import.endsWith('*') || import.endsWith('.')) {
                     packages.add(import.substringBeforeLast('.'))
                 } else {
                     classes.add(import)

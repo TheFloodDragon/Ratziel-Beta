@@ -48,7 +48,8 @@ object WorldContactListener {
             set("event", event)
             set("player", event.player)
             set("item", ratzielItem)
-            /* 此处不开放事件的 ItemStack,
+            /*
+               此处不开放事件的 ItemStack,
                是因为 ItemStack 最后都会被 RatzielItem 重新写入数据,
                故而就算脚本运行过程中修改了 ItemStack,
                最后所看的也只会是 RatzielItem 转化成的 ItemStack 罢了
