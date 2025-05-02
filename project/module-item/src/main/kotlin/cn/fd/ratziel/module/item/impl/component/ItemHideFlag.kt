@@ -57,10 +57,12 @@ class ItemHideFlag(
         override fun serialize(encoder: Encoder, value: ItemHideFlag) {
             if (encoder is NbtEncoder) {
                 val ref = RefItemStack.of(XMaterial.STONE)
-                val hideFlags = value.hideFlags
-                if (hideFlags != null) {
-                    for (hideFlag in hideFlags) {
-                        hideFlag.set(ref.bukkitStack)
+                val flags = value.hideFlags?.mapNotNull { it.get() }
+                if (flags != null) {
+                    ref.bukkitStack.apply {
+                        itemMeta = itemMeta.also {
+                            it?.addItemFlags(*flags.toTypedArray())
+                        }
                     }
                 }
                 encoder.encodeNbtTag(ref.tag)

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.script.internal
+package cn.fd.ratziel.module.script.impl
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import javax.script.Compilable
@@ -20,27 +20,30 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
     abstract fun newEngine(): ScriptEngine
 
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        val engine = newEngine()
-        importBindings(engine, environment) // 导入环境的绑定键
-        return engine.eval(script)
+        return newImportedEngine(environment).eval(script)
     }
 
-    override fun compile(script: String): CompiledScript {
-        return (this.newEngine() as Compilable).compile(script)
+    override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
+        return (newImportedEngine(environment) as Compilable).compile(script)
     }
 
     override fun evalCompiled(script: CompiledScript, environment: ScriptEnvironment): Any? {
-        val engine = script.engine
-        importBindings(engine, environment) // 导入环境的绑定键
-        return script.eval(engine.context)
+        val bindings = script.engine.createBindings()
+        bindings.putAll(environment.bindings) // 导入环境的绑定键
+        return script.eval(bindings)
     }
 
     /**
      * 导入环境的绑定键
      * (为了避免引擎沾染环境, 所以要导入绑定键而不是直接用环境上下文)
      */
-    private fun importBindings(engine: ScriptEngine, environment: ScriptEnvironment) {
-        engine.context.getBindings(ScriptContext.ENGINE_SCOPE).putAll(environment.bindings)
+    private fun newImportedEngine(environment: ScriptEnvironment): ScriptEngine {
+        val engine = newEngine()
+        // 导入环境的绑定键
+        val bindings = engine.context.getBindings(ScriptContext.ENGINE_SCOPE)
+        bindings.putAll(environment.bindings)
+        // 返回导入后的脚本引擎
+        return engine
     }
 
 }

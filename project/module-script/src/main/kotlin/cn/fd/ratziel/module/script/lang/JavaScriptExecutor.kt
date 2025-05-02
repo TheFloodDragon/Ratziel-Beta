@@ -30,7 +30,7 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
         this.engine = engine
     }
 
-    override fun build(script: String) = engine.build(script)
+    override fun build(script: String, environment: ScriptEnvironment) = engine.build(script, environment)
 
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = engine.evaluate(script, environment)
 

@@ -1,12 +1,16 @@
 package cn.fd.ratziel.module.item.impl.action
 
+import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.serialization.getBy
+import cn.fd.ratziel.module.item.api.action.ActionMap
+import cn.fd.ratziel.module.item.api.action.ItemAction
+import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
 import kotlinx.serialization.json.JsonObject
+import taboolib.common.io.digest
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.severe
-import java.util.concurrent.CompletableFuture
 
 /**
  * ActionParser
@@ -25,22 +29,23 @@ object ActionParser {
     /**
      * 从配置中解析成触发器表
      */
-    fun parse(element: JsonObject): TriggerMap {
+    fun parse(identifier: Identifier, element: JsonObject): ActionMap {
         // 创建触发器表
-        val map = TriggerMap()
-        for (raw in element) {
+        val map = LinkedHashMap<ItemTrigger, ItemAction>()
+        for ((triggerName, content) in element) {
             // 匹配触发器
-            val type = ActionManager.matchTrigger(raw.key)
-            if (type == null) {
-                severe("Unknown trigger: \"${raw.key}\" !")
+            val trigger = ActionManager.registry[triggerName]
+            if (trigger == null) {
+                severe("Unknown trigger: \"$triggerName\" !")
                 continue
             }
             // 构建脚本块
-            val block = ScriptBlockBuilder.build(raw.value)
+            val block = ScriptBlockBuilder.build(content)
             // 创建脚本动作, 放入表中
-            map[type] = ExecutableAction(block)
+            val name = trigger.name + "#" + identifier.content + "@" + content.toString().digest("SHA-256")
+            map[trigger] = SimpleAction(name, content, block)
         }
-        return map
+        return ActionMap(map)
     }
 
     @SubscribeEvent
@@ -49,12 +54,10 @@ object ActionParser {
         // 获取原始动作
         val raw = element.getBy(*nodeNames) ?: return
         if (raw is JsonObject) {
-            CompletableFuture.runAsync {
-                // 解析触发器表
-                val triggerMap = parse(raw)
-                // 加入到动作表中
-                ActionManager.actionMap[event.identifier] = triggerMap
-            }
+            // 解析触发器表
+            val triggerMap = parse(event.identifier, raw)
+            // 加入到动作表中
+            ActionManager.service[event.identifier] = triggerMap
         } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
     }
 

@@ -19,12 +19,18 @@ import kotlinx.serialization.json.JsonPrimitive
  * @author TheFloodDragon
  * @since 2024/10/2 18:31
  */
-class ScriptBlock(val script: ScriptContent) : ExecutableBlock {
+class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : ExecutableBlock {
 
-    constructor(script: String, executor: ScriptExecutor) : this(executor.build(script))
+    lateinit var script: ScriptContent
+        private set
 
     override fun execute(context: ArgumentContext): Any? {
         val environment = context.scriptEnv() ?: SimpleScriptEnv()
+        // 初次运行编译
+        if (!::script.isInitialized) {
+            script = executor.build(scriptSource, environment)
+        }
+        // 评估
         return script.executor.evaluate(script, environment)
     }
 

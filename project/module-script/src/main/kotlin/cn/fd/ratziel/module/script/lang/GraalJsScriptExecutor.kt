@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.internal.EnginedScriptExecutor
+import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
 import javax.script.ScriptEngine

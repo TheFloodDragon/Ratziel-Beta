@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.internal.CompletableScriptExecutor
+import cn.fd.ratziel.module.script.impl.CompletableScriptExecutor
 import org.apache.commons.jexl3.JexlBuilder
 import org.apache.commons.jexl3.JexlContext
 import org.apache.commons.jexl3.JexlScript
@@ -22,6 +22,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
 
     val engine by lazy {
         JexlBuilder().apply {
+            loader(this::class.java.classLoader)
             imports(ScriptManager.globalImports)
         }.create()
     }
@@ -30,7 +31,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
         return engine.createScript(script).execute(WrappedJexlContext(environment.context))
     }
 
-    override fun compile(script: String): JexlScript {
+    override fun compile(script: String, environment: ScriptEnvironment): JexlScript {
         return engine.createScript(script)
     }
 
