@@ -23,7 +23,8 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
     val engine by lazy {
         JexlBuilder().apply {
             loader(this::class.java.classLoader)
-            imports(ScriptManager.globalImports)
+            // 导入包 (Jexl这个imports只能导包, 导类请看下面 WrappedJexlContext#get )
+            imports(ScriptManager.Imports.packages)
         }.create()
     }
 
@@ -46,6 +47,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
 
         override fun get(name: String): Any? {
             return scriptContext.getAttribute(name)
+                ?: ScriptManager.Imports.getImportedClass(name) // 获取导入的类
         }
 
         override fun has(name: String): Boolean {

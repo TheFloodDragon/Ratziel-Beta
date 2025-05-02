@@ -8,6 +8,7 @@ import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.getJarFile
 import taboolib.library.configuration.ConfigurationSection
 import java.io.File
+import java.util.jar.JarFile
 
 /**
  * WorkspaceManager
@@ -79,10 +80,11 @@ object WorkspaceManager {
      * 复制默认工作空间内文件到默认工作空间
      */
     private fun releaseDefaultWorkspace(folder: File) {
-        findInJar(getJarFile()) {
+        val jar = JarFile(getJarFile())
+        findInJar(jar) {
             !it.isDirectory && it.name.startsWith("default/")
         }.forEach {
-            newFile(File(folder, it.first.name.substringAfter('/'))).writeBytes(it.second.readBytes())
+            newFile(File(folder, it.name.substringAfter('/'))).writeBytes(jar.getInputStream(it).readBytes())
         }
     }
 

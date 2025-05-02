@@ -6,6 +6,7 @@ import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
+import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.event.PlayerWorldContactEvent
 
@@ -15,6 +16,7 @@ import taboolib.platform.event.PlayerWorldContactEvent
  * @author TheFloodDragon
  * @since 2025/5/2 12:47
  */
+@Awake
 object WorldContactListener {
 
     /* 左右键交互 */

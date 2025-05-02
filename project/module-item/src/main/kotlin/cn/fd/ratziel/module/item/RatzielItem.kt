@@ -23,7 +23,7 @@ import taboolib.platform.util.isAir
  * @author TheFloodDragon
  * @since 2024/5/2 22:05
  */
-data class RatzielItem private constructor(
+class RatzielItem private constructor(
     /**
      * 物品信息
      */
@@ -31,7 +31,7 @@ data class RatzielItem private constructor(
     /**
      * 物品数据
      */
-    override val data: ItemData
+    override val data: ItemData,
 ) : NeoItem, DataHolder {
 
     /**
@@ -47,12 +47,20 @@ data class RatzielItem private constructor(
     /**
      * 读取指定数据
      */
-    override fun get(name: String): NbtTag? = (data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)?.get(name)
+    override fun get(name: String): NbtTag? {
+        return (data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)?.get(name)
+    }
 
     /**
      * 写入指定数据
      */
-    override fun set(name: String, tag: NbtTag) = data.tag.handle(RATZIEL_DATA_PATH) { put(name, tag) }
+    override fun set(name: String, tag: NbtTag) {
+        data.tag.handle(RATZIEL_DATA_PATH) { put(name, tag) }
+    }
+
+    override fun toString(): String {
+        return "RatzielItem(info=$info, data=$data)"
+    }
 
     companion object {
 

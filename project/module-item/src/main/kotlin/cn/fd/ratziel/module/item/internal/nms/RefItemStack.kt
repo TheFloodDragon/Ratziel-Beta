@@ -89,6 +89,15 @@ class RefItemStack private constructor(
         }
 
     /**
+     * 应用 [ItemData]
+     */
+    fun applyData(data: ItemData) {
+        this.material = data.material
+        this.tag = data.tag
+        this.amount = data.amount
+    }
+
+    /**
      * 克隆数据
      */
     override fun clone() = RefItemStack(InternalUtil.obcCloneMethod.invoke(handle) as BukkitItemStack)
