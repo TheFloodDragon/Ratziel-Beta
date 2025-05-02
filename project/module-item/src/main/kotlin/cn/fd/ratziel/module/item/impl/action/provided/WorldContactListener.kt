@@ -5,6 +5,7 @@ import cn.fd.ratziel.module.item.RatzielItem
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
+import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
@@ -46,8 +47,12 @@ object WorldContactListener {
         val environment = SimpleScriptEnv().apply {
             set("event", event)
             set("player", event.player)
-            set("itemStack", itemStack)
-            set("neoItem", ratzielItem)
+            set("item", ratzielItem)
+            /* 此处不开放事件的 ItemStack,
+               是因为 ItemStack 最后都会被 RatzielItem 重新写入数据,
+               故而就算脚本运行过程中修改了 ItemStack,
+               最后所看的也只会是 RatzielItem 转化成的 ItemStack 罢了
+            */
         }
 
         fun trigger(
@@ -56,6 +61,8 @@ object WorldContactListener {
         ) {
             action(environment)
             trigger.trigger(ratzielItem.id, SimpleContext(environment))
+            // 向事件的 ItemStack 写入 RatzielItem 的数据
+            RefItemStack.of(ratzielItem.data).writeTo(itemStack)
         }
 
         // 分配处理器

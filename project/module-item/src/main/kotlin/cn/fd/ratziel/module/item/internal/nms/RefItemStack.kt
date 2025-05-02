@@ -17,7 +17,6 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
-import org.bukkit.Material as BukkitMaterial
 import org.bukkit.inventory.ItemStack as BukkitItemStack
 
 /**
@@ -89,12 +88,20 @@ class RefItemStack private constructor(
         }
 
     /**
-     * 应用 [ItemData]
+     * 将此 [RefItemStack] 写入目标 [BukkitItemStack]
      */
-    fun applyData(data: ItemData) {
-        this.material = data.material
-        this.tag = data.tag
-        this.amount = data.amount
+    fun writeTo(itemStack: BukkitItemStack) {
+        // 写入材质和数量信息
+        itemStack.type = this.material.toBukkit()
+        itemStack.amount = this.amount
+        // 写入标签数据
+        if (isObcClass(itemStack::class.java)) {
+            // CraftItemStack 直接写入
+            RefItemStack(itemStack).tag = this.tag
+        } else {
+            // 一般的 BukkitItemStack 写入 ItemMeta
+            itemStack.itemMeta = this.bukkitStack.itemMeta
+        }
     }
 
     /**
@@ -124,23 +131,15 @@ class RefItemStack private constructor(
          * 创建一个材质为 [material] 的 [RefItemStack]
          */
         @JvmStatic
-        fun of(material: BukkitMaterial) = of(SimpleMaterial(material))
-
-        /**
-         * 创建一个材质为 [material] 的 [RefItemStack]
-         */
-        @JvmStatic
         fun of(material: XMaterial) = of(SimpleMaterial(material))
 
         /**
          * 通过 [ItemData] 创建一个 [RefItemStack]
-         *
-         * @param copyTag 是否复制标签 (默认不复制)
          */
         @JvmStatic
-        fun of(data: ItemData, copyTag: Boolean = false) = RefItemStack().apply {
+        fun of(data: ItemData) = RefItemStack().apply {
             this.material = data.material
-            this.tag = if (copyTag) data.tag.clone() else data.tag
+            this.tag = data.tag
             this.amount = data.amount
         }
 
@@ -148,10 +147,11 @@ class RefItemStack private constructor(
          * 通过 [BukkitItemStack] 创建一个 [RefItemStack]
          */
         @JvmStatic
-        fun of(itemStack: BukkitItemStack) =
-            if (isObcClass(itemStack::class.java)) {
+        fun of(itemStack: BukkitItemStack): RefItemStack {
+            return if (isObcClass(itemStack::class.java)) {
                 RefItemStack(itemStack)  // CraftItemStack
             } else RefItemStack(newObc(itemStack) as BukkitItemStack) // an impl of interface BukkitItemStack, but not CraftItemStack
+        }
 
         /**
          * 通过 [net.minecraft.world.item.ItemStack] 创建一个 [RefItemStack]
@@ -162,9 +162,8 @@ class RefItemStack private constructor(
         /**
          * 从 [itemStack] 中提取 [ItemData]
          */
-        fun exactData(itemStack: BukkitItemStack): ItemData {
-            val ref = of(itemStack)
-            return SimpleData(ref.material, ref.tag, ref.amount)
+        fun exactData(itemStack: BukkitItemStack): ItemData = this.of(itemStack).let {
+            SimpleData(it.material, it.tag, it.amount)
         }
 
         /**

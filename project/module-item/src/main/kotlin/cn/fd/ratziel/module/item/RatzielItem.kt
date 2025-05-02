@@ -147,7 +147,7 @@ class RatzielItem private constructor(
         /**
          * 物品版本信息 (生成此物品时的元素哈希)
          */
-        val hash: String
+        val hash: String,
     ) {
 
         constructor(identifier: String, hash: String) : this(SimpleIdentifier(identifier), hash)
