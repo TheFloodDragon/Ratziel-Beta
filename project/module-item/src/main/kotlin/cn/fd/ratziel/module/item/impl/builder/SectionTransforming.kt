@@ -19,7 +19,7 @@ open class SectionTransforming<T>(val serializer: KSerializer<T>) : ContextualSe
     override fun accept(context: ArgumentContext): KSerializer<T> =
         object : SectionTransforming<T>(this.serializer) {
             override fun transformDeserialize(element: JsonElement): JsonElement {
-                return DefaultSectionResolver.resolve(element, serializer.descriptor.elementAlias, context)
+                return SectionResolver.resolve(element, serializer.descriptor.elementAlias, context)
             }
         }
 

@@ -7,13 +7,13 @@ import taboolib.common.platform.Awake
 import taboolib.platform.compat.replacePlaceholder
 
 /**
- * PapiResolver
+ * PapiTagResolver
  *
  * @author TheFloodDragon
  * @since 2024/8/16 19:26
  */
 @Awake
-object PapiResolver : SectionTagResolver("papi", "p") {
+object PapiTagResolver : SectionTagResolver("papi", "p") {
 
     override fun resolve(element: List<String>, context: ArgumentContext): String? {
         // 获取玩家

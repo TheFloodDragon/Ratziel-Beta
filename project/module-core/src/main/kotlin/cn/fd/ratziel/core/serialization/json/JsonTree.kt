@@ -4,6 +4,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import java.util.function.Consumer
 
 /**
  * JsonTree
@@ -27,22 +28,6 @@ class JsonTree(
         return parseToElement(root)
     }
 
-    companion object {
-
-        private fun parseToNode(element: JsonElement, parent: Node?): Node = when (element) {
-            is JsonObject -> ObjectNode(element.mapValues { parseToNode(it.value, parent) }.toMutableMap(), parent)
-            is JsonArray -> ArrayNode(element.map { parseToNode(it, parent) }.toMutableList(), parent)
-            is JsonPrimitive -> PrimitiveNode(element, parent)
-        }
-
-        private fun parseToElement(node: Node): JsonElement = when (node) {
-            is ObjectNode -> JsonObject(node.value.mapValues { parseToElement(it.value) })
-            is ArrayNode -> JsonArray(node.value.map { parseToElement(it) })
-            is PrimitiveNode -> node.value
-        }
-
-    }
-
     /**
      * Node
      */
@@ -59,7 +44,7 @@ class JsonTree(
      * ObjectNode
      */
     class ObjectNode(
-        var value: MutableMap<String, Node>,
+        var value: Map<String, Node>,
         override val parent: Node?,
     ) : Node
 
@@ -67,7 +52,7 @@ class JsonTree(
      * ArrayNode
      */
     class ArrayNode(
-        var value: MutableList<Node>,
+        var value: List<Node>,
         override val parent: Node?,
     ) : Node
 
@@ -78,5 +63,35 @@ class JsonTree(
         var value: JsonPrimitive,
         override val parent: Node?,
     ) : Node
+
+    companion object {
+
+        /**
+         * 展开节点并进行处理
+         *
+         * @param node 要展开的节点
+         * @param action 处理动作
+         */
+        fun unfold(node: Node, action: Consumer<Node>) {
+            when (node) {
+                is ObjectNode -> node.value.forEach { action.accept(it.value) }
+                is ArrayNode -> node.value.forEach { action.accept(it) }
+                is PrimitiveNode -> action.accept(node)
+            }
+        }
+
+        private fun parseToNode(element: JsonElement, parent: Node?): Node = when (element) {
+            is JsonObject -> ObjectNode(emptyMap(), parent).apply { value = element.mapValues { parseToNode(it.value, this) } }
+            is JsonArray -> ArrayNode(emptyList(), parent).apply { value = element.map { parseToNode(it, this) } }
+            is JsonPrimitive -> PrimitiveNode(element, parent)
+        }
+
+        private fun parseToElement(node: Node): JsonElement = when (node) {
+            is ObjectNode -> JsonObject(node.value.mapValues { parseToElement(it.value) })
+            is ArrayNode -> JsonArray(node.value.map { parseToElement(it) })
+            is PrimitiveNode -> node.value
+        }
+
+    }
 
 }

@@ -17,7 +17,7 @@ class SectionTagRegister : ClassVisitor(10) {
     override fun visitStart(clazz: ReflexClass) {
         if (clazz.hasAnnotation(Awake::class.java) && SectionTagResolver::class.java.isAssignableFrom(clazz.toClass())) {
             val resolver = findInstance(clazz) as? SectionTagResolver ?: return
-            DefaultSectionResolver.resolvers.add(resolver)
+            DefaultResolver.tagResolvers.add(resolver)
         }
     }
 
