@@ -2,13 +2,12 @@ package cn.fd.ratziel.module.item.internal.compat
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.serialization.getBy
+import cn.fd.ratziel.core.serialization.json.getBy
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.platform.bukkit.util.player
 import io.rokuko.azureflow.api.AzureFlowAPI
-import io.rokuko.azureflow.features.item.AzureFlowItem
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull

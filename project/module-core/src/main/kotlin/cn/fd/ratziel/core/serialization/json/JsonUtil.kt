@@ -1,7 +1,7 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 @file:Suppress("NOTHING_TO_INLINE")
 
-package cn.fd.ratziel.core.serialization
+package cn.fd.ratziel.core.serialization.json
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json

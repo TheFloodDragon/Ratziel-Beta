@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.exception.ArgumentNotFoundException
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.serialization.JsonHelper
+import cn.fd.ratziel.core.serialization.json.JsonHelper
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.platform.bukkit.util.player
 import kotlinx.serialization.json.JsonElement

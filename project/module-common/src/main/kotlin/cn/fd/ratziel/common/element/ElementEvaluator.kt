@@ -37,9 +37,18 @@ object ElementEvaluator {
         .apply { for (cycle in LifeCycle.entries) put(cycle, EvaluationGroup()) } // 初始化任务组表
 
     /**
-     * 加载过的元素表
+     * 评估过的元素表 (不包含评估失败的)
      */
     val evaluatedElements: MutableMap<ElementIdentifier, Element> = ConcurrentHashMap()
+
+    /**
+     * 加载过的元素列表
+     *
+     * 元素在评估之前就被加入到了这个列表里,
+     * 因此无论元素在评估过程成失败与否,
+     * 总能通过这个列表获取从配置文件中加载的元素
+     */
+    val loadedElements: MutableCollection<Element> = ConcurrentLinkedQueue()
 
     /**
      * 处理任务
@@ -100,6 +109,9 @@ object ElementEvaluator {
      * 提交周期评估任务
      */
     fun submitCycledTask(element: Element) {
+        // 加入到 loadedElements
+        loadedElements.add(element)
+        // 创建任务
         val task = createTask(element)
         // 注册到任务组里
         val group = cycledEvaluations[task.config.lifeCycle]!!
@@ -118,8 +130,10 @@ object ElementEvaluator {
      * 清空
      */
     fun clear() {
-        cycledEvaluations.forEach { it.value.evaluations.clear() }
+        // 清理 Group 而不是清理 cycledEvaluations, 从而就不需要重新初始化 cycledEvaluations 了
+        for (group in cycledEvaluations) group.value.evaluations.clear()
         evaluatedElements.clear()
+        loadedElements.clear()
     }
 
     /**
@@ -160,7 +174,7 @@ object ElementEvaluator {
         /** 元素处理器 **/
         val handler: ElementHandler,
         /** 元素配置 **/
-        val config: ElementConfig
+        val config: ElementConfig,
     )
 
     /**
