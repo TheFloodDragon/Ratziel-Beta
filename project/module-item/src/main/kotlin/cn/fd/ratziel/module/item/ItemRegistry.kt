@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.api.builder.ItemSource
+import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -41,9 +42,10 @@ object ItemRegistry {
      * 获取组件集成构建器
      */
     fun <T> get(type: Class<T>): Integrated<T> {
+        val integrated = registry.find { it.type == type }
+            ?: throw ComponentNotFoundException(type)
         @Suppress("UNCHECKED_CAST")
-        return (registry.find { it.type == type }
-            ?: throw NoSuchElementException("Cannot find '$type' in registry.")) as Integrated<T>
+        return integrated as Integrated<T>
     }
 
     inline fun <reified T> get(): Integrated<T> = get(T::class.java)

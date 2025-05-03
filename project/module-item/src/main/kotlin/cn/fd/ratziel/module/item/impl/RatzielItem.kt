@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item
+package cn.fd.ratziel.module.item.impl
 
 import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
@@ -8,9 +8,8 @@ import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.NeoItem
-import cn.fd.ratziel.module.item.impl.ItemSheet
 import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
+import cn.fd.ratziel.module.item.internal.ItemSheet
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
@@ -32,7 +31,7 @@ class RatzielItem private constructor(
      * 物品数据
      */
     override val data: ItemData,
-) : NeoItem, DataHolder {
+) : AbstractNeoItem(), DataHolder {
 
     /**
      * 物品标识符
@@ -103,14 +102,14 @@ class RatzielItem private constructor(
         }
 
         /**
-         * 将目标 [ItemStack] 转为 [RatzielItem]
+         * 将目标 [org.bukkit.inventory.ItemStack] 转为 [RatzielItem]
          *
          * @return 若目标不是 [RatzielItem], 返回空
          */
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
             if (itemStack.isAir()) return null
-            val itemData = RefItemStack.exactData(itemStack)
+            val itemData = RefItemStack.Companion.extractData(itemStack)
             return of(itemData)
         }
 
@@ -131,7 +130,7 @@ class RatzielItem private constructor(
          */
         @JvmStatic
         fun isRatzielItem(itemStack: ItemStack): Boolean {
-            return isRatzielItem(RefItemStack.of(itemStack))
+            return isRatzielItem(RefItemStack.Companion.of(itemStack))
         }
 
     }

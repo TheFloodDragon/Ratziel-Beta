@@ -162,7 +162,7 @@ class RefItemStack private constructor(
         /**
          * 从 [itemStack] 中提取 [ItemData]
          */
-        fun exactData(itemStack: BukkitItemStack): ItemData = this.of(itemStack).let {
+        fun extractData(itemStack: BukkitItemStack): ItemData = this.of(itemStack).let {
             SimpleData(it.material, it.tag, it.amount)
         }
 

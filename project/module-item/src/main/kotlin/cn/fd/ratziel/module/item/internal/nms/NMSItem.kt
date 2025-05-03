@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.impl.ItemSheet
+import cn.fd.ratziel.module.item.internal.ItemSheet
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.PatchedDataComponentMap

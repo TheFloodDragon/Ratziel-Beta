@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl
+package cn.fd.ratziel.module.item.internal
 
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
@@ -41,7 +41,7 @@ object ItemSheet {
         fun initialize(path: String): BiMap<Pair<String, String>, String> {
             // Read from resources
             val bytes = runningResources[path] ?: throw IllegalStateException("File not found: $path!")
-            val json = Json.parseToJsonElement(bytes.toString(Charsets.UTF_8))
+            val json = Json.Default.parseToJsonElement(bytes.toString(Charsets.UTF_8))
             // Analyze to map
             return HashBiMap.create<Pair<String, String>, String>().apply {
                 for ((id, verMap) in json.jsonObject) {
