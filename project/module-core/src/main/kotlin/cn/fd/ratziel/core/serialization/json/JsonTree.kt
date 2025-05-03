@@ -73,10 +73,11 @@ class JsonTree(
          * @param action 处理动作
          */
         fun unfold(node: Node, action: Consumer<Node>) {
+            action.accept(node) // 先执行动作
             when (node) {
-                is ObjectNode -> node.value.forEach { action.accept(it.value) }
-                is ArrayNode -> node.value.forEach { action.accept(it) }
-                is PrimitiveNode -> action.accept(node)
+                is ObjectNode -> node.value.forEach { unfold(it.value, action) }
+                is ArrayNode -> node.value.forEach { unfold(it, action) }
+                is PrimitiveNode -> Unit // 无法继续展开
             }
         }
 

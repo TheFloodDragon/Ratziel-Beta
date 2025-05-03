@@ -20,7 +20,7 @@ object EnhancedListResolver : ItemSectionResolver {
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         if (node !is JsonTree.ArrayNode) return
         // 重新构建列表
-        val list = ArrayList<JsonElement>()
+        val list = ArrayList<JsonPrimitive>()
         for (child in node.value) {
             // 要求列表内的所有元素都是 JsonPrimitive
             if (child !is JsonTree.PrimitiveNode) return
@@ -39,6 +39,7 @@ object EnhancedListResolver : ItemSectionResolver {
                 list.add(JsonPrimitive(stripped))
             }
         }
+        node.value = list.map { JsonTree.PrimitiveNode(it, node) }
     }
 
 }
