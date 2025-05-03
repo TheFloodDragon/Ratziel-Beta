@@ -59,7 +59,7 @@ class JsonTree(
      * ObjectNode
      */
     class ObjectNode(
-        val value: MutableMap<String, Node>,
+        var value: MutableMap<String, Node>,
         override val parent: Node?,
     ) : Node
 
@@ -67,7 +67,7 @@ class JsonTree(
      * ArrayNode
      */
     class ArrayNode(
-        val value: MutableList<Node>,
+        var value: MutableList<Node>,
         override val parent: Node?,
     ) : Node
 

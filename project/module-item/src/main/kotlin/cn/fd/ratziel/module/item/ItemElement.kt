@@ -9,7 +9,6 @@ import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
-import cn.fd.ratziel.core.serialization.serializers.EnhancedListSerializer
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
@@ -68,8 +67,6 @@ object ItemElement : ElementHandler {
      */
     val json = Json(baseJson) {
         serializersModule += SerializersModule {
-            // Basic Serializers
-            contextual(EnhancedListSerializer(MessageComponentSerializer))
             // Common Serializers
             contextual(NbtTag::class, NBTSerializer)
             contextual(ItemMaterial::class, ItemMaterialSerializer)

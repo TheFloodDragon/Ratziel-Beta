@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.action.provided
 
 import cn.fd.ratziel.core.function.SimpleContext
-import cn.fd.ratziel.module.item.RatzielItem
+import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger

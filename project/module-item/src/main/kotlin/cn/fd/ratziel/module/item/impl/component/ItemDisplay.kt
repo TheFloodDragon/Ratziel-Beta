@@ -4,7 +4,6 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.common.message.MessageComponent
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -31,7 +30,7 @@ class ItemDisplay(
      * 物品描述
      */
     @JsonNames("lores")
-    var lore: @Contextual List<MessageComponent>? = null,
+    var lore: List<MessageComponent>? = null,
 ) {
 
     /**

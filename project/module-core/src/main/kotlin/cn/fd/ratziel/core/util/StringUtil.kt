@@ -13,13 +13,22 @@ inline fun randomUuid() = Uuid.random().toHexString()
 /**
  * 默认转义字符
  */
-const val ESCAPE_CHAR = "\\"
+const val ESCAPE_CHAR = '\\'
 
 /**
  * 删除当前字符串的所有目标字符
  * 其实就是将 [value] 替换成 ""
  */
 fun String.removeAll(value: String, ignoreCase: Boolean = false) = this.replace(value, "", ignoreCase)
+
+
+/**
+ * 检查字符串是否包含非转义的字符串
+ */
+@JvmOverloads
+fun String.containsNonEscaped(other: String, ignoreCase: Boolean = false): Boolean {
+    return indexOfNonEscaped(other, ignoreCase = ignoreCase) >= 0
+}
 
 /**
  * 获取单个非转义字符串的索引位置
@@ -30,8 +39,9 @@ fun String.indexOfNonEscaped(
     target: String,
     startIndex: Int = 0,
     ignoreCase: Boolean = false,
-    escapeChar: String = ESCAPE_CHAR,
-) = this.indexOf(target, startIndex, ignoreCase).takeUnless { this.substring(0, it).endsWith(escapeChar, ignoreCase) }
+    escapeChar: Char = ESCAPE_CHAR,
+) = this.indexOf(target, startIndex, ignoreCase)
+    .takeUnless { this[it - 1].equals(escapeChar, ignoreCase) } ?: -1
 
 /**
  * 获取所有非转义字符串的索引位置
@@ -41,11 +51,11 @@ fun String.allIndexOfNonEscaped(
     target: String,
     startIndex: Int = 0,
     ignoreCase: Boolean = false,
-    escapeChar: String = ESCAPE_CHAR,
+    escapeChar: Char = ESCAPE_CHAR,
     action: (Int) -> Unit,
 ) {
     var index = indexOfNonEscaped(target, startIndex, ignoreCase, escapeChar)
-    while (index != null && index > -1) {
+    while (index >= 0) {
         action(index); index = indexOfNonEscaped(target, index + 1, ignoreCase, escapeChar)
     }
 }
@@ -55,7 +65,7 @@ fun String.allIndexOfNonEscaped(
     target: String,
     startIndex: Int = 0,
     ignoreCase: Boolean = false,
-    escapeChar: String = ESCAPE_CHAR,
+    escapeChar: Char = ESCAPE_CHAR,
 ) = buildList { allIndexOfNonEscaped(target, startIndex, ignoreCase, escapeChar) { add(it) } }.toTypedArray()
 
 
@@ -87,7 +97,7 @@ fun String.replaceNonEscaped(
     newValue: String,
     ignoreCase: Boolean = false,
     startIndex: Int = 0,
-    escapeChar: String = ESCAPE_CHAR,
+    escapeChar: Char = ESCAPE_CHAR,
 ): String = buildString {
     // 索引记录
     var lastIndex = 0
@@ -96,8 +106,8 @@ fun String.replaceNonEscaped(
         // 从上次找到的位置到当前找到的位置之前的字符串
         val segment = this@replaceNonEscaped.substring(lastIndex, index)
         // 检查转义字符串
-        if (this@replaceNonEscaped.startsWith(escapeChar, index - escapeChar.length))
-            append(segment.dropLast(escapeChar.length)).append(oldValue)
+        if (this@replaceNonEscaped[index - 1] == escapeChar)
+            append(segment.dropLast(1)).append(oldValue)
         else append(segment).append(newValue)
         // 更新索引
         lastIndex = index + oldValue.length
@@ -114,9 +124,9 @@ fun String.splitNonEscaped(
     vararg delimiters: String,
     ignoreCase: Boolean = false,
     limit: Int = 0,
-    escapeChar: String = ESCAPE_CHAR,
+    escapeChar: Char = ESCAPE_CHAR,
 ): List<String> = this.split(*delimiters, ignoreCase = ignoreCase, limit = limit)
-    .map { s -> s.takeUnless { it.endsWith(escapeChar) } ?: s.dropLast(escapeChar.length) }
+    .map { s -> s.takeUnless { it.endsWith(escapeChar) } ?: s.dropLast(1) }
 
 /**
  * 字符串自适应 - 尝试将字符串转化为数字
