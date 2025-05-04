@@ -9,6 +9,7 @@ import kotlinx.serialization.json.contentOrNull
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * SectionResolver
@@ -18,11 +19,16 @@ import taboolib.common.util.VariableReader
  */
 object SectionResolver : ItemSectionResolver {
 
+    /**
+     * 标签解析器列表
+     */
+    val tagResolvers: MutableMap<String, SectionTagResolver> = ConcurrentHashMap()
+
     /** 标签读取器 **/
     private val reader = VariableReader("{", "}")
 
     /** 标签参数分隔符 **/
-    const val TAG_ARG_SEPARATION = ":"
+    private const val TAG_ARG_SEPARATION = ":"
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         // 解析字符串
@@ -34,7 +40,7 @@ object SectionResolver : ItemSectionResolver {
     /**
      * 解析字符串
      */
-    fun resolveString(element: String, node: JsonTree.PrimitiveNode, context: ArgumentContext): String {
+    private fun resolveString(element: String, node: JsonTree.PrimitiveNode, context: ArgumentContext): String {
         // 读取标签, 拼接字符串片段并返回
         return reader.readToFlatten(element).joinToString("") {
             // 如果标签片段
@@ -51,13 +57,13 @@ object SectionResolver : ItemSectionResolver {
      * 从标签字符串中获取 [SectionTagResolver] 并解析
      * @return 若标签不合法或者处理后结果为空, 则返回空
      */
-    fun resolveTag(tag: String, node: JsonTree.PrimitiveNode, context: ArgumentContext): String? {
+    private fun resolveTag(tag: String, node: JsonTree.PrimitiveNode, context: ArgumentContext): String? {
         // 分割
         val split = tag.splitNonEscaped(TAG_ARG_SEPARATION)
         // 获取名称
         val name = split.firstOrNull() ?: return null
         // 获取解析器
-        val resolver = DefaultResolver.match(name) ?: return null
+        val resolver = tagResolvers[name] ?: return null
         // 解析并返回
         return try {
             resolver.resolve(split.drop(1), node, context)
@@ -69,7 +75,6 @@ object SectionResolver : ItemSectionResolver {
             ex.printStackTrace()
             return null
         }
-
     }
 
 }

@@ -14,7 +14,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.function.warning
 
 /**
- * InheritResolver
+ * InheritResolver - 继承解析器
  *
  * @author TheFloodDragon
  * @since 2025/5/4 15:44
@@ -75,25 +75,27 @@ object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inhe
         val parent = node.parent ?: return null // 这能为根节点?
         // 父节点为数组节点
         if (parent is JsonTree.ArrayNode) {
-            val index = parent.value.indexOf(node) // 寻找索引
-            val list = parent.value
-            if (find is JsonPrimitive) {
-                list[index] = JsonTree.PrimitiveNode(JsonPrimitive(find.content), parent)
-            } else if (find is JsonArray) {
-                list.addAll(index, find.map {
-                    if (it !is JsonPrimitive) {
+            when (find) {
+                is JsonPrimitive -> find.content
+                is JsonArray -> {
+                    // 仅支持元素全是 JsonPrimitive 的 JsonArray
+                    if (find.all { it is JsonPrimitive }) {
+                        find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
+                    } else {
                         warning("Inline inheritance in a array does not support complex JsonArray.")
                         return null
                     }
-                    JsonTree.PrimitiveNode(it, parent)
-                })
+                }
+
+                else -> null
             }
         } else if (parent is JsonTree.PrimitiveNode) {
-            if (find !is JsonPrimitive) {
+            if (find is JsonPrimitive) {
+                return find.content
+            } else {
                 warning("Inline inheritance does not support non JsonPrimitive.")
                 return null
             }
-            return find.content // 用找到的 JsonPrimitive 替换标签
         }
         return null
     }
@@ -127,7 +129,7 @@ object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inhe
      * 合并目标
      */
     fun merge(source: JsonTree.ObjectNode, target: JsonObject) {
-        val map = source.value
+        val map = source.value.toMutableMap()
         for ((key, targetValue) in target) {
             // 获取自身的数据
             val ownValue = map[key]
@@ -140,6 +142,7 @@ object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inhe
                 else -> null
             } ?: if (ownValue == null) JsonTree.parseToNode(targetValue) else continue
         }
+        source.value = map // 替换为新 Map
     }
 
 }

@@ -20,7 +20,9 @@ import taboolib.platform.BukkitPlugin
 @PlatformSide(Platform.BUKKIT)
 object BukkitMessage : MessageWrapper {
 
-    override val audienceProvider = BukkitAudiences.create(BukkitPlugin.getInstance())
+    override val audienceProvider by lazy {
+        BukkitAudiences.create(BukkitPlugin.getInstance())
+    }
 
     fun isLegacy() = MinecraftVersion.isLower(MinecraftVersion.V1_16)
 

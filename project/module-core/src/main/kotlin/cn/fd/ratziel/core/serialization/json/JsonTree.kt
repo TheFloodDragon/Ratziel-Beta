@@ -44,7 +44,7 @@ class JsonTree(
      * ObjectNode
      */
     class ObjectNode(
-        var value: MutableMap<String, Node>,
+        var value: Map<String, Node>,
         override val parent: Node?,
     ) : Node
 
@@ -52,7 +52,7 @@ class JsonTree(
      * ArrayNode
      */
     class ArrayNode(
-        var value: MutableList<Node>,
+        var value: List<Node>,
         override val parent: Node?,
     ) : Node
 
@@ -78,18 +78,8 @@ class JsonTree(
             when (node) {
                 is ObjectNode -> node.value.forEach { unfold(it.value, action) }
                 is ArrayNode -> node.value.forEach { unfold(it, action) }
-                is PrimitiveNode -> Unit // 无法继续展开
+                is PrimitiveNode -> return // 无法继续展开
             }
-        }
-
-        /**
-         * 判断一个节点是否在根节点下
-         */
-        @JvmStatic
-        fun isUnderRoot(node: Node): Boolean {
-            val parent = node.parent
-            return parent != null // 自身不是根节点
-                    && parent.parent == null // 并且父节点是根节点
         }
 
         /**
@@ -97,9 +87,9 @@ class JsonTree(
          */
         @JvmStatic
         fun parseToNode(element: JsonElement, parent: Node? = null): Node = when (element) {
-            is JsonObject -> ObjectNode(LinkedHashMap(), parent).apply { value.putAll(element.mapValues { parseToNode(it.value, this) }) }
-            is JsonArray -> ArrayNode(ArrayList(), parent).apply { value.addAll(element.map { parseToNode(it, this) }) }
-            is JsonPrimitive -> PrimitiveNode(element, parent)
+            is JsonObject -> ObjectNode(emptyMap(), parent).apply { value = element.mapValues { parseToNode(it.value, this) } }
+            is JsonArray -> ArrayNode(emptyList(), parent).apply { value = element.map { parseToNode(it, this) } }
+            is JsonPrimitive -> PrimitiveNode(element, parent) // 无法继续展开
         }
 
         /**

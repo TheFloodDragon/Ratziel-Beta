@@ -6,14 +6,13 @@ import cn.fd.ratziel.core.serialization.elementAlias
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
-import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.InheritResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
+import java.util.function.Consumer
 
 /**
  * DefaultResolver
@@ -21,77 +20,55 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @author TheFloodDragon
  * @since 2025/5/3 18:32
  */
-open class DefaultResolver : ItemResolver {
+object DefaultResolver : ItemResolver {
 
     /**
-     * 允许访问的节点, 留空代表允许访问所有节点
+     * 允许访问的节点列表, 仅在 限制性解析 时使用
      */
-    var accessibleNodes: List<String>? = null
+    val accessibleNodes: MutableSet<String> = CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
 
     override fun resolve(element: JsonElement, context: ArgumentContext): JsonElement {
-        // 过滤非允许的节点
-        val nodes = accessibleNodes
-        val filtered = if (nodes != null && element is JsonObject) {
-            JsonObject(element.filter { nodes.contains(it.key) })
-        } else element
-        // 解析树
-        val tree = JsonTree(filtered)
+        val tree = JsonTree(element)
         this.resolveTree(tree, context) // 对树进行编辑解析
         return tree.toElement()
     }
 
     fun resolveTree(tree: JsonTree, context: ArgumentContext) {
-        JsonTree.unfold(tree.root) {
-            for (resolver in sectionResolvers) resolver.resolve(it, context)
-        }
-    }
-
-    /**
-     * 过滤非允许的节点, 生成 [JsonElement]
-     */
-    fun generateFiltered(element: JsonElement): JsonElement {
-        val nodes = accessibleNodes
-        val filtered = if (nodes != null && element is JsonObject) {
-            JsonObject(element.filter { nodes.contains(it.key) })
-        } else element
-        return filtered
-    }
-
-    companion object Default : DefaultResolver() {
-
-        init {
-            // 仅允许参与序列化过程的节点
-            this.accessibleNodes = ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias }
+        val root = tree.root
+        // 继承解析
+        InheritResolver.resolve(root, context)
+        // 限制性解析
+        val limitedResolve = Consumer<JsonTree.Node> {
+            // Papi 解析
+            PapiResolver.resolve(it, context)
+            // 标签解析
+            SectionResolver.resolve(it, context)
+            /*
+              内接增强列表解析
+              这里解释下为什么要放在标签解析的后面:
+              放在标签解析的后面, 则是因为有些标签解析器可能会返回带有换行的字符串,
+              就比如 InheritResolver (SectionTagResolver),
+              因为列表是不能边遍历边修改的, 所以只能采用换行字符的方式.
+            */
+            EnhancedListResolver.resolve(it, context)
         }
 
-        /**
-         * 片段解析器列表
-         */
-        val sectionResolvers: MutableList<ItemSectionResolver> = mutableListOf(
-            EnhancedListResolver,
-            InheritResolver,
-            PapiResolver,
-            SectionResolver,
-        )
-
-        /**
-         * 标签解析器列表
-         */
-        val tagResolvers: MutableList<SectionTagResolver> = CopyOnWriteArrayList()
-
-        /**
-         * 匹配 [SectionTagResolver]
-         */
-        fun match(name: String): SectionTagResolver? = tagResolvers.find { it.names.contains(name) }
-
+        if (root is JsonTree.ObjectNode) {
+            for (entry in root.value) {
+                // 限制性解析: 过滤非运行的节点
+                if (entry.key in accessibleNodes) {
+                    JsonTree.unfold(entry.value, limitedResolve)
+                }
+            }
+        } else JsonTree.unfold(root, limitedResolve)
     }
+
 
     /**
      * ResolvationCache - 可复用的解析缓存机制
      */
     class ResolvationCache(
         val element: JsonElement,
-        val resolver: DefaultResolver = Default,
         /**
          * 是否立刻解析一次 (异步)
          * 同时在获取结果 [fetchResult] 后, 会再次开启解析任务, 以便下一次调用
@@ -132,15 +109,13 @@ open class DefaultResolver : ItemResolver {
             if (initialized) {
                 future = future.thenApply {
                     // 已初始化了的再次解析
-                    resolver.resolveTree(it, context); it
+                    resolveTree(it, context); it
                 }
             } else {
                 future = CompletableFuture.supplyAsync {
-                    // 过滤
-                    val filtered = resolver.generateFiltered(element)
                     // 生成树并解析
-                    JsonTree(filtered).also {
-                        resolver.resolveTree(it, context)
+                    JsonTree(element).also {
+                        resolveTree(it, context)
                     }
                 }
                 initialized = true // 标记状态为已初始化

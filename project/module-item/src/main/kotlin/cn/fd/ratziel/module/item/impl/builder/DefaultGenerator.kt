@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.impl.builder
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.serialization.ContextualSerializer
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
@@ -32,7 +31,7 @@ class DefaultGenerator(
     /**
      * 解析缓存
      */
-    private val resolvationCache = DefaultResolver.ResolvationCache(origin.property, resolveImmediately = true)
+    private val resolvationCache = DefaultResolver.ResolvationCache(origin.property, true)
 
     /**
      * 构建物品
@@ -62,7 +61,7 @@ class DefaultGenerator(
 
         // 原生任务: 元素(解析过后的) -> 组件 -> 数据
         val nativeTasks = ItemRegistry.registry.map {
-            async { runTask(it, resolved, context, item.data) }
+            async { runTask(it, resolved, item.data) }
         }
 
         // 等待所有任务完成, 然后合并数据
@@ -89,13 +88,11 @@ class DefaultGenerator(
     fun runTask(
         integrated: ItemRegistry.Integrated<*>,
         element: JsonElement,
-        context: ArgumentContext,
         refer: ItemData,
     ): Result<ItemData> {
         // 获取序列化器
         @Suppress("UNCHECKED_CAST")
         val serializer = (integrated as ItemRegistry.Integrated<Any>).serializer
-            .let { if (it is ContextualSerializer) it.accept(context) else it }
         // 第一步: 解码成物品组件
         val component = try {
             // 解码

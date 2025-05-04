@@ -5,14 +5,12 @@ import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
-import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
-import cn.fd.ratziel.module.item.impl.builder.SectionTransforming
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
@@ -24,7 +22,6 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.serializer
 import org.bukkit.enchantments.Enchantment
@@ -116,11 +113,8 @@ object ItemElement : ElementHandler {
         ItemManager.registry.clear()
     }
 
-    private inline fun <reified T : Any> register(
-        serializer: KSerializer<T> = serializer<T>(),
-        processor: DataProcessor = DataProcessor.NoProcess,
-    ) {
-        ItemRegistry.register(T::class.java, SectionTransforming(serializer), processor)
+    private inline fun <reified T : Any> register(serializer: KSerializer<T> = serializer<T>(), processor: DataProcessor = DataProcessor.NoProcess) {
+        ItemRegistry.register(T::class.java, serializer, processor)
     }
 
 }

@@ -43,8 +43,8 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
         val engineBindings = engine.context.getBindings(ScriptContext.ENGINE_SCOPE)
         engineBindings.putAll(environment.bindings)
         // 导入全局绑定键
-        val globalBindings = engine.context.getBindings(ScriptContext.GLOBAL_SCOPE)
-        globalBindings.putAll(environment.context.getBindings(ScriptContext.GLOBAL_SCOPE))
+        val globalBindings = environment.context.getBindings(ScriptContext.GLOBAL_SCOPE)
+        engine.context.setBindings(globalBindings, ScriptContext.GLOBAL_SCOPE)
         // 返回导入后的脚本引擎
         return engine
     }
