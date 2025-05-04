@@ -81,6 +81,15 @@ class JsonTree(
             }
         }
 
+        /**
+         * 判断一个节点是否在根节点下
+         */
+        fun isUnderRoot(node: Node): Boolean {
+            val parent = node.parent
+            return parent != null // 自身不是根节点
+                    && parent.parent == null // 并且父节点是根节点
+        }
+
         private fun parseToNode(element: JsonElement, parent: Node?): Node = when (element) {
             is JsonObject -> ObjectNode(emptyMap(), parent).apply { value = element.mapValues { parseToNode(it.value, this) } }
             is JsonArray -> ArrayNode(emptyList(), parent).apply { value = element.map { parseToNode(it, this) } }

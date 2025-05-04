@@ -26,7 +26,7 @@ class DefaultGenerator(
     /**
      * 原始物品配置 (元素)
      */
-    val origin: Element
+    val origin: Element,
 ) : ItemGenerator {
 
     /**
@@ -40,20 +40,23 @@ class DefaultGenerator(
      * 注: 此处使用多线程进行 反序列化和应用数据 的操作
      */
     fun buildAsync(sourceData: ItemData, context: ArgumentContext) = ItemElement.scope.async {
-        // 生成基本物品
+        // 生成基本物品 (本地源物品)
         val item = NativeSource.generateItem(origin, sourceData) ?: throw IllegalStateException("Failed to generate item source!")
 
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(item.id, this@DefaultGenerator, context, origin.property).call()
 
-        // 原生任务: 组件 -> 数据
-        val nativeTasks = ItemRegistry.registry.map {
-            async { runTask(it, origin.property, context, item.data) }
-        }
+        // 解析元素内容
+        val content = DefaultResolver.resolve(origin.property, context)
 
-        // 源任务: 物品源 -> 解析 -> 数据
+        // 源任务: 元素 -> 数据
         val sourcedTasks = ItemRegistry.sources.map {
             async { it.generateItem(origin, context)?.data }
+        }
+
+        // 原生任务: 元素(解析过后的) -> 组件 -> 数据
+        val nativeTasks = ItemRegistry.registry.map {
+            async { runTask(it, content, context, item.data) }
         }
 
         // 等待所有任务完成, 然后合并数据
@@ -81,7 +84,7 @@ class DefaultGenerator(
         integrated: ItemRegistry.Integrated<*>,
         element: JsonElement,
         context: ArgumentContext,
-        refer: ItemData
+        refer: ItemData,
     ): Result<ItemData> {
         // 获取序列化器
         @Suppress("UNCHECKED_CAST")

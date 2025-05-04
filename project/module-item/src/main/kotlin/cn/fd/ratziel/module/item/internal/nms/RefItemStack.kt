@@ -162,6 +162,7 @@ class RefItemStack private constructor(
         /**
          * 从 [itemStack] 中提取 [ItemData]
          */
+        @JvmStatic
         fun extractData(itemStack: BukkitItemStack): ItemData = this.of(itemStack).let {
             SimpleData(it.material, it.tag, it.amount)
         }

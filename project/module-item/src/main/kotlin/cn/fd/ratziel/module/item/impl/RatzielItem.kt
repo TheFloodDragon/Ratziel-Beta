@@ -102,14 +102,14 @@ class RatzielItem private constructor(
         }
 
         /**
-         * 将目标 [org.bukkit.inventory.ItemStack] 转为 [RatzielItem]
+         * 将目标 [ItemStack] 转为 [RatzielItem]
          *
          * @return 若目标不是 [RatzielItem], 返回空
          */
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
             if (itemStack.isAir()) return null
-            val itemData = RefItemStack.Companion.extractData(itemStack)
+            val itemData = RefItemStack.extractData(itemStack)
             return of(itemData)
         }
 

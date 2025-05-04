@@ -5,9 +5,8 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.containsNonEscaped
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.contentOrNull
 
 /**
  * EnhancedListResolver
@@ -25,11 +24,9 @@ object EnhancedListResolver : ItemSectionResolver {
             // 要求列表内的所有元素都是 JsonPrimitive
             if (child !is JsonTree.PrimitiveNode) return
             // 仅处理字符串类型
-            if (!child.value.isString) continue
-            // 获取内容
-            val content = child.value.contentOrNull ?: continue
+            if (!child.value.isString || child.value !is JsonNull) continue
             // 分割换行符
-            val split = content.splitNonEscaped("\\n", "{nl}", ignoreCase = true)
+            val split = child.value.content.splitNonEscaped("\\n", "{nl}", ignoreCase = true)
             for (line in split) {
                 // 跳过含有删行符的
                 if (line.containsNonEscaped("{dl}")) continue
