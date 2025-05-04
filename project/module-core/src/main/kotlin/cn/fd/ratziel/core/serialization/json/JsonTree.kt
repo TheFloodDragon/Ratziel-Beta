@@ -44,7 +44,7 @@ class JsonTree(
      * ObjectNode
      */
     class ObjectNode(
-        var value: Map<String, Node>,
+        var value: MutableMap<String, Node>,
         override val parent: Node?,
     ) : Node
 
@@ -52,7 +52,7 @@ class JsonTree(
      * ArrayNode
      */
     class ArrayNode(
-        var value: List<Node>,
+        var value: MutableList<Node>,
         override val parent: Node?,
     ) : Node
 
@@ -72,6 +72,7 @@ class JsonTree(
          * @param node 要展开的节点
          * @param action 处理动作
          */
+        @JvmStatic
         fun unfold(node: Node, action: Consumer<Node>) {
             action.accept(node) // 先执行动作
             when (node) {
@@ -84,19 +85,28 @@ class JsonTree(
         /**
          * 判断一个节点是否在根节点下
          */
+        @JvmStatic
         fun isUnderRoot(node: Node): Boolean {
             val parent = node.parent
             return parent != null // 自身不是根节点
                     && parent.parent == null // 并且父节点是根节点
         }
 
-        private fun parseToNode(element: JsonElement, parent: Node?): Node = when (element) {
-            is JsonObject -> ObjectNode(emptyMap(), parent).apply { value = element.mapValues { parseToNode(it.value, this) } }
-            is JsonArray -> ArrayNode(emptyList(), parent).apply { value = element.map { parseToNode(it, this) } }
+        /**
+         * 将 [JsonElement] 解析成节点
+         */
+        @JvmStatic
+        fun parseToNode(element: JsonElement, parent: Node? = null): Node = when (element) {
+            is JsonObject -> ObjectNode(LinkedHashMap(), parent).apply { value.putAll(element.mapValues { parseToNode(it.value, this) }) }
+            is JsonArray -> ArrayNode(ArrayList(), parent).apply { value.addAll(element.map { parseToNode(it, this) }) }
             is JsonPrimitive -> PrimitiveNode(element, parent)
         }
 
-        private fun parseToElement(node: Node): JsonElement = when (node) {
+        /**
+         * 将节点 解析成 [JsonElement]
+         */
+        @JvmStatic
+        fun parseToElement(node: Node): JsonElement = when (node) {
             is ObjectNode -> JsonObject(node.value.mapValues { parseToElement(it.value) })
             is ArrayNode -> JsonArray(node.value.map { parseToElement(it) })
             is PrimitiveNode -> node.value

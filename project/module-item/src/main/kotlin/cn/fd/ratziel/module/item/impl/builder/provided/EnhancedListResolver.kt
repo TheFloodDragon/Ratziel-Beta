@@ -19,7 +19,7 @@ object EnhancedListResolver : ItemSectionResolver {
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         if (node !is JsonTree.ArrayNode) return
         // 重新构建列表
-        val list = ArrayList<JsonPrimitive>()
+        val list = ArrayList<JsonTree.Node>()
         for (child in node.value) {
             // 要求列表内的所有元素都是 JsonPrimitive
             if (child !is JsonTree.PrimitiveNode) return
@@ -33,10 +33,10 @@ object EnhancedListResolver : ItemSectionResolver {
                 // 去除转义: 替换 "\{dl}" 为 "{dl}"
                 val stripped = line.replace("\\{dl}", "{dl}")
                 // 添加
-                list.add(JsonPrimitive(stripped))
+                list.add(JsonTree.PrimitiveNode(JsonPrimitive(stripped), node))
             }
         }
-        node.value = list.map { JsonTree.PrimitiveNode(it, node) }
+        node.value = list // 替换列表
     }
 
 }

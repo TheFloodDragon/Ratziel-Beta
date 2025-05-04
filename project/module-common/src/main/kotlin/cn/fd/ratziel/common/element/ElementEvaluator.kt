@@ -42,13 +42,13 @@ object ElementEvaluator {
     val evaluatedElements: MutableMap<ElementIdentifier, Element> = ConcurrentHashMap()
 
     /**
-     * 加载过的元素列表
+     * 加载过的元素表
      *
      * 元素在评估之前就被加入到了这个列表里,
      * 因此无论元素在评估过程成失败与否,
-     * 总能通过这个列表获取从配置文件中加载的元素
+     * 总能通过这个表获取从配置文件中加载的元素
      */
-    val loadedElements: MutableCollection<Element> = ConcurrentLinkedQueue()
+    val loadedElements: MutableMap<String, Element> = ConcurrentHashMap()
 
     /**
      * 处理任务
@@ -110,7 +110,7 @@ object ElementEvaluator {
      */
     fun submitCycledTask(element: Element) {
         // 加入到 loadedElements
-        loadedElements.add(element)
+        loadedElements[element.name] = element
         // 创建任务
         val task = createTask(element)
         // 注册到任务组里

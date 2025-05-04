@@ -30,6 +30,11 @@ class DefaultGenerator(
 ) : ItemGenerator {
 
     /**
+     * 解析缓存
+     */
+    private val resolvationCache = DefaultResolver.ResolvationCache(origin.property, resolveImmediately = true)
+
+    /**
      * 构建物品
      */
     override fun build(context: ArgumentContext) = buildAsync(SimpleData(), context)
@@ -46,17 +51,18 @@ class DefaultGenerator(
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(item.id, this@DefaultGenerator, context, origin.property).call()
 
-        // 解析元素内容
-        val content = DefaultResolver.resolve(origin.property, context)
-
         // 源任务: 元素 -> 数据
         val sourcedTasks = ItemRegistry.sources.map {
             async { it.generateItem(origin, context)?.data }
         }
 
+        // 解析元素内容
+        resolvationCache.resolveAsync(context)
+        val resolved = resolvationCache.fetchResult()
+
         // 原生任务: 元素(解析过后的) -> 组件 -> 数据
         val nativeTasks = ItemRegistry.registry.map {
-            async { runTask(it, content, context, item.data) }
+            async { runTask(it, resolved, context, item.data) }
         }
 
         // 等待所有任务完成, 然后合并数据
