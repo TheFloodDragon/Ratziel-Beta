@@ -6,6 +6,7 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.JsonPrimitive
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
@@ -33,7 +34,8 @@ object SectionResolver : ItemSectionResolver {
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         // 解析字符串
         if (node is JsonTree.PrimitiveNode && node.value.isString) {
-            resolveString(node.value.contentOrNull ?: return, node, context)
+            val resolved = resolveString(node.value.contentOrNull ?: return, node, context)
+            node.value = JsonPrimitive(resolved)
         }
     }
 

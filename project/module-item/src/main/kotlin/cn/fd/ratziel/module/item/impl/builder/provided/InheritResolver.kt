@@ -71,29 +71,23 @@ object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inhe
         // 根据路径寻找
         val target = findElement(name) ?: return null
         val find = read(target, path)
+        if (find == null) {
+           warning("Cannot find element by path '$path'.")
+           return null
+        }
         // 开始插入合并
-        val parent = node.parent ?: return null // 这能为根节点?
-        // 父节点为数组节点
-        if (parent is JsonTree.ArrayNode) {
-            when (find) {
-                is JsonPrimitive -> find.content
-                is JsonArray -> {
-                    // 仅支持元素全是 JsonPrimitive 的 JsonArray
-                    if (find.all { it is JsonPrimitive }) {
-                        find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
-                    } else {
-                        warning("Inline inheritance in a array does not support complex JsonArray.")
-                        return null
-                    }
-                }
-
-                else -> null
+        if (find is JsonPrimitive) {
+            return find.content
+        } else if (find is JsonArray) {
+            if (node.parent !is JsonTree.ArrayNode) {
+                warning("Cannot inherit a JsonArray to a non JsonArray.")
+                return null
             }
-        } else if (parent is JsonTree.PrimitiveNode) {
-            if (find is JsonPrimitive) {
-                return find.content
+            // 仅支持元素全是 JsonPrimitive 的 JsonArray
+            else if (find.all { it is JsonPrimitive }) {
+                return find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
             } else {
-                warning("Inline inheritance does not support non JsonPrimitive.")
+                warning("Inline inheritance in a array does not support complex JsonArray.")
                 return null
             }
         }

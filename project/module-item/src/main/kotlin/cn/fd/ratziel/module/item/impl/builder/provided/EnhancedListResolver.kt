@@ -27,8 +27,6 @@ object EnhancedListResolver : ItemSectionResolver {
         for (child in node.value) {
             // 要求列表内的所有元素都是 JsonPrimitive
             if (child !is JsonTree.PrimitiveNode) return
-            // 仅处理字符串类型
-            if (!child.value.isString || child.value !is JsonNull) continue
             // 分割换行符
             val split = child.value.content.splitNonEscaped(NEWLINE, NEWLINE_2, ignoreCase = true)
             for (line in split) {
