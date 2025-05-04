@@ -38,10 +38,10 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
         engine.eval(buildString {
             appendLine("// Importing Start")
             appendLine("load('nashorn:mozilla_compat.js');")
-            for (pkg in ScriptManager.Imports.packages) {
+            for (pkg in ScriptManager.Global.packages) {
                 appendLine("importPackage(Packages.$pkg);")
             }
-            for (cls in ScriptManager.Imports.classes) {
+            for (cls in ScriptManager.Global.classes) {
                 appendLine("importClass(Java.type('$cls'));")
             }
             appendLine("// Importing Ended")

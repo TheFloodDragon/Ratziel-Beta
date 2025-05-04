@@ -30,26 +30,6 @@ object Message {
     val wrapper by lazy { PlatformFactory.getService<MessageWrapper>() }
 
     /**
-     * 将 Json字符串 转换成 [MessageComponent]
-     */
-    fun transformToJson(component: Component): String = wrapper.gsonBuilder.serialize(component)
-
-    /**
-     * 将 [MessageComponent] 转换成 Json字符串
-     */
-    fun transformFromJson(json: String): Component = wrapper.gsonBuilder.deserialize(json)
-
-    /**
-     * 将 '&' 转换成 '§'
-     */
-    fun translateAmpersandColor(target: String) = target.replace(AMPERSAND_CHAR, SECTION_CHAR)
-
-    /**
-     * 将 '§' 转换成 '&'
-     */
-    fun translateLegacyColor(target: String) = target.replace(SECTION_CHAR, AMPERSAND_CHAR)
-
-    /**
      * 基本消息构建
      */
     @JvmStatic
@@ -60,6 +40,15 @@ object Message {
     }
 
     /**
+     * Adventure API消息解析
+     */
+    @JvmStatic
+    fun parseAdventure(source: String, vararg tagResolver: TagResolver): Component =
+        wrapper.legacyBuilder.deserialize(translateAmpersandColor(mark(source)))
+            .let { wrapper.miniBuilder.serialize(it) }
+            .let { wrapper.miniBuilder.deserialize(deMark(it), *tagResolver) }
+
+    /**
      * Taboolib消息解析
      */
     @JvmStatic
@@ -67,13 +56,28 @@ object Message {
         source?.let { Components.parseSimple(it).build() } ?: ComponentText.empty()
 
     /**
-     * 冒险API消息解析
+     * 将 Json字符串 转换成 [MessageComponent]
      */
     @JvmStatic
-    fun parseAdventure(source: String, vararg tagResolver: TagResolver): Component =
-        wrapper.legacyBuilder.deserialize(translateAmpersandColor(mark(source)))
-            .let { wrapper.miniBuilder.serialize(it) }
-            .let { wrapper.miniBuilder.deserialize(deMark(it), *tagResolver) }
+    fun transformToJson(component: Component): String = wrapper.gsonBuilder.serialize(component)
+
+    /**
+     * 将 [MessageComponent] 转换成 Json字符串
+     */
+    @JvmStatic
+    fun transformFromJson(json: String): Component = wrapper.gsonBuilder.deserialize(json)
+
+    /**
+     * 将 '&' 转换成 '§'
+     */
+    @JvmStatic
+    fun translateAmpersandColor(target: String) = target.replace(AMPERSAND_CHAR, SECTION_CHAR)
+
+    /**
+     * 将 '§' 转换成 '&'
+     */
+    @JvmStatic
+    fun translateLegacyColor(target: String) = target.replace(SECTION_CHAR, AMPERSAND_CHAR)
 
     private fun mark(source: String) =
         source.replaceNonEscaped(TAG_START, MARKED_TAG_START).replaceNonEscaped(TAG_END, MARKED_TAG_END)

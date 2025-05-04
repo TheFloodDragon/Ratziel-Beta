@@ -3,10 +3,12 @@ package cn.fd.ratziel.common.message
 import cn.fd.ratziel.common.message.builder.GsonMessageBuilder
 import cn.fd.ratziel.common.message.builder.LegacyMessageBuilder
 import cn.fd.ratziel.common.message.builder.MiniMessageBuilder
+import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.module.nms.MinecraftVersion
+import taboolib.platform.BukkitPlugin
 
 /**
  * BukkitMessage
@@ -17,6 +19,8 @@ import taboolib.module.nms.MinecraftVersion
 @Awake
 @PlatformSide(Platform.BUKKIT)
 object BukkitMessage : MessageWrapper {
+
+    override val audienceProvider = BukkitAudiences.create(BukkitPlugin.getInstance())
 
     fun isLegacy() = MinecraftVersion.isLower(MinecraftVersion.V1_16)
 

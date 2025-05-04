@@ -8,8 +8,11 @@ import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getJarFile
 import taboolib.common.platform.function.severe
+import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarFile
+import javax.script.Bindings
 import javax.script.ScriptEngineManager
+import javax.script.SimpleBindings
 
 
 /**
@@ -37,7 +40,7 @@ object ScriptManager {
     @Awake(LifeCycle.INIT)
     private fun initialize() {
         // 读取导入的类
-        Imports.initialize(readDefaultImports())
+        Global.initialize(readDefaultImports())
 
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!
@@ -91,9 +94,16 @@ object ScriptManager {
     }
 
     /**
-     * Imports - 默认导入的类和包 (有些脚本语言可能不支持或部分支持)
+     * Global
+     *   - 全局绑定键
+     *   - 默认导入的类和包 (有些脚本语言可能不支持或部分支持)
      */
-    object Imports {
+    object Global {
+
+        /**
+         * 全局绑定键
+         */
+        val bindings: Bindings = SimpleBindings(ConcurrentHashMap())
 
         /**
          * 导入包
@@ -108,11 +118,13 @@ object ScriptManager {
             private set
 
         /**
-         * 获取已经导入的类对象
+         * 通过简单类名称获取已经导入的类
+         * @param name 类的简单名称
+         * @return [Class], 找不到则返回空
          */
         fun getImportedClass(name: String): Class<*>? {
             for (fullName in classes) {
-                if(name != fullName.substringAfterLast('.')) continue
+                if (name != fullName.substringAfterLast('.')) continue
                 try {
                     return Class.forName(fullName, false, this::class.java.classLoader)
                 } catch (_: ClassNotFoundException) {
@@ -121,7 +133,7 @@ object ScriptManager {
             return null
         }
 
-        fun initialize(imports: List<String>) {
+        internal fun initialize(imports: List<String>) {
             val packages = ArrayList<String>()
             val classes = ArrayList<String>()
             for (import in imports) {
