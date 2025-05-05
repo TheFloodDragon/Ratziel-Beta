@@ -29,7 +29,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
 
     override fun evalCompiled(script: CompiledScript, environment: ScriptEnvironment): Any? {
         // 导入环境的绑定键
-        val bindings = script.engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(environment.bindings)
+        script.engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(environment.bindings)
         // 使用引擎上下文解析
         return script.eval(script.engine.context)
     }
