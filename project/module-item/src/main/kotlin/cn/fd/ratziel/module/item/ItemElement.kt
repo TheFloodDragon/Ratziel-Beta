@@ -10,8 +10,9 @@ import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
-import cn.fd.ratziel.module.item.impl.action.ActionInterceptor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
+import cn.fd.ratziel.module.item.impl.builder.provided.ActionInterceptor
+import cn.fd.ratziel.module.item.impl.builder.provided.DefinitionInterceptor
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
@@ -91,6 +92,7 @@ object ItemElement : ElementHandler {
         register<ItemHideFlag>()
         // 注册解释器
         ItemRegistry.interceptors.add(ActionInterceptor)
+        ItemRegistry.interceptors.add(DefinitionInterceptor)
     }
 
     override fun handle(element: Element) {

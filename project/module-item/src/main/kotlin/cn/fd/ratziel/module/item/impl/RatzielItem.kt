@@ -31,7 +31,7 @@ class RatzielItem private constructor(
      * 物品数据
      */
     override val data: ItemData,
-) : AbstractNeoItem(), DataHolder {
+) : AbstractNeoItem(), DataHolder by Holder(data) {
 
     /**
      * 物品标识符
@@ -42,20 +42,6 @@ class RatzielItem private constructor(
      * 物品服务
      */
     override val service get() = GlobalServiceManager[id]
-
-    /**
-     * 读取指定数据
-     */
-    override fun get(name: String): NbtTag? {
-        return (data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)?.get(name)
-    }
-
-    /**
-     * 写入指定数据
-     */
-    override fun set(name: String, tag: NbtTag) {
-        data.tag.handle(RATZIEL_DATA_PATH) { put(name, tag) }
-    }
 
     override fun toString(): String {
         return "RatzielItem(info=$info, data=$data)"
@@ -131,6 +117,27 @@ class RatzielItem private constructor(
         @JvmStatic
         fun isRatzielItem(itemStack: ItemStack): Boolean {
             return isRatzielItem(RefItemStack.Companion.of(itemStack))
+        }
+
+    }
+
+    /**
+     * [RatzielItem] 自定义数据 [DataHolder]
+     */
+    class Holder(val data: ItemData) : DataHolder {
+
+        /**
+         * 读取指定数据
+         */
+        override fun get(name: String): NbtTag? {
+            return (data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)?.get(name)
+        }
+
+        /**
+         * 写入指定数据
+         */
+        override fun set(name: String, tag: NbtTag) {
+            data.tag.handle(RATZIEL_DATA_PATH) { put(name, tag) }
         }
 
     }

@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.core.serialization.elementAlias
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.ItemRegistry
@@ -10,10 +9,8 @@ import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.InheritResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
 import kotlinx.serialization.json.JsonElement
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Consumer
-import java.util.function.Function
 
 /**
  * DefaultResolver
@@ -62,75 +59,6 @@ object DefaultResolver : ItemResolver {
                 }
             }
         } else JsonTree.unfold(root, limitedResolve)
-    }
-
-
-    /**
-     * ResolvationCache - 可复用的解析缓存机制
-     */
-    class ResolvationCache(
-        val element: JsonElement,
-        /**
-         * 是否立刻解析一次 (异步)
-         * 同时在获取结果 [fetchResult] 后, 会再次开启解析任务, 以便下一次调用
-         */
-        val resolveImmediately: Boolean = true,
-    ) {
-
-        private lateinit var future: CompletableFuture<JsonTree>
-        private var initialized = false
-
-        init {
-            if (resolveImmediately) {
-                resolveAsync()
-            }
-        }
-
-        /**
-         * 对于 [ResolvationCache] 的多步操作请使用此方法
-         */
-        @Synchronized
-        fun <R> use(action: Function<ResolvationCache, R>) = action.apply(this)
-
-        /**
-         * 获取最终结果
-         */
-        @Synchronized
-        fun fetchResult(): JsonElement {
-            // 变量未初始化时无参数初始化
-            if (!::future.isInitialized) {
-                resolveAsync()
-            }
-            // 等待完成, 获取树
-            val tree = future.get()
-            initialized = false // 标记状态为未初始化
-            // 若启用, 则再次开启解析任务
-            if (resolveImmediately) resolveAsync()
-            // 返回结果
-            return tree.toElement()
-        }
-
-        /**
-         * 异步解析
-         */
-        @Synchronized
-        fun resolveAsync(context: ArgumentContext = SimpleContext()) {
-            if (initialized) {
-                future = future.thenApply {
-                    // 已初始化了的再次解析
-                    resolveTree(it, context); it
-                }
-            } else {
-                future = CompletableFuture.supplyAsync {
-                    // 生成树并解析
-                    JsonTree(element).also {
-                        resolveTree(it, context)
-                    }
-                }
-                initialized = true // 标记状态为已初始化
-            }
-        }
-
     }
 
 }

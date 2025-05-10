@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl.action
+package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
@@ -9,6 +9,8 @@ import cn.fd.ratziel.module.item.api.action.ActionMap
 import cn.fd.ratziel.module.item.api.action.ItemAction
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.impl.action.ActionManager
+import cn.fd.ratziel.module.item.impl.action.SimpleAction
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.io.digest
