@@ -13,6 +13,7 @@ import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.function.Consumer
 import java.util.function.Supplier
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -53,26 +54,26 @@ object ElementEvaluator {
     /**
      * 处理任务
      */
-    fun handleTask(task: EvaluationTask): Result<Element> {
-        return try {
+    fun handleTask(task: EvaluationTask): Throwable? {
+        try {
             val element = task.element
             // 处理元素
             task.handler.handle(element)
             // 缓存加载过的元素
             evaluatedElements[element.identifier] = element
             // 完成任务
-            Result.success(element)
+            return null
         } catch (ex: Throwable) {
             severe("Couldn't handle element by ${task.handler}!")
             ex.printStackTrace()
-            Result.failure(ex)
+            return ex
         }
     }
 
     /**
      * 评估 [cycledEvaluations] 内的所有任务
      *
-     * @return 返回 [java.util.concurrent.CompletableFuture], 包含处理总共耗时
+     * @return 返回 [CompletableFuture], 包含处理总共耗时
      */
     fun evaluateCycled(): CompletableFuture<Duration> {
         val cycleTasks = ArrayList<CompletableFuture<Duration>>()
@@ -108,22 +109,23 @@ object ElementEvaluator {
     /**
      * 提交周期评估任务
      */
-    fun submitCycledTask(element: Element) {
+    fun submitCycledTask(element: Element, onCompleted: Consumer<Throwable?> = Consumer {}): EvaluationTask {
         // 加入到 loadedElements
         loadedElements[element.name] = element
         // 创建任务
-        val task = createTask(element)
+        val task = createTask(element, onCompleted)
         // 注册到任务组里
         val group = cycledEvaluations[task.config.lifeCycle]!!
         group.evaluations.add(task)
+        return task
     }
 
     /**
      * 创建任务
      */
-    fun createTask(element: Element): EvaluationTask {
+    fun createTask(element: Element, onCompleted: Consumer<Throwable?> = Consumer {}): EvaluationTask {
         val handler = ElementRegistry[element.type]
-        return EvaluationTask(element, handler, findConfig(handler))
+        return EvaluationTask(element, handler, findConfig(handler), onCompleted)
     }
 
     /**
@@ -141,18 +143,22 @@ object ElementEvaluator {
      */
     class EvaluationGroup(val evaluations: MutableCollection<EvaluationTask> = ConcurrentLinkedQueue()) {
 
-        suspend fun evaluate(): List<Result<Element>> {
+        suspend fun evaluate(): List<Throwable?> {
             // 异步任务列表
-            val asyncTasks = ArrayList<Deferred<Result<Element>>>()
+            val asyncTasks = ArrayList<Deferred<Throwable?>>()
             // 同步任务列表
-            val syncTasks = ArrayList<Supplier<Result<Element>>>()
+            val syncTasks = ArrayList<Supplier<Throwable?>>()
             // 提交任务
             for (task in evaluations) {
                 // 异步 & 同步 任务提交
                 if (task.config.async) {
-                    asyncTasks.add(scope.async { handleTask(task) })
+                    asyncTasks.add(scope.async {
+                        handleTask(task).also { task.onCompleted.accept(it) }
+                    })
                 } else {
-                    syncTasks.add(Supplier { handleTask(task) })
+                    syncTasks.add(Supplier {
+                        handleTask(task).also { task.onCompleted.accept(it) }
+                    })
                 }
             }
             // 执行同步任务, 完成后取得结果
@@ -175,6 +181,8 @@ object ElementEvaluator {
         val handler: ElementHandler,
         /** 元素配置 **/
         val config: ElementConfig,
+        /** 完成时触发回调 **/
+        val onCompleted: Consumer<Throwable?>,
     )
 
     /**

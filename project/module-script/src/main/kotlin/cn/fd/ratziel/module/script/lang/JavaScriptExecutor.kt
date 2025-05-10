@@ -6,6 +6,7 @@ import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.internal.Initializable
 import taboolib.library.configuration.ConfigurationSection
+import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
 /**
@@ -34,7 +35,7 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
 
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = engine.evaluate(script, environment)
 
-    internal fun importDefaults(engine: ScriptEngine) {
+    internal fun importDefaults(engine: ScriptEngine, context: ScriptContext) {
         engine.eval(buildString {
             appendLine("// Importing Start")
             appendLine("load('nashorn:mozilla_compat.js');")
@@ -45,7 +46,7 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
                 appendLine("importClass(Java.type('$cls'));")
             }
             appendLine("// Importing Ended")
-        })
+        }, context)
     }
 
 }

@@ -60,9 +60,9 @@ object WorkspaceLoader {
                             return@listen
                         }
                         for (element in elements) {
-                            val result = ElementEvaluator.handleTask(ElementEvaluator.createTask(element))
+                            val throwable = ElementEvaluator.handleTask(ElementEvaluator.createTask(element))
                             // 只要一个元素评估失败就判定整个文件都算失败的
-                            if (result.isFailure) {
+                            if (throwable != null) {
                                 sender.sendLang("Element-File-Reload-Failed", it.name)
                                 return@listen
                             }
@@ -74,11 +74,16 @@ object WorkspaceLoader {
                 // 提交加载任务
                 tasks.add(CompletableFuture.supplyAsync({
                     val elements = ElementLoader.load(workspace, file).getOrElse {
-                        sender.sendLang("Element-File-load-Failed", file.name)
+                        sender.sendLang("Element-File-Load-Failed", file.name)
                         emptyList() // 加载失败返回空列表 (表示不注册到评估器里)
                     }
                     // 提交到周期评估任务表里
-                    elements.forEach { ElementEvaluator.submitCycledTask(it) }
+                    for (element in elements) {
+                        ElementEvaluator.submitCycledTask(element) {
+                            // 失败时发送失败消息
+                            if (it != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, file.name)
+                        }
+                    }
                 }, executor))
             }
         }
