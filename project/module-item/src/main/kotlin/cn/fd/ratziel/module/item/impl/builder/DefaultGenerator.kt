@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
@@ -14,6 +15,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
+import java.util.concurrent.CompletableFuture
 
 /**
  * DefaultGenerator
@@ -29,9 +31,13 @@ class DefaultGenerator(
 ) : ItemGenerator {
 
     /**
-     * 解析缓存 TODO 多线程同时生成时使用不同的缓存
+     * 预解析的 [JsonElement]
      */
-    private val resolvationCache = DefaultResolver.ResolvationCache(origin.property, true)
+    private val preResolved = CompletableFuture.supplyAsync({
+        DefaultResolver.resolve(origin.property, SimpleContext())
+    }, ItemElement.executor)
+
+    override fun build() = build(SimpleContext())
 
     /**
      * 构建物品
@@ -50,28 +56,20 @@ class DefaultGenerator(
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(item.id, this@DefaultGenerator, context, origin.property).call()
 
-        // 解析元素内容
-        var resolved = resolvationCache.use {
-            it.resolveAsync(context)
-            it.fetchResult()
-        }
+        // 解析后的元素内容
+        var resolved = preResolved.get()
 
         // 解释器
         val interceptorTasks = ItemRegistry.interceptors.map {
-            async { it.intercept(origin.property, context) }
-        }
-        interceptorTasks.awaitAll()
+            async { it.intercept(Element(origin.identifier, resolved), context) }
+        }.awaitAll()
 
-        // 解析元素内容
-        resolved = resolvationCache.use {
-            it.resolveAsync(context)
-            it.fetchResult()
-        }
+        // 再次解析
+        resolved = DefaultResolver.resolve(resolved, context)
 
         // 源任务: 元素 -> 数据
-        val resolvedElement = Element(origin.identifier, resolved)
         val sourcedTasks = ItemRegistry.sources.map {
-            async { it.generateItem(resolvedElement, context)?.data }
+            async { it.generateItem(Element(origin.identifier, resolved), context)?.data }
         }
 
         // 原生任务: 元素(解析过后的) -> 组件 -> 数据
@@ -82,7 +80,7 @@ class DefaultGenerator(
         val originalMaterial = item.data.material
         val originalAmount = item.data.amount
         // 等待所有任务完成, 然后合并数据
-        val allTasks = interceptorTasks.awaitAll()
+        val allTasks = interceptorTasks
             .plus(sourcedTasks.awaitAll())
             .plus(nativeTasks.awaitAll().map { it.getOrNull() })
         for (generated in allTasks) {

@@ -3,6 +3,7 @@ package cn.fd.ratziel.common.element.registry
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.ElementType
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KClass
 
 /**
  * ElementRegistry
@@ -18,6 +19,20 @@ object ElementRegistry {
      */
     @JvmStatic
     val registry: MutableMap<ElementType, ElementHandler> = ConcurrentHashMap()
+
+    /**
+     * 获取元素处理器
+     */
+    operator fun get(key: ElementType): ElementHandler {
+        return registry[key] ?: throw IllegalStateException("Element type ${key.name} not registered.")
+    }
+
+    /**
+     * 寻找元素处理器对应的 元素类型 [ElementType]
+     */
+    fun findType(handlerClass: KClass<out ElementHandler>): ElementType {
+        return registry.entries.find { it::class == handlerClass }?.key ?: throw IllegalStateException("Cannot find element type for '$handlerClass'.")
+    }
 
     /**
      * 注册元素类型
@@ -36,10 +51,6 @@ object ElementRegistry {
         alias: Array<String>,
         handler: ElementHandler,
     ) = register(ElementType(space, name, alias), handler)
-
-    operator fun get(key: ElementType): ElementHandler {
-        return registry[key] ?: throw IllegalStateException("Element type ${key.name} not registered.")
-    }
 
     @JvmStatic
     fun unregister(type: ElementType) {

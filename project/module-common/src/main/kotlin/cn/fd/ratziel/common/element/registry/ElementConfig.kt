@@ -1,6 +1,8 @@
 package cn.fd.ratziel.common.element.registry
 
+import cn.fd.ratziel.core.element.ElementHandler
 import taboolib.common.LifeCycle
+import kotlin.reflect.KClass
 
 /**
  * 元素处理配置
@@ -16,7 +18,11 @@ annotation class ElementConfig(
      */
     val lifeCycle: LifeCycle = LifeCycle.LOAD,
     /**
-     * 异步处理 TODO remove this
+     * 需要/依赖 的元素处理器
      */
-    val async: Boolean = false,
+    val requires: Array<KClass<out ElementHandler>> = [],
+    /**
+     * 异步处理
+     */
+    val async: Boolean = true,
 )

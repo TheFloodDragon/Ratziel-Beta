@@ -9,8 +9,20 @@ package cn.fd.ratziel.core.element
 interface ElementHandler {
 
     /**
-     * 处理元素
+     * 处理单个元素
      */
-    fun handle(element: Element)
+    fun handle(element: Element) {}
+
+    /**
+     * 在元素加载前调用
+     *
+     * @param elements 交给该 [ElementHandler] 解析的所有元素
+     */
+    fun onStart(elements: Collection<Element>) {}
+
+    /**
+     * 在元素加载后调用
+     */
+    fun onEnd() {}
 
 }

@@ -4,12 +4,13 @@ import cn.altawk.nbt.NbtFormat
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
-import cn.fd.ratziel.common.event.WorkspaceLoadEvent
+import cn.fd.ratziel.common.template.TemplateElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
+import cn.fd.ratziel.module.item.impl.action.ActionInterceptor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
@@ -26,7 +27,6 @@ import kotlinx.serialization.modules.plus
 import kotlinx.serialization.serializer
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.LifeCycle
-import taboolib.common.platform.event.SubscribeEvent
 import taboolib.library.xseries.XItemFlag
 import taboolib.module.nms.MinecraftVersion
 import java.util.concurrent.ExecutorService
@@ -43,7 +43,8 @@ import java.util.concurrent.Executors
     space = "test"
 )
 @ElementConfig(
-    lifeCycle = LifeCycle.ENABLE
+    lifeCycle = LifeCycle.ENABLE,
+    requires = [TemplateElement::class]
 )
 object ItemElement : ElementHandler {
 
@@ -88,6 +89,8 @@ object ItemElement : ElementHandler {
         register<ItemDurability>()
         register<ItemSkull>(processor = ItemSkull.Processor)
         register<ItemHideFlag>()
+        // 注册解释器
+        ItemRegistry.interceptors.add(ActionInterceptor)
     }
 
     override fun handle(element: Element) {
@@ -107,8 +110,7 @@ object ItemElement : ElementHandler {
         ItemManager.registry[element.name] = generator
     }
 
-    @SubscribeEvent
-    fun onLoadStart(event: WorkspaceLoadEvent.Start) {
+    override fun onStart(elements: Collection<Element>) {
         // 清除注册的物品
         ItemManager.registry.clear()
     }
