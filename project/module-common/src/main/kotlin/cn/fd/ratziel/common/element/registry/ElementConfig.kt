@@ -16,7 +16,7 @@ annotation class ElementConfig(
      */
     val lifeCycle: LifeCycle = LifeCycle.LOAD,
     /**
-     * 异步处理
+     * 异步处理 TODO remove this
      */
-    val async: Boolean = true,
+    val async: Boolean = false,
 )

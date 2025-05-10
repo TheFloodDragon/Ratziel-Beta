@@ -13,6 +13,7 @@ import kotlinx.serialization.json.JsonElement
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Consumer
+import java.util.function.Function
 
 /**
  * DefaultResolver
@@ -86,8 +87,15 @@ object DefaultResolver : ItemResolver {
         }
 
         /**
+         * 对于 [ResolvationCache] 的多步操作请使用此方法
+         */
+        @Synchronized
+        fun <R> use(action: Function<ResolvationCache, R>) = action.apply(this)
+
+        /**
          * 获取最终结果
          */
+        @Synchronized
         fun fetchResult(): JsonElement {
             // 变量未初始化时无参数初始化
             if (!::future.isInitialized) {
@@ -105,6 +113,7 @@ object DefaultResolver : ItemResolver {
         /**
          * 异步解析
          */
+        @Synchronized
         fun resolveAsync(context: ArgumentContext = SimpleContext()) {
             if (initialized) {
                 future = future.thenApply {

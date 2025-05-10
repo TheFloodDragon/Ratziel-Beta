@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
+import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
 import kotlinx.serialization.KSerializer
@@ -20,6 +21,11 @@ object ItemRegistry {
     val registry: MutableList<Integrated<*>> = CopyOnWriteArrayList()
 
     /**
+     * 物品解释器注册表
+     */
+    val interceptors: MutableList<ItemInterceptor> = CopyOnWriteArrayList()
+
+    /**
      * 物品源注册表
      */
     val sources: MutableList<ItemSource> = CopyOnWriteArrayList()
@@ -29,7 +35,7 @@ object ItemRegistry {
      *
      * @param serializer 组件序列化器
      */
-    fun <T> register(
+    fun <T> registerComponent(
         type: Class<T>,
         serializer: KSerializer<T>,
         processor: DataProcessor = DataProcessor.NoProcess,
@@ -41,22 +47,24 @@ object ItemRegistry {
     /**
      * 获取组件集成构建器
      */
-    fun <T> get(type: Class<T>): Integrated<T> {
+    fun <T> getComponent(type: Class<T>): Integrated<T> {
         val integrated = registry.find { it.type == type }
             ?: throw ComponentNotFoundException(type)
         @Suppress("UNCHECKED_CAST")
         return integrated as Integrated<T>
     }
 
-    inline fun <reified T> get(): Integrated<T> = get(T::class.java)
-
     /**
+     * 物品组件集成
      * @param serializer 序列化器
      * @param processor 物品数据处理器
      */
     class Integrated<T>(
+        /** 物品组件类型 **/
         val type: Class<T>,
+        /** 物品组件序列化器 **/
         val serializer: KSerializer<T>,
+        /** 数据处理器 **/
         val processor: DataProcessor,
     )
 

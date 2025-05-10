@@ -29,7 +29,7 @@ class DefaultGenerator(
 ) : ItemGenerator {
 
     /**
-     * 解析缓存
+     * 解析缓存 TODO 多线程同时生成时使用不同的缓存
      */
     private val resolvationCache = DefaultResolver.ResolvationCache(origin.property, true)
 
@@ -50,30 +50,53 @@ class DefaultGenerator(
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(item.id, this@DefaultGenerator, context, origin.property).call()
 
-        // 源任务: 元素 -> 数据
-        val sourcedTasks = ItemRegistry.sources.map {
-            async { it.generateItem(origin, context)?.data }
+        // 解析元素内容
+        var resolved = resolvationCache.use {
+            it.resolveAsync(context)
+            it.fetchResult()
         }
 
+        // 解释器
+        val interceptorTasks = ItemRegistry.interceptors.map {
+            async { it.intercept(origin.property, context) }
+        }
+        interceptorTasks.awaitAll()
+
         // 解析元素内容
-        resolvationCache.resolveAsync(context)
-        val resolved = resolvationCache.fetchResult()
+        resolved = resolvationCache.use {
+            it.resolveAsync(context)
+            it.fetchResult()
+        }
+
+        // 源任务: 元素 -> 数据
+        val resolvedElement = Element(origin.identifier, resolved)
+        val sourcedTasks = ItemRegistry.sources.map {
+            async { it.generateItem(resolvedElement, context)?.data }
+        }
 
         // 原生任务: 元素(解析过后的) -> 组件 -> 数据
         val nativeTasks = ItemRegistry.registry.map {
             async { runTask(it, resolved, item.data) }
         }
 
+        val originalMaterial = item.data.material
+        val originalAmount = item.data.amount
         // 等待所有任务完成, 然后合并数据
-        val firstMat = item.data.material
-        for (generated in sourcedTasks.awaitAll().plus(nativeTasks.awaitAll().map { it.getOrNull() })) {
-            if (generated != null) {
-                // 重新设置材质
-                val nextMat = generated.material
-                if (nextMat != firstMat) item.data.material = nextMat
-                // 合并标签
-                item.data.tag.merge(generated.tag, true)
-            }
+        val allTasks = interceptorTasks.awaitAll()
+            .plus(sourcedTasks.awaitAll())
+            .plus(nativeTasks.awaitAll().map { it.getOrNull() })
+        for (generated in allTasks) {
+            // 跳过空数据
+            if (generated == null) continue
+
+            // 设置材质
+            val nowMat = generated.material
+            if (nowMat != originalMaterial) item.data.material = nowMat
+            // 设置数量
+            val nowAmount = generated.amount
+            if (nowAmount != originalAmount) item.data.amount = nowAmount
+            // 合并标签
+            item.data.tag.merge(generated.tag, true)
         }
 
         // 呼出生成结束的事件

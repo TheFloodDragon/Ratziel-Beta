@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.altawk.nbt.NbtPath
-import cn.fd.ratziel.common.element.ElementEvaluator
+import cn.fd.ratziel.common.template.TemplateElement
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
@@ -23,18 +23,12 @@ import taboolib.common.platform.function.warning
 object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inherit") {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
-        // 仅处理根节点, 根节点需为对象节点
-        if (node.parent != null || node !is JsonTree.ObjectNode) return
-        // 寻找继承字段
-        val field = node.value["inherit"] as? JsonTree.PrimitiveNode ?: return
-        val name = field.value.content
-        // 处理继承
-        val target = findElement(name) ?: return
-        // 合并对象
-        merge(node, target)
+        return TemplateElement.resolveInherit(node)
     }
 
-    override fun resolve(element: List<String>, context: ArgumentContext) = throw UnsupportedOperationException("InheritResolver requires Node.")
+    override fun resolve(element: List<String>, context: ArgumentContext): String? {
+        throw UnsupportedOperationException("InheritResolver requires Node.")
+    }
 
     override fun resolve(element: List<String>, node: JsonTree.PrimitiveNode, context: ArgumentContext): String? {
         // 元素名称
@@ -69,11 +63,11 @@ object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inhe
         }
 
         // 根据路径寻找
-        val target = findElement(name) ?: return null
+        val target = TemplateElement.findObjectElement(name) ?: return null
         val find = read(target, path)
         if (find == null) {
-           warning("Cannot find element by path '$path'.")
-           return null
+            warning("Cannot find element by path '$path'.")
+            return null
         }
         // 开始插入合并
         if (find is JsonPrimitive) {
@@ -94,20 +88,6 @@ object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inhe
         return null
     }
 
-    private fun findElement(name: String): JsonObject? {
-        val element = ElementEvaluator.loadedElements[name]
-        if (element == null) {
-            warning("Unknown element named '$name' which is to be inherited!")
-            return null
-        }
-        val property = element.property
-        if (property !is JsonObject) {
-            warning("The target to be inherited must be a JsonObject!")
-            return null
-        }
-        return property
-    }
-
     private fun read(element: JsonElement, path: NbtPath): JsonElement? {
         var result = element
         for (node in path) {
@@ -117,26 +97,6 @@ object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inhe
             }
         }
         return result
-    }
-
-    /**
-     * 合并目标
-     */
-    fun merge(source: JsonTree.ObjectNode, target: JsonObject) {
-        val map = source.value.toMutableMap()
-        for ((key, targetValue) in target) {
-            // 获取自身的数据
-            val ownValue = map[key]
-            // 如果自身数据不存在, 或者允许替换, 则直接替换, 反则跳出循环
-            map[key] = when (targetValue) {
-                // 目标值为 Compound 类型
-                is JsonObject -> (ownValue as? JsonTree.ObjectNode)
-                    ?.also { merge(it, targetValue) } // 同类型合并
-                // 目标值为基础类型
-                else -> null
-            } ?: if (ownValue == null) JsonTree.parseToNode(targetValue) else continue
-        }
-        source.value = map // 替换为新 Map
     }
 
 }

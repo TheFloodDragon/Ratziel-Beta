@@ -114,7 +114,7 @@ object ItemElement : ElementHandler {
     }
 
     private inline fun <reified T : Any> register(serializer: KSerializer<T> = serializer<T>(), processor: DataProcessor = DataProcessor.NoProcess) {
-        ItemRegistry.register(T::class.java, serializer, processor)
+        ItemRegistry.registerComponent(T::class.java, serializer, processor)
     }
 
 }
