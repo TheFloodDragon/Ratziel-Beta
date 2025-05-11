@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.altawk.nbt.NbtPath
 import cn.fd.ratziel.common.element.registry.AutoRegister
-import cn.fd.ratziel.common.template.TemplateElement
+import cn.fd.ratziel.module.item.TemplateElement
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver

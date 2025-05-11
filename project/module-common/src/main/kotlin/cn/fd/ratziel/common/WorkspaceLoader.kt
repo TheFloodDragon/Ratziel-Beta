@@ -15,9 +15,9 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.system.measureTimeMillis
 import kotlin.time.Duration
 import kotlin.time.TimeSource
-import kotlin.time.measureTime
 
 /**
  * WorkspaceLoader
@@ -46,9 +46,9 @@ object WorkspaceLoader {
     /**
      * 初始化工作空间
      */
-    private fun init(sender: ProxyCommandSender) = measureTime {
+    private fun init(sender: ProxyCommandSender) = measureTimeMillis {
         WorkspaceManager.initializeAllWorkspace()
-    }.also { sender.sendLang("Workspace-Initiated", WorkspaceManager.workspaces.size, it.inWholeMilliseconds) }
+    }.also { sender.sendLang("Workspace-Initiated", WorkspaceManager.workspaces.size, it) }
 
     /**
      * 加载工作空间中的元素
@@ -107,23 +107,26 @@ object WorkspaceLoader {
 
     private fun listenFile(workspace: Workspace, file: File, sender: ProxyCommandSender) {
         FileListener.listen(file) { file ->
-            // 加载文件
-            ElementLoader.load(workspace, file).getOrElse { _ ->
-                sender.sendLang("Element-File-Reload-Failed", file.name)
-                return@listen
-            }.forEach { element ->
-                // 加入到 loadedElements
-                loadedElements[element.name] = element
-                // 处理任务
-                val throwable = ElementEvaluator.handleElement(element)
-                // 只要一个元素评估失败就判定整个文件都算失败的
-                if (throwable != null) {
+            measureTimeMillis {
+                // 加载文件
+                ElementLoader.load(workspace, file).getOrElse { _ ->
                     sender.sendLang("Element-File-Reload-Failed", file.name)
                     return@listen
+                }.forEach { element ->
+                    // 加入到 loadedElements
+                    loadedElements[element.name] = element
+                    // 处理任务
+                    val throwable = ElementEvaluator.handleElement(element)
+                    // 只要一个元素评估失败就判定整个文件都算失败的
+                    if (throwable != null) {
+                        sender.sendLang("Element-File-Reload-Failed", file.name)
+                        return@listen
+                    }
                 }
+            }.also {
+                // 成功加载和评估的提示
+                sender.sendLang("Element-File-Reload-Succeed", file.name, it)
             }
-            // 成功加载和评估的提示
-            sender.sendLang("Element-File-Reload-Succeed", file.name)
         }
     }
 

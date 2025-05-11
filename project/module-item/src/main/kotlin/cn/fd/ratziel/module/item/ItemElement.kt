@@ -4,7 +4,6 @@ import cn.altawk.nbt.NbtFormat
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
-import cn.fd.ratziel.common.template.TemplateElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson

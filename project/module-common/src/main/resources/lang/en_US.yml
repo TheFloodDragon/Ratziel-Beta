@@ -14,7 +14,7 @@ Workspace-Loaded: '&8[&6R&8] &7Successfully loaded &a{0} &7valid element... &8({
 Element-File-Load-Failed: '&8[&6R&8] &cLoading &7{0} &cfailed.'
 Element-File-Evaluate-Failed: '&8[&6R&8] &cEvaluating &7{0} (in file {1}) &cfailed.'
 Element-File-Reload-Failed: '&8[&6R&8] &cAutomatically reloading &7{0} &cfailed.'
-Element-File-Reload-Succeed: '&8[&6R&8] &7Automatically loaded the changes of &f{0} &7.'
+Element-File-Reload-Succeed: '&8[&6R&8] &7Automatically loaded the changes of &f{0} &7. &8({1}ms)'
 
 # Element
 Element-Header: '&8[&6R&8] &bINFO &8| &3Loaded Element:'

@@ -19,7 +19,7 @@ Workspace-Loaded: '&8[&6R&8] &7成功载入 &a{0} &7个有效元素... &8({1}ms)
 Element-File-Load-Failed: '&8[&6R&8] &c加载文件 &7{0} &c失败.'
 Element-File-Evaluate-Failed: '&8[&6R&8] &c评估元素 &7{0} ({1}) &c时失败.'
 Element-File-Reload-Failed: '&8[&6R&8] &c自动重载 &7{0} &c失败.'
-Element-File-Reload-Succeed: '&8[&6R&8] &7自动载入了 &f{0} &7的更改.'
+Element-File-Reload-Succeed: '&8[&6R&8] &7自动载入了 &f{0} &7的更改. &8({1}ms)'
 
 # 元素
 Element-Header: '&8[&6R&8] &b信息 &8| &3已加载元素列表:'
