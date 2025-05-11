@@ -30,4 +30,6 @@ class SimpleAction(
         block.execute(context)
     }
 
+    override fun toString() = "SimpleAction(name=$name, block=$block, content=$content)"
+
 }

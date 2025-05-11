@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
+import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
@@ -7,7 +8,6 @@ import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
 import cn.fd.ratziel.platform.bukkit.util.player
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
-import taboolib.common.platform.Awake
 import taboolib.platform.compat.replacePlaceholder
 
 /**
@@ -16,7 +16,7 @@ import taboolib.platform.compat.replacePlaceholder
  * @author TheFloodDragon
  * @since 2024/8/16 19:26
  */
-@Awake
+@AutoRegister
 object PapiResolver : ItemSectionResolver, SectionTagResolver("papi", "p") {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {

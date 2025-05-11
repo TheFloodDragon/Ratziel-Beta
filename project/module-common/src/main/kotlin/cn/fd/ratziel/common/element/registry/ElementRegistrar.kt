@@ -9,13 +9,13 @@ import taboolib.common.platform.function.severe
 import taboolib.library.reflex.ReflexClass
 
 /**
- * ElementRegister
+ * ElementRegistrar
  *
  * @author TheFloodDragon
  * @since 2023/8/14 15:50
  */
 @Awake
-class ElementRegister : ClassVisitor(0) {
+class ElementRegistrar : ClassVisitor(0) {
 
     override fun visitStart(clazz: ReflexClass) {
         val anno = clazz.getAnnotationIfPresent(NewElement::class.java) ?: return

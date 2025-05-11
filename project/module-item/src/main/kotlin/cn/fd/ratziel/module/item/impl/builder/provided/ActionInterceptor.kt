@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
+import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.getBy
 import cn.fd.ratziel.module.item.api.ItemData
@@ -12,6 +12,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.impl.action.ActionManager
 import cn.fd.ratziel.module.item.impl.action.SimpleAction
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.io.digest
 import taboolib.common.platform.function.severe
@@ -22,6 +23,7 @@ import taboolib.common.platform.function.severe
  * @author TheFloodDragon
  * @since 2025/5/10 16:38
  */
+@AutoRegister
 object ActionInterceptor : ItemInterceptor {
 
     /**
@@ -51,15 +53,15 @@ object ActionInterceptor : ItemInterceptor {
         return ActionMap(map)
     }
 
-    override fun intercept(element: Element, context: ArgumentContext): ItemData? {
-        val property = element.property as? JsonObject ?: return null
+    override fun intercept(identifier: Identifier, element: JsonElement, context: ArgumentContext): ItemData? {
+        if (element !is JsonObject) return null
         // 获取原始动作
-        val raw = property.getBy(*nodeNames) ?: return null
+        val raw = element.getBy(*nodeNames) ?: return null
         if (raw is JsonObject) {
             // 解析触发器表
-            val triggerMap = parse(element.identifier, raw)
+            val triggerMap = parse(identifier, raw)
             // 加入到动作表中
-            ActionManager.service[element.identifier] = triggerMap
+            ActionManager.service[identifier] = triggerMap
         } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
         return null
     }

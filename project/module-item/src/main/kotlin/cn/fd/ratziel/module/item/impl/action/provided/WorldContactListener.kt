@@ -20,9 +20,8 @@ import taboolib.platform.event.PlayerWorldContactEvent
 @Awake
 object WorldContactListener {
 
-    /* 左右键交互 */
-    val INTERACT_LEFT_CLICK = registerTrigger("onLeft", "left", "onLeftClick", "leftClick")
-    val INTERACT_RIGHT_CLICK = registerTrigger("onRight", "right", "onRightClick", "rightClick")
+    /* 任意交互 */
+    val INTERACT_ANY = registerTrigger("onInteract", "Interact", "interact")
 
     /* 左右键交互具体事物 */
     val INTERACT_LEFT_CLICK_AIR = registerTrigger("onLeftAir", "left-air")
@@ -61,17 +60,14 @@ object WorldContactListener {
             action: SimpleScriptEnv.() -> Unit = {},
         ) {
             action(environment)
-            trigger.trigger(ratzielItem.id, SimpleContext(environment))
+            trigger.trigger(ratzielItem.identifier, SimpleContext(environment))
             // 向事件的 ItemStack 写入 RatzielItem 的数据
             RefItemStack.of(ratzielItem.data).writeTo(itemStack)
         }
 
+        // 任意交互
+        trigger(INTERACT_ANY)
         // 分配处理器
-        when {
-            // Click
-            event.isLeftClick -> trigger(INTERACT_LEFT_CLICK)
-            event.isRightClick -> trigger(INTERACT_RIGHT_CLICK)
-        }
         when {
             event.isLeftClickAir -> trigger(INTERACT_LEFT_CLICK_AIR)
             event.isRightClickAir -> trigger(INTERACT_RIGHT_CLICK_AIR)
@@ -83,7 +79,7 @@ object WorldContactListener {
             }
 
             event.isRightClickBlock -> trigger(INTERACT_RIGHT_CLICK_BLOCK) {
-                val action = event.action as PlayerWorldContactEvent.Action.LeftClickBlock
+                val action = event.action as PlayerWorldContactEvent.Action.RightClickBlock
                 set("block", action.block)
             }
 

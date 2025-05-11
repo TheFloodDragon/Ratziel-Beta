@@ -17,7 +17,9 @@ class SimpleTrigger(
      * 触发器别名
      */
     vararg val alias: String,
-) : ItemTrigger
+) : ItemTrigger {
+    override fun toString() = "SimpleTrigger(name=$name, alias=${alias.contentToString()})"
+}
 
 /**
  * 注册简易的 [ItemTrigger] - [SimpleTrigger]

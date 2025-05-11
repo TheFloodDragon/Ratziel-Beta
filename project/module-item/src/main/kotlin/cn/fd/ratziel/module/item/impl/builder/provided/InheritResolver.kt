@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.altawk.nbt.NbtPath
+import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.common.template.TemplateElement
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
@@ -10,7 +11,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import taboolib.common.platform.Awake
 import taboolib.common.platform.function.warning
 
 /**
@@ -19,7 +19,7 @@ import taboolib.common.platform.function.warning
  * @author TheFloodDragon
  * @since 2025/5/4 15:44
  */
-@Awake
+@AutoRegister
 object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inherit") {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {

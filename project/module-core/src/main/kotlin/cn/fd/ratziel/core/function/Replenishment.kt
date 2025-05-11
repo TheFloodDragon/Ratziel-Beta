@@ -1,5 +1,6 @@
 package cn.fd.ratziel.core.function
 
+import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /**
@@ -10,11 +11,11 @@ import kotlin.reflect.KProperty
  */
 class Replenishment<T>(
     private val initializer: () -> T,
-) {
+) : ReadOnlyProperty<Any?, T> {
 
     private var value: T = initializer()
 
-    operator fun getValue(thisRef: T, property: KProperty<*>): T {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         // 获取当前的值
         val nowValue = value
         // 重新初始化

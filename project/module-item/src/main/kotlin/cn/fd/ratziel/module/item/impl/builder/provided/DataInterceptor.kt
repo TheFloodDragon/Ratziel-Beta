@@ -1,7 +1,8 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.altawk.nbt.tag.NbtTag
-import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.common.element.registry.AutoRegister
+import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
@@ -10,6 +11,7 @@ import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.impl.builder.provided.DefinitionInterceptor.definition
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 /**
@@ -18,11 +20,12 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/5/11 10:21
  */
+@AutoRegister
 object DataInterceptor : ItemInterceptor {
 
-    override fun intercept(element: Element, context: ArgumentContext): ItemData? {
-        val property = element.property as? JsonObject ?: return null
-        val data = property["data"] as? JsonObject ?: return null
+    override fun intercept(identifier: Identifier, element: JsonElement, context: ArgumentContext): ItemData? {
+        if (element !is JsonObject) return null
+        val data = element["data"] as? JsonObject ?: return null
 
         // 获取定义上下文
         val definition = context.definition()

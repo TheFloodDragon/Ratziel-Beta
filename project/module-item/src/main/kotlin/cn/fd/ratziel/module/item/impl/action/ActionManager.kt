@@ -5,6 +5,7 @@ import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.action.ActionMap
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
+import taboolib.common.platform.function.debug
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -43,6 +44,8 @@ object ActionManager {
         val action = service[identifier]?.get(this) ?: return
         // 执行物品动作
         action.execute(context)
+        // Debug
+        debug("[ActionManager] '$this' trigger action '$action'.")
     }
 
 }

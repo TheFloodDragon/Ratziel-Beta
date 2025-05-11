@@ -36,12 +36,12 @@ class RatzielItem private constructor(
     /**
      * 物品标识符
      */
-    val id: Identifier get() = info.identity
+    val identifier: Identifier get() = info.identity
 
     /**
      * 物品服务
      */
-    override val service get() = GlobalServiceManager[id]
+    override val service get() = GlobalServiceManager[identifier]
 
     override fun toString(): String {
         return "RatzielItem(info=$info, data=$data)"
@@ -167,7 +167,7 @@ class RatzielItem private constructor(
             private val INTERNAL_PATH = RATZIEL_PATH.plus(NbtPath.NameNode("internal"))
 
             /**
-             * 内部信息 - [id]
+             * 内部信息 - [identifier]
              */
             private const val INFO_ID = "identity"
 

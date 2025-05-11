@@ -57,18 +57,15 @@ class DefaultGenerator(
         val item = NativeSource.generateItem(origin, sourceData) ?: throw IllegalStateException("Failed to generate item source!")
 
         // 呼出开始生成的事件
-        ItemGenerateEvent.Pre(item.id, this@DefaultGenerator, context, origin.property).call()
+        ItemGenerateEvent.Pre(item.identifier, this@DefaultGenerator, context, origin.property).call()
 
-        // 解析后的元素内容
-        var resolved = preResolved.get()
+        // 解析元素内容
+        val resolved = DefaultResolver.resolve(preResolved.get(), context)
 
-        // 解释器
+        // 解释器 TODO How to deal with them
         val interceptorTasks = ItemRegistry.interceptors.map {
-            async { it.intercept(Element(origin.identifier, resolved), context) }
-        }.awaitAll()
-
-        // 再次解析
-        resolved = DefaultResolver.resolve(resolved, context)
+            async { it.intercept(item.identifier, resolved, context) }
+        }
 
         // 源任务: 元素 -> 数据
         val sourcedTasks = ItemRegistry.sources.map {
@@ -83,7 +80,7 @@ class DefaultGenerator(
         val originalMaterial = item.data.material
         val originalAmount = item.data.amount
         // 等待所有任务完成, 然后合并数据
-        val allTasks = interceptorTasks
+        val allTasks = interceptorTasks.awaitAll()
             .plus(sourcedTasks.awaitAll())
             .plus(nativeTasks.awaitAll().map { it.getOrNull() })
         for (generated in allTasks) {
@@ -101,7 +98,7 @@ class DefaultGenerator(
         }
 
         // 呼出生成结束的事件
-        val event = ItemGenerateEvent.Post(item.id, this@DefaultGenerator, context, item)
+        val event = ItemGenerateEvent.Post(item.identifier, this@DefaultGenerator, context, item)
         event.call()
         event.item // 返回最终结果
     }.asCompletableFuture()
