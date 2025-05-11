@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.item.impl.action.provided
 
 import cn.fd.ratziel.core.function.SimpleContext
-import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
+import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
@@ -68,6 +68,11 @@ object WorldContactListener {
 
         // 分配处理器
         when {
+            // Click
+            event.isLeftClick -> trigger(INTERACT_LEFT_CLICK)
+            event.isRightClick -> trigger(INTERACT_RIGHT_CLICK)
+        }
+        when {
             event.isLeftClickAir -> trigger(INTERACT_LEFT_CLICK_AIR)
             event.isRightClickAir -> trigger(INTERACT_RIGHT_CLICK_AIR)
 
@@ -94,9 +99,6 @@ object WorldContactListener {
                 set("taget", action.entity)
             }
 
-            // Click (Must check at LAST)
-            event.isLeftClick -> trigger(INTERACT_LEFT_CLICK)
-            event.isRightClick -> trigger(INTERACT_RIGHT_CLICK)
         }
     }
 

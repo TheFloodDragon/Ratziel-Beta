@@ -14,7 +14,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
- * ScriptBlock
+ * ScriptBlock TODO Refactor
  *
  * @author TheFloodDragon
  * @since 2024/10/2 18:31

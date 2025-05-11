@@ -12,6 +12,7 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.provided.ActionInterceptor
+import cn.fd.ratziel.module.item.impl.builder.provided.DataInterceptor
 import cn.fd.ratziel.module.item.impl.builder.provided.DefinitionInterceptor
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
@@ -91,8 +92,9 @@ object ItemElement : ElementHandler {
         register<ItemSkull>(processor = ItemSkull.Processor)
         register<ItemHideFlag>()
         // 注册解释器
-        ItemRegistry.interceptors.add(ActionInterceptor)
-        ItemRegistry.interceptors.add(DefinitionInterceptor)
+        ItemRegistry.registerInterceptor(ActionInterceptor)
+        ItemRegistry.registerInterceptor(DefinitionInterceptor)
+        ItemRegistry.registerInterceptor(DataInterceptor)
     }
 
     override fun handle(element: Element) {

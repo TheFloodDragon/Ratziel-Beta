@@ -4,6 +4,7 @@ import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SimpleContext
+import cn.fd.ratziel.core.function.replenish
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
@@ -33,9 +34,11 @@ class DefaultGenerator(
     /**
      * 预解析的 [JsonElement]
      */
-    private val preResolved = CompletableFuture.supplyAsync({
-        DefaultResolver.resolve(origin.property, SimpleContext())
-    }, ItemElement.executor)
+    private val preResolved by replenish {
+        CompletableFuture.supplyAsync({
+            DefaultResolver.resolve(origin.property, SimpleContext())
+        }, ItemElement.executor)
+    }
 
     override fun build() = build(SimpleContext())
 

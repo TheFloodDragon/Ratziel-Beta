@@ -8,11 +8,13 @@ import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.*
+import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.submit
 import taboolib.expansion.createHelper
 import taboolib.module.lang.sendLang
 import taboolib.platform.util.giveItem
 import java.util.concurrent.CompletableFuture
+import kotlin.time.TimeSource
 
 /**
  * ItemCommand
@@ -62,7 +64,10 @@ object ItemCommand {
         // 上下文参数
         val args = SimpleContext().apply { add(player) }
         // 开始生成物品
+        val time = TimeSource.Monotonic.markNow()
         generator.build(args).thenAccept {
+            val duration = time.elapsedNow()
+            debug("Generated item '$id' in ${duration.inWholeMilliseconds}ms.")
             // 将生成结果打包成 BukkitItemStack
             val item = RefItemStack.of(it.data).bukkitStack.apply { setAmount(amount) }
             submit {

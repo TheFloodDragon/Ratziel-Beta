@@ -3,7 +3,6 @@ package cn.fd.ratziel.common.element.registry
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.ElementType
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.reflect.KClass
 
 /**
  * ElementRegistry
@@ -30,8 +29,8 @@ object ElementRegistry {
     /**
      * 寻找元素处理器对应的 元素类型 [ElementType]
      */
-    fun findType(handlerClass: KClass<out ElementHandler>): ElementType {
-        return registry.entries.find { it::class == handlerClass }?.key ?: throw IllegalStateException("Cannot find element type for '$handlerClass'.")
+    fun findType(clazz: Class<out ElementHandler>): ElementType {
+        return registry.entries.find { it.value::class.java == clazz }?.key ?: throw IllegalStateException("Cannot find element type for '$clazz'.")
     }
 
     /**

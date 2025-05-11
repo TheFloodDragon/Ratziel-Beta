@@ -55,6 +55,13 @@ object ItemRegistry {
     }
 
     /**
+     * 注册物品解释器
+     */
+    fun registerInterceptor(interceptor: ItemInterceptor) {
+        interceptors.add(interceptor)
+    }
+
+    /**
      * 物品组件集成
      * @param serializer 序列化器
      * @param processor 物品数据处理器

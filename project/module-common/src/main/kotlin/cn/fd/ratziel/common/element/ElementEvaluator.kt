@@ -75,18 +75,20 @@ object ElementEvaluator {
     fun evaluateCycled(): CompletableFuture<Duration> {
         val cycleTasks = ArrayList<CompletableFuture<Duration>>()
         // 遍历生命周期创建周期任务
-        for (lifeCycle in LifeCycle.entries) {
-            // 创建周期任务回调
+        for (lifeCycle in LifeCycle.entries.filter { it.ordinal >= LifeCycle.LOAD.ordinal }) {
+            // 寻找当前生命周期执行的所有任务
+            val groups = ArrayList<EvaluationGroup>()
+            for (group in evaluations.values) {
+                if (group.lifeCycle == lifeCycle) {
+                    groups.add(group)
+                }
+            }
+            // 没有对应周期的元素组就跳过
+            if (groups.isEmpty()) continue
+            // 创建周期任务
             val future = CompletableFuture<Duration>().also { cycleTasks.add(it) }
             // 注册周期任务
             TabooLib.registerLifeCycleTask(lifeCycle, 10) {
-                // 寻找当前生命周期执行的所有任务
-                val groups = ArrayList<EvaluationGroup>()
-                for (group in evaluations.values) {
-                    if (group.lifeCycle == lifeCycle) {
-                        groups.add(group)
-                    }
-                }
                 // 开启阻塞协程
                 runBlocking {
                     // 开始记录时间
@@ -202,13 +204,13 @@ object ElementEvaluator {
         private suspend fun checkDependencies() {
             for (dependencyClass in config.requires) {
                 // 寻找对应类型
-                val type = ElementRegistry.findType(dependencyClass)
+                val type = ElementRegistry.findType(dependencyClass.java)
                 // 获取其任务组
                 val group = evaluations[type]
                 // 完成其任务组
                 if (group != null) {
                     group.evaluate()
-                    debug("EvaluationGroup: Depended handler '$dependencyClass' for '$handler' has been evaluated.")
+                    debug("[EvaluationGroup] Depended handler '${dependencyClass.java}' for '$handler' has been evaluated.")
                 }
             }
         }
