@@ -17,8 +17,6 @@ class SourceInterceptor(val source: ItemSource) : ItemInterceptor {
         // 生成物品
         val item = source.generateItem(stream.origin, context) ?: return
         // 写入数据
-        val newMaterail = item.data.material
-        val newAmount = item.data.amount
         val newTag = item.data.tag
         stream.data.withValue {
             // 合并标签

@@ -68,7 +68,7 @@ class DefaultGenerator(
 
         // 解释器解释元素
         val interceptorTasks = ItemRegistry.interceptors.map {
-            async { it.intercept(stream, context) }
+            async { it.intercept(this@async, stream) }
         }
 
         // 序列化任务需要完全在解释后, 故等待解释任务的完成

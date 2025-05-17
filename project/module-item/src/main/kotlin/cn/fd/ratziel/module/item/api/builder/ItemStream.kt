@@ -40,7 +40,7 @@ interface ItemStream {
     /**
      * 上下文
      */
-    val context: SynchronizedValue.Mutable<ArgumentContext>
+    val context: ArgumentContext
 
     /**
      * 返回 [tree] 当前的元素内容

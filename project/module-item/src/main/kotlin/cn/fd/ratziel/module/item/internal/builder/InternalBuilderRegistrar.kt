@@ -1,8 +1,10 @@
-package cn.fd.ratziel.module.item.impl.builder
+package cn.fd.ratziel.module.item.internal.builder
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.impl.builder.SectionResolver
+import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake

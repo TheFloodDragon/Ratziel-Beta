@@ -1,10 +1,10 @@
 package cn.fd.ratziel.module.item.internal.builder
 
-import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemStream
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * ResolvationInterceptor
@@ -16,10 +16,10 @@ class ResolvationInterceptor(
     val resolver: ItemResolver,
 ) : ItemInterceptor {
 
-    override suspend fun intercept(stream: ItemStream, context: ArgumentContext) {
+    override suspend fun intercept(scope: CoroutineScope, stream: ItemStream) {
         stream.tree.withValue { tree ->
             JsonTree.unfold(tree.root) {
-                resolver.resolve(it, context)
+                resolver.resolve(it, stream.context)
             }
         }
     }

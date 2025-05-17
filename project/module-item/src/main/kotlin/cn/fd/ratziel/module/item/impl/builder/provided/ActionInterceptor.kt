@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.getBy
 import cn.fd.ratziel.module.item.api.action.ActionMap
 import cn.fd.ratziel.module.item.api.action.ItemAction
@@ -12,6 +11,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.action.ActionManager
 import cn.fd.ratziel.module.item.impl.action.SimpleAction
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.io.digest
 import taboolib.common.platform.function.severe
@@ -52,7 +52,7 @@ object ActionInterceptor : ItemInterceptor {
         return ActionMap(map)
     }
 
-    override suspend fun intercept(stream: ItemStream, context: ArgumentContext) {
+    override suspend fun intercept(scope: CoroutineScope, stream: ItemStream) {
         // 获取元素
         val element = stream.fetchElement()
         // 仅处理 Object 类型

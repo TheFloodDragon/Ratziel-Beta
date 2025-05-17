@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.InheritResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
-import kotlinx.serialization.json.JsonElement
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Consumer
 
@@ -25,17 +24,6 @@ object DefaultResolver : ItemResolver {
      */
     val accessibleNodes: MutableSet<String> by lazy {
         CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
-    }
-
-    fun resolve(element: JsonElement, context: ArgumentContext): JsonElement {
-        val tree = JsonTree(element)
-        this.resolveTree(tree, context) // 对树进行编辑解析
-        return tree.toElement()
-    }
-
-    fun resolveTree(tree: JsonTree, context: ArgumentContext) {
-        val root = tree.root
-        resolve(root, context)
     }
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {

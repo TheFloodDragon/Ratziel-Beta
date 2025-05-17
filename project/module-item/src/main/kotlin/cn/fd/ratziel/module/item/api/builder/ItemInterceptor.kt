@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.core.function.ArgumentContext
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * ItemInterceptor - 物品解释器
@@ -13,9 +13,9 @@ interface ItemInterceptor {
     /**
      * 解释物品流
      *
+     * @param scope 协程作用域
      * @param stream 物品流
-     * @param context 上下文
      */
-    suspend fun intercept(stream: ItemStream, context: ArgumentContext)
+    suspend fun intercept(scope: CoroutineScope, stream: ItemStream)
 
 }
