@@ -75,8 +75,11 @@ object ItemRegistry {
      * 注册解析器
      */
     @JvmStatic
-    fun registerResolver(resolver: ItemResolver) {
-        val interceptor = ResolvationInterceptor(resolver)
+    @JvmOverloads
+    fun registerResolver(resolver: ItemResolver, limit: Boolean = false) {
+        val interceptor = if (limit) {
+            ResolvationInterceptor.Limited(resolver)
+        } else ResolvationInterceptor(resolver)
         registerInterceptor(interceptor)
     }
 

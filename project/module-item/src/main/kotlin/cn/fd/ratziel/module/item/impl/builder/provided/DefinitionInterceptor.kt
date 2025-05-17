@@ -9,6 +9,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleData
+import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
@@ -36,9 +37,27 @@ object DefinitionInterceptor : ItemInterceptor {
      * @since 2025/5/17 17:20
      */
     class DefinitionContext(
-        val defineMap: Map<String, Any?>,
+        val definitionMap: Map<String, Any?>,
         val dataMap: Map<String, Any?>,
     )
+
+    @AutoRegister
+    object DefinitionResolver : SectionTagResolver("define", "def", "definition") {
+        override fun resolve(element: List<String>, context: ArgumentContext): String? {
+            val definition = context.popOrNull(DefinitionContext::class.java) ?: return null
+            val value = definition.definitionMap[element.firstOrNull() ?: return null]
+            return value.toString()
+        }
+    }
+
+    @AutoRegister
+    object DataResolver : SectionTagResolver("data") {
+        override fun resolve(element: List<String>, context: ArgumentContext): String? {
+            val definition = context.popOrNull(DefinitionContext::class.java) ?: return null
+            val value = definition.dataMap[element.firstOrNull() ?: return null]
+            return value.toString()
+        }
+    }
 
     private val definitionCache: MutableMap<String, Map<String, ExecutableBlock>> = ConcurrentHashMap()
     private val dataCache: MutableMap<String, Map<String, ExecutableBlock>> = ConcurrentHashMap()
@@ -54,12 +73,12 @@ object DefinitionInterceptor : ItemInterceptor {
             val blocks = definitionCache[id]
                 ?: run {
                     // 读取定义
-                    val define = element["define"] as? JsonObject ?: return@run
+                    val define = element["define"] as? JsonObject ?: return@run null
                     val map = buildBlockMap(define)
                     // 加入到缓存
                     definitionCache[id] = map
                     map
-                }
+                } ?: return@async emptyMap()
 
             // 创建新的定义
             executeAll(blocks, stream.context)
@@ -72,12 +91,12 @@ object DefinitionInterceptor : ItemInterceptor {
             val blocks = dataCache[id]
                 ?: run {
                     // 读取定义
-                    val define = element["data"] as? JsonObject ?: return@run
+                    val define = element["data"] as? JsonObject ?: return@run null
                     val map = buildBlockMap(define)
                     // 加入到缓存
                     dataCache[id] = map
                     map
-                }
+                } ?: return@async emptyMap()
 
             // 创建数据容器
             val holder = RatzielItem.Holder(SimpleData())
@@ -114,7 +133,7 @@ object DefinitionInterceptor : ItemInterceptor {
             async {
                 it.key to ScriptBlockBuilder.build(it.value) // 构建语句块
             }
-        }.awaitAll().toTypedArray()))
+        }.awaitAll().toTypedArray())
     }
 
     private suspend fun executeAll(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): Map<String, Any?> = supervisorScope {

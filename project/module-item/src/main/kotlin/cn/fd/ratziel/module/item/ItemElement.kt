@@ -89,7 +89,7 @@ object ItemElement : ElementHandler {
         register<ItemSkull>(processor = ItemSkull.Processor)
         register<ItemHideFlag>()
         // 注册默认解析器
-        ItemRegistry.registerResolver(DefaultResolver)
+        DefaultResolver.registerDefaults()
     }
 
     override fun handle(element: Element) {

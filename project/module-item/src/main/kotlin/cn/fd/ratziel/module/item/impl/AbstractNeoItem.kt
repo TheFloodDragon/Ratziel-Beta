@@ -36,8 +36,8 @@ abstract class AbstractNeoItem : NeoItem {
         // 将组件序列化成标签
         val tag = ItemElement.nbt.encodeToNbtTag(integrated.serializer, component)
         if (tag is NbtCompound) {
-            // 设置标签
-            this.data.tag = tag
+            // 合并标签
+            this.data.tag.merge(tag, true)
         }
     }
 
