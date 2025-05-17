@@ -176,6 +176,8 @@ object ElementEvaluator {
             // 检查前置
             checkDependencies()
 
+            // 触发 ElementHandler#onStart
+            handler.onStart(elements)
             // 触发 ElementEvaluateEvent.Start
             ElementEvaluateEvent.Start(handler, elements).call()
 
@@ -202,6 +204,8 @@ object ElementEvaluator {
 
             }
 
+            // 触发 ElementHandler#onEnd
+            handler.onEnd()
             // 触发 ElementEvaluateEvent.End
             ElementEvaluateEvent.End(handler).call()
         }
@@ -221,6 +225,10 @@ object ElementEvaluator {
         }
 
         private fun handle(element: Element): Throwable? {
+            // 触发 ElementEvaluateEvent.Process
+            ElementEvaluateEvent.Process(handler, element).call()
+
+            // 开始处理
             val result = handleElement(handler, element)
             onCompleted.accept(result)
             return result

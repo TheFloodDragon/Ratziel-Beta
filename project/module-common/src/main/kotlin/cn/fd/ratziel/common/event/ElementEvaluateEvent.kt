@@ -12,7 +12,7 @@ import taboolib.common.event.InternalEvent
  */
 sealed class ElementEvaluateEvent : InternalEvent() {
 
-    class Start internal constructor(
+    class Start(
         /**
          * 处理此元素的 [ElementHandler]
          */
@@ -21,14 +21,9 @@ sealed class ElementEvaluateEvent : InternalEvent() {
          * 交给该 [ElementHandler] 解析的所有元素
          */
         val elements: Collection<Element>,
-    ) : ElementEvaluateEvent() {
-        init {
-            // 触发 ElementHandler#onStart
-            handler.onStart(elements)
-        }
-    }
+    ) : ElementEvaluateEvent()
 
-    class Process internal constructor(
+    class Process(
         /**
          * 处理此元素的 [ElementHandler]
          */
@@ -39,16 +34,11 @@ sealed class ElementEvaluateEvent : InternalEvent() {
         val element: Element,
     ) : ElementEvaluateEvent()
 
-    class End internal constructor(
+    class End(
         /**
          * 处理此元素的 [ElementHandler]
          */
         val handler: ElementHandler,
-    ) : ElementEvaluateEvent() {
-        init {
-            // 触发 ElementHandler#onEnd
-            handler.onEnd()
-        }
-    }
+    ) : ElementEvaluateEvent()
 
 }

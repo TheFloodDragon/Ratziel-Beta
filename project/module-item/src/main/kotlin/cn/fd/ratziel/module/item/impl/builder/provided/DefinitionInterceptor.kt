@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
+import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
@@ -11,7 +12,10 @@ import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.ConcurrentHashMap
@@ -42,35 +46,36 @@ object DefinitionInterceptor : ItemInterceptor {
     override suspend fun intercept(stream: ItemStream) = coroutineScope {
         val element = stream.fetchElement()
         if (element !is JsonObject) return@coroutineScope
+        val id = stream.identifier.content
 
         // 定义处理
         val defineTask = async {
             // 获取语句块表
-            val blocks = definitionCache[stream.identifier.content]
+            val blocks = definitionCache[id]
                 ?: run {
                     // 读取定义
-                    val define = element["define"] as? JsonObject ?: return@apply
-                    val map = buildBlockMap(element)
+                    val define = element["define"] as? JsonObject ?: return@run
+                    val map = buildBlockMap(define)
                     // 加入到缓存
-                    definitionCache[stream.identifier.content] = map
+                    definitionCache[id] = map
                     map
                 }
 
             // 创建新的定义
-            executeAll(blocks)
+            executeAll(blocks, stream.context)
         }
 
 
         // 数据处理
-        val dataTask = scope.async {
+        val dataTask = async {
             // 获取语句块表
-            val blocks = dataCache[stream.identifier.content]
+            val blocks = dataCache[id]
                 ?: run {
                     // 读取定义
-                    val define = element["data"] as? JsonObject ?: return@apply
-                    val map = buildBlockMap(element)
+                    val define = element["data"] as? JsonObject ?: return@run
+                    val map = buildBlockMap(define)
                     // 加入到缓存
-                    dataCache[stream.identifier.content] = map
+                    dataCache[id] = map
                     map
                 }
 
@@ -78,7 +83,7 @@ object DefinitionInterceptor : ItemInterceptor {
             val holder = RatzielItem.Holder(SimpleData())
 
             // 创建新的定义
-            val result = executeAll(blocks)
+            val result = executeAll(blocks, stream.context)
 
             for ((name, value) in result) {
                 // 处理 Nbt 数据
@@ -104,32 +109,31 @@ object DefinitionInterceptor : ItemInterceptor {
         stream.context.put(definition)
     }
 
-    suspend fun buildBlockMap(element: JsonObject): Map<String, ExecutableBlock> = supervisorScope {
-        mapOf(element.map {
+    private suspend fun buildBlockMap(element: JsonObject): Map<String, ExecutableBlock> = supervisorScope {
+        mapOf(*element.map {
             async {
-                // 构建语句块
-                it.key to ScriptBlockBuilder.build(it.value)
+                it.key to ScriptBlockBuilder.build(it.value) // 构建语句块
             }
-        }.awaitAll()))
+        }.awaitAll().toTypedArray()))
     }
 
-    suspend fun executeAll(map: Map<String, ExecutableBlock>): Map<String, Any?> = supervisorScope {
-        mapOf(blocks.map {
+    private suspend fun executeAll(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): Map<String, Any?> = supervisorScope {
+        mapOf(*blocks.map {
             async {
-                it.key to it.value.execute()
+                it.key to it.value.execute(context) // 执行语句块
             }
-        }.awaitAll())
+        }.awaitAll().toTypedArray())
     }
 
     @SubscribeEvent
-    fun onProcess(event: ElementEvaluateEvent.Process) {
+    private fun onProcess(event: ElementEvaluateEvent.Process) {
         if (event.handler !is ItemElement) return
         definitionCache.remove(event.element.name)
         dataCache.remove(event.element.name)
     }
 
     @SubscribeEvent
-    fun onStart(event: ElementEvaluateEvent.Start) {
+    private fun onStart(event: ElementEvaluateEvent.Start) {
         if (event.handler !is ItemElement) return
         definitionCache.clear()
         dataCache.clear()
