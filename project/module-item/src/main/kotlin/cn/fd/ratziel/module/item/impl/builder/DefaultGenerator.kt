@@ -7,6 +7,7 @@ import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
@@ -76,7 +77,12 @@ class DefaultGenerator(
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->
             async {
-                val generated = serializationComponent(integrated, stream.fetchElement()).getOrNull()
+                val generated = serializationComponent(
+                    integrated,
+                    stream.fetchElement(),
+                    originalMaterial,
+                    originalAmount,
+                ).getOrNull()
                 // 合并数据
                 if (generated != null) stream.data.withValue {
                     // 设置材质
@@ -106,6 +112,8 @@ class DefaultGenerator(
     fun serializationComponent(
         integrated: ItemRegistry.Integrated<*>,
         element: JsonElement,
+        originMaterial: ItemMaterial,
+        originAmount: Int,
     ): Result<ItemData> {
         // 获取序列化器
         @Suppress("UNCHECKED_CAST")
@@ -132,8 +140,7 @@ class DefaultGenerator(
         if (tag is NbtCompound) {
             val processor = integrated.processor
             try {
-                // TODO 真的需要吗？
-                val processed = processor.process(SimpleData(tag = tag))
+                val processed = processor.process(SimpleData(originMaterial, tag, originAmount))
                 return Result.success(processed)
             } catch (ex: Exception) {
                 severe("Failed to process data by '$processor'!")

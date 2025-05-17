@@ -2,8 +2,11 @@ package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
+import cn.fd.ratziel.module.item.internal.builder.ResolvationInterceptor
+import cn.fd.ratziel.module.item.internal.builder.SourceInterceptor
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -26,15 +29,11 @@ object ItemRegistry {
     val interceptors: MutableList<ItemInterceptor> = CopyOnWriteArrayList()
 
     /**
-     * 物品源注册表
-     */
-    val sources: MutableList<ItemSource> = CopyOnWriteArrayList()
-
-    /**
      * 注册组件
      *
      * @param serializer 组件序列化器
      */
+    @JvmStatic
     fun <T> registerComponent(
         type: Class<T>,
         serializer: KSerializer<T>,
@@ -47,6 +46,7 @@ object ItemRegistry {
     /**
      * 获取组件集成构建器
      */
+    @JvmStatic
     fun <T> getComponent(type: Class<T>): Integrated<T> {
         val integrated = registry.find { it.type == type }
             ?: throw ComponentNotFoundException(type)
@@ -57,8 +57,27 @@ object ItemRegistry {
     /**
      * 注册物品解释器
      */
+    @JvmStatic
     fun registerInterceptor(interceptor: ItemInterceptor) {
         interceptors.add(interceptor)
+    }
+
+    /**
+     * 注册物品源
+     */
+    @JvmStatic
+    fun registerSource(source: ItemSource) {
+        val interceptor = SourceInterceptor(source)
+        registerInterceptor(interceptor)
+    }
+
+    /**
+     * 注册解析器
+     */
+    @JvmStatic
+    fun registerResolver(resolver: ItemResolver) {
+        val interceptor = ResolvationInterceptor(resolver)
+        registerInterceptor(interceptor)
     }
 
     /**

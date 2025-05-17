@@ -20,8 +20,8 @@ object AzureFlowHook : PluginHook {
     val plugin by lazy { Bukkit.getPluginManager().getPlugin(pluginName) }
 
     @HookInject
-    private fun registerSource() {
-        ItemRegistry.sources.add(AzureFlowSource)
+    private fun register() {
+        ItemRegistry.registerSource(AzureFlowSource)
     }
 
 }

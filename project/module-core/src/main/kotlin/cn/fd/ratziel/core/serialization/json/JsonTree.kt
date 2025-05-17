@@ -16,7 +16,7 @@ class JsonTree(
     /**
      * 根节点
      */
-    val root: Node,
+    val root: Node
 ) {
 
     constructor(element: JsonElement) : this(parseToNode(element, null))
@@ -37,13 +37,6 @@ class JsonTree(
          * 父节点 (空代表此节点为跟节点)
          */
         val parent: Node?
-
-        /**
-         * 是否为根节点
-         */
-        fun isRootNode(): Boolean {
-            parent == null
-        }
 
     }
 
@@ -93,6 +86,7 @@ class JsonTree(
          * 将 [JsonElement] 解析成节点
          */
         @JvmStatic
+        @JvmOverloads
         fun parseToNode(element: JsonElement, parent: Node? = null): Node = when (element) {
             is JsonObject -> ObjectNode(emptyMap(), parent).apply { value = element.mapValues { parseToNode(it.value, this) } }
             is JsonArray -> ArrayNode(emptyList(), parent).apply { value = element.map { parseToNode(it, this) } }

@@ -1,0 +1,29 @@
+package cn.fd.ratziel.module.item.internal.builder
+
+import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemSource
+import cn.fd.ratziel.module.item.api.builder.ItemStream
+
+/**
+ * SourceInterceptor
+ *
+ * @author TheFloodDragon
+ * @since 2025/5/17 14:38
+ */
+class SourceInterceptor(val source: ItemSource) : ItemInterceptor {
+
+    override suspend fun intercept(stream: ItemStream, context: ArgumentContext) {
+        // 生成物品
+        val item = source.generateItem(stream.origin, context) ?: return
+        // 写入数据
+        val newMaterail = item.data.material
+        val newAmount = item.data.amount
+        val newTag = item.data.tag
+        stream.data.withValue {
+            // 合并标签
+            it.tag.merge(newTag, true)
+        }
+    }
+
+}

@@ -23,7 +23,9 @@ object DefaultResolver : ItemResolver {
     /**
      * 允许访问的节点列表, 仅在 限制性解析 时使用
      */
-    val accessibleNodes: MutableSet<String> = CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
+    val accessibleNodes: MutableSet<String> by lazy {
+        CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
+    }
 
     fun resolve(element: JsonElement, context: ArgumentContext): JsonElement {
         val tree = JsonTree(element)
@@ -38,7 +40,7 @@ object DefaultResolver : ItemResolver {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         // 只接受根节点
-        if(node.isRootNode()) return
+        if (node.parent != null) return
         // 继承解析
         InheritResolver.resolve(node, context)
         // 限制性解析

@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item.api.builder
 import cn.fd.ratziel.core.function.ArgumentContext
 
 /**
- * ItemInterceptor
+ * ItemInterceptor - 物品解释器
  *
  * @author TheFloodDragon
  * @since 2025/5/10 15:22

@@ -24,7 +24,7 @@ object InheritResolver : ItemResolver, SectionTagResolver("extend", "inherit") {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         // 仅处理根节点, 根节点需为对象节点
-        if (!node.isRootNode() || node !is JsonTree.ObjectNode) return
+        if (node.parent != null || node !is JsonTree.ObjectNode) return
         // 寻找继承字段
         val field = node.value["inherit"] as? JsonTree.PrimitiveNode ?: return
         node.value = node.value.filter { it.key != "inherit" } // 删除继承节点

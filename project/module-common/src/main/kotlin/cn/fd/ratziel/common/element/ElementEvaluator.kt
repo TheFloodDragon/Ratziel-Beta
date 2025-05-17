@@ -163,43 +163,48 @@ object ElementEvaluator {
          * 评估所有任务 (只执行一次)
          */
         @Synchronized
-        fun evaluate() = runBlocking { // 开启阻塞协程
+        fun evaluate() {
             // 完成后不再执行
             if (isDone) {
-                return@runBlocking
+                return
             } else {
                 // 标记所有任务完成
                 isDone = true
             }
+
             // 检查前置
             checkDependencies()
 
             // 触发 ElementHandler#onStart TODO EVENT
             handler.onStart(elements)
 
-            // 异步任务列表
-            val asyncTasks = ArrayList<Deferred<Throwable?>>()
-            // 同步任务列表
-            val syncTasks = ArrayList<Supplier<Throwable?>>()
-            // 提交任务
-            for (element in elements) {
-                // 异步 & 同步 任务提交
-                if (config.async) {
-                    asyncTasks.add(scope.async { handle(element) })
-                } else {
-                    syncTasks.add(Supplier { handle(element) })
-                }
-            }
-            // 执行同步任务
-            syncTasks.forEach { it.get() }
-            // 等待所有异步任务完成 (必须在同步之后再等待)
-            awaitAll(*asyncTasks.toTypedArray())
+            // 开启阻塞协程
+            runBlocking {
 
+                // 异步任务列表
+                val asyncTasks = ArrayList<Deferred<Throwable?>>()
+                // 同步任务列表
+                val syncTasks = ArrayList<Supplier<Throwable?>>()
+                // 提交任务
+                for (element in elements) {
+                    // 异步 & 同步 任务提交
+                    if (config.async) {
+                        asyncTasks.add(scope.async { handle(element) })
+                    } else {
+                        syncTasks.add(Supplier { handle(element) })
+                    }
+                }
+                // 执行同步任务
+                syncTasks.forEach { it.get() }
+                // 等待所有异步任务完成 (必须在同步之后再等待)
+                awaitAll(*asyncTasks.toTypedArray())
+
+            }
             // 触发 ElementHandler#onEnd
             handler.onEnd()
         }
 
-        private suspend fun checkDependencies() {
+        private fun checkDependencies() {
             for (dependencyClass in config.requires) {
                 // 寻找对应类型
                 val type = ElementRegistry.findType(dependencyClass.java)

@@ -10,6 +10,7 @@ import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
+import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
@@ -87,6 +88,8 @@ object ItemElement : ElementHandler {
         register<ItemDurability>()
         register<ItemSkull>(processor = ItemSkull.Processor)
         register<ItemHideFlag>()
+        // 注册默认解析器
+        ItemRegistry.registerResolver(DefaultResolver)
     }
 
     override fun handle(element: Element) {
