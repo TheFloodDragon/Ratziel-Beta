@@ -1,9 +1,6 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.module.item.api.ItemData
-import kotlinx.serialization.json.JsonElement
 
 /**
  * ItemInterceptor
@@ -14,13 +11,11 @@ import kotlinx.serialization.json.JsonElement
 interface ItemInterceptor {
 
     /**
-     * 解释元素
+     * 解释物品流
      *
-     * @param identifier 物品标识符
-     * @param element 要解释的 [JsonElement]
+     * @param stream 物品流
      * @param context 上下文
-     * @return 物品数据 [ItemData]
      */
-    fun intercept(identifier: Identifier, element: JsonElement, context: ArgumentContext): ItemData?
+    suspend fun intercept(stream: ItemStream, context: ArgumentContext)
 
 }

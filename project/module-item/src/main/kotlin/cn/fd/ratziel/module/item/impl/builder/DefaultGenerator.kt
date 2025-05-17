@@ -13,10 +13,12 @@ import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * DefaultGenerator
@@ -34,7 +36,7 @@ class DefaultGenerator(
     /**
      * 预解析的 [JsonElement]
      */
-    private val preResolved by replenish {
+    private val preHandle by replenish {
         CompletableFuture.supplyAsync({
             DefaultResolver.resolve(origin.property, SimpleContext())
         }, ItemElement.executor)
@@ -54,48 +56,85 @@ class DefaultGenerator(
      */
     fun buildAsync(sourceData: ItemData, context: ArgumentContext) = ItemElement.scope.async {
         // 生成基本物品 (本地源物品)
-        val item = NativeSource.generateItem(origin, sourceData) ?: throw IllegalStateException("Failed to generate item source!")
+        val item = NativeSource.generateItem(origin, sourceData)
+            ?: throw IllegalStateException("Failed to generate item source!")
 
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(item.identifier, this@DefaultGenerator, context, origin.property).call()
 
-        // 解析元素内容
-        val resolved = DefaultResolver.resolve(preResolved.get(), context)
-
-        // 解释器 TODO How to deal with them
-        val interceptorTasks = ItemRegistry.interceptors.map {
-            async { it.intercept(item.identifier, resolved, context) }
-        }
-
-        // 源任务: 元素 -> 数据
-        val sourcedTasks = ItemRegistry.sources.map {
-            async { it.generateItem(Element(origin.identifier, resolved), context)?.data }
-        }
-
-        // 原生任务: 元素(解析过后的) -> 组件 -> 数据
-        val nativeTasks = ItemRegistry.registry.map {
-            async { runTask(it, resolved, item.data) }
-        }
-
+        // 记录当前材料数量数据
         val originalMaterial = item.data.material
         val originalAmount = item.data.amount
-        // 等待所有任务完成, 然后合并数据
-        val allTasks = interceptorTasks.awaitAll()
-            .plus(sourcedTasks.awaitAll())
-            .plus(nativeTasks.awaitAll().map { it.getOrNull() })
-        for (generated in allTasks) {
-            // 跳过空数据
-            if (generated == null) continue
 
-            // 设置材质
-            val nowMat = generated.material
-            if (nowMat != originalMaterial) item.data.material = nowMat
-            // 设置数量
-            val nowAmount = generated.amount
-            if (nowAmount != originalAmount) item.data.amount = nowAmount
-            // 合并标签
-            item.data.tag.merge(generated.tag, true)
+        // 创建物品流
+        val stream = NativeItemStream(origin, item)
+
+        // 解释器解释元素
+        val interceptorTasks = ItemRegistry.interceptors.map {
+            async { it.intercept(stream, context) }
         }
+
+        interceptorTasks.awaitAll()
+
+        // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
+        val serializationTasks = ItemRegistry.registry.map {
+            async {
+                val element = stream.fetchElement()
+                val generated = runTask(it, element, item.data).getOrNull()
+                // 合并数据
+                if (generated != null) stream.data.withValue {
+                    // 设置材质
+                    val nowMat = generated.material
+                    if (nowMat != originalMaterial) item.data.material = nowMat
+                    // 设置数量
+                    val nowAmount = generated.amount
+                    if (nowAmount != originalAmount) item.data.amount = nowAmount
+                    // 合并标签
+                    item.data.tag.merge(generated.tag, true)
+                }
+            }
+        }
+
+        serializationTasks.awaitAll()
+
+//
+//        // 解析元素内容
+//        val resolved = DefaultResolver.resolve(preHandle.get(), context)
+//
+//        // 解释器 TODO How to deal with them
+//        val interceptorTasks = ItemRegistry.interceptors.map {
+//            async { it.intercept(item.identifier, resolved, context) }
+//        }
+//
+//        // 源任务: 元素 -> 数据
+//        val sourcedTasks = ItemRegistry.sources.map {
+//            async { it.generateItem(Element(origin.identifier, resolved), context)?.data }
+//        }
+//
+//        // 原生任务: 元素(解析过后的) -> 组件 -> 数据
+//        val nativeTasks = ItemRegistry.registry.map {
+//            async { runTask(it, resolved, item.data) }
+//        }
+//
+//        val originalMaterial = item.data.material
+//        val originalAmount = item.data.amount
+//        // 等待所有任务完成, 然后合并数据
+//        val allTasks = interceptorTasks.awaitAll()
+//            .plus(sourcedTasks.awaitAll())
+//            .plus(nativeTasks.awaitAll().map { it.getOrNull() })
+//        for (generated in allTasks) {
+//            // 跳过空数据
+//            if (generated == null) continue
+//
+//            // 设置材质
+//            val nowMat = generated.material
+//            if (nowMat != originalMaterial) item.data.material = nowMat
+//            // 设置数量
+//            val nowAmount = generated.amount
+//            if (nowAmount != originalAmount) item.data.amount = nowAmount
+//            // 合并标签
+//            item.data.tag.merge(generated.tag, true)
+//        }
 
         // 呼出生成结束的事件
         val event = ItemGenerateEvent.Post(item.identifier, this@DefaultGenerator, context, item)

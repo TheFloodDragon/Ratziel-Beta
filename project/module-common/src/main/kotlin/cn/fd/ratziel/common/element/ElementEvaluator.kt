@@ -89,15 +89,12 @@ object ElementEvaluator {
             val future = CompletableFuture<Duration>().also { cycleTasks.add(it) }
             // 注册周期任务
             TabooLib.registerLifeCycleTask(lifeCycle, 10) {
-                // 开启阻塞协程
-                runBlocking {
-                    // 开始记录时间
-                    val timeMark = TimeSource.Monotonic.markNow()
-                    // 评估所有组内的所有任务
-                    for (group in groups) group.evaluate()
-                    // 完成并回传处理时间
-                    future.complete(timeMark.elapsedNow())
-                }
+                // 开始记录时间
+                val timeMark = TimeSource.Monotonic.markNow()
+                // 评估所有组内的所有任务
+                for (group in groups) group.evaluate()
+                // 完成并回传处理时间
+                future.complete(timeMark.elapsedNow())
             }
         }
         return CompletableFuture.allOf(*cycleTasks.toTypedArray()).thenApply {
@@ -165,10 +162,11 @@ object ElementEvaluator {
         /**
          * 评估所有任务 (只执行一次)
          */
-        suspend fun evaluate() {
+        @Synchronized
+        fun evaluate() = runBlocking { // 开启阻塞协程
             // 完成后不再执行
             if (isDone) {
-                return
+                return@runBlocking
             } else {
                 // 标记所有任务完成
                 isDone = true
@@ -176,7 +174,7 @@ object ElementEvaluator {
             // 检查前置
             checkDependencies()
 
-            // 触发 ElementHandler#onStart
+            // 触发 ElementHandler#onStart TODO EVENT
             handler.onStart(elements)
 
             // 异步任务列表

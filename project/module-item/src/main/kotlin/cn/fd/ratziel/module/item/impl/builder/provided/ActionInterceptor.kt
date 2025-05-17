@@ -4,15 +4,15 @@ import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.getBy
-import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.action.ActionMap
 import cn.fd.ratziel.module.item.api.action.ItemAction
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.action.ActionManager
 import cn.fd.ratziel.module.item.impl.action.SimpleAction
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
-import kotlinx.serialization.json.JsonElement
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.io.digest
 import taboolib.common.platform.function.severe
@@ -53,17 +53,19 @@ object ActionInterceptor : ItemInterceptor {
         return ActionMap(map)
     }
 
-    override fun intercept(identifier: Identifier, element: JsonElement, context: ArgumentContext): ItemData? {
-        if (element !is JsonObject) return null
+    override suspend fun intercept(stream: ItemStream, context: ArgumentContext) {
+        // 获取元素
+        val element = stream.fetchElement()
+        // 仅处理 Object 类型
+        if (element !is JsonObject) return
         // 获取原始动作
-        val raw = element.getBy(*nodeNames) ?: return null
+        val raw = element.getBy(*nodeNames) ?: return
         if (raw is JsonObject) {
             // 解析触发器表
-            val triggerMap = parse(identifier, raw)
+            val triggerMap = parse(stream.identifier, raw)
             // 加入到动作表中
-            ActionManager.service[identifier] = triggerMap
+            ActionManager.service[stream.identifier] = triggerMap
         } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
-        return null
     }
 
 }
