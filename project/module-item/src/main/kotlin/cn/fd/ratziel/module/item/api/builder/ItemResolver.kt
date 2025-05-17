@@ -1,23 +1,22 @@
 package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.core.function.ArgumentContext
-import kotlinx.serialization.json.JsonElement
+import cn.fd.ratziel.core.serialization.json.JsonTree
 
 /**
  * ItemResolver
  *
  * @author TheFloodDragon
- * @since 2025/5/3 19:46
+ * @since 2025/5/3 19:16
  */
 interface ItemResolver {
 
     /**
-     * 解析处理 [JsonElement]
+     * 解析处理 [JsonTree.Node] 节点
      *
-     * @param element 要解析的 [JsonElement]
+     * @param node 要解析处理的节点
      * @param context 上下文
-     * @return 解析完的 [JsonElement]
      */
-    fun resolve(element: JsonElement, context: ArgumentContext): JsonElement
+    fun resolve(node: JsonTree.Node, context: ArgumentContext)
 
 }

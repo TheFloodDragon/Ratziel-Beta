@@ -38,6 +38,13 @@ class JsonTree(
          */
         val parent: Node?
 
+        /**
+         * 是否为根节点
+         */
+        fun isRootNode(): Boolean {
+            parent == null
+        }
+
     }
 
     /**

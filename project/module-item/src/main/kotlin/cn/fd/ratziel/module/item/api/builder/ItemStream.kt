@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SynchronizedValue
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.ItemData
@@ -35,6 +36,11 @@ interface ItemStream {
      * 物品数据 (最终产物)
      */
     val data: SynchronizedValue<ItemData>
+
+    /**
+     * 上下文
+     */
+    val context: SynchronizedValue.Mutable<ArgumentContext>
 
     /**
      * 返回 [tree] 当前的元素内容

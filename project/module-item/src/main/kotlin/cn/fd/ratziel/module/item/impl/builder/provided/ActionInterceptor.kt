@@ -12,7 +12,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.action.ActionManager
 import cn.fd.ratziel.module.item.impl.action.SimpleAction
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.io.digest
 import taboolib.common.platform.function.severe

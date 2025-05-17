@@ -25,7 +25,7 @@ object DefaultResolver : ItemResolver {
      */
     val accessibleNodes: MutableSet<String> = CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
 
-    override fun resolve(element: JsonElement, context: ArgumentContext): JsonElement {
+    fun resolve(element: JsonElement, context: ArgumentContext): JsonElement {
         val tree = JsonTree(element)
         this.resolveTree(tree, context) // 对树进行编辑解析
         return tree.toElement()
@@ -33,8 +33,14 @@ object DefaultResolver : ItemResolver {
 
     fun resolveTree(tree: JsonTree, context: ArgumentContext) {
         val root = tree.root
+        resolve(root, context)
+    }
+
+    override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
+        // 只接受根节点
+        if(node.isRootNode()) return
         // 继承解析
-        InheritResolver.resolve(root, context)
+        InheritResolver.resolve(node, context)
         // 限制性解析
         val limitedResolve = Consumer<JsonTree.Node> {
             // Papi 解析
@@ -51,14 +57,14 @@ object DefaultResolver : ItemResolver {
             EnhancedListResolver.resolve(it, context)
         }
 
-        if (root is JsonTree.ObjectNode) {
-            for (entry in root.value) {
+        if (node is JsonTree.ObjectNode) {
+            for (entry in node.value) {
                 // 限制性解析: 过滤非运行的节点
                 if (entry.key in accessibleNodes) {
                     JsonTree.unfold(entry.value, limitedResolve)
                 }
             }
-        } else JsonTree.unfold(root, limitedResolve)
+        } else JsonTree.unfold(node, limitedResolve)
     }
 
 }

@@ -2,10 +2,10 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.altawk.nbt.NbtPath
 import cn.fd.ratziel.common.element.registry.AutoRegister
-import cn.fd.ratziel.module.item.TemplateElement
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
-import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
+import cn.fd.ratziel.module.item.TemplateElement
+import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -20,11 +20,11 @@ import taboolib.common.platform.function.warning
  * @since 2025/5/4 15:44
  */
 @AutoRegister
-object InheritResolver : ItemSectionResolver, SectionTagResolver("extend", "inherit") {
+object InheritResolver : ItemResolver, SectionTagResolver("extend", "inherit") {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         // 仅处理根节点, 根节点需为对象节点
-        if (node.parent != null || node !is JsonTree.ObjectNode) return
+        if (!node.isRootNode() || node !is JsonTree.ObjectNode) return
         // 寻找继承字段
         val field = node.value["inherit"] as? JsonTree.PrimitiveNode ?: return
         node.value = node.value.filter { it.key != "inherit" } // 删除继承节点

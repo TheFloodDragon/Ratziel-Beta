@@ -4,7 +4,6 @@ import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SimpleContext
-import cn.fd.ratziel.core.function.replenish
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
@@ -13,12 +12,9 @@ import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
-import java.util.concurrent.CompletableFuture
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * DefaultGenerator
@@ -33,14 +29,14 @@ class DefaultGenerator(
     val origin: Element,
 ) : ItemGenerator {
 
-    /**
-     * 预解析的 [JsonElement]
-     */
-    private val preHandle by replenish {
-        CompletableFuture.supplyAsync({
-            DefaultResolver.resolve(origin.property, SimpleContext())
-        }, ItemElement.executor)
-    }
+//    /**
+//     * 预解析的 [JsonElement]
+//     */
+//    private val preHandle by replenish {
+//        CompletableFuture.supplyAsync({
+//            DefaultResolver.resolve(origin.property, SimpleContext())
+//        }, ItemElement.executor)
+//    }
 
     override fun build() = build(SimpleContext())
 
@@ -67,74 +63,36 @@ class DefaultGenerator(
         val originalAmount = item.data.amount
 
         // 创建物品流
-        val stream = NativeItemStream(origin, item)
+        val stream = NativeItemStream(origin, item, context)
 
         // 解释器解释元素
         val interceptorTasks = ItemRegistry.interceptors.map {
             async { it.intercept(stream, context) }
         }
 
+        // 序列化任务需要完全在解释后, 故等待解释任务的完成
         interceptorTasks.awaitAll()
 
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
-        val serializationTasks = ItemRegistry.registry.map {
+        val serializationTasks = ItemRegistry.registry.map { integrated ->
             async {
-                val element = stream.fetchElement()
-                val generated = runTask(it, element, item.data).getOrNull()
+                val generated = serializationComponent(integrated, stream.fetchElement()).getOrNull()
                 // 合并数据
                 if (generated != null) stream.data.withValue {
                     // 设置材质
                     val nowMat = generated.material
-                    if (nowMat != originalMaterial) item.data.material = nowMat
+                    if (nowMat != originalMaterial) it.material = nowMat
                     // 设置数量
                     val nowAmount = generated.amount
-                    if (nowAmount != originalAmount) item.data.amount = nowAmount
+                    if (nowAmount != originalAmount) it.amount = nowAmount
                     // 合并标签
-                    item.data.tag.merge(generated.tag, true)
+                    it.tag.merge(generated.tag, true)
                 }
             }
         }
 
+        // 等待所有序列化任务完成
         serializationTasks.awaitAll()
-
-//
-//        // 解析元素内容
-//        val resolved = DefaultResolver.resolve(preHandle.get(), context)
-//
-//        // 解释器 TODO How to deal with them
-//        val interceptorTasks = ItemRegistry.interceptors.map {
-//            async { it.intercept(item.identifier, resolved, context) }
-//        }
-//
-//        // 源任务: 元素 -> 数据
-//        val sourcedTasks = ItemRegistry.sources.map {
-//            async { it.generateItem(Element(origin.identifier, resolved), context)?.data }
-//        }
-//
-//        // 原生任务: 元素(解析过后的) -> 组件 -> 数据
-//        val nativeTasks = ItemRegistry.registry.map {
-//            async { runTask(it, resolved, item.data) }
-//        }
-//
-//        val originalMaterial = item.data.material
-//        val originalAmount = item.data.amount
-//        // 等待所有任务完成, 然后合并数据
-//        val allTasks = interceptorTasks.awaitAll()
-//            .plus(sourcedTasks.awaitAll())
-//            .plus(nativeTasks.awaitAll().map { it.getOrNull() })
-//        for (generated in allTasks) {
-//            // 跳过空数据
-//            if (generated == null) continue
-//
-//            // 设置材质
-//            val nowMat = generated.material
-//            if (nowMat != originalMaterial) item.data.material = nowMat
-//            // 设置数量
-//            val nowAmount = generated.amount
-//            if (nowAmount != originalAmount) item.data.amount = nowAmount
-//            // 合并标签
-//            item.data.tag.merge(generated.tag, true)
-//        }
 
         // 呼出生成结束的事件
         val event = ItemGenerateEvent.Post(item.identifier, this@DefaultGenerator, context, item)
@@ -143,12 +101,11 @@ class DefaultGenerator(
     }.asCompletableFuture()
 
     /**
-     * 执行任务
+     * 序列化组件
      */
-    fun runTask(
+    fun serializationComponent(
         integrated: ItemRegistry.Integrated<*>,
         element: JsonElement,
-        refer: ItemData,
     ): Result<ItemData> {
         // 获取序列化器
         @Suppress("UNCHECKED_CAST")
@@ -175,7 +132,8 @@ class DefaultGenerator(
         if (tag is NbtCompound) {
             val processor = integrated.processor
             try {
-                val processed = processor.process(SimpleData(refer.material, tag))
+                // TODO 真的需要吗？
+                val processed = processor.process(SimpleData(tag = tag))
                 return Result.success(processed)
             } catch (ex: Exception) {
                 severe("Failed to process data by '$processor'!")

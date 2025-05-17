@@ -4,8 +4,7 @@ import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.containsNonEscaped
 import cn.fd.ratziel.core.util.splitNonEscaped
-import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
-import kotlinx.serialization.json.JsonNull
+import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
@@ -14,7 +13,7 @@ import kotlinx.serialization.json.JsonPrimitive
  * @author TheFloodDragon
  * @since 2025/5/3 19:20
  */
-object EnhancedListResolver : ItemSectionResolver {
+object EnhancedListResolver : ItemResolver {
 
     const val NEWLINE = "\\n"
     const val NEWLINE_2 = "{nl}"

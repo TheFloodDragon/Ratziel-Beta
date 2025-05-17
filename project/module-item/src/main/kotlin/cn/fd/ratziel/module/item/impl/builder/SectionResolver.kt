@@ -4,9 +4,9 @@ import cn.fd.ratziel.core.exception.ArgumentNotFoundException
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.splitNonEscaped
-import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
-import kotlinx.serialization.json.contentOrNull
+import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author TheFloodDragon
  * @since 2025/5/3 19:34
  */
-object SectionResolver : ItemSectionResolver {
+object SectionResolver : ItemResolver {
 
     /**
      * 标签解析器列表
