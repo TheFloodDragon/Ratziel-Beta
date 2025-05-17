@@ -34,7 +34,7 @@ open class SimpleContext(
         return list.filter { type.isAssignableFrom(it::class.java) } as List<T>
     }
 
-    override fun add(element: Any) {
+    override fun put(element: Any) {
         list.add(element)
     }
 

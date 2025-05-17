@@ -62,7 +62,7 @@ object ItemCommand {
         // 获取物品生成器
         val generator = ItemManager.registry[id] ?: return CompletableFuture.completedFuture(null)
         // 上下文参数
-        val args = SimpleContext().apply { add(player) }
+        val args = SimpleContext().apply { put(player) }
         // 开始生成物品
         val time = TimeSource.Monotonic.markNow()
         generator.build(args).thenAccept {

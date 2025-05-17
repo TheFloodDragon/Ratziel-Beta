@@ -3,6 +3,7 @@ package cn.fd.ratziel.common.element
 import cn.fd.ratziel.common.element.ElementEvaluator.evaluations
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.ElementRegistry
+import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.ElementIdentifier
@@ -175,8 +176,8 @@ object ElementEvaluator {
             // 检查前置
             checkDependencies()
 
-            // 触发 ElementHandler#onStart TODO EVENT
-            handler.onStart(elements)
+            // 触发 ElementEvaluateEvent.Start
+            ElementEvaluateEvent.Start(handler, elements).call()
 
             // 开启阻塞协程
             runBlocking {
@@ -200,8 +201,9 @@ object ElementEvaluator {
                 awaitAll(*asyncTasks.toTypedArray())
 
             }
-            // 触发 ElementHandler#onEnd
-            handler.onEnd()
+
+            // 触发 ElementEvaluateEvent.End
+            ElementEvaluateEvent.End(handler).call()
         }
 
         private fun checkDependencies() {

@@ -40,7 +40,7 @@ public interface ArgumentContext {
     /**
      * 添加一个参数
      */
-    void add(@NotNull Object element);
+    void put(@NotNull Object element);
 
     /**
      * 删除一个参数

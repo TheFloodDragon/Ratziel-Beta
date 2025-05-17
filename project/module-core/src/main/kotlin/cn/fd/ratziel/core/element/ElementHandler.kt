@@ -11,7 +11,7 @@ interface ElementHandler {
     /**
      * 处理单个元素
      */
-    fun handle(element: Element) {}
+    fun handle(element: Element)
 
     /**
      * 在元素加载前调用

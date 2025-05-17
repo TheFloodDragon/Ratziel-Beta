@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.internal.builder
 
-import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.api.builder.ItemStream
@@ -13,9 +12,9 @@ import cn.fd.ratziel.module.item.api.builder.ItemStream
  */
 class SourceInterceptor(val source: ItemSource) : ItemInterceptor {
 
-    override suspend fun intercept(stream: ItemStream, context: ArgumentContext) {
+    override suspend fun intercept(stream: ItemStream) {
         // 生成物品
-        val item = source.generateItem(stream.origin, context) ?: return
+        val item = source.generateItem(stream.origin, stream.context) ?: return
         // 写入数据
         val newTag = item.data.tag
         stream.data.withValue {

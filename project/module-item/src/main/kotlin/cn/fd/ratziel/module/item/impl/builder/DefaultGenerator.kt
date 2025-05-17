@@ -12,8 +12,9 @@ import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.future.asCompletableFuture
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
 
@@ -68,15 +69,15 @@ class DefaultGenerator(
 
         // 解释器解释元素
         val interceptorTasks = ItemRegistry.interceptors.map {
-            async { it.intercept(this@async, stream) }
+            launch { it.intercept(stream) }
         }
 
         // 序列化任务需要完全在解释后, 故等待解释任务的完成
-        interceptorTasks.awaitAll()
+        interceptorTasks.joinAll()
 
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->
-            async {
+            launch {
                 val generated = serializationComponent(
                     integrated,
                     stream.fetchElement(),
@@ -98,7 +99,7 @@ class DefaultGenerator(
         }
 
         // 等待所有序列化任务完成
-        serializationTasks.awaitAll()
+        serializationTasks.joinAll()
 
         // 呼出生成结束的事件
         val event = ItemGenerateEvent.Post(item.identifier, this@DefaultGenerator, context, item)
