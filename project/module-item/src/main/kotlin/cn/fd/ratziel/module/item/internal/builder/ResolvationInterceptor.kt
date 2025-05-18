@@ -29,7 +29,7 @@ open class ResolvationInterceptor(
 
     class Limited(
         resolver: ItemResolver,
-        val limitsGetter: () -> Set<String> = { DefaultResolver.accessibleNodes },
+        private val limitsGetter: () -> Set<String> = { DefaultResolver.accessibleNodes },
     ) : ResolvationInterceptor(resolver) {
 
         override suspend fun intercept(stream: ItemStream) {

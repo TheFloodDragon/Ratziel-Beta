@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
-import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.serialization.json.getBy
 import cn.fd.ratziel.module.item.api.action.ActionMap
@@ -21,7 +20,6 @@ import taboolib.common.platform.function.severe
  * @author TheFloodDragon
  * @since 2025/5/10 16:38
  */
-@AutoRegister
 object ActionInterceptor : ItemInterceptor {
 
     /**

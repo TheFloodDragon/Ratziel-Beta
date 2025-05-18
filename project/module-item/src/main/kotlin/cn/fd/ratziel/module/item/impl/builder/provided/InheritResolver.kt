@@ -41,14 +41,14 @@ object InheritResolver : ItemResolver, SectionTagResolver("extend", "inherit") {
 
     override fun resolve(element: List<String>, node: JsonTree.PrimitiveNode, context: ArgumentContext): String? {
         // 元素名称
-        var name: String
+        val name: String
         /*
           路径
           为什么用 NbtPath 呢?
           因为底层逻辑都是一样的, 重写一个岂不麻烦?
           不用白不用.
          */
-        var path: NbtPath
+        val path: NbtPath
 
         // 看看传过来什么东西
         when (element.size) {
@@ -103,12 +103,11 @@ object InheritResolver : ItemResolver, SectionTagResolver("extend", "inherit") {
             warning("Unknown element named '$name' which is to be inherited!")
             return null
         }
-        val property = element
-        if (property !is JsonObject) {
+        if (element !is JsonObject) {
             warning("The target to be inherited must be a JsonObject!")
             return null
         }
-        return property
+        return element
     }
 
     private fun read(element: JsonElement, path: NbtPath): JsonElement? {
