@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap
  * @author TheFloodDragon
  * @since 2025/5/10 19:49
  */
-@AutoRegister
 object DefinitionInterceptor : ItemInterceptor {
 
     /**

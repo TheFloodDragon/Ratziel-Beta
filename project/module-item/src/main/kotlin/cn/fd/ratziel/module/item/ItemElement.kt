@@ -11,6 +11,7 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
+import cn.fd.ratziel.module.item.impl.builder.provided.DefinitionInterceptor
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
@@ -88,6 +89,8 @@ object ItemElement : ElementHandler {
         register<ItemDurability>()
         register<ItemSkull>(processor = ItemSkull.Processor)
         register<ItemHideFlag>()
+        // 注册默认解释器
+        ItemRegistry.registerInterceptor(DefinitionInterceptor)
         // 注册默认解析器
         DefaultResolver.registerDefaults()
     }

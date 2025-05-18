@@ -1,37 +1,37 @@
 {
   "ItemDisplay.name": {
     "0": "Name",
-    "12005": "custom_name"
+    "12005": "minecraft:custom_name"
   },
   "ItemDisplay.localizedName": {
     "0": "LocName",
-    "12005": "item_name"
+    "12005": "minecraft:item_name"
   },
   "ItemDisplay.lore": {
     "0": "Lore",
-    "12005": "lore"
+    "12005": "minecraft:lore"
   },
   "ItemDurability.maxDurability": {
-    "0": "max_damage"
+    "12005": "minecraft:max_damage"
   },
   "ItemDurability.repairCost": {
     "0": "RepairCost",
-    "12005": "repair_cost"
+    "12005": "minecraft:repair_cost"
   },
   "ItemDurability.unbreakable": {
     "0": "Unbreakable",
-    "12005": "unbreakable"
+    "12005": "minecraft:unbreakable"
   },
   "ItemEnchant.enchantments": {
     "0": "Enchantments",
-    "12005": "enchants"
+    "12005": "minecraft:enchants"
   },
   "ItemEnchant.glintOverride": {
-    "0": "enchantment_glint_override"
+    "0": "minecraft:enchantment_glint_override"
   },
   "ItemSundry.customModelData": {
     "11400": "CustomModelData",
-    "12005": "custom_model_data"
+    "12005": "minecraft:custom_model_data"
   },
   "TODO.TODO.DYED_COLOR": {
     "0": "display.color",

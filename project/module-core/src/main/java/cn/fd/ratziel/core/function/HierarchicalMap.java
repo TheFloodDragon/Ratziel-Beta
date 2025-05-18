@@ -88,7 +88,7 @@ public class HierarchicalMap {
      *   <li>返回第一个找到的匹配值</li>
      * </ol>
      *
-     * @param key 查询的类
+     * @param type 查询的类
      * @return 找到的匹配值，未找到时返回null
      */
     public synchronized @Nullable Object get(@NotNull Class<?> type) {
@@ -99,6 +99,20 @@ public class HierarchicalMap {
             }
         }
         return null;
+    }
+
+    /**
+     * 删除值
+     */
+    public synchronized void remove(@NotNull Class<?> type) {
+        map.remove(type);
+    }
+
+    /**
+     * 获取所有存储的值
+     */
+    public synchronized Collection<Object> values() {
+        return Collections.unmodifiableCollection(map.values());
     }
 
     /**

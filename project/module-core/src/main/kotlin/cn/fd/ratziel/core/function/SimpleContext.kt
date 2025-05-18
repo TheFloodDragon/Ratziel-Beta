@@ -1,7 +1,6 @@
 package cn.fd.ratziel.core.function
 
 import cn.fd.ratziel.core.exception.ArgumentNotFoundException
-import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * SimpleContext
@@ -9,11 +8,13 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @author TheFloodDragon
  * @since 2024/6/28 16:19
  */
-open class SimpleContext(
-    val list: MutableList<Any>
+class SimpleContext(
+    private val map: HierarchicalMap = HierarchicalMap(1),
 ) : ArgumentContext {
 
-    constructor(vararg values: Any) : this(CopyOnWriteArrayList<Any>().apply { addAll(values) })
+    constructor(vararg values: Any) : this() {
+        for (value in values) this.map.put(value)
+    }
 
     override fun <T> pop(type: Class<T>): T & Any {
         return popOrNull(type) ?: throw ArgumentNotFoundException(type)
@@ -24,28 +25,23 @@ open class SimpleContext(
     }
 
     override fun <T> popOrNull(type: Class<T>): T? {
-        val find = list.find { type.isAssignableFrom(it::class.java) }
+        val find = map.get(type) ?: return null
         @Suppress("UNCHECKED_CAST")
-        return (find ?: return null) as T
-    }
-
-    override fun <T : Any?> popAll(type: Class<T>): List<T> {
-        @Suppress("UNCHECKED_CAST")
-        return list.filter { type.isAssignableFrom(it::class.java) } as List<T>
+        return find as T
     }
 
     override fun put(element: Any) {
-        list.add(element)
+        map.put(element)
     }
 
     override fun remove(element: Any) {
-        list.remove(element)
+        if (element is Class<*>) {
+            map.remove(element)
+        } else {
+            map.remove(element::class.java)
+        }
     }
 
-    override fun removeAll(type: Class<*>) = list.forEachIndexed { index, element ->
-        if (!type.isAssignableFrom(element::class.java)) list.removeAt(index)
-    }
-
-    override fun args(): Collection<Any> = list
+    override fun args(): Collection<Any> = map.values()
 
 }
