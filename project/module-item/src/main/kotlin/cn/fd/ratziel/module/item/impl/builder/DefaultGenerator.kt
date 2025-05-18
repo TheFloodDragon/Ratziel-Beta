@@ -31,15 +31,6 @@ class DefaultGenerator(
     val origin: Element,
 ) : ItemGenerator {
 
-//    /**
-//     * 预解析的 [JsonElement]
-//     */
-//    private val preHandle by replenish {
-//        CompletableFuture.supplyAsync({
-//            DefaultResolver.resolve(origin.property, SimpleContext())
-//        }, ItemElement.executor)
-//    }
-
     override fun build() = build(SimpleContext())
 
     /**

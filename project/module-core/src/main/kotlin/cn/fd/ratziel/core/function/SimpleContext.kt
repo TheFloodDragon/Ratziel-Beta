@@ -1,6 +1,7 @@
 package cn.fd.ratziel.core.function
 
 import cn.fd.ratziel.core.exception.ArgumentNotFoundException
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * SimpleContext
@@ -9,11 +10,11 @@ import cn.fd.ratziel.core.exception.ArgumentNotFoundException
  * @since 2024/6/28 16:19
  */
 class SimpleContext(
-    private val map: HierarchicalMap = HierarchicalMap(1),
+    private val map: MutableMap<Class<*>, Any> = ConcurrentHashMap(),
 ) : ArgumentContext {
 
     constructor(vararg values: Any) : this() {
-        for (value in values) this.map.put(value)
+        for (value in values) this.map.put(value::class.java, value)
     }
 
     override fun <T> pop(type: Class<T>): T & Any {
@@ -25,23 +26,21 @@ class SimpleContext(
     }
 
     override fun <T> popOrNull(type: Class<T>): T? {
-        val find = map.get(type) ?: return null
+        val find = map[type] // 寻找同类型
+            ?: map.entries.find { type.isAssignableFrom(it.key) }?.value // 寻找子类
+            ?: return null
         @Suppress("UNCHECKED_CAST")
         return find as T
     }
 
     override fun put(element: Any) {
-        map.put(element)
+        map.put(element::class.java, element)
     }
 
-    override fun remove(element: Any) {
-        if (element is Class<*>) {
-            map.remove(element)
-        } else {
-            map.remove(element::class.java)
-        }
+    override fun remove(type: Class<*>) {
+        map.remove(type)
     }
 
-    override fun args(): Collection<Any> = map.values()
+    override fun args(): Collection<Any> = map.values
 
 }

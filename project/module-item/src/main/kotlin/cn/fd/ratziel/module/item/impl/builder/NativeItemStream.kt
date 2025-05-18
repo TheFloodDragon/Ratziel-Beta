@@ -28,11 +28,7 @@ class NativeItemStream(
     override val data: SynchronizedValue<ItemData> = SynchronizedValue.getter { item.data }
 
     override var context: ArgumentContext = context
-        @Synchronized
-        get() = field
-        @Synchronized
-        set(value) {
-            field = value
-        }
+        @Synchronized get
+        @Synchronized set
 
 }

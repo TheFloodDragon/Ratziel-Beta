@@ -23,9 +23,9 @@ object MessageComponentSerializer : KSerializer<Component> {
     override val descriptor = PrimitiveSerialDescriptor("adventure.Component", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): Component {
-        // Json 使用组件构建的形式
         return if (decoder is JsonDecoder) {
             val component = Message.buildMessage(decoder.decodeString())
+            // 默认非斜体处理
             if (Settings.nonItalic && !component.hasDecoration(TextDecoration.ITALIC)) {
                 component.decoration(TextDecoration.ITALIC, false)
             } else component

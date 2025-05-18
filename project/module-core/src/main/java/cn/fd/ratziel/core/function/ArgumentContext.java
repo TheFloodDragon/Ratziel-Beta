@@ -40,7 +40,7 @@ public interface ArgumentContext {
     /**
      * 删除一个参数
      */
-    void remove(@NotNull Object element);
+    void remove(@NotNull Class<?> type);
 
     /**
      * 获取所有参数
