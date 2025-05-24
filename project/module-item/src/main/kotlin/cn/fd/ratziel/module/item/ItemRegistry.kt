@@ -2,10 +2,8 @@ package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
-import cn.fd.ratziel.module.item.api.builder.ItemResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
-import cn.fd.ratziel.module.item.internal.builder.ResolvationInterceptor
 import cn.fd.ratziel.module.item.internal.builder.SourceInterceptor
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
@@ -68,18 +66,6 @@ object ItemRegistry {
     @JvmStatic
     fun registerSource(source: ItemSource) {
         val interceptor = SourceInterceptor(source)
-        registerInterceptor(interceptor)
-    }
-
-    /**
-     * 注册解析器
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun registerResolver(resolver: ItemResolver, limit: Boolean = false) {
-        val interceptor = if (limit) {
-            ResolvationInterceptor.Limited(resolver)
-        } else ResolvationInterceptor(resolver)
         registerInterceptor(interceptor)
     }
 

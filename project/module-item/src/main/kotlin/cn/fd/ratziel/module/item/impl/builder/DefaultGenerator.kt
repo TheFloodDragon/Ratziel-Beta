@@ -44,19 +44,11 @@ class DefaultGenerator(
      * 注: 此处使用多线程进行 反序列化和应用数据 的操作
      */
     fun buildAsync(sourceData: ItemData, context: ArgumentContext) = ItemElement.scope.async {
-        // 生成基本物品 (本地源物品)
-        val item = NativeSource.generateItem(origin, sourceData)
-            ?: throw IllegalStateException("Failed to generate item source!")
+        // 创建物品流
+        val stream = createNativeStream(sourceData, context)
 
         // 呼出开始生成的事件
-        ItemGenerateEvent.Pre(item.identifier, this@DefaultGenerator, context, origin.property).call()
-
-        // 记录当前材料数量数据
-        val originalMaterial = item.data.material
-        val originalAmount = item.data.amount
-
-        // 创建物品流
-        val stream = NativeItemStream(origin, item, context)
+        ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
 
         // 解释器解释元素
         val interceptorTasks = ItemRegistry.interceptors.map {
@@ -65,6 +57,10 @@ class DefaultGenerator(
 
         // 序列化任务需要完全在解释后, 故等待解释任务的完成
         interceptorTasks.joinAll()
+
+        // 记录当前材料数量数据
+        val originalMaterial = stream.item.data.material
+        val originalAmount = stream.item.data.amount
 
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->
@@ -78,11 +74,9 @@ class DefaultGenerator(
                 // 合并数据
                 if (generated != null) stream.data.withValue {
                     // 设置材质
-                    val nowMat = generated.material
-                    if (nowMat != originalMaterial) it.material = nowMat
+                    it.material = generated.material
                     // 设置数量
-                    val nowAmount = generated.amount
-                    if (nowAmount != originalAmount) it.amount = nowAmount
+                    it.amount = generated.amount
                     // 合并标签
                     it.tag.merge(generated.tag, true)
                 }
@@ -93,10 +87,21 @@ class DefaultGenerator(
         serializationTasks.joinAll()
 
         // 呼出生成结束的事件
-        val event = ItemGenerateEvent.Post(item.identifier, this@DefaultGenerator, context, item)
+        val event = ItemGenerateEvent.Post(stream.identifier, this@DefaultGenerator, context, stream.item)
         event.call()
         event.item // 返回最终结果
     }.asCompletableFuture()
+
+    /**
+     * 创建原生物品流
+     */
+    fun createNativeStream(sourceData: ItemData, context: ArgumentContext): NativeItemStream {
+        // 生成基本物品 (本地源物品)
+        val item = NativeSource.generateItem(origin, sourceData)
+            ?: throw IllegalStateException("Failed to generate item source!")
+        // 创建物品流
+        return NativeItemStream(origin, item, context)
+    }
 
     /**
      * 序列化组件

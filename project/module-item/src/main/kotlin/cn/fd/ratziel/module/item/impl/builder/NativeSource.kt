@@ -5,7 +5,9 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.getBy
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemSource
+import cn.fd.ratziel.module.item.api.service.ItemService
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.util.MetaMatcher
@@ -20,9 +22,7 @@ import taboolib.common.io.digest
  * @author TheFloodDragon
  * @since 2025/4/4 14:24
  */
-object NativeSource : ItemSource {
-
-    val materialNames = listOf("material", "mat", "materials", "mats")
+object NativeSource {
 
     fun generateItem(element: Element, sourceData: ItemData): RatzielItem? {
         // 生成物品唯一标识符
@@ -33,16 +33,30 @@ object NativeSource : ItemSource {
         // 生成物品信息
         val info = RatzielItem.Info(identifier, version)
 
-        // 确定第一物品材料类型
-        val name = (property.getBy(materialNames) as? JsonPrimitive)?.contentOrNull
-        if (name != null) sourceData.material = MetaMatcher.matchMaterial(name)
-
         // 创建物品
         return RatzielItem.of(info, sourceData)
     }
 
-    override fun generateItem(element: Element, context: ArgumentContext): RatzielItem? {
-        return generateItem(element, SimpleData())
+    object MaterialSource : ItemSource {
+
+        val materialNames = listOf("material", "mat", "materials", "mats")
+
+        override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
+            val data = SimpleData()
+
+            // 确定第一物品材料类型
+            val property = (element.property as? JsonObject) ?: return null
+            val name = (property.getBy(materialNames) as? JsonPrimitive)?.contentOrNull
+            if (name != null) data.material = MetaMatcher.matchMaterial(name)
+
+            // 创建仅使用数据功能的物品
+            return object : NeoItem {
+                override val data: ItemData = data
+                override val service: ItemService
+                    get() = throw UnsupportedOperationException("Service is not supported for MaterialSource's item!")
+            }
+        }
+
     }
 
 }
