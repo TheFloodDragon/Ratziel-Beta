@@ -10,8 +10,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.script.block.ExecutableBlock
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.event.SubscribeEvent
@@ -53,31 +51,25 @@ object NativeDataInterceptor : ItemInterceptor {
         if (element !is JsonObject) return
         val id = stream.identifier.content
 
-        // 数据处理
-        val task = coroutineScope {
-            async {
-                // 获取语句块表
-                val blocks = cache[id]
-                    ?: run {
-                        // 读取数据
-                        val define = element["data"] as? JsonObject ?: return@run null
-                        val map = DefinitionInterceptor.buildBlockMap(define)
-                        // 加入到缓存
-                        cache[id] = map
-                        map
-                    } ?: return@async emptyMap()
+        // 获取语句块表
+        val blocks = cache[id]
+            ?: run {
+                // 读取数据
+                val define = element["data"] as? JsonObject ?: return@run null
+                val map = DefinitionInterceptor.buildBlockMap(define)
+                // 加入到缓存
+                cache[id] = map
+                map
+            } ?: return
 
-                DefinitionInterceptor.executeAll(blocks, stream.context)
-                    .mapValues {
-                        runCatching {
-                            NbtAdapter.box(it)
-                        }.getOrNull()
-                    }
+        val result = DefinitionInterceptor.executeAll(blocks, stream.context)
+            .mapValues { (_, value) ->
+                runCatching {
+                    value?.let { NbtAdapter.box(it) }
+                }.getOrNull()
             }
-        }
 
-        // 等待任务完成, 写入到物品数据里
-        val result = task.await()
+        // 写入到物品数据里
         stream.data.withValue {
             // 创建 Holder 以写入数据
             val holder = RatzielItem.Holder(it)

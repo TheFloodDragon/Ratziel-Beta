@@ -12,7 +12,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import java.util.concurrent.CompletableFuture
 
 /**
  * ScriptBlock TODO Refactor
@@ -25,19 +24,6 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
     lateinit var script: ScriptContent
         @Synchronized private set
         @Synchronized get
-
-    init {
-        // 尝试预编译
-        CompletableFuture.supplyAsync {
-            try {
-                val compiled = executor.build(scriptSource, SimpleScriptEnv())
-                if (!::script.isInitialized) {
-                    script = compiled
-                }
-            } catch (_: Exception) {
-            }
-        }
-    }
 
     override fun execute(context: ArgumentContext): Any? {
         val environment = context.scriptEnv() ?: SimpleScriptEnv()

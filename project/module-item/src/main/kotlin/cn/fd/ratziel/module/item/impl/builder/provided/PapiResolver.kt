@@ -20,7 +20,7 @@ import taboolib.platform.compat.replacePlaceholder
 object PapiResolver : ItemSectionResolver, ItemTagResolver {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
-        if (node !is JsonTree.PrimitiveNode || !node.value.isString || node.value !is JsonNull) return
+        if (node !is JsonTree.PrimitiveNode || !node.value.isString || node.value is JsonNull) return
         // 仅当有玩家参数的时候解析
         val player = context.player() ?: return
         // 解析 PlaceholderAPI 变量

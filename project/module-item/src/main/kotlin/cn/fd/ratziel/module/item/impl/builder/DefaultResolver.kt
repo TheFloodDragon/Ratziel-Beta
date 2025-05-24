@@ -52,7 +52,7 @@ object DefaultResolver : ItemInterceptor {
                     .let { JsonTree.ObjectNode(it, null) }
 
                 // Papi 解析
-                PapiResolver.resolve(filtered, stream.context)
+                JsonTree.unfold(filtered) { PapiResolver.resolve(it, stream.context) }
 
                 // 标签解析
                 val analyzed = TaggedSectionResolver.analyze(filtered)
@@ -65,7 +65,7 @@ object DefaultResolver : ItemInterceptor {
                   就比如 InheritResolver (SectionTagResolver),
                   因为列表是不能边遍历边修改的, 所以只能采用换行字符的方式.
                 */
-                EnhancedListResolver.resolve(filtered, stream.context)
+                JsonTree.unfold(filtered) { EnhancedListResolver.resolve(it, stream.context) }
             }
 
         }

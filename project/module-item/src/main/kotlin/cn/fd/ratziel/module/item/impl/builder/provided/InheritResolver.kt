@@ -14,7 +14,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import taboolib.common.platform.function.warning
 
 /**
- * InheritResolver - 继承解析器
+ * InheritResolver - 继承解析器 TODO Implement to ItemInterceptor
  *
  * @author TheFloodDragon
  * @since 2025/5/4 15:44

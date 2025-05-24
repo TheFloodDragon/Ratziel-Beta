@@ -15,7 +15,7 @@ inline fun randomUuid() = Uuid.random().toHexString()
  */
 @JvmOverloads
 fun String.containsNonEscaped(other: String, ignoreCase: Boolean = false): Boolean {
-    return indexOfNonEscaped(other, ignoreCase = ignoreCase) >= 0
+    return allIndexOfNonEscaped(other, ignoreCase = ignoreCase).isNotEmpty()
 }
 
 /**
@@ -81,7 +81,7 @@ fun String.replaceNonEscaped(
     oldValue: String,
     newValue: String,
     ignoreCase: Boolean = false,
-    startIndex: Int = 0
+    startIndex: Int = 0,
 ): String = buildString {
     // 索引记录
     var lastIndex = 0
@@ -107,7 +107,7 @@ fun String.replaceNonEscaped(
 fun String.splitNonEscaped(
     vararg delimiters: String,
     ignoreCase: Boolean = false,
-    limit: Int = 0
+    limit: Int = 0,
 ): List<String> = this.split(*delimiters, ignoreCase = ignoreCase, limit = limit)
     .map { s -> s.takeUnless { it.endsWith('\\') } ?: s.dropLast(1) }
 

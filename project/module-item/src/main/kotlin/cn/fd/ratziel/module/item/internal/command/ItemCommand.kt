@@ -67,7 +67,7 @@ object ItemCommand {
         val time = TimeSource.Monotonic.markNow()
         generator.build(args).thenAccept {
             val duration = time.elapsedNow()
-            debug("Generated item '$id' in ${duration.inWholeMilliseconds}ms.")
+            debug("[TIME MARK] Generated item '$id' in ${duration.inWholeMilliseconds}ms.")
             // 将生成结果打包成 BukkitItemStack
             val item = RefItemStack.of(it.data).bukkitStack.apply { setAmount(amount) }
             submit {

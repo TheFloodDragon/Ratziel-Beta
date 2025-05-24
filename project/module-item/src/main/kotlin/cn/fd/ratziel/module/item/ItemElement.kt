@@ -96,10 +96,10 @@ object ItemElement : ElementHandler {
     init {
         // 注册默认解释器
         ItemRegistry.registerSource(NativeSource.MaterialSource)
-        ItemRegistry.registerInterceptor(DefaultResolver)
         ItemRegistry.registerInterceptor(ActionInterceptor)
         ItemRegistry.registerInterceptor(DefinitionInterceptor)
         ItemRegistry.registerInterceptor(NativeDataInterceptor)
+        ItemRegistry.registerInterceptor(DefaultResolver)
     }
 
     override fun handle(element: Element) {
