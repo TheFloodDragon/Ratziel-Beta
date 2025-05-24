@@ -4,7 +4,7 @@ import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
-import cn.fd.ratziel.module.item.internal.builder.SourceInterceptor
+import cn.fd.ratziel.module.item.internal.SourceInterceptor
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 

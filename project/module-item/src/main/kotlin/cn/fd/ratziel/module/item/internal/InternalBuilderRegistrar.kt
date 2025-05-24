@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.builder
+package cn.fd.ratziel.module.item.internal
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.module.item.ItemRegistry

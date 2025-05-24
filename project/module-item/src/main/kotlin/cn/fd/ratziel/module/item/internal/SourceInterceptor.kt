@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.builder
+package cn.fd.ratziel.module.item.internal
 
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemSource

@@ -100,7 +100,10 @@ class DefaultGenerator(
         val item = NativeSource.generateItem(origin, sourceData)
             ?: throw IllegalStateException("Failed to generate item source!")
         // 创建物品流
-        return NativeItemStream(origin, item, context)
+        val stream = NativeItemStream(origin, item, context)
+        // 将物品流放入上下文中 (某些情况需要用)
+        context.put(stream)
+        return stream
     }
 
     /**

@@ -58,10 +58,6 @@ object DefaultResolver : ItemInterceptor {
     }
 
     override suspend fun intercept(stream: ItemStream) {
-        interceptWith(stream, registry)
-    }
-
-    suspend fun interceptWith(stream: ItemStream, registry: List<Pair<ItemSectionResolver, Boolean>>) {
         stream.tree.withValue { tree ->
             val root = tree.root
 
