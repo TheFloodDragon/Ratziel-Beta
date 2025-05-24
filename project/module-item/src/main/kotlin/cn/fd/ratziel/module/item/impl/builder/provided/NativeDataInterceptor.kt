@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
+import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
@@ -27,9 +28,9 @@ object NativeDataInterceptor : ItemInterceptor {
     @AutoRegister
     object NativeDataResolver : ItemTagResolver {
         override val alias = arrayOf("data")
-        override fun resolve(task: ItemTagResolver.ResolvationTask) {
+        override fun resolve(task: ItemTagResolver.ResolvationTask, context: ArgumentContext) {
             // 获取物品流
-            val stream = task.context.popOrNull(ItemStream::class.java) ?: return
+            val stream = context.popOrNull(ItemStream::class.java) ?: return
             // 数据名称
             val name = task.args.firstOrNull() ?: return
             // 获取数据

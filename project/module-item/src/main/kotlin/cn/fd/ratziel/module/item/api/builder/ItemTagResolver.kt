@@ -16,21 +16,24 @@ interface ItemTagResolver {
 
     /**
      * 解析元素
+     *
+     * @param task 解析任务
+     * @param context 上下文
      */
-    fun resolve(task: ResolvationTask)
+    fun resolve(task: ResolvationTask, context: ArgumentContext)
 
     /**
      * 标签解析任务
      */
     class ResolvationTask(
         /**
+         * 执行此任务的 [ItemTagResolver]
+         */
+        val resolver: ItemTagResolver,
+        /**
          * 标签参数
          */
         val args: List<String>,
-        /**
-         * 下上文
-         */
-        val context: ArgumentContext,
         /**
          * 外部内容 (此标签在哪个字符串节点内部)
          */

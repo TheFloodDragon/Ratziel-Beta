@@ -31,52 +31,43 @@ object DefaultResolver : ItemInterceptor {
         CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
     }
 
-    /**
-     * 注册默认解析器:
-     *
+    /*
      * 尽管解释器 (Resolver, Interceptor, Source) 在解释的过程中是并行的,
      * 但是启动协程的顺序就近乎决定了解释器获取同步锁的顺序,
      * 比如解析器 (Resolver) 的执行是一开始就尝试拿锁的, 故而但看解析器执行链, 会发现它们其实是串行的.
      * 其他的同理也不是完全的并行或者串行, 这种方式虽说有可能会带来错位解释 (不按照启动协程的顺序),
      * 但相比来说, 却极为简洁, 在大多情况下无异常.
      */
-    init {
-        // 继承解析
-        registry.add(InheritResolver to false)
-        // Papi 解析
-        registry.add(PapiResolver to true)
-        // 标签解析
-        registry.add(TaggedSectionResolver to true)
-        /*
-          内接增强列表解析
-          这里解释下为什么要放在标签解析的后面:
-          放在标签解析的后面, 则是因为有些标签解析器可能会返回带有换行的字符串,
-          就比如 InheritResolver (SectionTagResolver),
-          因为列表是不能边遍历边修改的, 所以只能采用换行字符的方式.
-        */
-        registry.add(EnhancedListResolver to true)
-    }
 
     override suspend fun intercept(stream: ItemStream) {
         stream.tree.withValue { tree ->
             val root = tree.root
 
-            // 限制性解析: 过滤掉限制的节点
-            var limited: Map<String, JsonTree.Node>? = null
+            // 继承解析
+            InheritResolver.resolve(root, stream.context)
+
             if (root is JsonTree.ObjectNode) {
-                limited = root.value.filter { it.key in accessibleNodes }
+                // 限制性解析: 过滤掉限制的节点
+                val filtered = root.value.filter { it.key in accessibleNodes }
+                    .let { JsonTree.ObjectNode(it, null) }
+
+                // Papi 解析
+                PapiResolver.resolve(filtered, stream.context)
+
+                // 标签解析
+                val analyzed = TaggedSectionResolver.analyze(filtered)
+                TaggedSectionResolver.resolveAnalyzed(analyzed, stream.context)
+
+                /*
+                  内接增强列表解析
+                  这里解释下为什么要放在标签解析的后面:
+                  放在标签解析的后面, 则是因为有些标签解析器可能会返回带有换行的字符串,
+                  就比如 InheritResolver (SectionTagResolver),
+                  因为列表是不能边遍历边修改的, 所以只能采用换行字符的方式.
+                */
+                EnhancedListResolver.resolve(filtered, stream.context)
             }
 
-            for ((resolver, isLimited) in registry) {
-                if (isLimited && limited != null) {
-                    val objectNode = JsonTree.ObjectNode(limited, null)
-                    // 限制性解析: 过滤掉限制的节点
-                    JsonTree.unfold(objectNode) { resolver.resolve(it, stream.context) }
-                } else {
-                    // 普通解析
-                    JsonTree.unfold(root) { resolver.resolve(it, stream.context) }
-                }
-            }
         }
     }
 

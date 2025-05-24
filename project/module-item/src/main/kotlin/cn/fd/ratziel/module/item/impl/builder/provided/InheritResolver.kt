@@ -37,7 +37,7 @@ object InheritResolver : ItemSectionResolver, ItemTagResolver {
 
     override val alias = arrayOf("extend", "inherit")
 
-    override fun resolve(task: ItemTagResolver.ResolvationTask) {
+    override fun resolve(task: ItemTagResolver.ResolvationTask, context: ArgumentContext) {
         // 元素名称
         val name: String
         /*
@@ -86,7 +86,7 @@ object InheritResolver : ItemSectionResolver, ItemTagResolver {
             }
             // 仅支持元素全是 JsonPrimitive 的 JsonArray
             else if (find.all { it is JsonPrimitive }) {
-                val result =find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
+                val result = find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
                 task.complete(result)
             } else {
                 warning("Inline inheritance in a array does not support complex JsonArray.")

@@ -29,9 +29,9 @@ object PapiResolver : ItemSectionResolver, ItemTagResolver {
 
     override val alias = arrayOf("papi", "p")
 
-    override fun resolve(task: ItemTagResolver.ResolvationTask) {
+    override fun resolve(task: ItemTagResolver.ResolvationTask, context: ArgumentContext) {
         // 获取玩家
-        val player = task.context.player() ?: return
+        val player = context.player() ?: return
         // 读取内容
         val args = task.args
         val content = when {

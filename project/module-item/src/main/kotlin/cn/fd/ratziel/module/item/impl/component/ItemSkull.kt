@@ -5,9 +5,6 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.altawk.nbt.NbtDecoder
 import cn.altawk.nbt.NbtEncoder
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.builder.DataProcessor
-import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import kotlinx.serialization.*
 import kotlinx.serialization.encoding.Decoder
@@ -20,7 +17,7 @@ import taboolib.platform.util.BukkitSkull
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * ItemSkull
+ * ItemSkull TODO SkullSource
  *
  * @author TheFloodDragon
  * @since 2024/10/1 13:48
@@ -37,14 +34,6 @@ class ItemSkull(
 
     private val tag: NbtCompound? by lazy {
         itemStack?.let { RefItemStack.of(it).tag }
-    }
-
-    object Processor : DataProcessor {
-        override fun process(data: ItemData) = data.apply {
-            if (tag.isNotEmpty()) {
-                material = SimpleMaterial(XMaterial.PLAYER_HEAD) // 设置材质
-            }
-        }
     }
 
     companion object {

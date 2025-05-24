@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item
 
-import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
@@ -35,9 +34,8 @@ object ItemRegistry {
     fun <T> registerComponent(
         type: Class<T>,
         serializer: KSerializer<T>,
-        processor: DataProcessor = DataProcessor.NoProcess,
     ) {
-        val integrated = Integrated(type, serializer, processor)
+        val integrated = Integrated(type, serializer)
         registry.add(integrated)
     }
 
@@ -79,8 +77,6 @@ object ItemRegistry {
         val type: Class<T>,
         /** 物品组件序列化器 **/
         val serializer: KSerializer<T>,
-        /** 数据处理器 **/
-        val processor: DataProcessor,
     )
 
 }

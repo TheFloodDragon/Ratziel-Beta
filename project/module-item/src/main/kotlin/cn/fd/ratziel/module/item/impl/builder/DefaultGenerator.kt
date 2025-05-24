@@ -1,13 +1,13 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
@@ -58,27 +58,14 @@ class DefaultGenerator(
         // 序列化任务需要完全在解释后, 故等待解释任务的完成
         interceptorTasks.joinAll()
 
-        // 记录当前材料数量数据
-        val originalMaterial = stream.item.data.material
-        val originalAmount = stream.item.data.amount
-
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->
             launch {
-                val generated = serializeComponent(
-                    integrated,
-                    stream.fetchElement(),
-                    originalMaterial,
-                    originalAmount,
-                ).getOrNull()
+                val generated = serializeComponent(integrated, stream.fetchElement()).getOrNull()
                 // 合并数据
-                if (generated != null) stream.data.withValue {
-                    // 设置材质
-                    it.material = generated.material
-                    // 设置数量
-                    it.amount = generated.amount
+                if (generated as? NbtCompound != null) stream.data.withValue {
                     // 合并标签
-                    it.tag.merge(generated.tag, true)
+                    it.tag.merge(generated, true)
                 }
             }
         }
@@ -112,9 +99,7 @@ class DefaultGenerator(
     fun serializeComponent(
         integrated: ItemRegistry.Integrated<*>,
         element: JsonElement,
-        originMaterial: ItemMaterial,
-        originAmount: Int,
-    ): Result<ItemData> {
+    ): Result<NbtTag> {
         // 获取序列化器
         @Suppress("UNCHECKED_CAST")
         val serializer = (integrated as ItemRegistry.Integrated<Any>).serializer
@@ -128,27 +113,15 @@ class DefaultGenerator(
             return Result.failure(ex)
         }
         // 第二步: 编码成组件数据
-        val tag = try {
+        try {
             // 编码
-            ItemElement.nbt.encodeToNbtTag(serializer, component)
+            val tag = ItemElement.nbt.encodeToNbtTag(serializer, component)
+            return Result.success(tag)
         } catch (ex: Exception) {
             severe("Failed to transform component by '$serializer'! Source component: $component")
             ex.printStackTrace()
             return Result.failure(ex)
         }
-        // 第三步: 处理组件数据
-        if (tag is NbtCompound) {
-            val processor = integrated.processor
-            try {
-                val processed = processor.process(SimpleData(originMaterial, tag, originAmount))
-                return Result.success(processed)
-            } catch (ex: Exception) {
-                severe("Failed to process data by '$processor'!")
-                ex.printStackTrace()
-                return Result.failure(ex)
-            }
-        }
-        return Result.failure(IllegalStateException("Unknown exception during data generation!"))
     }
 
 }

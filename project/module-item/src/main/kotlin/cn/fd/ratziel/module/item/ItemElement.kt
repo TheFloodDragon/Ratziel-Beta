@@ -8,7 +8,6 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.api.builder.DataProcessor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
@@ -90,7 +89,7 @@ object ItemElement : ElementHandler {
         // 注册默认组件
         register(if (MinecraftVersion.versionId >= 12005) ItemDisplay.serializer() else LegacyItemDisplaySerializer)
         register<ItemDurability>()
-        register<ItemSkull>(processor = ItemSkull.Processor)
+        register<ItemSkull>()
         register<ItemHideFlag>()
     }
 
@@ -125,11 +124,8 @@ object ItemElement : ElementHandler {
         ItemManager.registry.clear()
     }
 
-    private inline fun <reified T : Any> register(
-        serializer: KSerializer<T> = serializer<T>(),
-        processor: DataProcessor = DataProcessor.NoProcess,
-    ) {
-        ItemRegistry.registerComponent(T::class.java, serializer, processor)
+    private inline fun <reified T : Any> register(serializer: KSerializer<T> = serializer<T>()) {
+        ItemRegistry.registerComponent(T::class.java, serializer)
     }
 
 }

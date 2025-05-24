@@ -17,15 +17,16 @@ class SourceInterceptor(val source: ItemSource) : ItemInterceptor {
         val item = source.generateItem(stream.origin, stream.context) ?: return
         // 写入数据
         val newTag = item.data.tag
+        val targetMaterial = item.data.material
+        val targetAmount = item.data.amount
+        // 合并任务
         stream.data.withValue {
             // 设置材料
-            val targetMaterial = item.data.material
             if (!targetMaterial.isEmpty()) it.material = targetMaterial
             // 设置数量
-            val targetAmount = item.data.amount
             if (targetAmount > 1) it.amount = targetAmount
             // 合并标签
-            it.tag.merge(newTag, true)
+            if (newTag.isNotEmpty()) it.tag.merge(newTag, true)
         }
     }
 
