@@ -5,8 +5,8 @@ import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.TemplateElement
-import cn.fd.ratziel.module.item.api.builder.ItemResolver
-import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
+import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
+import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -20,7 +20,7 @@ import taboolib.common.platform.function.warning
  * @since 2025/5/4 15:44
  */
 @AutoRegister
-object InheritResolver : ItemResolver, SectionTagResolver("extend", "inherit") {
+object InheritResolver : ItemSectionResolver, ItemTagResolver {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         // 仅处理根节点, 根节点需为对象节点
@@ -35,11 +35,9 @@ object InheritResolver : ItemResolver, SectionTagResolver("extend", "inherit") {
         merge(node, target)
     }
 
-    override fun resolve(element: List<String>, context: ArgumentContext): String? {
-        throw UnsupportedOperationException("InheritResolver requires Node.")
-    }
+    override val alias = arrayOf("extend", "inherit")
 
-    override fun resolve(element: List<String>, node: JsonTree.PrimitiveNode, context: ArgumentContext): String? {
+    override fun resolve(task: ItemTagResolver.ResolvationTask) {
         // 元素名称
         val name: String
         /*
@@ -51,50 +49,49 @@ object InheritResolver : ItemResolver, SectionTagResolver("extend", "inherit") {
         val path: NbtPath
 
         // 看看传过来什么东西
-        when (element.size) {
-            0 -> return null // 没元素名, 没路径, 解析什么?
+        val args = task.args
+        when (args.size) {
+            0 -> return // 没元素名, 没路径, 解析什么?
             // Name.Path 形式, 可以的
             1 -> {
-                val np = NbtPath(element[0])
+                val np = NbtPath(args[0])
                 name = (np.first() as NbtPath.NameNode).name
                 path = NbtPath(np.drop(1))
             }
             // Name:Path 形式
             2 -> {
-                name = element[0]
-                path = NbtPath(element[1])
+                name = args[0]
+                path = NbtPath(args[1])
             }
             // >=3, 也就是 Name:Path 形式, 同时 Path形式: hello:[1]:world
             else -> {
-                name = element[0]
-                path = NbtPath(element.drop(1).flatMap { NbtPath(it) })
+                name = args[0]
+                path = NbtPath(args.drop(1).flatMap { NbtPath(it) })
             }
         }
 
         // 根据路径寻找
-        val target = findElement(name) ?: return null
+        val target = findElement(name) ?: return
         val find = read(target, path)
         if (find == null) {
             warning("Cannot find element by path '$path'.")
-            return null
+            return
         }
         // 开始插入合并
         if (find is JsonPrimitive) {
-            return find.content
+            task.complete(find.content)
         } else if (find is JsonArray) {
-            if (node.parent !is JsonTree.ArrayNode) {
+            if (task.outside.parent !is JsonTree.ArrayNode) {
                 warning("Cannot inherit a JsonArray to a non JsonArray.")
-                return null
             }
             // 仅支持元素全是 JsonPrimitive 的 JsonArray
             else if (find.all { it is JsonPrimitive }) {
-                return find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
+                val result =find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
+                task.complete(result)
             } else {
                 warning("Inline inheritance in a array does not support complex JsonArray.")
-                return null
             }
         }
-        return null
     }
 
     private fun findElement(name: String): JsonObject? {

@@ -65,7 +65,7 @@ class DefaultGenerator(
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->
             launch {
-                val generated = serializationComponent(
+                val generated = serializeComponent(
                     integrated,
                     stream.fetchElement(),
                     originalMaterial,
@@ -106,7 +106,7 @@ class DefaultGenerator(
     /**
      * 序列化组件
      */
-    fun serializationComponent(
+    fun serializeComponent(
         integrated: ItemRegistry.Integrated<*>,
         element: JsonElement,
         originMaterial: ItemMaterial,

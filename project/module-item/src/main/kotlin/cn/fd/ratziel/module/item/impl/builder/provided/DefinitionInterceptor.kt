@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.altawk.nbt.tag.NbtTag
-import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
@@ -9,7 +8,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleData
-import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
@@ -40,23 +38,23 @@ object DefinitionInterceptor : ItemInterceptor {
         val dataMap: Map<String, Any?>,
     )
 
-    @AutoRegister
-    object DefinitionResolver : SectionTagResolver("define", "def", "definition") {
-        override fun resolve(element: List<String>, context: ArgumentContext): String? {
-            val definition = context.popOrNull(DefinitionContext::class.java) ?: return null
-            val value = definition.definitionMap[element.firstOrNull() ?: return null]
-            return value.toString()
-        }
-    }
-
-    @AutoRegister
-    object DataResolver : SectionTagResolver("data") {
-        override fun resolve(element: List<String>, context: ArgumentContext): String? {
-            val definition = context.popOrNull(DefinitionContext::class.java) ?: return null
-            val value = definition.dataMap[element.firstOrNull() ?: return null]
-            return value.toString()
-        }
-    }
+//    @AutoRegister
+//    object DefinitionResolver : SectionTagResolver("define", "def", "definition") {
+//        override fun resolve(element: List<String>, context: ArgumentContext): String? {
+//            val definition = context.popOrNull(DefinitionContext::class.java) ?: return null
+//            val value = definition.definitionMap[element.firstOrNull() ?: return null]
+//            return value.toString()
+//        }
+//    }
+//
+//    @AutoRegister
+//    object DataResolver : SectionTagResolver("data") {
+//        override fun resolve(element: List<String>, context: ArgumentContext): String? {
+//            val definition = context.popOrNull(DefinitionContext::class.java) ?: return null
+//            val value = definition.dataMap[element.firstOrNull() ?: return null]
+//            return value.toString()
+//        }
+//    }
 
     private val definitionCache: MutableMap<String, Map<String, ExecutableBlock>> = ConcurrentHashMap()
     private val dataCache: MutableMap<String, Map<String, ExecutableBlock>> = ConcurrentHashMap()

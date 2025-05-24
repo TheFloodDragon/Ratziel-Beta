@@ -4,26 +4,28 @@ import cn.fd.ratziel.core.exception.ArgumentNotFoundException
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.splitNonEscaped
-import cn.fd.ratziel.module.item.api.builder.ItemResolver
+import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
+import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.jvm.optionals.getOrNull
 
 /**
- * SectionResolver
+ * TaggedSectionResolver
  *
  * @author TheFloodDragon
  * @since 2025/5/3 19:34
  */
-object SectionResolver : ItemResolver {
+object TaggedSectionResolver : ItemSectionResolver {
 
     /**
      * 标签解析器列表
      */
-    val tagResolvers: MutableMap<String, SectionTagResolver> = ConcurrentHashMap()
+    val tagResolvers: MutableMap<String, ItemTagResolver> = ConcurrentHashMap()
 
     /** 标签读取器 **/
     private val reader = VariableReader("{", "}")
@@ -56,7 +58,7 @@ object SectionResolver : ItemResolver {
     }
 
     /**
-     * 从标签字符串中获取 [SectionTagResolver] 并解析
+     * 从标签字符串中获取 [ItemTagResolver] 并解析
      * @return 若标签不合法或者处理后结果为空, 则返回空
      */
     private fun resolveTag(tag: String, node: JsonTree.PrimitiveNode, context: ArgumentContext): String? {
@@ -66,9 +68,11 @@ object SectionResolver : ItemResolver {
         val name = split.firstOrNull() ?: return null
         // 获取解析器
         val resolver = tagResolvers[name] ?: return null
+        val task = ItemTagResolver.ResolvationTask(split.drop(1), context, node)
         // 解析并返回
         return try {
-            resolver.resolve(split.drop(1), node, context)
+            resolver.resolve(task)
+            task.result.getOrNull() // 最终结果
         } catch (ex: ArgumentNotFoundException) {
             warning("Missing argument '${ex.missingType.simpleName}' for $resolver")
             return null

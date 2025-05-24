@@ -4,7 +4,7 @@ import cn.fd.ratziel.core.serialization.elementAlias
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
-import cn.fd.ratziel.module.item.api.builder.ItemResolver
+import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.InheritResolver
@@ -22,7 +22,7 @@ object DefaultResolver : ItemInterceptor {
     /**
      * 物品解析器注册表
      */
-    val registry: MutableList<Pair<ItemResolver, Boolean>> = ArrayList()
+    val registry: MutableList<Pair<ItemSectionResolver, Boolean>> = ArrayList()
 
     /**
      * 允许访问的节点列表, 仅在 限制性解析 时使用
@@ -46,7 +46,7 @@ object DefaultResolver : ItemInterceptor {
         // Papi 解析
         registry.add(PapiResolver to true)
         // 标签解析
-        registry.add(SectionResolver to true)
+        registry.add(TaggedSectionResolver to true)
         /*
           内接增强列表解析
           这里解释下为什么要放在标签解析的后面:
@@ -61,7 +61,7 @@ object DefaultResolver : ItemInterceptor {
         interceptWith(stream, registry)
     }
 
-    suspend fun interceptWith(stream: ItemStream, registry: List<Pair<ItemResolver, Boolean>>) {
+    suspend fun interceptWith(stream: ItemStream, registry: List<Pair<ItemSectionResolver, Boolean>>) {
         stream.tree.withValue { tree ->
             val root = tree.root
 

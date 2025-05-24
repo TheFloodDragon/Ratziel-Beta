@@ -4,12 +4,12 @@ import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 
 /**
- * ItemResolver
+ * ItemSectionResolver
  *
  * @author TheFloodDragon
  * @since 2025/5/3 19:16
  */
-interface ItemResolver {
+interface ItemSectionResolver {
 
     /**
      * 解析处理 [JsonTree.Node] 节点

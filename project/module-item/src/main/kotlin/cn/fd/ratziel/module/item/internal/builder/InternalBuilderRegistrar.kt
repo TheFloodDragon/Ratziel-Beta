@@ -3,8 +3,8 @@ package cn.fd.ratziel.module.item.internal.builder
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
-import cn.fd.ratziel.module.item.impl.builder.SectionResolver
-import cn.fd.ratziel.module.item.impl.builder.SectionTagResolver
+import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
+import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
@@ -23,11 +23,11 @@ class InternalBuilderRegistrar : ClassVisitor(10) {
         // 需要带有 @AutoRegister 才会自动注册
         if (!clazz.hasAnnotation(AutoRegister::class.java)) return
 
-        // 注册 SectionTagResolver
-        if (SectionTagResolver::class.java.isAssignableFrom(clazz.toClass())) {
-            val resolver = findInstance(clazz) as? SectionTagResolver ?: return
-            for (name in resolver.names) {
-                SectionResolver.tagResolvers[name] = resolver
+        // 注册 ItemTagResolver
+        if (clazz.hasInterface(ItemTagResolver::class.java)) {
+            val resolver = findInstance(clazz) as? ItemTagResolver ?: return
+            for (name in resolver.alias) {
+                TaggedSectionResolver.tagResolvers[name] = resolver
             }
         }
 
