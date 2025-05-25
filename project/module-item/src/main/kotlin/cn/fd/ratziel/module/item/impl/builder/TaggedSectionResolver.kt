@@ -123,7 +123,11 @@ object TaggedSectionResolver {
      */
     class AnalyzedData internal constructor(
         internal val mappings: Map<JsonTree.PrimitiveNode, List<UnresolvedPart>> = HashMap(),
-    )
+    ) {
+        val assignments: List<ItemTagResolver.Assignment> by lazy {
+            mappings.values.flatten().mapNotNull { it.assignment }
+        }
+    }
 
     /**
      * 未解析的部分

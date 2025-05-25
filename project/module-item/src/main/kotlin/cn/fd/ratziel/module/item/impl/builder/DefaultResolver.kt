@@ -7,7 +7,9 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
+import io.rokuko.azureflow.utils.debug
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.system.measureTimeMillis
 
 /**
  * DefaultResolver
@@ -34,34 +36,40 @@ object DefaultResolver : ItemInterceptor {
 
     override suspend fun intercept(stream: ItemStream) {
         stream.tree.withValue { tree ->
-            val root = tree.root
-            if (root is JsonTree.ObjectNode) {
-                // 限制性解析: 过滤掉限制的节点
-                val filtered = root.value.filter { it.key in accessibleNodes }
-                    .let { JsonTree.ObjectNode(it, null) }
+            val root = makeFiltered(tree)
 
-                // 标签解析
-                val analyzed = TaggedSectionResolver.analyze(filtered)
+            // 标签解析
+            measureTimeMillis {
+                val analyzed = TaggedSectionResolver.analyze(root)
                 TaggedSectionResolver.resolveAnalyzed(analyzed, stream.context)
+            }.also { debug("[TIME MARK] TaggedSectionResolver costs $it") }
 
-                JsonTree.unfold(filtered) {
+            root.unfold {
 
-                    // Papi 解析
-                    PapiResolver.resolve(it, stream.context)
+                // Papi 解析
+                PapiResolver.resolve(it, stream.context)
 
-                    /*
-                      内接增强列表解析
-                      这里解释下为什么要放在标签解析的后面:
-                      放在标签解析的后面, 则是因为有些标签解析器可能会返回带有换行的字符串,
-                      就比如 InheritResolver (SectionTagResolver),
-                      因为列表是不能边遍历边修改的, 所以只能采用换行字符的方式.
-                    */
-                    EnhancedListResolver.resolve(it, stream.context)
+                /*
+                  内接增强列表解析
+                  这里解释下为什么要放在标签解析的后面:
+                  放在标签解析的后面, 则是因为有些标签解析器可能会返回带有换行的字符串,
+                  就比如 InheritResolver (SectionTagResolver),
+                  因为列表是不能边遍历边修改的, 所以只能采用换行字符的方式.
+                */
+                EnhancedListResolver.resolve(it, stream.context)
 
-                }
             }
 
         }
+    }
+
+    fun makeFiltered(tree: JsonTree): JsonTree.Node {
+        val root = tree.root
+        return if (root is JsonTree.ObjectNode) {
+            // 限制性解析: 过滤掉限制的节点
+            root.value.filter { it.key in accessibleNodes }
+                .let { JsonTree.ObjectNode(it, null) }
+        } else root
     }
 
 }

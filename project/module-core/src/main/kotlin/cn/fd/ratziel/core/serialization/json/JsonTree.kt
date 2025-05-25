@@ -16,7 +16,7 @@ class JsonTree(
     /**
      * 根节点
      */
-    val root: Node
+    val root: Node,
 ) {
 
     constructor(element: JsonElement) : this(parseToNode(element, null))
@@ -37,6 +37,11 @@ class JsonTree(
          * 父节点 (空代表此节点为跟节点)
          */
         val parent: Node?
+
+        /**
+         * 展开
+         */
+        fun unfold(action: Consumer<Node>) = unfold(this, action)
 
     }
 
