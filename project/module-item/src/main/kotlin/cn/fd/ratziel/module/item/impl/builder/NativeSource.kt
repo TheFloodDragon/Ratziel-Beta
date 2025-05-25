@@ -7,9 +7,9 @@ import cn.fd.ratziel.core.serialization.json.getBy
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemSource
-import cn.fd.ratziel.module.item.api.service.ItemService
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleData
+import cn.fd.ratziel.module.item.impl.SimpleItem
 import cn.fd.ratziel.module.item.util.MetaMatcher
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -42,19 +42,10 @@ object NativeSource {
         val materialNames = listOf("material", "mat", "materials", "mats")
 
         override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
-            val data = SimpleData()
-
-            // 确定第一物品材料类型
             val property = (element.property as? JsonObject) ?: return null
-            val name = (property.getBy(materialNames) as? JsonPrimitive)?.contentOrNull
-            if (name != null) data.material = MetaMatcher.matchMaterial(name)
-
-            // 创建仅使用数据功能的物品
-            return object : NeoItem {
-                override val data: ItemData = data
-                override val service: ItemService
-                    get() = throw UnsupportedOperationException("Service is not supported for MaterialSource's item!")
-            }
+            val name = (property.getBy(materialNames) as? JsonPrimitive)?.contentOrNull ?: return null
+            val data = SimpleData(material = MetaMatcher.matchMaterial(name))
+            return SimpleItem(data)
         }
 
     }

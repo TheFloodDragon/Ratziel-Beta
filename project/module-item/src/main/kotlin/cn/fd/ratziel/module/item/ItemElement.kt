@@ -11,10 +11,7 @@ import cn.fd.ratziel.module.item.api.ItemMaterial
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
-import cn.fd.ratziel.module.item.impl.builder.provided.ActionInterceptor
-import cn.fd.ratziel.module.item.impl.builder.provided.DefinitionInterceptor
-import cn.fd.ratziel.module.item.impl.builder.provided.InheritResolver
-import cn.fd.ratziel.module.item.impl.builder.provided.NativeDataInterceptor
+import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
@@ -90,14 +87,14 @@ object ItemElement : ElementHandler {
         // 注册默认组件
         register(if (MinecraftVersion.versionId >= 12005) ItemDisplay.serializer() else LegacyItemDisplaySerializer)
         register<ItemDurability>()
-        register<ItemSkull>()
         register<ItemHideFlag>()
     }
 
     init {
         // 注册默认解释器
-        ItemRegistry.registerSource(NativeSource.MaterialSource)
         ItemRegistry.registerInterceptor(InheritResolver)
+        ItemRegistry.registerSource(NativeSource.MaterialSource)
+        ItemRegistry.registerSource(SkullSource)
         ItemRegistry.registerInterceptor(ActionInterceptor)
         ItemRegistry.registerInterceptor(DefinitionInterceptor)
         ItemRegistry.registerInterceptor(NativeDataInterceptor)

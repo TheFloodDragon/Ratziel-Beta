@@ -1,8 +1,7 @@
 package cn.fd.ratziel.module.item.internal.compat
 
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.api.NeoItem
-import cn.fd.ratziel.module.item.api.service.ItemService
+import cn.fd.ratziel.module.item.impl.SimpleItem
 
 /**
  * CompatItem
@@ -12,10 +11,5 @@ import cn.fd.ratziel.module.item.api.service.ItemService
  */
 open class CompatItem(
     val name: String,
-    override val data: ItemData
-) : NeoItem {
-
-    override val service: ItemService
-        get() = throw UnsupportedOperationException("Service is not supported for $name!")
-
-}
+    data: ItemData,
+) : SimpleItem(data)
