@@ -7,7 +7,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
-import io.rokuko.azureflow.utils.debug
+import taboolib.common.platform.function.debug
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.system.measureTimeMillis
 

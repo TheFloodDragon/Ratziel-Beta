@@ -31,7 +31,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
             .option("js.nashorn-compat", "true") // Nashorn 兼容模式
     }
 
-    override fun newEngine(): ScriptEngine {
+    override fun getEngine(): ScriptEngine {
         return GraalJSScriptEngine.create(null, builder)
     }
 

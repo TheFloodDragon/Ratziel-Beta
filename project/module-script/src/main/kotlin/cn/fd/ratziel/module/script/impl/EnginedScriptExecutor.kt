@@ -12,17 +12,17 @@ import javax.script.*
 abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>() {
 
     /**
-     * 创建一个新的 [ScriptEngine]
+     * 获取 [ScriptEngine]
      */
-    abstract fun newEngine(): ScriptEngine
+    abstract fun getEngine(): ScriptEngine
 
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        val engine = newEngine()
+        val engine = getEngine()
         return engine.eval(script, createContext(engine, environment))
     }
 
     override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
-        val engine = newEngine()
+        val engine = getEngine()
         engine.context = createContext(engine, environment)
         return (engine as Compilable).compile(script)
     }
