@@ -4,10 +4,8 @@ import cn.fd.ratziel.core.serialization.elementAlias
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
-import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
-import cn.fd.ratziel.module.item.impl.builder.provided.InheritResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -18,11 +16,6 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @since 2025/5/3 18:32
  */
 object DefaultResolver : ItemInterceptor {
-
-    /**
-     * 物品解析器注册表
-     */
-    val registry: MutableList<Pair<ItemSectionResolver, Boolean>> = ArrayList()
 
     /**
      * 允许访问的节点列表, 仅在 限制性解析 时使用
@@ -42,30 +35,30 @@ object DefaultResolver : ItemInterceptor {
     override suspend fun intercept(stream: ItemStream) {
         stream.tree.withValue { tree ->
             val root = tree.root
-
-            // 继承解析
-            InheritResolver.resolve(root, stream.context)
-
             if (root is JsonTree.ObjectNode) {
                 // 限制性解析: 过滤掉限制的节点
                 val filtered = root.value.filter { it.key in accessibleNodes }
                     .let { JsonTree.ObjectNode(it, null) }
 
-                // Papi 解析
-                JsonTree.unfold(filtered) { PapiResolver.resolve(it, stream.context) }
-
                 // 标签解析
                 val analyzed = TaggedSectionResolver.analyze(filtered)
                 TaggedSectionResolver.resolveAnalyzed(analyzed, stream.context)
 
-                /*
-                  内接增强列表解析
-                  这里解释下为什么要放在标签解析的后面:
-                  放在标签解析的后面, 则是因为有些标签解析器可能会返回带有换行的字符串,
-                  就比如 InheritResolver (SectionTagResolver),
-                  因为列表是不能边遍历边修改的, 所以只能采用换行字符的方式.
-                */
-                JsonTree.unfold(filtered) { EnhancedListResolver.resolve(it, stream.context) }
+                JsonTree.unfold(filtered) {
+
+                    // Papi 解析
+                    PapiResolver.resolve(it, stream.context)
+
+                    /*
+                      内接增强列表解析
+                      这里解释下为什么要放在标签解析的后面:
+                      放在标签解析的后面, 则是因为有些标签解析器可能会返回带有换行的字符串,
+                      就比如 InheritResolver (SectionTagResolver),
+                      因为列表是不能边遍历边修改的, 所以只能采用换行字符的方式.
+                    */
+                    EnhancedListResolver.resolve(it, stream.context)
+
+                }
             }
 
         }

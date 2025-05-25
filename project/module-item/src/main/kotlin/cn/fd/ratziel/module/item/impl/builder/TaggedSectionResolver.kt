@@ -5,10 +5,10 @@ import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import taboolib.common.platform.function.severe
@@ -65,7 +65,7 @@ object TaggedSectionResolver {
                 // 获取解析器
                 val resolver = tagResolvers[name] ?: continue
                 // 创建解析任务
-                val task = ItemTagResolver.ResolvationTask(resolver, split.drop(1), node)
+                val task = ItemTagResolver.Assignment(resolver, split.drop(1), node)
                 // 添加部分
                 analyzedParts.add(UnresolvedPart(reader.start + part.text + reader.end, task))
             } else {
@@ -76,15 +76,15 @@ object TaggedSectionResolver {
     }
 
     /**
-     * 执行解析 [ItemTagResolver.ResolvationTask], 返回处理后的字符串
+     * 执行解析 [ItemTagResolver.Assignment], 返回处理后的字符串
      * @return 若标签不合法或者处理后结果为空, 则返回空
      */
-    fun resolveTag(task: ItemTagResolver.ResolvationTask, context: ArgumentContext): String? {
-        val resolver = task.resolver
+    fun resolveTag(assignment: ItemTagResolver.Assignment, context: ArgumentContext): String? {
+        val resolver = assignment.resolver
         try {
             // 解析标签
-            resolver.resolve(task, context)
-            return task.result.getOrNull()
+            resolver.resolve(assignment, context)
+            return assignment.result.getOrNull()
         } catch (ex: ArgumentNotFoundException) {
             warning("Missing argument '${ex.missingType.simpleName}' for $resolver")
         } catch (ex: Exception) {
@@ -99,20 +99,22 @@ object TaggedSectionResolver {
      */
     suspend fun resolveAnalyzed(analyzed: AnalyzedData, context: ArgumentContext): Unit = coroutineScope {
         for ((node, parts) in analyzed.mappings) {
-            val resolveTasks = parts.map {
-                val task = it.task
-                // 标签片段
-                if (task != null) async {
-                    // 解析标签
-                    resolveTag(task, context) ?: it.text
-                } else {
-                    CompletableDeferred(it.text) // 非标签片段
+            launch {
+                val resolveTasks = parts.map { part ->
+                    val task = part.assignment
+                    // 标签片段
+                    async {
+                        task?.let {
+                            // 解析标签
+                            resolveTag(it, context)
+                        } ?: part.text // 非标签片段或者解析失败, 返回原始内容
+                    }
                 }
+                // 等待所有解析完成
+                val result = resolveTasks.awaitAll().joinToString("")
+                // 替换原节点的内容
+                node.value = JsonPrimitive(result)
             }
-            // 等待所有解析完成
-            val result = resolveTasks.awaitAll().joinToString("")
-            // 替换原节点的内容
-            node.value = JsonPrimitive(result)
         }
     }
 
@@ -130,7 +132,7 @@ object TaggedSectionResolver {
         /** 原始文本 **/
         val text: String,
         /** 解析任务 (空代表这部分不是有标签的部分) **/
-        val task: ItemTagResolver.ResolvationTask?,
+        val assignment: ItemTagResolver.Assignment?,
     )
 
     /** 标签读取器 **/

@@ -26,11 +26,11 @@ object NativeDataInterceptor : ItemInterceptor {
     @AutoRegister
     object NativeDataResolver : ItemTagResolver {
         override val alias = arrayOf("data")
-        override fun resolve(task: ItemTagResolver.ResolvationTask, context: ArgumentContext) {
+        override fun resolve(assignment: ItemTagResolver.Assignment, context: ArgumentContext) {
             // 获取物品流
             val stream = context.popOrNull(ItemStream::class.java) ?: return
             // 数据名称
-            val name = task.args.firstOrNull() ?: return
+            val name = assignment.args.firstOrNull() ?: return
             // 获取数据
             runBlocking {
                 stream.data.withValue {
@@ -38,7 +38,7 @@ object NativeDataInterceptor : ItemInterceptor {
                     val holder = RatzielItem.Holder(it)
                     val value = holder[name] ?: return@withValue
                     // 结束解析
-                    task.complete(value.content.toString())
+                    assignment.complete(value.content.toString())
                 }
             }
         }

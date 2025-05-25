@@ -30,7 +30,7 @@ class DefaultGenerator(
     /**
      * 原始物品配置 (元素)
      */
-    val origin: Element,
+    val origin: Element
 ) : ItemGenerator {
 
     override fun build() = build(SimpleContext())

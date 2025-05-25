@@ -17,15 +17,15 @@ interface ItemTagResolver {
     /**
      * 解析元素
      *
-     * @param task 解析任务
+     * @param assignment 解析任务
      * @param context 上下文
      */
-    fun resolve(task: ResolvationTask, context: ArgumentContext)
+    fun resolve(assignment: Assignment, context: ArgumentContext)
 
     /**
      * 标签解析任务
      */
-    class ResolvationTask(
+    class Assignment(
         /**
          * 执行此任务的 [ItemTagResolver]
          */

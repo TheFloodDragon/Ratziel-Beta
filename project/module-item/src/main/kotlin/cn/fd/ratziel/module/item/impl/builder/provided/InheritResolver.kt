@@ -5,7 +5,8 @@ import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.TemplateElement
-import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
+import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -14,30 +15,34 @@ import kotlinx.serialization.json.JsonPrimitive
 import taboolib.common.platform.function.warning
 
 /**
- * InheritResolver - 继承解析器 TODO Implement to ItemInterceptor
+ * InheritResolver - 继承解析器
  *
  * @author TheFloodDragon
  * @since 2025/5/4 15:44
  */
 @AutoRegister
-object InheritResolver : ItemSectionResolver, ItemTagResolver {
+object InheritResolver : ItemInterceptor, ItemTagResolver {
 
-    override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
+    override suspend fun intercept(stream: ItemStream) {
+        stream.tree.withValue { resolveTree(it) }
+    }
+
+    fun resolveTree(tree: JsonTree) {
         // 仅处理根节点, 根节点需为对象节点
-        if (node.parent != null || node !is JsonTree.ObjectNode) return
+        val root = tree.root as? JsonTree.ObjectNode ?: return
         // 寻找继承字段
-        val field = node.value["inherit"] as? JsonTree.PrimitiveNode ?: return
-        node.value = node.value.filter { it.key != "inherit" } // 删除继承节点
+        val field = root.value["inherit"] as? JsonTree.PrimitiveNode ?: return
+        root.value = root.value.filter { it.key != "inherit" } // 删除继承节点
         val name = field.value.content
         // 处理继承
         val target = findElement(name) ?: return
         // 合并对象
-        merge(node, target)
+        merge(root, target)
     }
 
     override val alias = arrayOf("extend", "inherit")
 
-    override fun resolve(task: ItemTagResolver.ResolvationTask, context: ArgumentContext) {
+    override fun resolve(assignment: ItemTagResolver.Assignment, context: ArgumentContext) {
         // 元素名称
         val name: String
         /*
@@ -49,7 +54,7 @@ object InheritResolver : ItemSectionResolver, ItemTagResolver {
         val path: NbtPath
 
         // 看看传过来什么东西
-        val args = task.args
+        val args = assignment.args
         when (args.size) {
             0 -> return // 没元素名, 没路径, 解析什么?
             // Name.Path 形式, 可以的
@@ -79,15 +84,15 @@ object InheritResolver : ItemSectionResolver, ItemTagResolver {
         }
         // 开始插入合并
         if (find is JsonPrimitive) {
-            task.complete(find.content)
+            assignment.complete(find.content)
         } else if (find is JsonArray) {
-            if (task.outside.parent !is JsonTree.ArrayNode) {
+            if (assignment.outside.parent !is JsonTree.ArrayNode) {
                 warning("Cannot inherit a JsonArray to a non JsonArray.")
             }
             // 仅支持元素全是 JsonPrimitive 的 JsonArray
             else if (find.all { it is JsonPrimitive }) {
                 val result = find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
-                task.complete(result)
+                assignment.complete(result)
             } else {
                 warning("Inline inheritance in a array does not support complex JsonArray.")
             }

@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
-import cn.fd.ratziel.core.util.containsNonEscaped
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import kotlinx.serialization.json.JsonPrimitive
@@ -16,8 +15,6 @@ import kotlinx.serialization.json.JsonPrimitive
 object EnhancedListResolver : ItemSectionResolver {
 
     const val NEWLINE = "\\n"
-    const val NEWLINE_2 = "{nl}"
-    const val DEL_LINE = "{dl}"
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         if (node !is JsonTree.ArrayNode) return
@@ -27,14 +24,9 @@ object EnhancedListResolver : ItemSectionResolver {
             // 要求列表内的所有元素都是 JsonPrimitive
             if (child !is JsonTree.PrimitiveNode) return
             // 分割换行符
-            val split = child.value.content.splitNonEscaped(NEWLINE, NEWLINE_2, ignoreCase = true)
+            val split = child.value.content.splitNonEscaped(NEWLINE)
             for (line in split) {
-                // 跳过含有删行符的
-                if (line.containsNonEscaped(DEL_LINE)) continue
-                // 去除转义: 替换 "\{dl}" 为 "{dl}"
-                val stripped = line.replace("\\" + DEL_LINE, DEL_LINE)
-                // 添加
-                list.add(JsonTree.PrimitiveNode(JsonPrimitive(stripped), node))
+                list.add(JsonTree.PrimitiveNode(JsonPrimitive(line), node))
             }
         }
         node.value = list // 替换列表

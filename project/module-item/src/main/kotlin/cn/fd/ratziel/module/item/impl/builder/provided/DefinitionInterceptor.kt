@@ -37,10 +37,10 @@ object DefinitionInterceptor : ItemInterceptor {
     @AutoRegister
     object DefinitionResolver : ItemTagResolver {
         override val alias = arrayOf("define", "def", "definition")
-        override fun resolve(task: ItemTagResolver.ResolvationTask, context: ArgumentContext) {
+        override fun resolve(assignment: ItemTagResolver.Assignment, context: ArgumentContext) {
             val definition = context.popOrNull(DefinitionContext::class.java) ?: return
-            val value = definition.map[task.args.firstOrNull() ?: return]
-            task.complete(value.toString())
+            val value = definition.map[assignment.args.firstOrNull() ?: return]
+            assignment.complete(value.toString())
         }
     }
 

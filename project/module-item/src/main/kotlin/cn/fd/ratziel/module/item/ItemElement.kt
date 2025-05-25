@@ -13,6 +13,7 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
 import cn.fd.ratziel.module.item.impl.builder.provided.ActionInterceptor
 import cn.fd.ratziel.module.item.impl.builder.provided.DefinitionInterceptor
+import cn.fd.ratziel.module.item.impl.builder.provided.InheritResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.NativeDataInterceptor
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
@@ -96,6 +97,7 @@ object ItemElement : ElementHandler {
     init {
         // 注册默认解释器
         ItemRegistry.registerSource(NativeSource.MaterialSource)
+        ItemRegistry.registerInterceptor(InheritResolver)
         ItemRegistry.registerInterceptor(ActionInterceptor)
         ItemRegistry.registerInterceptor(DefinitionInterceptor)
         ItemRegistry.registerInterceptor(NativeDataInterceptor)
