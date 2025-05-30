@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.impl
 
+import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import javax.script.*
 
@@ -44,9 +45,8 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
         engineBindings.putAll(environment.bindings)
 
         // 导入全局绑定键
-        val globalBindings = engine.getBindings(ScriptContext.GLOBAL_SCOPE) // 使用引擎全局作用域的绑定键
-        environment.context.getBindings(ScriptContext.GLOBAL_SCOPE) // 导入环境的全局绑定键
-            ?.also { globalBindings?.putAll(it) }
+        val globalBindings = environment.context.getBindings(ScriptContext.GLOBAL_SCOPE) // 导入环境的全局绑定键
+            ?: ScriptManager.Global.globalBindings // 如果没有, 则使用全局绑定键
 
         // 设置绑定键
         context.setBindings(engineBindings, ScriptContext.ENGINE_SCOPE)

@@ -8,8 +8,11 @@ import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getJarFile
 import taboolib.common.platform.function.severe
+import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarFile
+import javax.script.Bindings
 import javax.script.ScriptEngineManager
+import javax.script.SimpleBindings
 
 
 /**
@@ -96,16 +99,25 @@ object ScriptManager {
      */
     object Global {
 
+        val globalBindings: Bindings by lazy {
+            val map = ConcurrentHashMap<String, Any?>()
+            SimpleBindings(
+                object : MutableMap<String, Any?> by map {
+                    override fun get(key: String) = map[key] ?: getImportedClass(key)
+                }
+            )
+        }
+
         /**
          * 导入包
          */
-        var packages: List<String> = emptyList()
+        var packages: List<PackageImport> = emptyList()
             private set
 
         /**
          * 导入类
          */
-        var classes: List<String> = emptyList()
+        var classes: List<ClassImport> = emptyList()
             private set
 
         /**
@@ -114,24 +126,68 @@ object ScriptManager {
          * @return [Class], 找不到则返回空
          */
         fun getImportedClass(name: String): Class<*>? {
-            for (fullName in classes) {
-                if (name != fullName.substringAfterLast('.')) continue
-                try {
-                    return Class.forName(fullName, false, this::class.java.classLoader)
-                } catch (_: ClassNotFoundException) {
-                }
+            // 在导入的类中查找
+            val find = classes.find { it.simpleName == name }?.clazz
+            if (find != null) return find
+            // 在导入的包中查找
+            for (import in packages) {
+                val searched = import.search(name)
+                if (searched != null) return searched
             }
             return null
         }
 
+        /**
+         * 导入的类
+         */
+        class ClassImport(
+            val simpleName: String,
+            val fullName: String,
+        ) {
+            constructor(name: String) : this(name.substringAfterLast('.'), name)
+
+            val clazz by lazy {
+                try {
+                    Class.forName(fullName, false, this::class.java.classLoader)
+                } catch (_: ClassNotFoundException) {
+                    null
+                }
+            }
+        }
+
+        /**
+         * 导入的包
+         */
+        class PackageImport(
+            val pkgName: String,
+        ) {
+
+            private val classesCache = ConcurrentHashMap<String, Class<*>>()
+
+            fun search(name: String): Class<*>? {
+                val cached = classesCache[name]
+                if (cached != null) return cached
+                val find = try {
+                    Class.forName("$pkgName.$name", false, this::class.java.classLoader)
+                } catch (_: ClassNotFoundException) {
+                    null
+                }
+                if (find != null) {
+                    classesCache[name] = find
+                    return find
+                }
+                return null
+            }
+        }
+
         internal fun initialize(imports: List<String>) {
-            val packages = ArrayList<String>()
-            val classes = ArrayList<String>()
+            val packages = ArrayList<PackageImport>()
+            val classes = ArrayList<ClassImport>()
             for (import in imports) {
                 if (import.endsWith('*') || import.endsWith('.')) {
-                    packages.add(import.substringBeforeLast('.'))
+                    packages.add(PackageImport(import.substringBeforeLast('.')))
                 } else {
-                    classes.add(import)
+                    classes.add(ClassImport(import))
                 }
             }
             this.packages = packages

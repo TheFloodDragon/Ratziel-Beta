@@ -29,11 +29,8 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
             .option("js.nashorn-compat", "true") // Nashorn 兼容模式
     }
 
-    val globalEngine: ScriptEngine by lazy {
-        val engine = GraalJSScriptEngine.create(null, builder)
-        JavaScriptExecutor.initGlobal(engine)
+    override fun getEngine(): ScriptEngine {
+        return GraalJSScriptEngine.create(null, builder)
     }
-
-    override fun getEngine() = globalEngine
 
 }

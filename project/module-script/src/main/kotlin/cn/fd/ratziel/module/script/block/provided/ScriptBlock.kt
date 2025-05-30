@@ -12,6 +12,8 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
+import taboolib.common.platform.function.debug
 
 /**
  * ScriptBlock TODO Refactor
@@ -26,13 +28,18 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
         @Synchronized get
 
     override fun execute(context: ArgumentContext): Any? {
-        val environment = context.scriptEnv() ?: SimpleScriptEnv()
-        // 初次运行编译
-        if (!::script.isInitialized) {
-            script = executor.build(scriptSource, environment)
+        measureTimeMillisWithResult {
+            val environment = context.scriptEnv() ?: SimpleScriptEnv()
+            // 初次运行编译
+            if (!::script.isInitialized) {
+                script = executor.build(scriptSource, environment)
+            }
+            // 评估
+            script.executor.evaluate(script, environment)
+        }.let { (time, result) ->
+            debug("[TIME MARK] ScriptBlock executed in $time ms. Content: $scriptSource")
+            return result
         }
-        // 评估
-        return script.executor.evaluate(script, environment)
     }
 
     class Parser {

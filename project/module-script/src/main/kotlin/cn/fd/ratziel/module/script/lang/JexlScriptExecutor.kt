@@ -24,7 +24,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
         JexlBuilder().apply {
             loader(this::class.java.classLoader)
             // 导入包 (Jexl这个imports只能导包, 导类请看下面 WrappedJexlContext#get )
-            imports(ScriptManager.Global.packages)
+            imports(ScriptManager.Global.packages.map { it.pkgName })
         }.create()
     }
 
