@@ -6,6 +6,7 @@ import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.internal.Initializable
 import taboolib.library.configuration.ConfigurationSection
+import javax.script.Bindings
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
@@ -35,7 +36,17 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
 
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = engine.evaluate(script, environment)
 
-    internal fun importDefaults(engine: ScriptEngine, context: ScriptContext) {
+    internal fun initGlobal(engine: ScriptEngine): ScriptEngine {
+        // 设置全局作用域
+        val globalScope = engine.createBindings()
+        engine.setBindings(globalScope, ScriptContext.GLOBAL_SCOPE)
+        // 导入默认类和包
+        importDefaults(engine, globalScope)
+        // 返回脚本引擎
+        return engine
+    }
+
+    internal fun importDefaults(engine: ScriptEngine, bindings: Bindings) {
         engine.eval(buildString {
             appendLine("// Importing Start")
             appendLine("load('nashorn:mozilla_compat.js');")
@@ -46,7 +57,7 @@ object JavaScriptExecutor : ScriptExecutor, Initializable {
                 appendLine("importClass(Java.type('$cls'));")
             }
             appendLine("// Importing Ended")
-        }, context)
+        }, bindings)
     }
 
 }

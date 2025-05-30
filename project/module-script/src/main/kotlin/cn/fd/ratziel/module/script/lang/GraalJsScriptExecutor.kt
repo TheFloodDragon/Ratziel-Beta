@@ -1,11 +1,9 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
-import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
 /**
@@ -23,7 +21,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
     /**
      * 创建一个新的 [Context.Builder]
      */
-    val builder by lazy {
+    val builder: Context.Builder by lazy {
         Context.newBuilder("js")
             .hostClassLoader(this::class.java.classLoader)
             .allowAllAccess(true) // 全开了算了
@@ -31,15 +29,11 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
             .option("js.nashorn-compat", "true") // Nashorn 兼容模式
     }
 
-    override fun getEngine(): ScriptEngine {
-        return GraalJSScriptEngine.create(null, builder)
+    val globalEngine: ScriptEngine by lazy {
+        val engine = GraalJSScriptEngine.create(null, builder)
+        JavaScriptExecutor.initGlobal(engine)
     }
 
-    override fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
-        val context = super.createContext(engine, environment)
-        // 导入默认
-        JavaScriptExecutor.importDefaults(engine, context)
-        return context
-    }
+    override fun getEngine() = globalEngine
 
 }

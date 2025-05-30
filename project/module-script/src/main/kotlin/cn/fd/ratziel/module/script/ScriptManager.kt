@@ -8,11 +8,8 @@ import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getJarFile
 import taboolib.common.platform.function.severe
-import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarFile
-import javax.script.Bindings
 import javax.script.ScriptEngineManager
-import javax.script.SimpleBindings
 
 
 /**
@@ -95,15 +92,9 @@ object ScriptManager {
 
     /**
      * Global
-     *   - 全局绑定键
      *   - 默认导入的类和包 (有些脚本语言可能不支持或部分支持)
      */
     object Global {
-
-        /**
-         * 全局绑定键
-         */
-        val bindings: Bindings = SimpleBindings(ConcurrentHashMap())
 
         /**
          * 导入包

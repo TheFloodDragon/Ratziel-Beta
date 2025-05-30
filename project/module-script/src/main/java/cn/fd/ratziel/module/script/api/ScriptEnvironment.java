@@ -21,7 +21,7 @@ public interface ScriptEnvironment {
     ScriptContext getContext();
 
     /**
-     * 获取脚本的所有绑定
+     * 获取脚本的所有绑定 (引擎作用域)
      */
     @NotNull
     default Bindings getBindings() {
@@ -29,14 +29,14 @@ public interface ScriptEnvironment {
     }
 
     /**
-     * 设置脚本的所有绑定
+     * 设置脚本的所有绑定 (引擎作用域)
      */
     default void setBindings(@NotNull Bindings bindings) {
         getContext().setBindings(bindings, ScriptContext.ENGINE_SCOPE);
     }
 
     /**
-     * 设置绑定内容
+     * 设置绑定内容 (引擎作用域)
      *
      * @param key   绑定键
      * @param value 绑定内容
