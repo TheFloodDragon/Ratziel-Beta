@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.impl
 
 import cn.fd.ratziel.module.script.ScriptManager
+import javax.script.ScriptContext
 import javax.script.SimpleScriptContext
 
 /**
@@ -9,7 +10,7 @@ import javax.script.SimpleScriptContext
  * @author TheFloodDragon
  * @since 2025/5/31 00:28
  */
-class ImportedScriptContext : SimpleScriptContext() {
+open class ImportedScriptContext() : SimpleScriptContext() {
 
     companion object {
 
@@ -20,6 +21,18 @@ class ImportedScriptContext : SimpleScriptContext() {
 
     }
 
+    constructor(scriptContext: ScriptContext) : this() {
+        this.setBindings(scriptContext.getBindings(ENGINE_SCOPE), ENGINE_SCOPE)
+        this.setBindings(scriptContext.getBindings(GLOBAL_SCOPE), GLOBAL_SCOPE)
+        this.writer = scriptContext.writer
+        this.errorWriter = scriptContext.errorWriter
+        this.reader = scriptContext.reader
+    }
+
+    open fun getImport(name: String): Any? {
+        return ScriptManager.Global.getImportedClass(name)
+    }
+
     override fun getAttribute(name: String): Any? {
         return super.getAttribute(name)
             ?: getAttribute(name, IMPORT_SCOPE) // 都没找到, 就尝试找导入的类
@@ -27,14 +40,14 @@ class ImportedScriptContext : SimpleScriptContext() {
 
     override fun getAttribute(name: String, scope: Int): Any? {
         return if (scope == IMPORT_SCOPE) {
-            ScriptManager.Global.getImportedClass(name)
+            getImport(name)
         } else super.getAttribute(name, scope)
     }
 
     override fun getAttributesScope(name: String): Int {
         val scope = super.getAttributesScope(name)
         if (scope == -1 && // 找到导入的类, 就指向 IMPORT_SCOPE
-            ScriptManager.Global.getImportedClass(name) != null
+            getImport(name) != null
         ) {
             return IMPORT_SCOPE
         }

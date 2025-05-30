@@ -3,8 +3,10 @@ package cn.fd.ratziel.module.script.lang
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.CompletableScriptExecutor
+import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import org.apache.commons.jexl3.JexlBuilder
 import org.apache.commons.jexl3.JexlContext
+import org.apache.commons.jexl3.JexlEngine
 import org.apache.commons.jexl3.JexlScript
 import javax.script.ScriptContext
 
@@ -20,7 +22,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
         ScriptManager.loadDependencies("jexl")
     }
 
-    val engine by lazy {
+    val engine: JexlEngine by lazy {
         JexlBuilder().apply {
             loader(this::class.java.classLoader)
         }.create()
@@ -44,7 +46,9 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
     /**
      * 封装的 [JexlContext]
      */
-    class WrappedJexlContext(val scriptContext: ScriptContext) : JexlContext {
+    class WrappedJexlContext(context: ScriptContext) : JexlContext {
+
+        val scriptContext = ImportedScriptContext(context)
 
         override fun get(name: String): Any? {
             return scriptContext.getAttribute(name)

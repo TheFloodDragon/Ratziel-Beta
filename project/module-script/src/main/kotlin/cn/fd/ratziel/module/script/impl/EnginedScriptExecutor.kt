@@ -36,22 +36,9 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
 
     /**
      * 创建 [ScriptContext]
-     * (为了避免引擎沾染环境, 所以要导入绑定键而不是直接用环境上下文)
      */
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
-        val context = ImportedScriptContext()
-
-        // 导入环境的引擎绑定键
-        val engineBindings = engine.createBindings() // 需要通过脚本引擎创建, 以便脚本内部上下文的继承
-        engineBindings.putAll(environment.bindings)
-
-        // 导入全局绑定键
-        val globalBindings = environment.context.getBindings(ScriptContext.GLOBAL_SCOPE) // 导入环境的全局绑定键
-
-        // 设置绑定键
-        context.setBindings(engineBindings, ScriptContext.ENGINE_SCOPE)
-        context.setBindings(globalBindings, ScriptContext.GLOBAL_SCOPE)
-        return context
+        return environment.context
     }
 
 }
