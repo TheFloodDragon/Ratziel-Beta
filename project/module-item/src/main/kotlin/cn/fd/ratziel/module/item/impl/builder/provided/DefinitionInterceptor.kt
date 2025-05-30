@@ -1,12 +1,12 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
-import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
+import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
 import kotlinx.coroutines.async
@@ -24,22 +24,12 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object DefinitionInterceptor : ItemInterceptor {
 
-    /**
-     * DefinitionContext
-     *
-     * @author TheFloodDragon
-     * @since 2025/5/17 17:20
-     */
-    class DefinitionContext(
-        val map: Map<String, Any?>,
-    )
-
-    @AutoRegister
-    object DefinitionResolver : ItemTagResolver {
+    class DefinitionResolver(
+        val values: Map<String, Any?>,
+    ) : ItemTagResolver {
         override val alias = arrayOf("define", "def", "definition")
         override fun resolve(assignment: ItemTagResolver.Assignment, context: ArgumentContext) {
-            val definition = context.popOrNull(DefinitionContext::class.java) ?: return
-            val value = definition.map[assignment.args.firstOrNull() ?: return]
+            val value = values[assignment.args.firstOrNull() ?: return]
             assignment.complete(value.toString())
         }
     }
@@ -63,10 +53,15 @@ object DefinitionInterceptor : ItemInterceptor {
             } ?: return
 
         // 创建新的定义
-        val result = executeAll(blocks, stream.context)
+        val values = executeAll(blocks, stream.context)
 
         // 等待所有任务完成, 并将 写入到环境里
-        stream.context.put(DefinitionContext(result))
+        stream.tree.togetherWith(stream.data) { tree, data ->
+            TaggedSectionResolver.resolveWithSingle(
+                DefinitionResolver(values),
+                tree, stream.context
+            )
+        }
     }
 
     internal suspend fun buildBlockMap(element: JsonObject): Map<String, ExecutableBlock> = supervisorScope {

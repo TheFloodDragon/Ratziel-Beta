@@ -5,11 +5,11 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
+import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
-import taboolib.common.platform.function.debug
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
-import kotlin.system.measureTimeMillis
 
 /**
  * DefaultResolver
@@ -26,6 +26,11 @@ object DefaultResolver : ItemInterceptor {
         CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
     }
 
+    /**
+     * 默认的标签解析器列表
+     */
+    val defaultTagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
+
     /*
      * 尽管解释器 (Resolver, Interceptor, Source) 在解释的过程中是并行的,
      * 但是启动协程的顺序就近乎决定了解释器获取同步锁的顺序,
@@ -36,18 +41,14 @@ object DefaultResolver : ItemInterceptor {
 
     override suspend fun intercept(stream: ItemStream) {
         stream.tree.withValue { tree ->
-            val root = makeFiltered(tree)
 
-            // 标签解析
-            measureTimeMillis {
-                val analyzed = TaggedSectionResolver.analyze(root)
-                TaggedSectionResolver.resolveAnalyzed(analyzed, stream.context)
-            }.also { debug("[TIME MARK] TaggedSectionResolver costs $it") }
-
-            root.unfold {
+            makeFiltered(tree.root).unfold {
 
                 // Papi 解析
                 PapiResolver.resolve(it, stream.context)
+
+                // 标签解析
+                TaggedSectionResolver(defaultTagResolvers).resolve(it, stream.context)
 
                 /*
                   内接增强列表解析
@@ -63,8 +64,12 @@ object DefaultResolver : ItemInterceptor {
         }
     }
 
-    fun makeFiltered(tree: JsonTree): JsonTree.Node {
-        val root = tree.root
+    /**
+     * 限制性解析: 仅保留允许访问的节点
+     * @param root 根节点
+     * @return 过滤后的根节点 [JsonTree.Node]
+     */
+    fun makeFiltered(root: JsonTree.Node): JsonTree.Node {
         return if (root is JsonTree.ObjectNode) {
             // 限制性解析: 过滤掉限制的节点
             root.value.filter { it.key in accessibleNodes }

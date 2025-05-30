@@ -22,6 +22,18 @@ abstract class SynchronizedValue<T> {
     abstract suspend fun <R> withValue(block: suspend (T) -> R): R
 
     /**
+     * 同时等待多个值, 并处理
+     */
+    suspend inline fun <R1, R2> togetherWith(
+        other: SynchronizedValue<R1>,
+        crossinline block: suspend (T, R1) -> R2,
+    ): R2 {
+        return withValue { v1 ->
+            other.withValue { v2 -> block(v1, v2) }
+        }
+    }
+
+    /**
      * 直接获取值
      */
     open suspend fun getValue(): T {

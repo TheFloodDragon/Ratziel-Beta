@@ -27,10 +27,6 @@ interface ItemTagResolver {
      */
     class Assignment(
         /**
-         * 执行此任务的 [ItemTagResolver]
-         */
-        val resolver: ItemTagResolver,
-        /**
          * 标签参数
          */
         val args: List<String>,

@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
-import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
@@ -8,9 +7,9 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.RatzielItem
+import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.script.block.ExecutableBlock
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.ConcurrentHashMap
@@ -23,24 +22,17 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object NativeDataInterceptor : ItemInterceptor {
 
-    @AutoRegister
-    object NativeDataResolver : ItemTagResolver {
+    class NativeDataResolver(
+        val holder: RatzielItem.Holder,
+    ) : ItemTagResolver {
         override val alias = arrayOf("data")
         override fun resolve(assignment: ItemTagResolver.Assignment, context: ArgumentContext) {
-            // 获取物品流
-            val stream = context.popOrNull(ItemStream::class.java) ?: return
             // 数据名称
             val name = assignment.args.firstOrNull() ?: return
             // 获取数据
-            runBlocking {
-                stream.data.withValue {
-                    // 创建 Holder 以获取数据
-                    val holder = RatzielItem.Holder(it)
-                    val value = holder[name] ?: return@withValue
-                    // 结束解析
-                    assignment.complete(value.content.toString())
-                }
-            }
+            val value = holder[name] ?: return
+            // 结束解析
+            assignment.complete(value.content.toString())
         }
     }
 
@@ -78,6 +70,16 @@ object NativeDataInterceptor : ItemInterceptor {
                 holder[key] = value ?: continue
             }
         }
+
+        // 标签解析
+        stream.tree.togetherWith(stream.data) { tree, data ->
+            val holder = RatzielItem.Holder(data)
+            TaggedSectionResolver.resolveWithSingle(
+                NativeDataResolver(holder),
+                tree, stream.context
+            )
+        }
+
     }
 
     @SubscribeEvent
