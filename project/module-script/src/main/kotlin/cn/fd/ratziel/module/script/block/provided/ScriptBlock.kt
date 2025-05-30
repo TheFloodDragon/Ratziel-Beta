@@ -8,12 +8,10 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import cn.fd.ratziel.module.script.util.scriptEnv
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
+import java.util.concurrent.CompletableFuture
 
 /**
  * ScriptBlock TODO Refactor
@@ -26,6 +24,19 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
     lateinit var script: ScriptContent
         @Synchronized private set
         @Synchronized get
+
+    init {
+        // 尝试预编译
+        CompletableFuture.supplyAsync {
+            try {
+                val compiled = executor.build(scriptSource, SimpleScriptEnv())
+                if (!::script.isInitialized) {
+                    script = compiled
+                }
+            } catch (_: Exception) {
+            }
+        }
+    }
 
     override fun execute(context: ArgumentContext): Any? {
         measureTimeMillisWithResult {
@@ -47,6 +58,10 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
         var currentExecutor = ScriptManager.defaultLanguage.executorOrThrow
 
         fun parse(element: JsonElement): ExecutableBlock? {
+            return parse0(element) ?: if (element is JsonPrimitive) ValueBlock(element.contentOrNull) else null
+        }
+
+        fun parse0(element: JsonElement): ExecutableBlock? {
             if (element is JsonObject && element.size == 1) {
                 val entry = element.entries.first()
                 val key = entry.key.trim()

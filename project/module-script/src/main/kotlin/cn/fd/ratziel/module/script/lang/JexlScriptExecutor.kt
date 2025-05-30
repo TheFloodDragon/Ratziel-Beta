@@ -51,7 +51,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
         }
 
         override fun has(name: String): Boolean {
-            return scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).containsKey(name)
+            return scriptContext.getAttributesScope(name) != -1
         }
 
         override fun set(name: String, value: Any?) {

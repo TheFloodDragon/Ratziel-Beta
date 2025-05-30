@@ -24,7 +24,6 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
         return engine.eval(script, createContext(engine, environment))
     }
 
-    @Synchronized
     override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
         val engine = getEngine()
         engine.context = createContext(engine, environment)
@@ -39,7 +38,6 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      * 创建 [ScriptContext]
      * (为了避免引擎沾染环境, 所以要导入绑定键而不是直接用环境上下文)
      */
-    @Synchronized
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
         val context = ImportedScriptContext()
 
