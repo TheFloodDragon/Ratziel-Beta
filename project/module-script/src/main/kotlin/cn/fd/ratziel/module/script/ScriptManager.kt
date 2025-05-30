@@ -96,17 +96,14 @@ object ScriptManager {
     /**
      * Global
      *   - 默认导入的类和包 (有些脚本语言可能不支持或部分支持)
+     *   - 提供全局的 [Bindings] 对象
      */
     object Global {
 
-        val globalBindings: Bindings by lazy {
-            val map = ConcurrentHashMap<String, Any?>()
-            SimpleBindings(
-                object : MutableMap<String, Any?> by map {
-                    override fun get(key: String) = map[key] ?: getImportedClass(key)
-                }
-            )
-        }
+        /**
+         * 全局的 [Bindings] 对象, 提供全局变量支持
+         */
+        val globalBindings: Bindings = SimpleBindings(ConcurrentHashMap())
 
         /**
          * 导入包
@@ -127,8 +124,8 @@ object ScriptManager {
          */
         fun getImportedClass(name: String): Class<*>? {
             // 在导入的类中查找
-            val find = classes.find { it.simpleName == name }?.clazz
-            if (find != null) return find
+            val find = classes.find { it.simpleName == name }
+            if (find != null) return find.clazz
             // 在导入的包中查找
             for (import in packages) {
                 val searched = import.search(name)

@@ -23,8 +23,6 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
     val engine by lazy {
         JexlBuilder().apply {
             loader(this::class.java.classLoader)
-            // 导入包 (Jexl这个imports只能导包, 导类请看下面 WrappedJexlContext#get )
-            imports(ScriptManager.Global.packages.map { it.pkgName })
         }.create()
     }
 
@@ -37,7 +35,10 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
     }
 
     override fun evalCompiled(script: JexlScript, environment: ScriptEnvironment): Any? {
-        return script.execute(WrappedJexlContext(environment.context))
+        // 创建上下文
+        val context = WrappedJexlContext(environment.context)
+        // 执行脚本
+        return script.execute(context)
     }
 
     /**
@@ -47,19 +48,14 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
 
         override fun get(name: String): Any? {
             return scriptContext.getAttribute(name)
-                ?: ScriptManager.Global.getImportedClass(name) // 获取导入的类
         }
 
         override fun has(name: String): Boolean {
             return scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).containsKey(name)
         }
 
-        override fun set(name: String, value: Any) {
-            var scope = scriptContext.getAttributesScope(name)
-            if (scope == -1) { // not found, default to engine
-                scope = ScriptContext.ENGINE_SCOPE
-            }
-            this.scriptContext.getBindings(scope).put(name, value)
+        override fun set(name: String, value: Any?) {
+            this.scriptContext.setAttribute(name, value, ScriptContext.ENGINE_SCOPE)
         }
 
     }

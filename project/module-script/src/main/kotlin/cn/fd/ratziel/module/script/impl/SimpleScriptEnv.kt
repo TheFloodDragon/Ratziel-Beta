@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.script.impl
 
+import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import javax.script.ScriptContext
-import javax.script.SimpleScriptContext
 
 /**
  * SimpleScriptEnv
@@ -14,7 +14,9 @@ class SimpleScriptEnv(
     private val scriptContext: ScriptContext,
 ) : ScriptEnvironment {
 
-    constructor() : this(SimpleScriptContext())
+    constructor() : this(ImportedScriptContext().apply {
+        setBindings(ScriptManager.Global.globalBindings, ScriptContext.GLOBAL_SCOPE)
+    })
 
     override fun getContext() = this.scriptContext
 

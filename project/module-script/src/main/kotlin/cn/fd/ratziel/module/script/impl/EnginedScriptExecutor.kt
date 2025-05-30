@@ -1,8 +1,10 @@
 package cn.fd.ratziel.module.script.impl
 
-import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import javax.script.*
+import javax.script.Compilable
+import javax.script.CompiledScript
+import javax.script.ScriptContext
+import javax.script.ScriptEngine
 
 /**
  * EnginedScriptExecutor
@@ -22,6 +24,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
         return engine.eval(script, createContext(engine, environment))
     }
 
+    @Synchronized
     override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
         val engine = getEngine()
         engine.context = createContext(engine, environment)
@@ -38,7 +41,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      */
     @Synchronized
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
-        val context = SimpleScriptContext()
+        val context = ImportedScriptContext()
 
         // 导入环境的引擎绑定键
         val engineBindings = engine.createBindings() // 需要通过脚本引擎创建, 以便脚本内部上下文的继承
@@ -46,7 +49,6 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
 
         // 导入全局绑定键
         val globalBindings = environment.context.getBindings(ScriptContext.GLOBAL_SCOPE) // 导入环境的全局绑定键
-            ?: ScriptManager.Global.globalBindings // 如果没有, 则使用全局绑定键
 
         // 设置绑定键
         context.setBindings(engineBindings, ScriptContext.ENGINE_SCOPE)
