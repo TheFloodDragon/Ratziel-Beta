@@ -167,14 +167,6 @@ class RefItemStack private constructor(
         fun ofNms(nmsItem: Any) = RefItemStack(newObc(nmsItem) as BukkitItemStack)
 
         /**
-         * 从 [itemStack] 中提取 [ItemData]
-         */
-        @JvmStatic
-        fun extractData(itemStack: BukkitItemStack): ItemData = this.of(itemStack).let {
-            SimpleData(it.material, it.tag, it.amount)
-        }
-
-        /**
          * nms.ItemStack
          *   1.17+ net.minecraft.world.item.ItemStack
          *   1.17- net.minecraft.server.$VERSION.ItemStack

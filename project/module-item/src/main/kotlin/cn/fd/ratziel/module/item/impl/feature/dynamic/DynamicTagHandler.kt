@@ -3,12 +3,16 @@ package cn.fd.ratziel.module.item.impl.feature.dynamic
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SimpleContext
+import cn.fd.ratziel.core.util.splitNonEscaped
+import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import net.kyori.adventure.text.TextReplacementConfig
+import org.bukkit.GameMode
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.nms.PacketSendEvent
+import kotlin.jvm.optionals.getOrElse
 
 /**
  * DynamicTagHandler
@@ -20,12 +24,21 @@ object DynamicTagHandler {
 
     @SubscribeEvent
     private fun onSend(event: PacketSendEvent) {
-        if (event.packet.name != "PacketPlayOutSetSlot") return
+        if (event.packet.name != "ClientboundContainerSetSlotPacket"
+            && event.packet.name != "PacketPlayOutSetSlot"
+        ) return
+
+        // 玩家模式仅处理 生存 和 冒险 模式, 原因: 创造强制设置库存, 旁观没什么必要
+        if (event.player.gameMode != GameMode.SURVIVAL
+            && event.player.gameMode != GameMode.ADVENTURE
+        ) return
+
         // 获取物品 TODO 完善版本支持
         val nmsItem = event.packet.read<Any>("itemStack") ?: return
         val refItem = RefItemStack.ofNms(nmsItem)
         // 生成 RatzielItem 实例 (如果不是就跳过处理)
         val ratzielItem = RatzielItem.of(refItem.extractData()) ?: return
+
         // 生成上下文
         val context = SimpleContext(event.player, ratzielItem)
 
@@ -54,10 +67,17 @@ object DynamicTagHandler {
     }
 
     fun createReplacementConfig(context: ArgumentContext) = TextReplacementConfig.builder().apply {
-        for ((literal, resolvation) in DynamicTagService.resolvations) {
-            matchLiteral(literal)
-            val component = Message.buildMessage(resolvation.resolve(context))
-            replacement(component)
+        match(DynamicTagResolver.regex)
+        replacement { text ->
+            val content = text.content()
+                .drop(DynamicTagResolver.IDENTIFIED_START.length)
+                .dropLast(DynamicTagResolver.IDENTIFIED_END.length)
+            val split = content.splitNonEscaped(DynamicTagResolver.IDENTIFIED_SEPARATION)
+            val name = split.firstOrNull() ?: return@replacement text
+            val resolver = DynamicTagService.findResolver(name) ?: return@replacement text
+            val assignment = ItemTagResolver.Assignment(split.drop(1), null)
+            resolver.resolve(assignment, context)
+            Message.buildMessage(assignment.result.getOrElse { return@replacement text })
         }
     }.build()
 
