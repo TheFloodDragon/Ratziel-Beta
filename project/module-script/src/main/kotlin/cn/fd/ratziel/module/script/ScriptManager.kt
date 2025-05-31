@@ -122,6 +122,7 @@ object ScriptManager {
          * @param name 类的简单名称
          * @return [Class], 找不到则返回空
          */
+        @JvmStatic
         fun getImportedClass(name: String): Class<*>? {
             // 在导入的类中查找
             val find = classes.find { it.simpleName == name }

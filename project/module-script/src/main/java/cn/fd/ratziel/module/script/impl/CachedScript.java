@@ -7,14 +7,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * CompletableScript
+ * CachedScript
  *
  * @author TheFloodDragon
  * @since 2024/10/4 20:19
  */
-public class CompletableScript<T> extends SimpleScriptContent {
+public class CachedScript<T> extends SimpleScriptContent {
 
-    public CompletableScript(@NotNull String content, @NotNull ScriptExecutor executor) {
+    public CachedScript(@NotNull String content, @NotNull ScriptExecutor executor) {
         super(content, executor);
     }
 

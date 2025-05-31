@@ -1,8 +1,12 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
+import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
+import taboolib.library.reflex.ReflexClass
+import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
 /**
@@ -26,11 +30,39 @@ object NashornScriptExecutor : EnginedScriptExecutor() {
     /**
      * 创建脚本引擎实例
      */
-    override fun getEngine(): ScriptEngine {
+    override fun newEngine(): ScriptEngine {
         val engine = scriptEngineFactory?.getScriptEngine(
             arrayOf("-Dnashorn.args=--language=es6"), this::class.java.classLoader
         ) ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript(Nashorn) Language")
         return engine
+    }
+
+    /**
+     * 创建 [ScriptContext]
+     * (为了避免引擎沾染环境, 所以要导入绑定键而不是直接用环境上下文)
+     */
+    override fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
+        // 创建导入的脚本上下文
+        val context = object : ImportedScriptContext(environment.context) {
+            override fun getImport(name: String): Any? {
+                val clazz = super.getImport(name)
+                // 转化成 StaticClass 便于 Nashorn 使用
+                return clazz?.let { staticClassForClassMethod.invokeStatic(it) }
+            }
+        }
+
+        // 导入环境的引擎绑定键
+        val engineBindings = engine.createBindings() // 需要通过脚本引擎创建, 以便脚本内部上下文的继承
+        engineBindings.putAll(environment.bindings)
+        context.setBindings(engineBindings, ScriptContext.ENGINE_SCOPE)
+
+        // 返回最终的脚本上下文
+        return context
+    }
+
+    private val staticClassForClassMethod by lazy {
+        val reflex = ReflexClass.of(Class.forName("jdk.dynalink.beans.StaticClass"), false)
+        reflex.structure.getMethodByType("forClass", Class::class.java)
     }
 
 }

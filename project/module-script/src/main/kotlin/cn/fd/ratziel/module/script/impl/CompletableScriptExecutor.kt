@@ -4,7 +4,6 @@ import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import taboolib.common.platform.function.warning
-import java.util.concurrent.CompletableFuture
 
 /**
  * CompletableScriptExecutor
@@ -33,7 +32,7 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
      * 执行脚本
      */
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
-        if (script is CompletableScript<*>) {
+        if (script is CachedScript<*>) {
             @Suppress("UNCHECKED_CAST")
             val compiled = script.completed as? T
             if (compiled != null) return evalCompiled(compiled, environment)
@@ -44,30 +43,22 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
     /**
      * 构建脚本
      * @param compile 是否启用编译
-     * @param async 若编译启用, 是否异步编译
      */
-    fun build(script: String, environment: ScriptEnvironment, compile: Boolean = true, async: Boolean = true): CompletableScript<T> {
-        val sc = CompletableScript<T>(script, this)
+    fun build(script: String, environment: ScriptEnvironment, compile: Boolean = true): CachedScript<T> {
+        val sc = CachedScript<T>(script, this)
         if (compile && sc.completed == null) {
-            val func = Runnable {
-                try {
-                    val compiled = this.compile(script, environment)
-                    sc.complete(compiled)
-                } catch (e: Exception) {
-                    warning("Cannot compile script by '$this' ! Script content: $script")
-                    e.printStackTrace()
-                }
+            try {
+                sc.complete(this.compile(script, environment))
+            } catch (e: Exception) {
+                warning("Cannot compile script by '$this' ! Script content: $script")
+                e.printStackTrace()
             }
-            // 异步 & 同步编译
-            if (async) {
-                CompletableFuture.runAsync(func)
-            } else func.run()
         }
         return sc
     }
 
     override fun build(script: String, environment: ScriptEnvironment): ScriptContent {
-        return build(script, environment, compile = true, async = true)
+        return build(script, environment, compile = true)
     }
 
 }
