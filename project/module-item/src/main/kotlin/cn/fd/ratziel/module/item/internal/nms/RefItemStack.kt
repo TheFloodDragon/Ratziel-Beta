@@ -88,6 +88,13 @@ class RefItemStack private constructor(
         }
 
     /**
+     * 提取此 [RefItemStack] 的数据到 [ItemData]
+     */
+    fun extractData(): ItemData {
+        return SimpleData(this.material, this.tag, this.amount)
+    }
+
+    /**
      * 将此 [RefItemStack] 写入目标 [BukkitItemStack]
      */
     fun writeTo(itemStack: BukkitItemStack) {

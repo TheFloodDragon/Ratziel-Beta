@@ -29,7 +29,7 @@ object NeigeItemsSource : ItemSource {
         val generator = pers.neige.neigeitems.manager.ItemManager.getItem(name) ?: return null
         val itemStack = generator.getItemStack(context.player(), mutableMapOf()) ?: return null
         // 提取数据
-        val data = RefItemStack.extractData(itemStack)
+        val data = RefItemStack.of(itemStack).extractData()
         return CompatItem(NeigeItemsHook.pluginName, data)
     }
 

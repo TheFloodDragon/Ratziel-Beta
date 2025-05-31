@@ -29,7 +29,7 @@ object SkullSource : ItemSource {
 
         // 创建物品
         val itemStack = SkullUtil.fetchSkull(value)
-        val data = RefItemStack.extractData(itemStack)
+        val data = RefItemStack.of(itemStack).extractData()
 
         // 创建仅使用数据功能的物品
         return SimpleItem(data)

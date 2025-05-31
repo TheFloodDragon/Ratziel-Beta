@@ -107,7 +107,7 @@ class TaggedSectionResolver(
         private val reader = VariableReader("{", "}")
 
         /** 标签参数分隔符 **/
-        private const val TAG_ARG_SEPARATION = ":"
+        const val TAG_ARG_SEPARATION = ":"
 
         /**
          * 解析带有单个标签的 [JsonTree]

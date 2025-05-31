@@ -86,7 +86,7 @@ object InheritResolver : ItemInterceptor, ItemTagResolver {
         if (find is JsonPrimitive) {
             assignment.complete(find.content)
         } else if (find is JsonArray) {
-            if (assignment.outside.parent !is JsonTree.ArrayNode) {
+            if (assignment.outside?.parent !is JsonTree.ArrayNode) {
                 warning("Cannot inherit a JsonArray to a non JsonArray.")
             }
             // 仅支持元素全是 JsonPrimitive 的 JsonArray

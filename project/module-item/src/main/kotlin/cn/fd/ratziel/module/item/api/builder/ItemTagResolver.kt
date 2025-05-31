@@ -33,7 +33,7 @@ interface ItemTagResolver {
         /**
          * 外部内容 (此标签在哪个字符串节点内部)
          */
-        val outside: JsonTree.PrimitiveNode,
+        val outside: JsonTree.PrimitiveNode?,
     ) {
 
         /**

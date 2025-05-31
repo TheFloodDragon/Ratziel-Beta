@@ -31,7 +31,7 @@ object AzureFlowSource : ItemSource {
         val factory = AzureFlowAPI.getFactory(name) ?: return null
         val itemStack = factory.build().itemStack(context.player() as? Player)
         // 提取数据
-        val data = RefItemStack.extractData(itemStack)
+        val data = RefItemStack.of(itemStack).extractData()
         return CompatItem(AzureFlowHook.pluginName, data)
     }
 

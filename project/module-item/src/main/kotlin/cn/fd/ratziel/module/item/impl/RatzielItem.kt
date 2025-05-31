@@ -95,7 +95,7 @@ class RatzielItem private constructor(
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
             if (itemStack.isAir()) return null
-            val itemData = RefItemStack.extractData(itemStack)
+            val itemData = RefItemStack.of(itemStack).extractData()
             return of(itemData)
         }
 
