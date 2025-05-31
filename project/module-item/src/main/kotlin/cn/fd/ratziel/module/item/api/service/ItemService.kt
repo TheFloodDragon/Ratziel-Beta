@@ -28,14 +28,14 @@ interface ItemService {
     /**
      * 获取 (通过指定服务注册表)
      */
-    operator fun <T> get(type: Class<T>, registry: ItemServiceRegistry): T? {
+    fun <T> get(type: Class<T>, registry: ItemServiceRegistry): T? {
         return registry.getter(type)?.apply(identifier)
     }
 
     /**
      * 设置 (通过指定服务注册表)
      */
-    operator fun <T> set(type: Class<T>, registry: ItemServiceRegistry, value: T) {
+    fun <T> set(type: Class<T>, registry: ItemServiceRegistry, value: T) {
         registry.setter(type)?.accept(identifier, value)
     }
 

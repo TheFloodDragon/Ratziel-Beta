@@ -19,6 +19,11 @@ object GlobalServiceRegistry : ItemServiceRegistry {
      */
     val registries: MutableSet<ItemServiceRegistry> = CopyOnWriteArraySet()
 
+    init {
+        // 注册原生服务注册表
+        registries.add(NativeServiceRegistry)
+    }
+
     override fun <T> getter(type: Class<T>): ItemServiceGetter<T>? {
         for (registry in registries) {
             val getter = registry.getter(type)
