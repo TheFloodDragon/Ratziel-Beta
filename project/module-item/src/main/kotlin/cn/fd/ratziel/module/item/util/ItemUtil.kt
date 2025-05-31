@@ -23,7 +23,7 @@ fun PlayerInventory.getItemBySlot(slot: String): ItemStack? {
  * 根据物品栏位操作物品NBT数据
  */
 fun ItemStack.modifyTag(action: Consumer<NbtCompound>): NbtCompound? {
-    if(this.isAir()) return null
+    if (this.isAir()) return null
     // 修改物品标签数据
     val ref = RefItemStack.of(this)
     val tag = ref.tag

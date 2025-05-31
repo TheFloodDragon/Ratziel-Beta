@@ -11,3 +11,10 @@ import org.bukkit.inventory.ItemStack
 fun NeoItem.toItemStack(): ItemStack {
     return RefItemStack.of(this.data).bukkitStack
 }
+
+/**
+ * 将 [NeoItem] 转化成 [ItemStack]
+ */
+fun NeoItem.writeTo(itemStack: ItemStack) {
+    return RefItemStack.of(this.data).writeTo(itemStack)
+}

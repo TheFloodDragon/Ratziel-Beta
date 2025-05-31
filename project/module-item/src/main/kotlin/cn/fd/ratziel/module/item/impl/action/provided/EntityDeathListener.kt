@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item.impl.action.provided
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.util.writeTo
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDeathEvent
 import taboolib.common.platform.Awake
@@ -39,7 +39,7 @@ object EntityDeathListener {
             set("entity", event.entity) // 被击杀的实体
         }
         // 将修改后的物品重新写到玩家手上
-        RefItemStack.of(ratzielItem.data).writeTo(itemInHand)
+        ratzielItem.writeTo(itemInHand)
     }
 
 }

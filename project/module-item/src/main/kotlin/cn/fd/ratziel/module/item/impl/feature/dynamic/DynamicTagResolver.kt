@@ -2,9 +2,11 @@ package cn.fd.ratziel.module.item.impl.feature.dynamic
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import java.util.regex.Pattern
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * DynamicTagResolver
@@ -34,6 +36,24 @@ object DynamicTagResolver : ItemTagResolver {
 
         // 原任务返回识别内容
         assignment.complete(identifiedContent)
+    }
+
+    fun resolveTag(content: String, context: ArgumentContext): String? {
+        // 获取文本 (去除头尾)
+        val text = content.drop(IDENTIFIED_START.length).dropLast(IDENTIFIED_END.length)
+        // 分割内容
+        val split = text.splitNonEscaped(IDENTIFIED_SEPARATION)
+
+        // 获取解析器
+        val name = split.firstOrNull() ?: return null
+        val resolver = DynamicTagService.findResolver(name) ?: return null
+        // 创建任务
+        val assignment = ItemTagResolver.Assignment(split.drop(1), null)
+
+        // 解析并返回结果
+        resolver.resolve(assignment, context)
+
+        return assignment.result.getOrNull()
     }
 
 }

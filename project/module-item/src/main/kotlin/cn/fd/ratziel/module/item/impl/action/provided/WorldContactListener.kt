@@ -5,7 +5,7 @@ import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.util.writeTo
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
@@ -23,6 +23,10 @@ object WorldContactListener {
 
     /* 任意交互 */
     val INTERACT_ANY = registerTrigger("onInteract", "Interact", "interact")
+
+    /* 左右键交互 */
+    val INTERACT_LEFT = registerTrigger("onLeft", "left")
+    val INTERACT_RIGHT = registerTrigger("onRight", "right")
 
     /* 左右键交互具体事物 */
     val INTERACT_LEFT_CLICK_AIR = registerTrigger("onLeftAir", "left-air")
@@ -63,12 +67,16 @@ object WorldContactListener {
             action(environment)
             trigger.trigger(ratzielItem.identifier, SimpleContext(environment))
             // 向事件的 ItemStack 写入 RatzielItem 的数据
-            RefItemStack.of(ratzielItem.data).writeTo(itemStack)
+            ratzielItem.writeTo(itemStack)
         }
 
         // 任意交互
         trigger(INTERACT_ANY)
-        // 分配处理器
+        // 左右键交互
+        if (event.isLeftClick) trigger(INTERACT_LEFT)
+        else if (event.isRightClick) trigger(INTERACT_RIGHT)
+
+        // 具体交互分配处理
         when {
             event.isLeftClickAir -> trigger(INTERACT_LEFT_CLICK_AIR)
             event.isRightClickAir -> trigger(INTERACT_RIGHT_CLICK_AIR)
