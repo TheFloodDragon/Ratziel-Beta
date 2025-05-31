@@ -10,6 +10,7 @@ import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.event.PlayerWorldContactEvent
+import taboolib.platform.util.attacker
 
 /**
  * WorldContactListener
@@ -87,7 +88,7 @@ object WorldContactListener {
             event.isLeftClickEntity -> trigger(INTERACT_LEFT_CLICK_ENTITY) {
                 val action = event.action as PlayerWorldContactEvent.Action.LeftClickEntity
                 set("target", action.entity)
-                set("attacker", event.player)
+                set("attacker", action.source.attacker)
             }
 
             event.isRightClickEntity -> trigger(INTERACT_RIGHT_CLICK_ENTITY) {

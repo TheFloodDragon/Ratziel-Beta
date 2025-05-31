@@ -2,9 +2,12 @@ package cn.fd.ratziel.module.item.impl.action
 
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.item.api.action.ActionMap
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
+import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import taboolib.common.platform.function.debug
 import java.util.concurrent.ConcurrentHashMap
 
@@ -46,6 +49,17 @@ object ActionManager {
         action.execute(context)
         // Debug
         debug("[ActionManager] '$this' trigger action '$action'.")
+    }
+
+    /**
+     * 触发指定物品的动作
+     */
+    @JvmStatic
+    fun ItemTrigger.trigger(identifier: Identifier, action: (ScriptEnvironment).() -> Unit) {
+        val environment = SimpleScriptEnv()
+        action(environment)
+        val context = SimpleContext(environment)
+        this.trigger(identifier, context)
     }
 
 }

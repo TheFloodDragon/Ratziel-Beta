@@ -5,7 +5,6 @@ import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
-import taboolib.library.reflex.ReflexClass
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
@@ -47,7 +46,7 @@ object NashornScriptExecutor : EnginedScriptExecutor() {
             override fun getImport(name: String): Any? {
                 val clazz = super.getImport(name)
                 // 转化成 StaticClass 便于 Nashorn 使用
-                return clazz?.let { staticClassForClassMethod.invokeStatic(it) }
+                return clazz?.let { jdk.dynalink.beans.StaticClass.forClass(it as Class<*>) }
             }
         }
 
@@ -58,11 +57,6 @@ object NashornScriptExecutor : EnginedScriptExecutor() {
 
         // 返回最终的脚本上下文
         return context
-    }
-
-    private val staticClassForClassMethod by lazy {
-        val reflex = ReflexClass.of(Class.forName("jdk.dynalink.beans.StaticClass"), false)
-        reflex.structure.getMethodByType("forClass", Class::class.java)
     }
 
 }

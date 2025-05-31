@@ -2,3 +2,4 @@
 cn.fd.ratziel.module.nbt.tag.*
 cn.fd.ratziel.module.item.impl.RatzielItem
 cn.fd.ratziel.module.item.impl.component.*
+cn.fd.ratziel.module.item.impl.feature.cooldown.Cooldown
