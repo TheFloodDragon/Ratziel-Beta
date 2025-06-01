@@ -41,6 +41,11 @@ object NashornScriptExecutor : EnginedScriptExecutor() {
      * (为了避免引擎沾染环境, 所以要导入绑定键而不是直接用环境上下文)
      */
     override fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
+        // 导入环境的引擎绑定键
+        val engineBindings = engine.createBindings() // 需要通过脚本引擎创建
+        engineBindings.putAll(environment.bindings)
+        environment.bindings = engineBindings // 更新环境的绑定键 (以便脚本内部上下文的继承)
+
         // 创建导入的脚本上下文
         val context = object : ImportedScriptContext(environment.context) {
             override fun getImport(name: String): Any? {
@@ -49,11 +54,6 @@ object NashornScriptExecutor : EnginedScriptExecutor() {
                 return clazz?.let { jdk.dynalink.beans.StaticClass.forClass(it as Class<*>) }
             }
         }
-
-        // 导入环境的引擎绑定键
-        val engineBindings = engine.createBindings() // 需要通过脚本引擎创建, 以便脚本内部上下文的继承
-        engineBindings.putAll(environment.bindings)
-        context.setBindings(engineBindings, ScriptContext.ENGINE_SCOPE)
 
         // 返回最终的脚本上下文
         return context

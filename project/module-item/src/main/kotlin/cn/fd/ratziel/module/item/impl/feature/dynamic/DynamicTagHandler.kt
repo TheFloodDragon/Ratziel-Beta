@@ -32,7 +32,7 @@ object DynamicTagHandler {
     private fun onGameModeChange(event: PlayerGameModeChangeEvent) {
         val player = event.player
         if (player.gameMode == GameMode.CREATIVE || event.newGameMode == GameMode.CREATIVE) {
-            submit {
+            submit(delay = 1) {
                 @Suppress("UnstableApiUsage")
                 player.updateInventory()
             }

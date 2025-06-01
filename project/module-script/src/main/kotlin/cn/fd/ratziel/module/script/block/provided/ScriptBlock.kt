@@ -5,10 +5,14 @@ import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import cn.fd.ratziel.module.script.util.scriptEnv
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
 import java.util.concurrent.CompletableFuture
@@ -53,15 +57,12 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
         }
     }
 
-    class Parser {
+    class Parser : BlockParser {
 
         var currentExecutor = ScriptManager.defaultLanguage.executorOrThrow
 
-        fun parse(element: JsonElement): ExecutableBlock? {
-            return parse0(element) ?: if (element is JsonPrimitive) ValueBlock(element.contentOrNull) else null
-        }
 
-        fun parse0(element: JsonElement): ExecutableBlock? {
+        override fun parse(element: JsonElement, parent: BlockParser): ExecutableBlock? {
             if (element is JsonObject && element.size == 1) {
                 val entry = element.entries.first()
                 val key = entry.key.trim()
@@ -69,19 +70,23 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
                 if (key.startsWith('\$')) {
                     val type = ScriptType.matchOrThrow(key.drop(1))
                     currentExecutor = type.executorOrThrow
-                    return this.parseBasic(entry.value)
+                    return this.parseBasic(entry.value, parent)
                 }
             }
 
-            return this.parseBasic(element)
+            return this.parseBasic(element, parent)
         }
 
-        private fun parseBasic(element: JsonElement): ExecutableBlock? {
+        private fun parseBasic(element: JsonElement, parent: BlockParser): ExecutableBlock? {
             if (element is JsonArray) {
-                return ScriptBlock(
-                    element.map { (it as? JsonPrimitive)?.content ?: return null }
-                        .joinToString("\n"), currentExecutor
-                )
+                val blocks = element.map { parent.parse(it,parent) ?: return null }
+                return if (blocks.all { it is ScriptBlock && it.executor == currentExecutor }) {
+                    ScriptBlock(
+                        blocks.joinToString("\n") {
+                            (it as ScriptBlock).scriptSource
+                        }, currentExecutor
+                    )
+                } else MultiLineBlock(blocks)
             } else if (element is JsonPrimitive) {
                 return ScriptBlock(element.content, currentExecutor)
             }
