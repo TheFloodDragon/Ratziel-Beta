@@ -16,9 +16,7 @@ import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
-import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.severe
-import kotlin.system.measureTimeMillis
 
 /**
  * DefaultGenerator
@@ -30,7 +28,7 @@ class DefaultGenerator(
     /**
      * 原始物品配置 (元素)
      */
-    val origin: Element
+    val origin: Element,
 ) : ItemGenerator {
 
     override fun build() = build(SimpleContext())
@@ -53,13 +51,7 @@ class DefaultGenerator(
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
 
         // 解释器解释元素
-        val interceptorTasks = ItemRegistry.interceptors.map { interceptor ->
-            launch {
-                measureTimeMillis {
-                    interceptor.intercept(stream)
-                }.let { debug("[TIME MARK] ItemInterceptor#$interceptor costs ${it}ms.") }
-            }
-        }
+        val interceptorTasks = ItemRegistry.interceptors.map { launch { it.intercept(stream) } }
 
         // 序列化任务需要完全在解释后, 故等待解释任务的完成
         interceptorTasks.joinAll()

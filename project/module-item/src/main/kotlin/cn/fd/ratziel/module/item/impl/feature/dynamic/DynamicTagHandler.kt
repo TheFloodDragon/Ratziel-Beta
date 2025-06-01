@@ -7,13 +7,14 @@ import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.writeTo
+import cn.fd.ratziel.platform.bukkit.util.readOrThrow
 import kotlinx.coroutines.*
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.GameMode
 import org.bukkit.event.player.PlayerGameModeChangeEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
+import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketSendEvent
 
 /**
@@ -38,36 +39,41 @@ object DynamicTagHandler {
 
     @SubscribeEvent
     private fun onSend(event: PacketSendEvent) {
-        // 玩家模式仅处理 生存 和 冒险 模式, 原因: 创造强制设置库存, 旁观没什么必要
-        fun checkGameMode() = event.player.gameMode == GameMode.SURVIVAL || event.player.gameMode == GameMode.ADVENTURE
-
         when (event.packet.name) {
             "PacketPlayOutSetSlot", "ClientboundContainerSetSlotPacket" ->
-                if (checkGameMode()) handleSetSlotPacket(event)
+                // 玩家模式不处理创造模式, 原因: 创造强制设置库存
+                if (event.player.gameMode != GameMode.CREATIVE) handleSetSlotPacket(event)
 
             "PacketPlayOutWindowItems", "ClientboundContainerSetContentPacket" ->
-                if (checkGameMode()) handleWindowItemsPacket(event)
+                // 玩家模式不处理创造模式, 原因: 创造强制设置库存
+                if (event.player.gameMode != GameMode.CREATIVE) handleWindowItemsPacket(event)
         }
     }
 
+    private val itemStackFiledInSetSlotPacket = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17)) "itemStack" else "c"
+
     fun handleSetSlotPacket(event: PacketSendEvent) {
-        // 获取物品 TODO 完善版本支持
-        val nmsItem = event.packet.read<Any>("itemStack") ?: return
+        val nmsItem = event.packet.readOrThrow<Any>(itemStackFiledInSetSlotPacket)
         handleItem(nmsItem, event)
     }
 
-    fun handleWindowItemsPacket(event: PacketSendEvent) {
-        // 获取物品 TODO 完善版本支持
-        val packetItems = event.packet.read<List<Any>>("items") ?: return
-        val packetCarriedItem = event.packet.read<Any>("carriedItem") ?: return
+    private val itemsFieldInWindowItemsPacket = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17)) "items" else "b"
 
-        // 处理每个物品
+    private val carriedItemFieldInWindowItemsPacket = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17)) "carriedItem" else "c"
+
+    fun handleWindowItemsPacket(event: PacketSendEvent) {
+        val packetItems = event.packet.readOrThrow<List<Any>>(itemsFieldInWindowItemsPacket)
         runBlocking {
-            // 创建任务
-            val carriedItemTask = launch { handleItem(packetCarriedItem, event) }
+            // 处理每个物品
             val itemTasks = packetItems.map { launch { handleItem(it, event) } }
+
+            // 处理手持物品 (carriedItem 在 1.12 后才有)
+            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
+                val packetCarriedItem = event.packet.readOrThrow<Any>(carriedItemFieldInWindowItemsPacket)
+                handleItem(packetCarriedItem, event)
+            }
+
             // 等待所有任务完成
-            carriedItemTask.join()
             itemTasks.joinAll()
         }
     }
@@ -96,18 +102,18 @@ object DynamicTagHandler {
      * 处理显示组件
      */
     fun handleDisplay(ratzielItem: RatzielItem, context: ArgumentContext) = runBlocking {
+        // 读取显示组件
         val display = ratzielItem.getComponent(ItemDisplay::class.java)
 
-        fun Component.replace(): Deferred<Component> {
-            return async { this@replace.replaceText(createReplacementConfig(context)) }
-        }
+        // 创建文本替换配置
+        val replacementConfig = createReplacementConfig(context)
 
         // 显示名称处理
-        val newName = display.name?.replace()
+        val newName = display.name?.run { async { replaceText(replacementConfig) } }
         // 本地化名称处理
-        val newLocalName = display.localizedName?.replace()
+        val newLocalName = display.localizedName?.run { async { replaceText(replacementConfig) } }
         // Lore 处理
-        val newLore = display.lore?.map { it.replace() }
+        val newLore = display.lore?.map { it.run { async { replaceText(replacementConfig) } } }
 
         // 创建新显示组件
         val newDisplay = ItemDisplay(
@@ -116,7 +122,7 @@ object DynamicTagHandler {
             newLore?.awaitAll()
         )
 
-        // 写入物品
+        // 将新的组件写入物品
         ratzielItem.setComponent(newDisplay)
     }
 
@@ -130,7 +136,7 @@ object DynamicTagHandler {
         match(DynamicTagResolver.regex)
         replacement { text ->
             val resolved = DynamicTagResolver.resolveTag(text.content(), context)
-                ?: return@replacement text
+                ?: return@replacement text // 如果解析失败, 返回原文本
             Message.buildMessage(resolved)
         }
     }.build()
