@@ -79,14 +79,19 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
 
         private fun parseBasic(element: JsonElement, parent: BlockParser): ExecutableBlock? {
             if (element is JsonArray) {
-                val blocks = element.map { parent.parse(it,parent) ?: return null }
-                return if (blocks.all { it is ScriptBlock && it.executor == currentExecutor }) {
-                    ScriptBlock(
-                        blocks.joinToString("\n") {
-                            (it as ScriptBlock).scriptSource
-                        }, currentExecutor
-                    )
-                } else MultiLineBlock(blocks)
+                return ScriptBlock(
+                    element.map { (it as? JsonPrimitive)?.content ?: return null }
+                        .joinToString("\n"), currentExecutor
+                )
+                // TODO
+//                val blocks = element.map { parent.parse(it,parent) ?: return null }
+//                return if (blocks.all { it is ScriptBlock && it.executor == currentExecutor }) {
+//                    ScriptBlock(
+//                        blocks.joinToString("\n") {
+//                            (it as ScriptBlock).scriptSource
+//                        }, currentExecutor
+//                    )
+//                } else MultiLineBlock(blocks)
             } else if (element is JsonPrimitive) {
                 return ScriptBlock(element.content, currentExecutor)
             }

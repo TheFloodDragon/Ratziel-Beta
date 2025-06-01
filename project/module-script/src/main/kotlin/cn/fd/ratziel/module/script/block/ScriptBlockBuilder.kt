@@ -24,7 +24,10 @@ object ScriptBlockBuilder : BlockParser {
     )
 
     fun build(element: JsonElement): ExecutableBlock {
-        return parse(element, this)
+        // 开始解析
+        val block = ScriptBlock.Parser().parse(element, this)
+        // 返回存在的结果
+        return block ?: throw Exception("Cannot parse the element to block. Source: $element")
     }
 
     override fun parse(element: JsonElement, parent: BlockParser): ExecutableBlock {

@@ -7,7 +7,6 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
-import javax.script.SimpleScriptContext
 
 /**
  * GraalJsScriptExecutor
@@ -41,16 +40,6 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
      * (为了避免引擎沾染环境, 所以要导入绑定键而不是直接用环境上下文)
      */
     override fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
-        val context = SimpleScriptContext()
-
-        // 导入环境的引擎绑定键
-        val engineBindings = engine.createBindings() // 需要通过脚本引擎创建, 以便脚本内部上下文的继承
-        engineBindings.putAll(environment.bindings)
-        context.setBindings(engineBindings, ScriptContext.ENGINE_SCOPE)
-
-        // 导入全局
-        context.setBindings(environment.context.getBindings(ScriptContext.GLOBAL_SCOPE), ScriptContext.GLOBAL_SCOPE)
-
         // 导入要导入的包和类
         engine.eval(
             """
@@ -75,10 +64,10 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
                     }
                 }
             });
-        """.trimIndent(), engineBindings
+        """.trimIndent(), environment.context
         )
 
-        return context
+        return environment.context
     }
 
 }
