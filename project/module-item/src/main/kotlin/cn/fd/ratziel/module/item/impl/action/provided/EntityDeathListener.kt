@@ -32,7 +32,7 @@ object EntityDeathListener {
         val ratzielItem = RatzielItem.of(itemInHand) ?: return
 
         // 触发触发器
-        KILL_ENTITY.trigger(ratzielItem.identifier) {
+        KILL_ENTITY.trigger(ratzielItem.identifier, killer, ratzielItem) {
             set("event", event) // 事件
             set("player", killer) // 玩家 & 杀手
             set("killer", killer) // 杀手

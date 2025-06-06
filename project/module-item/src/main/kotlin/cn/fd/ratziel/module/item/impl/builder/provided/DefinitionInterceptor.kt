@@ -7,11 +7,11 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
-import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.block.BlockBuilder
+import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.ConcurrentHashMap
@@ -64,7 +64,7 @@ object DefinitionInterceptor : ItemInterceptor {
         }
     }
 
-    internal suspend fun buildBlockMap(element: JsonObject): Map<String, ExecutableBlock> = supervisorScope {
+    internal suspend fun buildBlockMap(element: JsonObject): Map<String, ExecutableBlock> = coroutineScope {
         mapOf(*element.map {
             async {
                 it.key to BlockBuilder.build(it.value) // 构建语句块
@@ -72,7 +72,7 @@ object DefinitionInterceptor : ItemInterceptor {
         }.awaitAll().toTypedArray())
     }
 
-    internal suspend fun executeAll(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): Map<String, Any?> = supervisorScope {
+    internal suspend fun executeAll(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): Map<String, Any?> = coroutineScope {
         mapOf(*blocks.map {
             async {
                 it.key to it.value.execute(context) // 执行语句块

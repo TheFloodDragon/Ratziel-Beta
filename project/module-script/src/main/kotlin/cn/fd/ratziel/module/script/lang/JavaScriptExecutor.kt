@@ -1,8 +1,6 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.api.ScriptContent
-import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.internal.Initializable
 import taboolib.library.configuration.ConfigurationSection
@@ -14,7 +12,7 @@ import java.util.function.Supplier
  * @author TheFloodDragon
  * @since 2025/4/26 9:37
  */
-class JavaScriptExecutor : ScriptExecutor, Initializable {
+class JavaScriptExecutor : ScriptExecutor by executor.get(), Initializable {
 
     companion object {
         /** 脚本执行器实例 **/
@@ -39,9 +37,5 @@ class JavaScriptExecutor : ScriptExecutor, Initializable {
             else -> throw IllegalArgumentException("Unknown engine '$selected' selected.")
         }
     }
-
-    override fun build(script: String, environment: ScriptEnvironment) = executor.get().build(script, environment)
-
-    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = executor.get().evaluate(script, environment)
 
 }

@@ -1,12 +1,11 @@
 package cn.fd.ratziel.module.item.impl.action.provided
 
-import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
 import cn.fd.ratziel.module.item.util.writeTo
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
+import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.event.PlayerWorldContactEvent
@@ -47,25 +46,22 @@ object WorldContactListener {
         // 仅处理 RatzielItem 物品, 其它的直接返回
         val ratzielItem = RatzielItem.of(itemStack ?: return) ?: return
 
-        // 初始化环境
-        val environment = SimpleScriptEnvironment().apply {
-            set("event", event)
-            set("player", event.player)
-            set("item", ratzielItem)
-            /*
-               此处不开放事件的 ItemStack,
-               是因为 ItemStack 最后都会被 RatzielItem 重新写入数据,
-               故而就算脚本运行过程中修改了 ItemStack,
-               最后所看的也只会是 RatzielItem 转化成的 ItemStack 罢了
-            */
-        }
-
         fun trigger(
             trigger: ItemTrigger,
-            action: SimpleScriptEnvironment.() -> Unit = {},
+            action: ScriptEnvironment.() -> Unit = {},
         ) {
-            action(environment)
-            trigger.trigger(ratzielItem.identifier, SimpleContext(environment))
+            trigger.trigger(ratzielItem.identifier, event.player, ratzielItem) {
+                set("event", event)
+                set("player", event.player)
+                set("item", ratzielItem)
+                action(this@trigger)
+                /*
+                   此处不开放事件的 ItemStack,
+                   是因为 ItemStack 最后都会被 RatzielItem 重新写入数据,
+                   故而就算脚本运行过程中修改了 ItemStack,
+                   最后所看的也只会是 RatzielItem 转化成的 ItemStack 罢了
+                */
+            }
             // 向事件的 ItemStack 写入 RatzielItem 的数据
             ratzielItem.writeTo(itemStack)
         }

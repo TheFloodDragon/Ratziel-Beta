@@ -56,7 +56,7 @@ class ScriptBlock(
             // 评估
             val environment = context.scriptEnv() ?: SimpleScriptEnvironment()
             script.executor.evaluate(script, environment)
-        }.let { (time, result) ->
+        }.also { (time, result) ->
             debug("[TIME MARK] ScriptBlock executed in $time ms. Content: $source")
             return result
         }
@@ -74,7 +74,7 @@ class ScriptBlock(
         private val executors: MutableMap<ScriptType, ScriptExecutor> = HashMap()
 
         /** 当前执行器 **/
-        private lateinit var currentExecutor: ScriptExecutor
+        private var currentExecutor: ScriptExecutor = executors.computeIfAbsent(ScriptManager.defaultLanguage) { it.newExecutor() }
 
         override fun parse(element: JsonElement, scheduler: BlockParser): ExecutableBlock? {
             if (element is JsonObject && element.size == 1) {
@@ -96,11 +96,7 @@ class ScriptBlock(
                 }
             }
             // 解析字符串脚本
-            if (element is JsonPrimitive && element.isString) {
-                // 当前执行器未初始化时，使用默认语言的执行器
-                if (!::currentExecutor.isInitialized) {
-                    currentExecutor = ScriptManager.defaultLanguage.newExecutor()
-                }
+            else if (element is JsonPrimitive && element.isString) {
                 // 创建脚本块并返回
                 val block = ScriptBlock(element.content, currentExecutor)
                 blocks.add(block) // 记录一下

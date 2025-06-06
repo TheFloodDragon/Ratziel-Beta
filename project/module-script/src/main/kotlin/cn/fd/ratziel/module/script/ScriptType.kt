@@ -98,6 +98,8 @@ interface ScriptType {
         /** 创建执行器 (不支持时抛出异常) **/
         override fun newExecutor() = this.executorGetter.get() ?: throw UnsupportedOperationException("There's no executor of language '$name'.")
 
+        override fun toString() = "ScriptType(name=$name, enabled=$enabled, alias=${this.alias.contentToString()})"
+
     }
 
 }

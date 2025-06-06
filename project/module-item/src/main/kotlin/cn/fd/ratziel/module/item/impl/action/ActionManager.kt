@@ -55,10 +55,10 @@ object ActionManager {
      * 触发指定物品的动作
      */
     @JvmStatic
-    fun ItemTrigger.trigger(identifier: Identifier, action: (ScriptEnvironment).() -> Unit) {
+    fun ItemTrigger.trigger(identifier: Identifier, vararg values: Any, action: (ScriptEnvironment).() -> Unit) {
         val environment = SimpleScriptEnvironment()
         action(environment)
-        val context = SimpleContext(environment)
+        val context = SimpleContext(environment, *values)
         this.trigger(identifier, context)
     }
 

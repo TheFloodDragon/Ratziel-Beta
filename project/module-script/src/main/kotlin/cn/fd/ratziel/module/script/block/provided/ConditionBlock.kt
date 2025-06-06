@@ -32,7 +32,7 @@ class ConditionBlock(
             val valueThen = element["then"]
             val valueElse = element["else"]
             return ConditionBlock(
-                scheduler.parse(valueIf, scheduler)!!,
+                scheduler.parse(valueIf, scheduler) ?: return null,
                 valueThen?.let { scheduler.parse(it, scheduler) },
                 valueElse?.let { scheduler.parse(it, scheduler) }
             )

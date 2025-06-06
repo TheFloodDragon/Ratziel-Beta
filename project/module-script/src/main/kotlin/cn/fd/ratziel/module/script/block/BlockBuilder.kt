@@ -14,61 +14,73 @@ import java.util.function.Supplier
  * @author TheFloodDragon
  * @since 2025/4/5 12:56
  */
-open class BlockBuilder(
-    /**
-     * 使用的解析器列表
-     */
-    protected open val parsers: List<BlockParser>,
-) : BlockParser {
+object BlockBuilder {
 
+    /**
+     * 语句块解析器注册表
+     */
+    val registry: MutableList<Supplier<BlockParser>> = CopyOnWriteArrayList(
+        listOf(
+            Supplier { ConditionBlock.Parser },
+            Supplier { ScriptBlock.Parser() },
+            Supplier { MultiLineBlock.Parser },
+            Supplier { ValueBlock.Parser },
+        )
+    )
+
+    /**
+     * 构建语句块
+     *
+     * @param element 语句块元素
+     * @return 解析后的语句块
+     */
     fun build(element: JsonElement): ExecutableBlock {
-        // 开始解析
-        var result: ExecutableBlock? = null
-        // 挨个尝试解析
-        for (parser in parsers) {
-            // 默认调度器使用自身
-            result = parser.parse(element, this) ?: continue
-        }
-        // 返回存在的结果
+        // 创建调度器
+        val scheduler = BlockScheduler(registry.map { it.get() })
+        // 调用调度器解析
+        val result = scheduler.parse(element, scheduler)
+        // 返回解析结果
         return result ?: throw Exception("Cannot parse the element to block. Source: $element")
     }
 
-    override fun parse(element: JsonElement, scheduler: BlockParser) = build(element)
-
-    companion object Default : BlockBuilder(emptyList()) {
-
+    class BlockScheduler(
         /**
-         * 语句块解析器注册表
+         * 使用的解析器列表
          */
-        val registry: MutableList<Supplier<BlockParser>> = CopyOnWriteArrayList(
-            listOf(
-                Supplier { ConditionBlock.Parser },
-                Supplier { MultiLineBlock.Parser },
-                Supplier { ScriptBlock.Parser() },
-                Supplier { ValueBlock.Parser },
-            )
-        )
+        val parsers: List<BlockParser>,
+    ) : BlockParser {
 
-        override val parsers: List<BlockParser> get() = registry.map { it.get() }
-
-        /**
-         * 注册语句块解析器
-         *
-         * @param parser 语句块解析器获取器
-         */
-        fun register(parser: Supplier<BlockParser>) {
-            registry.add(parser)
+        override fun parse(element: JsonElement, scheduler: BlockParser): ExecutableBlock? {
+            // 开始解析
+            var result: ExecutableBlock? = null
+            // 挨个尝试解析
+            for (parser in parsers) {
+                // 默认调度器使用自身
+                result = parser.parse(element, this) ?: continue
+                break // 解析到有效语句块就返回
+            }
+            // 返回存在的结果
+            return result
         }
 
-        /**
-         * 注册语句块解析器
-         *
-         * @param parser 语句块解析器
-         */
-        fun register(parser: BlockParser) {
-            registry.add { parser }
-        }
+    }
 
+    /**
+     * 注册语句块解析器
+     *
+     * @param parser 语句块解析器获取器
+     */
+    fun register(parser: Supplier<BlockParser>) {
+        registry.add(parser)
+    }
+
+    /**
+     * 注册语句块解析器
+     *
+     * @param parser 语句块解析器
+     */
+    fun register(parser: BlockParser) {
+        registry.add { parser }
     }
 
 }
