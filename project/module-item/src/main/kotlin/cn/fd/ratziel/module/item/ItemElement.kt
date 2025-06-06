@@ -1,23 +1,21 @@
 package cn.fd.ratziel.module.item
 
 import cn.altawk.nbt.NbtFormat
-import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.impl.action.ActionInterceptor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.component.serializers.*
-import cn.fd.ratziel.module.item.impl.action.ActionInterceptor
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
-import cn.fd.ratziel.module.nbt.NBTSerializer
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -67,7 +65,6 @@ object ItemElement : ElementHandler {
     val json = Json(baseJson) {
         serializersModule += SerializersModule {
             // Common Serializers
-            contextual(NbtTag::class, NBTSerializer)
             contextual(ItemMaterial::class, ItemMaterialSerializer)
             // Bukkit Serializers
             contextual(Enchantment::class, EnchantmentSerializer)
@@ -96,6 +93,7 @@ object ItemElement : ElementHandler {
         ItemRegistry.registerInterceptor(InheritResolver)
         ItemRegistry.registerSource(NativeSource.MaterialSource)
         ItemRegistry.registerSource(SkullSource)
+        ItemRegistry.registerSource(NbtTagSource)
         ItemRegistry.registerInterceptor(ActionInterceptor)
         ItemRegistry.registerInterceptor(DefinitionInterceptor)
         ItemRegistry.registerInterceptor(NativeDataInterceptor)

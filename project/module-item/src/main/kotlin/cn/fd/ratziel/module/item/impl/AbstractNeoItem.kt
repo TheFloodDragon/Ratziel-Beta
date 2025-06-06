@@ -41,4 +41,20 @@ abstract class AbstractNeoItem : NeoItem {
         }
     }
 
+    /**
+     * 消耗一定数量的物品
+     *
+     * @return 是否成功消耗
+     */
+    fun take(amount: Int): Boolean {
+        val current = this.data.amount
+        val took = current - amount
+        if (took < 0) {
+            return false
+        } else {
+            this.data.amount = took
+            return true
+        }
+    }
+
 }

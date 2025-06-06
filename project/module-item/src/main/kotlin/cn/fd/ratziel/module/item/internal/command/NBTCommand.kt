@@ -4,8 +4,8 @@ import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.module.item.util.getItemBySlot
 import cn.fd.ratziel.module.item.util.modifyTag
-import cn.fd.ratziel.module.nbt.NBTSerializer
 import cn.fd.ratziel.module.nbt.NbtAdapter
+import cn.fd.ratziel.module.nbt.NbtSerializer
 import cn.fd.ratziel.module.nbt.delete
 import cn.fd.ratziel.module.nbt.write
 import org.bukkit.entity.Player
@@ -69,7 +69,7 @@ object NBTCommand {
                         val path = NbtPath(ctx.args()[2])
                         val rawValue = ctx.args()[3]
                         player.cast<Player>().inventory.getItemBySlot(ctx.args()[1])?.modifyTag { tag ->
-                            val value = NBTSerializer.Converter.deserializeFromString(rawValue)
+                            val value = NbtSerializer.deserializeFromString(rawValue)
                             tag.write(path, value, true)
                             player.sendLang(
                                 "NBTAction-Set",
@@ -168,7 +168,7 @@ object NBTCommand {
 
     private fun componentValue(sender: ProxyCommandSender, nbt: NbtTag) =
         getTypeJson(sender, "NBTFormat-Entry-Value")
-            .buildMessage(sender, asString(nbt), NBTSerializer.Converter.serializeToString(nbt))
+            .buildMessage(sender, asString(nbt), NbtSerializer.serializeToString(nbt))
 
     /**
      * 获取语言文件Json内容
@@ -200,17 +200,8 @@ object NBTCommand {
      * 获取 [NbtTag] 的字符串形式
      */
     private fun asString(nbt: NbtTag): String = when (nbt) {
-        is NbtString -> nbt.content
         is NbtByte -> (NbtByte(nbt.content).toBoolean() ?: nbt.content).toString()
-        is NbtInt -> nbt.content.toString()
-        is NbtFloat -> nbt.content.toString()
-        is NbtDouble -> nbt.content.toString()
-        is NbtLong -> nbt.content.toString()
-        is NbtShort -> nbt.content.toString()
-        is NbtByteArray -> nbt.content.toString()
-        is NbtIntArray -> nbt.content.toString()
-        is NbtLongArray -> nbt.content.toString()
-        else -> NBTSerializer.Converter.serializeToString(nbt).substringBeforeLast(NBTSerializer.Converter.EXACT_TYPE_CHAR)
+        else -> NbtSerializer.serializeToString(nbt)
     }
 
 }
