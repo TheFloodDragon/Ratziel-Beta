@@ -31,6 +31,13 @@ object DefaultResolver : ItemInterceptor {
      */
     val defaultTagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
 
+    /**
+     * 注册默认的标签解析器
+     */
+    fun registerResolver(resolver: ItemTagResolver) {
+        defaultTagResolvers.add(resolver)
+    }
+
     /*
      * 尽管解释器 (Resolver, Interceptor, Source) 在解释的过程中是并行的,
      * 但是启动协程的顺序就近乎决定了解释器获取同步锁的顺序,

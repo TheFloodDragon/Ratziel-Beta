@@ -9,7 +9,6 @@ import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
 import cn.fd.ratziel.module.script.util.scriptEnv
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -18,13 +17,19 @@ import taboolib.common.platform.function.debug
 import java.util.concurrent.CompletableFuture
 
 /**
- * ScriptBlock TODO Refactor
+ * ScriptBlock
  *
  * @author TheFloodDragon
  * @since 2024/10/2 18:31
  */
-class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : ExecutableBlock {
+class ScriptBlock(
+    /** 脚本原始内容 */
+    val source: String,
+    /** 脚本执行器 */
+    val executor: ScriptExecutor,
+) : ExecutableBlock {
 
+    /** 脚本 */
     lateinit var script: ScriptContent
         @Synchronized private set
         @Synchronized get
@@ -33,7 +38,7 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
         // 尝试预编译
         CompletableFuture.supplyAsync {
             try {
-                val compiled = executor.build(scriptSource, SimpleScriptEnv())
+                val compiled = executor.build(source, SimpleScriptEnv())
                 if (!::script.isInitialized) {
                     script = compiled
                 }
@@ -47,12 +52,12 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
             val environment = context.scriptEnv() ?: SimpleScriptEnv()
             // 初次运行编译
             if (!::script.isInitialized) {
-                script = executor.build(scriptSource, environment)
+                script = executor.build(source, environment)
             }
             // 评估
             script.executor.evaluate(script, environment)
         }.let { (time, result) ->
-            debug("[TIME MARK] ScriptBlock executed in $time ms. Content: $scriptSource")
+            debug("[TIME MARK] ScriptBlock executed in $time ms. Content: $source")
             return result
         }
     }
@@ -61,38 +66,27 @@ class ScriptBlock(val scriptSource: String, val executor: ScriptExecutor) : Exec
 
         var currentExecutor = ScriptManager.defaultLanguage.executorOrThrow
 
-
-        override fun parse(element: JsonElement, parent: BlockParser): ExecutableBlock? {
+        override fun parse(element: JsonElement, scheduler: BlockParser): ExecutableBlock? {
             if (element is JsonObject && element.size == 1) {
                 val entry = element.entries.first()
                 val key = entry.key.trim()
                 // 检查开头 (是否为转换语言的)
                 if (key.startsWith('\$')) {
                     val type = ScriptType.matchOrThrow(key.drop(1))
+                    // 记录当前执行器
+                    val lastExecutor = currentExecutor
+                    // 设置当前执行器
                     currentExecutor = type.executorOrThrow
-                    return this.parseBasic(entry.value, parent)
+                    // 使用调度器解析结果
+                    val result = scheduler.parse(entry.value, scheduler)
+                    // 恢复上一个执行器
+                    currentExecutor = lastExecutor
+                    // 返回结果
+                    return result
                 }
             }
-
-            return this.parseBasic(element, parent)
-        }
-
-        private fun parseBasic(element: JsonElement, parent: BlockParser): ExecutableBlock? {
-            if (element is JsonArray) {
-                return ScriptBlock(
-                    element.map { (it as? JsonPrimitive)?.content ?: return null }
-                        .joinToString("\n"), currentExecutor
-                )
-                // TODO
-//                val blocks = element.map { parent.parse(it,parent) ?: return null }
-//                return if (blocks.all { it is ScriptBlock && it.executor == currentExecutor }) {
-//                    ScriptBlock(
-//                        blocks.joinToString("\n") {
-//                            (it as ScriptBlock).scriptSource
-//                        }, currentExecutor
-//                    )
-//                } else MultiLineBlock(blocks)
-            } else if (element is JsonPrimitive) {
+            // 解析字符串脚本
+            if (element is JsonPrimitive && element.isString) {
                 return ScriptBlock(element.content, currentExecutor)
             }
             return null

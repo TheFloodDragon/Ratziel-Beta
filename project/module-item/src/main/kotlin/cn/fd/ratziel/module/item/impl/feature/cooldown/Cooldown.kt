@@ -35,7 +35,7 @@ class Cooldown(
     operator fun get(uuid: Uuid, name: String): CooldownUnit {
         val group = unitGroups.computeIfAbsent(uuid) { HashMap() }
         return group.computeIfAbsent(name) {
-            CooldownUnit(name)
+            CooldownUnit(uuid, name)
         }
     }
 

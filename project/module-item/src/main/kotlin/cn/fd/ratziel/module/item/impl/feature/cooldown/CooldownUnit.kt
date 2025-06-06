@@ -2,10 +2,17 @@
 
 package cn.fd.ratziel.module.item.impl.feature.cooldown
 
+import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.api.NeoItem
+import cn.fd.ratziel.module.item.impl.SimpleMaterial.Companion.toBukkit
+import org.bukkit.Bukkit
+import taboolib.module.nms.MinecraftVersion
 import kotlin.time.Duration
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+import kotlin.uuid.toJavaUuid
 
 /**
  * CooldownUnit
@@ -14,6 +21,10 @@ import kotlin.uuid.ExperimentalUuidApi
  * @since 2025/5/31 13:21
  */
 class CooldownUnit(
+    /**
+     * 玩家 [Uuid]
+     */
+    val uuid: Uuid,
     /**
      * 冷却标识 (名称)
      */
@@ -80,9 +91,30 @@ class CooldownUnit(
      */
     @Synchronized
     fun decrease(duration: Duration) {
-        durationMark = (durationMark - duration).coerceAtLeast(Duration.ZERO)
+        durationMark = (durationMark - duration)
     }
 
     fun decrease(duration: String) = decrease(Duration.parse(duration))
+
+    /**
+     * 为玩家设置某个材质的冷却动画
+     */
+    fun `for`(material: ItemMaterial) {
+        // 1.11.2 之前没有冷却动画
+        if (MinecraftVersion.versionId < 11102) return
+        val player = Bukkit.getPlayer(uuid.toJavaUuid()) ?: return
+        // 剩余冷却时间 (ticks)
+        val left = endMark.elapsedNow().absoluteValue.inWholeMilliseconds / 50
+        // 小薯片说 1.11.2 才有这个
+        // void setCooldown(@NotNull Material var1, int var2)
+        player.setCooldown(material.toBukkit(), left.toInt())
+    }
+
+    /**
+     * 为玩家设置某个材质的冷却动画
+     */
+    fun `for`(item: NeoItem) {
+        `for`(item.data.material)
+    }
 
 }

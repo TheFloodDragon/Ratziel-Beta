@@ -19,11 +19,9 @@ class ValueBlock(val value: Any?) : ExecutableBlock {
     override fun execute(context: ArgumentContext) = value
 
     object Parser : BlockParser {
-
-        override fun parse(element: JsonElement, parent: BlockParser): ValueBlock? {
+        override fun parse(element: JsonElement, scheduler: BlockParser): ValueBlock? {
             return if (element is JsonPrimitive) ValueBlock(element.contentOrNull?.adapt()) else null
         }
-
     }
 
 }

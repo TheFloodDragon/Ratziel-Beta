@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.script.block.ExecutableBlock
-import cn.fd.ratziel.module.script.block.ScriptBlockBuilder
+import cn.fd.ratziel.module.script.block.BlockBuilder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
@@ -67,7 +67,7 @@ object DefinitionInterceptor : ItemInterceptor {
     internal suspend fun buildBlockMap(element: JsonObject): Map<String, ExecutableBlock> = supervisorScope {
         mapOf(*element.map {
             async {
-                it.key to ScriptBlockBuilder.build(it.value) // 构建语句块
+                it.key to BlockBuilder.build(it.value) // 构建语句块
             }
         }.awaitAll().toTypedArray())
     }

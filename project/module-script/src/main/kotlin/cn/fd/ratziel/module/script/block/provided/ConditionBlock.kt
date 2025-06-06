@@ -13,6 +13,7 @@ import kotlinx.serialization.json.JsonObject
  * @since 2025/3/23 09:16
  */
 class ConditionBlock(
+    /** 条件语句 (必选) **/
     val funcIf: ExecutableBlock,
     val funcThen: ExecutableBlock?,
     val funcElse: ExecutableBlock?,
@@ -25,19 +26,17 @@ class ConditionBlock(
     }
 
     object Parser : BlockParser {
-
-        override fun parse(element: JsonElement, parent: BlockParser): ConditionBlock? {
+        override fun parse(element: JsonElement, scheduler: BlockParser): ConditionBlock? {
             if (element !is JsonObject) return null
             val valueIf = element["if"] ?: element["condition"] ?: return null
             val valueThen = element["then"]
             val valueElse = element["else"]
             return ConditionBlock(
-                parent.parse(valueIf, parent)!!,
-                valueThen?.let { parent.parse(it, parent) },
-                valueElse?.let { parent.parse(it, parent) }
+                scheduler.parse(valueIf, scheduler)!!,
+                valueThen?.let { scheduler.parse(it, scheduler) },
+                valueElse?.let { scheduler.parse(it, scheduler) }
             )
         }
-
     }
 
 }
