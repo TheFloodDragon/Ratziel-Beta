@@ -91,9 +91,9 @@ object ItemElement : ElementHandler {
     init {
         // 注册默认解释器
         ItemRegistry.registerInterceptor(InheritResolver)
-        ItemRegistry.registerSource(NativeSource.MaterialSource)
         ItemRegistry.registerSource(SkullSource)
         ItemRegistry.registerSource(NbtTagSource)
+        ItemRegistry.registerSource(NativeSource.MaterialSource)
         ItemRegistry.registerInterceptor(ActionInterceptor)
         ItemRegistry.registerInterceptor(DefinitionInterceptor)
         ItemRegistry.registerInterceptor(NativeDataInterceptor)

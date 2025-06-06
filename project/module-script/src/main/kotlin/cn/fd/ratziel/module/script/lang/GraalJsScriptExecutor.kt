@@ -1,12 +1,9 @@
 package cn.fd.ratziel.module.script.lang
 
-import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
-import net.kyori.adventure.text.Component
 import org.graalvm.polyglot.Context
-import org.graalvm.polyglot.HostAccess
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
@@ -27,17 +24,6 @@ class GraalJsScriptExecutor : EnginedScriptExecutor() {
             .allowAllAccess(true) // 全开了算了
             .allowExperimentalOptions(true)
             .option("js.nashorn-compat", "true") // Nashorn 兼容模式
-            .allowHostAccess(
-                HostAccess.newBuilder(HostAccess.ALL)
-                    // String 转 Component
-                    .targetTypeMapping(
-                        String::class.java,
-                        Component::class.java,
-                        null,
-                        { Message.buildMessage(it) },
-                        HostAccess.TargetMappingPrecedence.LOWEST
-                    ).build()
-            )
     }
 
     override val engine: ScriptEngine by lazy {

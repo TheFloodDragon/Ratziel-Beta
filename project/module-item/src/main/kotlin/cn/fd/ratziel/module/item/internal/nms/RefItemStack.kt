@@ -88,6 +88,21 @@ class RefItemStack private constructor(
         }
 
     /**
+     * 应用物品数据
+     */
+    fun applyData(data: ItemData): RefItemStack {
+        if (data.material.isEmpty()) {
+            // 直接设置材质不会改变 CraftItemStack#handle , 故设置数量
+            this.amount = 0
+        } else {
+            this.material = data.material
+            this.tag = data.tag
+            this.amount = data.amount
+        }
+        return this
+    }
+
+    /**
      * 提取此 [RefItemStack] 的数据到 [ItemData]
      */
     fun extractData(): ItemData {
@@ -98,16 +113,16 @@ class RefItemStack private constructor(
      * 将此 [RefItemStack] 写入目标 [BukkitItemStack]
      */
     fun writeTo(itemStack: BukkitItemStack) {
-        // 写入材质和数量信息
-        itemStack.type = this.material.toBukkit()
-        itemStack.amount = this.amount
         // 写入标签数据
         if (isObcClass(itemStack::class.java)) {
             // CraftItemStack 直接写入
-            RefItemStack(itemStack).tag = this.tag
+            RefItemStack(itemStack).applyData(this)
         } else {
             // 一般的 BukkitItemStack 写入 ItemMeta
             itemStack.itemMeta = this.bukkitStack.itemMeta
+            // 写入材质和数量信息
+            itemStack.type = this.material.toBukkit()
+            itemStack.amount = this.amount
         }
     }
 
@@ -144,11 +159,7 @@ class RefItemStack private constructor(
          * 通过 [ItemData] 创建一个 [RefItemStack]
          */
         @JvmStatic
-        fun of(data: ItemData) = RefItemStack().apply {
-            this.material = data.material
-            this.tag = data.tag
-            this.amount = data.amount
-        }
+        fun of(data: ItemData) = RefItemStack().applyData(data)
 
         /**
          * 通过 [BukkitItemStack] 创建一个 [RefItemStack]

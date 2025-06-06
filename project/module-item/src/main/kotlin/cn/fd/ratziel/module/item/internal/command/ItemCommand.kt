@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.internal.command
 
 import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.item.ItemManager
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.util.toItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.ProxyCommandSender
@@ -69,7 +69,7 @@ object ItemCommand {
             val duration = time.elapsedNow()
             debug("[TIME MARK] Generated item '$id' in ${duration.inWholeMilliseconds}ms.")
             // 将生成结果打包成 BukkitItemStack
-            val item = RefItemStack.of(it.data).bukkitStack.apply { setAmount(amount) }
+            val item = it.toItemStack().apply { setAmount(amount) }
             submit {
                 // 给予物品
                 player.cast<Player>().giveItem(item)

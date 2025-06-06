@@ -35,18 +35,17 @@ class ItemHideFlag(
     /**
      * 添加物品隐藏标签
      */
-    fun addHideFlags(vararg flags: XItemFlag) {
-        // 初始化 HideFlags
+    fun add(vararg flags: XItemFlag) {
+        val hideFlags = this.hideFlags
         if (hideFlags == null) {
-            hideFlags = HashSet()
-        }
-        hideFlags?.addAll(flags)
+            this.hideFlags = HashSet(flags.toList())
+        } else hideFlags.addAll(flags)
     }
 
     /**
      * 删除物品隐藏标签
      */
-    fun removeHideFlags(vararg flags: XItemFlag) {
+    fun remove(vararg flags: XItemFlag) {
         hideFlags?.removeAll(flags)
     }
 
