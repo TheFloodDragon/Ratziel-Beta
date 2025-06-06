@@ -6,7 +6,7 @@ import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
 import cn.fd.ratziel.module.item.util.writeTo
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
+import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.event.PlayerWorldContactEvent
@@ -48,7 +48,7 @@ object WorldContactListener {
         val ratzielItem = RatzielItem.of(itemStack ?: return) ?: return
 
         // 初始化环境
-        val environment = SimpleScriptEnv().apply {
+        val environment = SimpleScriptEnvironment().apply {
             set("event", event)
             set("player", event.player)
             set("item", ratzielItem)
@@ -62,7 +62,7 @@ object WorldContactListener {
 
         fun trigger(
             trigger: ItemTrigger,
-            action: SimpleScriptEnv.() -> Unit = {},
+            action: SimpleScriptEnvironment.() -> Unit = {},
         ) {
             action(environment)
             trigger.trigger(ratzielItem.identifier, SimpleContext(environment))

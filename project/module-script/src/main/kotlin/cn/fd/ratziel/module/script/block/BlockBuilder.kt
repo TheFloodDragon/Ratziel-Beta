@@ -52,19 +52,6 @@ open class BlockBuilder(
         override val parsers: List<BlockParser> get() = registry.map { it.get() }
 
         /**
-         * 解析 [JsonElement] 为可执行的语句块
-         *
-         * @param element [JsonElement]
-         * @return 可执行的语句块
-         */
-        fun buildWithParsers(element: JsonElement, parsers: List<BlockParser>): ExecutableBlock {
-            // 创建语句块构建器
-            val builder = BlockBuilder(parsers)
-            // 解析元素
-            return builder.build(element)
-        }
-
-        /**
          * 注册语句块解析器
          *
          * @param parser 语句块解析器获取器

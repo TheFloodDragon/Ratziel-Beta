@@ -7,14 +7,13 @@ import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
+import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
-import java.util.concurrent.CompletableFuture
 
 /**
  * ScriptBlock
@@ -29,32 +28,33 @@ class ScriptBlock(
     val executor: ScriptExecutor,
 ) : ExecutableBlock {
 
-    /** 脚本 */
+    /** 脚本 **/
     lateinit var script: ScriptContent
         @Synchronized private set
         @Synchronized get
 
-    init {
-        // 尝试预编译
-        CompletableFuture.supplyAsync {
+    /**
+     * 编译脚本
+     */
+    fun compile(context: ArgumentContext): Throwable? {
+        // 不重复编译
+        if (!::script.isInitialized) {
             try {
-                val compiled = executor.build(source, SimpleScriptEnv())
-                if (!::script.isInitialized) {
-                    script = compiled
-                }
-            } catch (_: Exception) {
+                val environment = context.scriptEnv() ?: SimpleScriptEnvironment()
+                script = executor.build(source, environment)
+            } catch (e: Exception) {
+                return e
             }
         }
+        return null
     }
 
     override fun execute(context: ArgumentContext): Any? {
         measureTimeMillisWithResult {
-            val environment = context.scriptEnv() ?: SimpleScriptEnv()
             // 初次运行编译
-            if (!::script.isInitialized) {
-                script = executor.build(source, environment)
-            }
+            compile(context)
             // 评估
+            val environment = context.scriptEnv() ?: SimpleScriptEnvironment()
             script.executor.evaluate(script, environment)
         }.let { (time, result) ->
             debug("[TIME MARK] ScriptBlock executed in $time ms. Content: $source")
@@ -64,7 +64,17 @@ class ScriptBlock(
 
     class Parser : BlockParser {
 
-        var currentExecutor = ScriptManager.defaultLanguage.executorOrThrow
+        /** 创建的语句块列表 **/
+        val blocks: MutableList<ScriptBlock> = ArrayList()
+
+        /**
+         * 每个语言使用一个执行器
+         * 该表用来记录每个语言的执行器实例
+         */
+        private val executors: MutableMap<ScriptType, ScriptExecutor> = HashMap()
+
+        /** 当前执行器 **/
+        private lateinit var currentExecutor: ScriptExecutor
 
         override fun parse(element: JsonElement, scheduler: BlockParser): ExecutableBlock? {
             if (element is JsonObject && element.size == 1) {
@@ -76,7 +86,7 @@ class ScriptBlock(
                     // 记录当前执行器
                     val lastExecutor = currentExecutor
                     // 设置当前执行器
-                    currentExecutor = type.executorOrThrow
+                    currentExecutor = executors.computeIfAbsent(type) { it.newExecutor() } // 获取或创建执行器
                     // 使用调度器解析结果
                     val result = scheduler.parse(entry.value, scheduler)
                     // 恢复上一个执行器
@@ -87,7 +97,14 @@ class ScriptBlock(
             }
             // 解析字符串脚本
             if (element is JsonPrimitive && element.isString) {
-                return ScriptBlock(element.content, currentExecutor)
+                // 当前执行器未初始化时，使用默认语言的执行器
+                if (!::currentExecutor.isInitialized) {
+                    currentExecutor = ScriptManager.defaultLanguage.newExecutor()
+                }
+                // 创建脚本块并返回
+                val block = ScriptBlock(element.content, currentExecutor)
+                blocks.add(block) // 记录一下
+                return block
             }
             return null
         }

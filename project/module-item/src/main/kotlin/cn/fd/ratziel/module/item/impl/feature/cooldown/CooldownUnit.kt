@@ -39,16 +39,16 @@ class CooldownUnit(
         private set
 
     /**
-     * 冷却时长标记
+     * 冷却时长
      */
     @Volatile
-    var durationMark: Duration = Duration.ZERO
+    var interval: Duration = Duration.ZERO
         private set
 
     /**
      * 冷却结束标记
      */
-    val endMark: TimeMark get() = startMark.plus(durationMark)
+    val endMark: TimeMark get() = startMark.plus(interval)
 
     /**
      * 是否正在冷却
@@ -59,12 +59,12 @@ class CooldownUnit(
      * 设置冷却时长
      */
     @Synchronized
-    fun setCooldown(duration: Duration) {
-        startMark = TimeSource.Monotonic.markNow()
-        durationMark = duration
+    fun setCooldown(interval: Duration) {
+        this.startMark = TimeSource.Monotonic.markNow()
+        this.interval = interval
     }
 
-    fun setCooldown(duration: String) = setCooldown(Duration.parse(duration))
+    fun setCooldown(interval: String) = setCooldown(Duration.parse(interval))
 
     /**
      * 立刻结束冷却
@@ -72,7 +72,7 @@ class CooldownUnit(
     @Synchronized
     fun stopImmediately() {
         // 立刻结束冷却，重置开始标记和持续时间
-        durationMark = Duration.ZERO
+        interval = Duration.ZERO
         startMark = TimeSource.Monotonic.markNow()
     }
 
@@ -80,21 +80,21 @@ class CooldownUnit(
      * 增加冷却时长
      */
     @Synchronized
-    fun increase(duration: Duration) {
-        durationMark = durationMark + duration
+    fun increase(interval: Duration) {
+        this.interval = this.interval + interval
     }
 
-    fun increase(duration: String) = increase(Duration.parse(duration))
+    fun increase(interval: String) = increase(Duration.parse(interval))
 
     /**
      * 减少冷却时长
      */
     @Synchronized
-    fun decrease(duration: Duration) {
-        durationMark = (durationMark - duration)
+    fun decrease(interval: Duration) {
+        this.interval = this.interval - interval
     }
 
-    fun decrease(duration: String) = decrease(Duration.parse(duration))
+    fun decrease(interval: String) = decrease(Duration.parse(interval))
 
     /**
      * 为玩家设置某个材质的冷却动画

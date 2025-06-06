@@ -7,7 +7,7 @@ import cn.fd.ratziel.module.item.api.action.ActionMap
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
+import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import taboolib.common.platform.function.debug
 import java.util.concurrent.ConcurrentHashMap
 
@@ -56,7 +56,7 @@ object ActionManager {
      */
     @JvmStatic
     fun ItemTrigger.trigger(identifier: Identifier, action: (ScriptEnvironment).() -> Unit) {
-        val environment = SimpleScriptEnv()
+        val environment = SimpleScriptEnvironment()
         action(environment)
         val context = SimpleContext(environment)
         this.trigger(identifier, context)

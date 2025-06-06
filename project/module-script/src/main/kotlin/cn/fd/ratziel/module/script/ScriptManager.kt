@@ -55,7 +55,7 @@ object ScriptManager {
             if (!type.enabled) continue // 禁用的直接跳过
             try {
                 // 获取执行器
-                val executor = type.executorOrThrow
+                val executor = type.newExecutor()
                 // 调用初始化函数
                 if (executor is Initializable) {
                     executor.initialize(settings)

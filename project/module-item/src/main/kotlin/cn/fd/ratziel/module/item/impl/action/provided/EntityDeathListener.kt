@@ -34,6 +34,7 @@ object EntityDeathListener {
         // 触发触发器
         KILL_ENTITY.trigger(ratzielItem.identifier) {
             set("event", event) // 事件
+            set("player", killer) // 玩家 & 杀手
             set("killer", killer) // 杀手
             set("item", ratzielItem) // 使用的物品 (凶器)
             set("entity", event.entity) // 被击杀的实体

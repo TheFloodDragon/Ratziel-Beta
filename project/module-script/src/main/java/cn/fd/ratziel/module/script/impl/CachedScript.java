@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
  * @author TheFloodDragon
  * @since 2024/10/4 20:19
  */
-public class CachedScript<T> extends SimpleScriptContent {
+public class CachedScript<T> extends LiteralScriptContent {
 
     public CachedScript(@NotNull String content, @NotNull ScriptExecutor executor) {
         super(content, executor);

@@ -5,14 +5,14 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * SimpleScriptContent
+ * LiteralScriptContent
  *
  * @author TheFloodDragon
  * @since 2024/10/4 20:11
  */
-public class SimpleScriptContent implements ScriptContent {
+public class LiteralScriptContent implements ScriptContent {
 
-    public SimpleScriptContent(@NotNull String content, @NotNull ScriptExecutor executor) {
+    public LiteralScriptContent(@NotNull String content, @NotNull ScriptExecutor executor) {
         this.content = content;
         this.executor = executor;
     }

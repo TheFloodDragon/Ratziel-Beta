@@ -26,19 +26,14 @@ interface ScriptType {
     var enabled: Boolean
 
     /**
-     * 执行器
-     */
-    var executor: Supplier<ScriptExecutor?>
-
-    /**
      * 别名
      */
     val alias: Array<out String>
 
     /**
-     * 获取执行器, 若不存在则直接抛出异常
+     * 创建一个执行器
      */
-    val executorOrThrow get() = executor.get() ?: throw UnsupportedOperationException("There's no executor of language '$name'.")
+    fun newExecutor(): ScriptExecutor
 
     companion object {
 
@@ -50,7 +45,7 @@ interface ScriptType {
 
         /** JavaScript **/
         @JvmStatic
-        val JAVASCRIPT = register("JavaScript", "Js") { JavaScriptExecutor }
+        val JAVASCRIPT = register("JavaScript", "Js") { JavaScriptExecutor() }
 
         /** Kether **/
         @Suppress("unused")
@@ -82,14 +77,26 @@ interface ScriptType {
         fun matchOrThrow(name: String): ScriptType =
             match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
 
-        private fun register(name: String, vararg alias: String, executor: Supplier<ScriptExecutor?>) =
-            object : ScriptType {
-                override val name = name
-                override var enabled = false
-                override var executor = executor
-                override val alias = alias
-                override fun toString() = "ScriptType(name=$name, enabled=$enabled, alias=${this.alias.contentToString()})"
-            }.also { this.registry.add(it) }
+        private fun register(name: String, vararg alias: String, executor: Supplier<ScriptExecutor?>): ScriptType {
+            val type = BuiltinScriptType(name, *alias, executorGetter = executor)
+            this.registry.add(type)
+            return type
+        }
+
+    }
+
+    private class BuiltinScriptType(
+        override val name: String,
+        override vararg val alias: String,
+        /** 执行器获取器 **/
+        val executorGetter: Supplier<ScriptExecutor?>,
+    ) : ScriptType {
+
+        /** 是否启用脚本 (需手动开启) **/
+        override var enabled = false
+
+        /** 创建执行器 (不支持时抛出异常) **/
+        override fun newExecutor() = this.executorGetter.get() ?: throw UnsupportedOperationException("There's no executor of language '$name'.")
 
     }
 

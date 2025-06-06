@@ -6,7 +6,7 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.script.block.BlockBuilder
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnv
+import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import taboolib.common.LifeCycle
 
 /**
@@ -26,7 +26,7 @@ object ActionElement : ElementHandler {
         element.property.let { json ->
             val block = BlockBuilder.build(json)
             println(block)
-            val result = block.execute(SimpleContext(SimpleScriptEnv()))
+            val result = block.execute(SimpleContext(SimpleScriptEnvironment()))
             println(result)
         }
     }

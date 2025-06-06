@@ -15,23 +15,21 @@ import javax.script.ScriptEngine
 abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>() {
 
     /**
-     * 创建 [ScriptEngine]
+     * 脚本引擎实例
      */
-    abstract fun newEngine(): ScriptEngine
-
-    /**
-     * 获取 [ScriptEngine]
-     */
-    open fun getEngine(): ScriptEngine = newEngine()
+    abstract val engine: ScriptEngine
 
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        val engine = getEngine()
         return engine.eval(script, createContext(engine, environment))
     }
 
+    /**
+     * 编译原始脚本
+     *
+     * @param script 原始脚本
+     * @param environment 脚本环境 (默认情况下不被使用, 若需要导入环境, 请重写此方法)
+     */
     override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
-        val engine = newEngine()
-        engine.context = createContext(engine, environment)
         return (engine as Compilable).compile(script)
     }
 
@@ -40,11 +38,21 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
     }
 
     /**
-     * 创建 [ScriptContext]
+     * 创建脚本上下文
+     *
+     * @param engine 脚本引擎
+     * @param environment 脚本环境
      */
-    @Synchronized
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
-        return environment.context
+        // 环境的绑定键
+        val environmentBindings = environment.bindings
+        if (environmentBindings.isNotEmpty()) {
+            // 导入环境的绑定键
+            engine.context.getBindings(ScriptContext.ENGINE_SCOPE)
+                .putAll(environmentBindings)
+        }
+        // 返回引擎上下文
+        return engine.context
     }
 
 }

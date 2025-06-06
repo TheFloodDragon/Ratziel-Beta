@@ -22,6 +22,9 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
         ScriptManager.loadDependencies("jexl")
     }
 
+    /**
+     * Jexl引擎实例
+     */
     val engine: JexlEngine by lazy {
         JexlBuilder().apply {
             loader(this::class.java.classLoader)
@@ -29,7 +32,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
     }
 
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        return engine.createScript(script).execute(WrappedJexlContext(environment.context))
+        return engine.createScript(script).execute(WrappedJexlContext(environment))
     }
 
     override fun compile(script: String, environment: ScriptEnvironment): JexlScript {
@@ -38,7 +41,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
 
     override fun evalCompiled(script: JexlScript, environment: ScriptEnvironment): Any? {
         // 创建上下文
-        val context = WrappedJexlContext(environment.context)
+        val context = WrappedJexlContext(environment)
         // 执行脚本
         return script.execute(context)
     }
@@ -46,9 +49,16 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
     /**
      * 封装的 [JexlContext]
      */
-    class WrappedJexlContext(context: ScriptContext) : JexlContext {
+    class WrappedJexlContext(context: ImportedScriptContext) : JexlContext {
 
-        val scriptContext = ImportedScriptContext(context)
+        constructor(environment: ScriptEnvironment) : this(
+            ImportedScriptContext().apply {
+                setBindings(environment.bindings, ScriptContext.ENGINE_SCOPE)
+                setBindings(ScriptManager.Global.globalBindings, ScriptContext.GLOBAL_SCOPE)
+            }
+        )
+
+        val scriptContext = context
 
         override fun get(name: String): Any? {
             return scriptContext.getAttribute(name)

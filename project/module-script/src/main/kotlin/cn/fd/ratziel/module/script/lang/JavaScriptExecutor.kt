@@ -1,10 +1,12 @@
 package cn.fd.ratziel.module.script.lang
 
+import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.internal.Initializable
 import taboolib.library.configuration.ConfigurationSection
+import java.util.function.Supplier
 
 /**
  * JavaScriptExecutor
@@ -12,24 +14,34 @@ import taboolib.library.configuration.ConfigurationSection
  * @author TheFloodDragon
  * @since 2025/4/26 9:37
  */
-object JavaScriptExecutor : ScriptExecutor, Initializable {
+class JavaScriptExecutor : ScriptExecutor, Initializable {
 
-    private lateinit var executor: ScriptExecutor
+    companion object {
+        /** 脚本执行器实例 **/
+        private lateinit var executor: Supplier<ScriptExecutor>
+    }
 
     override fun initialize(settings: ConfigurationSection) {
         // 读取引擎
         val selected = settings.getString("engine")
-        // 创建脚本执行器
-        val engine = when (selected?.lowercase()) {
-            "nashorn" -> NashornScriptExecutor
-            "graaljs" -> GraalJsScriptExecutor
-            else -> NashornScriptExecutor
+        // 设置全局使用的脚本执行器
+        executor = when (selected?.lowercase()) {
+            "nashorn" -> {
+                ScriptManager.loadDependencies("nashorn") // 加载 Nashorn JavaScript 依赖
+                Supplier { NashornScriptExecutor() }
+            }
+
+            "graaljs" -> {
+                ScriptManager.loadDependencies("graaljs") // 加载 GraalVM JavaScript 依赖
+                Supplier { GraalJsScriptExecutor() }
+            }
+
+            else -> throw IllegalArgumentException("Unknown engine '$selected' selected.")
         }
-        this.executor = engine
     }
 
-    override fun build(script: String, environment: ScriptEnvironment) = this.executor.build(script, environment)
+    override fun build(script: String, environment: ScriptEnvironment) = executor.get().build(script, environment)
 
-    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = this.executor.evaluate(script, environment)
+    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment) = executor.get().evaluate(script, environment)
 
 }
