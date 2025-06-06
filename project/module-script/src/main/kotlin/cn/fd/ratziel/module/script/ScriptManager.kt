@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.core.util.findInJar
-import cn.fd.ratziel.module.script.internal.Initializable
+import cn.fd.ratziel.module.script.internal.ScriptBootstrap
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
@@ -22,6 +22,11 @@ import javax.script.SimpleBindings
  * @since 2024/7/16 11:30
  */
 object ScriptManager {
+
+    /**
+     * 脚本启动器表
+     */
+    val bootstraps: MutableMap<ScriptType, ScriptBootstrap> = HashMap()
 
     /**
      * 默认使用的的脚本语言
@@ -54,12 +59,8 @@ object ScriptManager {
             type.enabled = settings.getBoolean("enabled", false)
             if (!type.enabled) continue // 禁用的直接跳过
             try {
-                // 获取执行器
-                val executor = type.newExecutor()
-                // 调用初始化函数
-                if (executor is Initializable) {
-                    executor.initialize(settings)
-                }
+                // 初始化脚本
+                bootstraps[type]?.initialize(settings)
             } catch (ex: Exception) {
                 type.enabled = false // 禁用
                 severe("Failed to enable script-language '${type.name}'!")

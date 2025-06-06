@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.internal.ScriptBootstrap
 import cn.fd.ratziel.module.script.lang.JavaScriptExecutor
 import cn.fd.ratziel.module.script.lang.JexlScriptExecutor
 import cn.fd.ratziel.module.script.lang.KetherExecutor
@@ -45,12 +46,12 @@ interface ScriptType {
 
         /** JavaScript **/
         @JvmStatic
-        val JAVASCRIPT = register("JavaScript", "Js") { JavaScriptExecutor() }
+        val JAVASCRIPT = register("JavaScript", "Js", bootstrap = JavaScriptExecutor) { JavaScriptExecutor() }
 
         /** Kether **/
         @Suppress("unused")
         @JvmStatic
-        val KETHER = register("Kether", "ke", "ks") { KetherExecutor }
+        val KETHER = register("Kether", "ke", "ks", bootstrap = KetherExecutor) { KetherExecutor }
 
         /** Jexl **/
         @Suppress("unused")
@@ -77,9 +78,12 @@ interface ScriptType {
         fun matchOrThrow(name: String): ScriptType =
             match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
 
-        private fun register(name: String, vararg alias: String, executor: Supplier<ScriptExecutor?>): ScriptType {
+        private fun register(name: String, vararg alias: String, bootstrap: ScriptBootstrap? = null, executor: Supplier<ScriptExecutor?>): ScriptType {
             val type = BuiltinScriptType(name, *alias, executorGetter = executor)
             this.registry.add(type)
+            if (bootstrap != null) {
+                ScriptManager.bootstraps[type] = bootstrap
+            }
             return type
         }
 

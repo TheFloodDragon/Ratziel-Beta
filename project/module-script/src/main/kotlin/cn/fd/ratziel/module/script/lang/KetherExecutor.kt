@@ -4,7 +4,7 @@ import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.impl.LiteralScriptContent
-import cn.fd.ratziel.module.script.internal.Initializable
+import cn.fd.ratziel.module.script.internal.ScriptBootstrap
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.library.configuration.ConfigurationSection
@@ -18,7 +18,7 @@ import taboolib.module.kether.ScriptOptions
  * @author TheFloodDragon
  * @since 2024/7/14 21:40
  */
-object KetherExecutor : ScriptExecutor, Initializable {
+object KetherExecutor : ScriptExecutor, ScriptBootstrap {
 
     override fun build(script: String, environment: ScriptEnvironment): ScriptContent = LiteralScriptContent(script, this)
 

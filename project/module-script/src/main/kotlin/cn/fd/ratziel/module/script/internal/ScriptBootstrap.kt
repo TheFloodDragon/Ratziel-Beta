@@ -3,12 +3,12 @@ package cn.fd.ratziel.module.script.internal
 import taboolib.library.configuration.ConfigurationSection
 
 /**
- * Initializable
+ * ScriptBootstrap
  *
  * @author TheFloodDragon
- * @since 2025/2/8 12:47
+ * @since 2025/6/6 18:39
  */
-internal interface Initializable {
+interface ScriptBootstrap {
 
     /**
      * 初始化函数
