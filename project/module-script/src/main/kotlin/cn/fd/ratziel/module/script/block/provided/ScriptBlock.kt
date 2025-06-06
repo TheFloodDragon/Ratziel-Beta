@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.block.provided
 
 import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
@@ -8,6 +9,7 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
+import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -32,6 +34,12 @@ class ScriptBlock(
     lateinit var script: ScriptContent
         @Synchronized private set
         @Synchronized get
+
+    init {
+        if (executor is NonStrictCompilation) {
+            compile(SimpleContext())
+        }
+    }
 
     /**
      * 编译脚本

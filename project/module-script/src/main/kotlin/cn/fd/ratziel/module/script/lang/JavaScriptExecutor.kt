@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.script.lang
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.internal.Initializable
+import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import taboolib.library.configuration.ConfigurationSection
 import java.util.function.Supplier
 
@@ -12,7 +13,7 @@ import java.util.function.Supplier
  * @author TheFloodDragon
  * @since 2025/4/26 9:37
  */
-class JavaScriptExecutor : ScriptExecutor by executor.get(), Initializable {
+class JavaScriptExecutor : ScriptExecutor by executor.get(), Initializable, NonStrictCompilation {
 
     companion object {
         /** 脚本执行器实例 **/
