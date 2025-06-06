@@ -39,9 +39,9 @@ class GraalJsScriptExecutor : EnginedScriptExecutor() {
                     value: function(name) {
                         'use strict';
                         var global = Java.type('cn.fd.ratziel.module.script.ScriptManager.Global');
-                        var type = global.getImportedClass(name)
-                        if (type) {
-                            return Packages.jdk.dynalink.beans.StaticClass.forClass(type);
+                        var clazz = global.getImportedClass(name)
+                        if (clazz) {
+                            return Java.type(clazz.name);
                         }
                         if (oldNoSuchProperty) {
                             return oldNoSuchProperty.call(this, name);

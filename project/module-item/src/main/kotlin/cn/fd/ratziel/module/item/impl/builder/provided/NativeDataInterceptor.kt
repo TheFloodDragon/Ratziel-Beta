@@ -11,7 +11,6 @@ import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.impl.feature.dynamic.DynamicTagService
-import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.event.SubscribeEvent
@@ -39,7 +38,7 @@ object NativeDataInterceptor : ItemInterceptor {
             // 获取数据
             val value = holder[name] ?: return
             // 结束解析
-            assignment.complete(value.content.toString())
+            assignment.complete(value.toString())
         }
     }
 
@@ -70,11 +69,6 @@ object NativeDataInterceptor : ItemInterceptor {
             } ?: return
 
         val result = DefinitionInterceptor.executeAll(blocks, stream.context)
-            .mapValues { (_, value) ->
-                runCatching {
-                    value?.let { NbtAdapter.box(it) }
-                }.getOrNull()
-            }
 
         // 写入到物品数据里
         stream.data.withValue {

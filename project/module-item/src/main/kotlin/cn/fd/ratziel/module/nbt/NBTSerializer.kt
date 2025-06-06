@@ -88,7 +88,6 @@ object NBTSerializer : KSerializer<NbtTag> {
             // Special Type
             is NbtCompound -> serializeToJsonObject(target).toString() + EXACT_TYPE_CHAR + NbtType.COMPOUND.name
             is NbtList -> serializeToJsonArray(target).toString() + EXACT_TYPE_CHAR + NbtType.LIST.name
-            else -> throw UnsupportedTypeException(target.type)
         }
 
         fun serializeToJsonObject(target: NbtCompound) = buildJsonObject { target.forEach { put(it.key, serializeToJson(it.value)) } }

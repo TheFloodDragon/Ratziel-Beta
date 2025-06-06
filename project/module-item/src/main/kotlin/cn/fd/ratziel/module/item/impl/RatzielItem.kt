@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.impl
 import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtString
-import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.api.DataHolder
@@ -11,6 +10,7 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
 import cn.fd.ratziel.module.item.internal.ItemSheet
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
 import org.bukkit.inventory.ItemStack
@@ -129,15 +129,16 @@ class RatzielItem private constructor(
         /**
          * 读取指定数据
          */
-        override fun get(name: String): NbtTag? {
-            return (data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)?.get(name)
+        override fun get(name: String): Any? {
+            return (this.data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)
+                ?.get(name)?.let { NbtAdapter.unbox(it) }
         }
 
         /**
          * 写入指定数据
          */
-        override fun set(name: String, tag: NbtTag) {
-            data.tag.handle(RATZIEL_DATA_PATH) { put(name, tag) }
+        override fun set(name: String, data: Any) {
+            this.data.tag.handle(RATZIEL_DATA_PATH) { put(name, NbtAdapter.box(data)) }
         }
 
     }

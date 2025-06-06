@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.altawk.nbt.tag.NbtTag
-
 /**
  * DataHolder
  *
@@ -11,18 +9,18 @@ import cn.altawk.nbt.tag.NbtTag
 interface DataHolder {
 
     /**
-     * 获取 [NbtTag] 数据
+     * 获取数据
      *
      * @param name 数据名称
      */
-    operator fun get(name: String): NbtTag?
+    operator fun get(name: String): Any?
 
     /**
-     * 设置 [NbtTag] 数据
+     * 设置数据
      *
      * @param name 数据名称
-     * @param tag 具体数据
+     * @param data 具体数据
      */
-    operator fun set(name: String, tag: NbtTag)
+    operator fun set(name: String, data: Any)
 
 }
