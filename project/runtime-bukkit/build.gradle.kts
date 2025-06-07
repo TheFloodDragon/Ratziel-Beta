@@ -1,6 +1,7 @@
 dependencies {
     // Core
-    compileCore(12005)
+    compileNMS()
+    compileCore(12104, mapped = true)
     compileOnly(libs.taboolib.platform.bukkit)
     compileOnly(libs.taboolib.platform.bukkit.impl)
     compileOnly(libs.taboolib.bukkit.nms)

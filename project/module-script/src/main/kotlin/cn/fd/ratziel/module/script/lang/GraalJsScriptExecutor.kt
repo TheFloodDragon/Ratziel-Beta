@@ -56,6 +56,8 @@ class GraalJsScriptExecutor : EnginedScriptExecutor() {
                 });
              """.trimIndent()
             )
+            // 加载全局扩展脚本
+            for (script in JavaScriptExecutor.getGlobalScripts()) eval(script)
         }
     }
 

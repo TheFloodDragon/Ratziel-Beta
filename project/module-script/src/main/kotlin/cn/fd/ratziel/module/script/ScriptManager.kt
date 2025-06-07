@@ -8,7 +8,10 @@ import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getJarFile
 import taboolib.common.platform.function.severe
+import java.io.InputStreamReader
 import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Function
+import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import javax.script.Bindings
 import javax.script.ScriptEngineManager
@@ -44,8 +47,8 @@ object ScriptManager {
      */
     @Awake(LifeCycle.INIT)
     private fun initialize() {
-        // 读取导入的类
-        Global.initialize(readDefaultImports())
+        // 初始化全局环境
+        Global.initialize()
 
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!
@@ -69,20 +72,13 @@ object ScriptManager {
         }
     }
 
-    private fun readDefaultImports(): List<String> {
-        val imports = ArrayList<String>()
-
+    fun getEntries(filter: Function<JarEntry, Boolean>): List<InputStreamReader> = buildList {
         val jar = JarFile(getJarFile())
         findInJar(jar) {
-            !it.isDirectory && it.name.startsWith("script-default/") && it.name.endsWith(".imports")
+            !it.isDirectory && filter.apply(it)
         }.forEach { jarEntry ->
-            val reader = jar.getInputStream(jarEntry).reader(Charsets.UTF_8)
-            // 读取导入的类
-            val lines = reader.readText().trim().lines().filter { it.isNotBlank() && !it.startsWith('#') }
-            imports.addAll(lines)
+            add(jar.getInputStream(jarEntry).reader(Charsets.UTF_8))
         }
-
-        return imports
     }
 
     /**
@@ -179,7 +175,14 @@ object ScriptManager {
             }
         }
 
-        internal fun initialize(imports: List<String>) {
+        internal fun initialize() {
+            // 读取文件
+            val imports = getEntries { it.name.startsWith("script-default/") && it.name.endsWith(".imports") }
+                .flatMap { reader ->
+                    // 读取导入的类
+                    reader.readText().trim().lines().filter { it.isNotBlank() && !it.startsWith('#') }
+                }
+            // 初始化
             val packages = ArrayList<PackageImport>()
             val classes = ArrayList<ClassImport>()
             for (import in imports) {

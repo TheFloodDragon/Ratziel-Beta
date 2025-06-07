@@ -5,6 +5,7 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.internal.ScriptBootstrap
 import taboolib.library.configuration.ConfigurationSection
+import java.io.Reader
 import java.util.function.Supplier
 
 /**
@@ -19,6 +20,13 @@ class JavaScriptExecutor : ScriptExecutor by executor.get(), NonStrictCompilatio
 
         /** 脚本执行器实例 **/
         private lateinit var executor: Supplier<ScriptExecutor>
+
+        /**
+         * 获取所有全局脚本
+         */
+        fun getGlobalScripts(): List<Reader> {
+            return ScriptManager.getEntries { it.name.endsWith(".js") }
+        }
 
         override fun initialize(settings: ConfigurationSection) {
             // 读取引擎

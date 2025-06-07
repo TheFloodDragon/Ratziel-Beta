@@ -22,3 +22,10 @@ val ProxyCommandSender.castBukkit
 
 val ProxyCommandSender.castAudience
     get() = this.castBukkit.audienceSender
+
+/**
+ * 发送消息
+ */
+fun Player.tell(message: String) {
+    audiencePlayer.sendMessage(Message.buildMessage(message))
+}

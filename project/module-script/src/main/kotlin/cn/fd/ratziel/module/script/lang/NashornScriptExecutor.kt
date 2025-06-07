@@ -20,6 +20,8 @@ class NashornScriptExecutor : EnginedScriptExecutor() {
         newEngine().apply {
             // 设置脚本引擎的全局绑定键
             setBindings(ScriptManager.Global.globalBindings, ScriptContext.GLOBAL_SCOPE)
+            // 加载全局扩展脚本
+            for (script in JavaScriptExecutor.getGlobalScripts()) eval(script)
         }
     }
 
