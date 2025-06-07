@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.impl.feature.dynamic
 
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import taboolib.common.platform.function.warning
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -23,7 +22,6 @@ object DynamicTagService {
      */
     fun findResolver(name: String): ItemTagResolver? {
         val resolver = supportedResolvers.firstOrNull { it.alias.contains(name) }
-            ?: DefaultResolver.defaultTagResolvers.firstOrNull { it.alias.contains(name) }
         if (resolver == null) warning("ItemTagResolver for DynamicTagService '$name' not found.")
         return resolver
     }

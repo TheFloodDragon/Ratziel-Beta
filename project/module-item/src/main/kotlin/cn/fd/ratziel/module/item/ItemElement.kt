@@ -54,9 +54,16 @@ object ItemElement : ElementHandler {
     }
 
     /**
+     * 协程上下文
+     */
+    val coroutineContext by lazy {
+        CoroutineName("ItemElement") + executor.asCoroutineDispatcher()
+    }
+
+    /**
      * 协程作用域
      */
-    val scope = CoroutineScope(CoroutineName("ItemHandler") + executor.asCoroutineDispatcher())
+    val scope get() = CoroutineScope(coroutineContext)
 
     /**
      * [Json]
@@ -100,7 +107,6 @@ object ItemElement : ElementHandler {
     }
 
     override fun handle(element: Element) {
-
         val generator = DefaultGenerator(element)
 
         val item = generator.build().get()

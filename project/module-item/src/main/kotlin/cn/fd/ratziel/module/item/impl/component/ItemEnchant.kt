@@ -7,6 +7,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import taboolib.library.xseries.XEnchantment
+import taboolib.module.nms.MinecraftVersion
 
 typealias EnchantmentType = @Serializable(EnchantmentSerializer::class) XEnchantment
 
@@ -33,4 +34,45 @@ class ItemEnchant(
      * 当附魔能力为 0 时, 物品无法被附魔
      */
     var enchantable: Int? = null,
-)
+) {
+
+    init {
+        // 检查附魔表
+        enchantments?.forEach { check(it.value) }
+    }
+
+    /**
+     * 获取魔咒等级
+     *
+     * @return 魔咒不存在时返回 0
+     */
+    fun getLevel(enchantment: EnchantmentType): Int = this.enchantments?.get(enchantment) ?: 0
+
+    /**
+     * 设置魔咒
+     */
+    fun setEnchantment(enchantment: EnchantmentType, level: Int) {
+        // 检查等级
+        check(level)
+        // 魔咒
+        val enchantments = this.enchantments
+        if (enchantments == null) {
+            this.enchantments = HashMap(mapOf(enchantment to level))
+        } else enchantments[enchantment] = level
+    }
+
+    /**
+     * 删除魔咒
+     */
+    fun remove(enchantmentType: EnchantmentType) = this.enchantments?.remove(enchantmentType)
+
+    /**
+     * 附魔等级检查
+     */
+    private fun check(level: Int) {
+        if (MinecraftVersion.versionId >= 12005) {
+            require(level in 0..255) { "Enchantment's level must be between 0 and 255" }
+        }
+    }
+
+}

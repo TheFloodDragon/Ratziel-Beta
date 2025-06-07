@@ -62,8 +62,7 @@ object ElementEvaluator {
             evaluatedElements[element.identifier] = element
             return null
         } catch (ex: Throwable) {
-            severe("Couldn't handle element by $handler!")
-            ex.printStackTrace()
+            severe("Couldn't handle element '${element.name}' by $handler!", ex.stackTraceToString())
             return ex
         }
     }
@@ -111,7 +110,7 @@ object ElementEvaluator {
     /**
      * 提交任务
      */
-    fun submit(element: Element, onCompleted: BiConsumer<Element, Throwable?> = BiConsumer {}) {
+    fun submit(element: Element, onCompleted: BiConsumer<Element, Throwable?>? = null) {
         // 获取任务组
         val group = evaluations.computeIfAbsent(element.type) {
             val handler = ElementRegistry[element.type]
@@ -142,7 +141,7 @@ object ElementEvaluator {
         /** 元素配置 **/
         val config: ElementConfig,
         /** 完成时触发回调 **/
-        val onCompleted: BiConsumer<Element, Throwable?>,
+        val onCompleted: BiConsumer<Element, Throwable?>?,
     ) {
 
         /**
@@ -230,7 +229,8 @@ object ElementEvaluator {
 
             // 开始处理
             val result = handleElement(handler, element)
-            onCompleted.accept(element, result)
+            // 完成回调
+            onCompleted?.accept(element, result)
             return result
         }
 

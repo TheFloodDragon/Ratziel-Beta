@@ -13,6 +13,6 @@ val Player.audiencePlayer
 /**
  * 发送消息
  */
-fun Player.tell(message: String) {
+fun Player.sendAdventure(message: String) {
     audiencePlayer.sendMessage(Message.buildMessage(message))
 }

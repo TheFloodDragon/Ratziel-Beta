@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.feature.dynamic
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SimpleContext
+import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
@@ -63,7 +64,7 @@ object DynamicTagHandler {
 
     fun handleWindowItemsPacket(event: PacketSendEvent) {
         val packetItems = event.packet.readOrThrow<List<Any>>(itemsFieldInWindowItemsPacket)
-        runBlocking {
+        runBlocking(ItemElement.coroutineContext) {
             // 处理每个物品
             val itemTasks = packetItems.map { launch { handleItem(it, event) } }
 
@@ -101,7 +102,7 @@ object DynamicTagHandler {
     /**
      * 处理显示组件
      */
-    fun handleDisplay(ratzielItem: RatzielItem, context: ArgumentContext) = runBlocking {
+    fun handleDisplay(ratzielItem: RatzielItem, context: ArgumentContext) = runBlocking(ItemElement.coroutineContext) {
         // 读取显示组件
         val display = ratzielItem.getComponent(ItemDisplay::class.java)
 
