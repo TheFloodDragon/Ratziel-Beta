@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonElement
@@ -48,7 +47,7 @@ class ScriptBlock(
         // 不重复编译
         if (!::script.isInitialized) {
             try {
-                val environment = context.scriptEnv() ?: SimpleScriptEnvironment()
+                val environment = context.scriptEnv()
                 script = executor.build(source, environment)
             } catch (e: Exception) {
                 return e
@@ -61,8 +60,9 @@ class ScriptBlock(
         measureTimeMillisWithResult {
             // 初次运行编译
             compile(context)
+            // 获取环境
+            val environment = context.scriptEnv()
             // 评估
-            val environment = context.scriptEnv() ?: SimpleScriptEnvironment()
             script.executor.evaluate(script, environment)
         }.also { (time, result) ->
             debug("[TIME MARK] ScriptBlock executed in $time ms. Content: $source")

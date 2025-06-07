@@ -4,6 +4,8 @@ import cn.fd.ratziel.core.exception.ArgumentNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 /**
  * ArgumentContext - 参数上下文
  * 本质为一个参数容器
@@ -24,7 +26,7 @@ public interface ArgumentContext {
      * 弹出指定类型的参数
      * 若无法找到, 则返回默认值
      */
-    <T> @NotNull T popOr(@NotNull Class<T> type, @NotNull T def);
+    <T> @NotNull T popOr(@NotNull Class<T> type, @NotNull Supplier<T> def);
 
     /**
      * 弹出指定类型的参数

@@ -62,15 +62,18 @@ class TaggedSectionResolver(
      */
     private fun resolveString(node: JsonTree.PrimitiveNode, context: ArgumentContext): String {
         // 读取标签, 拼接字符串片段并返回
-        return reader.readToFlatten(node.value.content).joinToString("") {
-            // 如果标签片段
-            if (it.isVariable) {
-                // 解析标签
-                val handled = resolveTag(it.text, node, context)
-                // 处理无误时返回处理结果, 反则返回完整标签片段
-                handled ?: (reader.start + it.text + reader.end)
-            } else it.text // 原文本
-        }
+        val parts = reader.readToFlatten(node.value.content)
+        return if (parts.isNotEmpty()) {
+            parts.joinToString("") {
+                // 如果标签片段
+                if (it.isVariable) {
+                    // 解析标签
+                    val handled = resolveTag(it.text, node, context)
+                    // 处理无误时返回处理结果, 反则返回完整标签片段
+                    handled ?: (reader.start + it.text + reader.end)
+                } else it.text // 原文本
+            }
+        } else node.value.content
     }
 
     /**

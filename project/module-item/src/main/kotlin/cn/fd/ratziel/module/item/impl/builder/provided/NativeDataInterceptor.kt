@@ -35,8 +35,8 @@ object NativeDataInterceptor : ItemInterceptor {
             val name = assignment.args.firstOrNull() ?: return
             // 获取物品 Holder
             val holder = context.popOrNull(DataHolder::class.java) ?: return
-            // 获取数据
-            val value = holder[name] ?: return
+            // 获取数据 (若找不到则找第二个参数, 第二个参数也没有就返回)
+            val value = holder[name] ?: assignment.args.getOrNull(1) ?: return
             // 结束解析
             assignment.complete(value.toString())
         }

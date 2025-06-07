@@ -7,6 +7,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
+import cn.fd.ratziel.module.item.impl.builder.provided.InlineScriptResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
@@ -50,6 +51,9 @@ object DefaultResolver : ItemInterceptor {
         stream.tree.withValue { tree ->
 
             makeFiltered(tree.root).unfold {
+
+                // 内联脚本解析
+                InlineScriptResolver.resolve(it, stream.context)
 
                 // Papi 解析
                 PapiResolver.resolve(it, stream.context)
