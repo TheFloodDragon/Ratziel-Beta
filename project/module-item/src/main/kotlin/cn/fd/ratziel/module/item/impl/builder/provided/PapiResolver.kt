@@ -29,18 +29,17 @@ object PapiResolver : ItemSectionResolver, ItemTagResolver {
 
     override val alias = arrayOf("papi", "p")
 
-    override fun resolve(assignment: ItemTagResolver.Assignment, context: ArgumentContext) {
+    override fun resolve(args: List<String>, context: ArgumentContext): String? {
         // 获取玩家
-        val player = context.player() ?: return
+        val player = context.player() ?: return null
         // 读取内容
-        val args = assignment.args
         val content = when {
             args.size == 1 -> args.first()
             args.size > 1 -> args.joinToString("_")
-            else -> return
+            else -> return null
         }
         // 处理Papi变量
-        assignment.complete("%$content%".replacePlaceholder(player))
+        return "%$content%".replacePlaceholder(player)
     }
 
 }

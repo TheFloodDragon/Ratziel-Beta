@@ -30,15 +30,15 @@ object NativeDataInterceptor : ItemInterceptor {
      */
     object NativeDataResolver : ItemTagResolver {
         override val alias = arrayOf("data")
-        override fun resolve(assignment: ItemTagResolver.Assignment, context: ArgumentContext) {
+        override fun resolve(args: List<String>, context: ArgumentContext): String? {
             // 数据名称
-            val name = assignment.args.firstOrNull() ?: return
+            val name = args.firstOrNull() ?: return null
             // 获取物品 Holder
-            val holder = context.popOrNull(DataHolder::class.java) ?: return
+            val holder = context.popOrNull(DataHolder::class.java) ?: return null
             // 获取数据 (若找不到则找第二个参数, 第二个参数也没有就返回)
-            val value = holder[name] ?: assignment.args.getOrNull(1) ?: return
+            val value = holder[name] ?: args.getOrNull(1) ?: return null
             // 结束解析
-            assignment.complete(value.toString())
+            return value.toString()
         }
     }
 

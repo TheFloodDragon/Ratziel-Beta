@@ -28,9 +28,9 @@ object DefinitionInterceptor : ItemInterceptor {
         val values: Map<String, Any?>,
     ) : ItemTagResolver {
         override val alias = arrayOf("define", "def", "definition")
-        override fun resolve(assignment: ItemTagResolver.Assignment, context: ArgumentContext) {
-            val value = values[assignment.args.firstOrNull() ?: return]
-            assignment.complete(value.toString())
+        override fun resolve(args: List<String>, context: ArgumentContext): String? {
+            val value = values[args.firstOrNull() ?: return null]
+            return value.toString()
         }
     }
 

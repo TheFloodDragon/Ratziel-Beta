@@ -1,8 +1,6 @@
 package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.serialization.json.JsonTree
-import java.util.*
 
 /**
  * ItemTagResolver
@@ -17,37 +15,10 @@ interface ItemTagResolver {
     /**
      * 解析元素
      *
-     * @param assignment 解析任务
+     * @param args 参数
      * @param context 上下文
+     * @return 解析结果 (空代表解析未完成, 不替换内容)
      */
-    fun resolve(assignment: Assignment, context: ArgumentContext)
-
-    /**
-     * 标签解析任务
-     */
-    class Assignment(
-        /**
-         * 标签参数
-         */
-        val args: List<String>,
-        /**
-         * 外部内容 (此标签在哪个字符串节点内部)
-         */
-        val outside: JsonTree.PrimitiveNode?,
-    ) {
-
-        /**
-         * 标签解析结果 (不赋值代表解析未完成, 不替换内容)
-         */
-        var result: Optional<String> = Optional.empty()
-
-        /**
-         * 完成解析, 设置结果
-         */
-        fun complete(content: String) {
-            this.result = Optional.of(content)
-        }
-
-    }
+    fun resolve(args: List<String>, context: ArgumentContext): String?
 
 }

@@ -49,7 +49,7 @@ object InheritResolver : ItemInterceptor, ItemTagResolver {
 
     override val alias = arrayOf("extend", "inherit")
 
-    override fun resolve(assignment: ItemTagResolver.Assignment, context: ArgumentContext) {
+    override fun resolve(args: List<String>, context: ArgumentContext): String? {
         // 元素名称
         val name: String
         /*
@@ -61,9 +61,8 @@ object InheritResolver : ItemInterceptor, ItemTagResolver {
         val path: NbtPath
 
         // 看看传过来什么东西
-        val args = assignment.args
         when (args.size) {
-            0 -> return // 没元素名, 没路径, 解析什么?
+            0 -> return null // 没元素名, 没路径, 解析什么?
             // Name.Path 形式, 可以的
             1 -> {
                 val np = NbtPath(args[0])
@@ -83,27 +82,24 @@ object InheritResolver : ItemInterceptor, ItemTagResolver {
         }
 
         // 根据路径寻找
-        val target = findElement(name) ?: return
+        val target = findElement(name) ?: return null
         val find = read(target, path)
         if (find == null) {
             warning("Cannot find element by path '$path'.")
-            return
+            return null
         }
         // 开始插入合并
         if (find is JsonPrimitive) {
-            assignment.complete(find.content)
+            return find.content
         } else if (find is JsonArray) {
-            if (assignment.outside?.parent !is JsonTree.ArrayNode) {
-                warning("Cannot inherit a JsonArray to a non JsonArray.")
-            }
             // 仅支持元素全是 JsonPrimitive 的 JsonArray
-            else if (find.all { it is JsonPrimitive }) {
-                val result = find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
-                assignment.complete(result)
+            if (find.all { it is JsonPrimitive }) {
+                return find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
             } else {
                 warning("Inline inheritance in a array does not support complex JsonArray.")
             }
         }
+        return null
     }
 
     private fun findElement(name: String): JsonObject? {

@@ -2,6 +2,7 @@ package cn.fd.ratziel.core.function
 
 import cn.fd.ratziel.core.exception.ArgumentNotFoundException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Supplier
 
 /**
  * SimpleContext
@@ -21,8 +22,8 @@ class SimpleContext(
         return popOrNull(type) ?: throw ArgumentNotFoundException(type)
     }
 
-    override fun <T> popOr(type: Class<T>, def: T & Any): T & Any {
-        return popOrNull(type) ?: def
+    override fun <T> popOr(type: Class<T>, def: Supplier<T & Any>): T & Any {
+        return popOrNull(type) ?: def.get()
     }
 
     override fun <T> popOrNull(type: Class<T>): T? {
