@@ -25,7 +25,7 @@ class JavaScriptExecutor : ScriptExecutor by executor.get(), NonStrictCompilatio
          * 获取所有全局脚本
          */
         fun getGlobalScripts(): List<Reader> {
-            return ScriptManager.getEntries { it.name.endsWith(".js") }
+            return ScriptManager.getEntries { it.name.startsWith("script-default/") && it.name.endsWith(".js") }
         }
 
         override fun initialize(settings: ConfigurationSection) {

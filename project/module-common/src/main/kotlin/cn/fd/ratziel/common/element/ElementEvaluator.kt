@@ -16,7 +16,7 @@ import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.function.Consumer
+import java.util.function.BiConsumer
 import java.util.function.Supplier
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -111,7 +111,7 @@ object ElementEvaluator {
     /**
      * 提交任务
      */
-    fun submit(element: Element, onCompleted: Consumer<Throwable?> = Consumer {}) {
+    fun submit(element: Element, onCompleted: BiConsumer<Element, Throwable?> = BiConsumer {}) {
         // 获取任务组
         val group = evaluations.computeIfAbsent(element.type) {
             val handler = ElementRegistry[element.type]
@@ -142,7 +142,7 @@ object ElementEvaluator {
         /** 元素配置 **/
         val config: ElementConfig,
         /** 完成时触发回调 **/
-        val onCompleted: Consumer<Throwable?>,
+        val onCompleted: BiConsumer<Element, Throwable?>,
     ) {
 
         /**
@@ -230,7 +230,7 @@ object ElementEvaluator {
 
             // 开始处理
             val result = handleElement(handler, element)
-            onCompleted.accept(result)
+            onCompleted.accept(element, result)
             return result
         }
 

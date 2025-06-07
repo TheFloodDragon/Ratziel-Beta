@@ -18,7 +18,16 @@ object EnchantmentSerializer : KSerializer<XEnchantment> {
 
     override val descriptor = PrimitiveSerialDescriptor("xseries.Enchantment", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: XEnchantment) = encoder.encodeString(value.name())
+    override fun serialize(encoder: Encoder, value: XEnchantment) {
+        val enchant = value.get()!!
+        val key = try {
+            enchant.key.toString()
+        } catch (_: NoSuchMethodException) {
+            @Suppress("DEPRECATION")
+            enchant.name
+        }
+        encoder.encodeString(key)
+    }
 
     override fun deserialize(decoder: Decoder) = MetaMatcher.matchEnchantment(decoder.decodeString())
 

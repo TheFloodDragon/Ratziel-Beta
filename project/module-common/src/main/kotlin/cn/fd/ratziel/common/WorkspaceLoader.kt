@@ -41,7 +41,7 @@ object WorkspaceLoader {
      * 因此无论元素在评估过程成失败与否,
      * 总能通过这个表获取从配置文件中加载的元素
      */
-    val loadedElements: MutableMap<String, Element> = ConcurrentHashMap()
+    val livingElements: MutableMap<String, Element> = ConcurrentHashMap()
 
     /**
      * 初始化工作空间
@@ -75,18 +75,18 @@ object WorkspaceLoader {
                 // 提交加载任务
                 tasks.add(CompletableFuture.supplyAsync({
                     // 加载文件
-                    ElementLoader.load(workspace, file).getOrElse {
-                        sender.sendLang("Element-File-Load-Failed", file.name)
-                        emptyList() // 加载失败返回空列表 (表示不注册到评估器里)
-                    }.forEach { element ->
-                        // 加入到 loadedElements
-                        loadedElements[element.name] = element
-                        // 提交到周期评估任务表里
-                        ElementEvaluator.submit(element) {
-                            // 失败时发送失败消息
-                            if (it != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, file.name)
+                    val result = ElementLoader.load(workspace, file)
+                    if (result.isSuccess) {
+                        for (loadedElement in result.getOrThrow()) {
+                            // 加入到 livingElements
+                            livingElements[loadedElement.name] = loadedElement
+                            // 提交到周期评估任务表里
+                            ElementEvaluator.submit(loadedElement) { element, throwable ->
+                                // 失败时发送失败消息
+                                if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file!!.name)
+                            }
                         }
-                    }
+                    } else sender.sendLang("Element-File-Load-Failed", file.name)
                 }, executor))
             }
         }
@@ -109,19 +109,22 @@ object WorkspaceLoader {
         FileListener.listen(file) { file ->
             measureTimeMillis {
                 // 加载文件
-                ElementLoader.load(workspace, file).getOrElse { _ ->
+                val result = ElementLoader.load(workspace, file)
+                if (result.isSuccess) {
+                    for (loadedElement in result.getOrThrow()) {
+                        // 加入到 livingElements
+                        livingElements[loadedElement.name] = loadedElement
+                        // 处理任务
+                        val throwable = ElementEvaluator.handleElement(loadedElement)
+                        // 只要一个元素评估失败就判定整个文件都算失败的
+                        if (throwable != null) {
+                            sender.sendLang("Element-File-Reload-Failed", file.name)
+                            return@listen
+                        }
+                    }
+                } else {
                     sender.sendLang("Element-File-Reload-Failed", file.name)
                     return@listen
-                }.forEach { element ->
-                    // 加入到 loadedElements
-                    loadedElements[element.name] = element
-                    // 处理任务
-                    val throwable = ElementEvaluator.handleElement(element)
-                    // 只要一个元素评估失败就判定整个文件都算失败的
-                    if (throwable != null) {
-                        sender.sendLang("Element-File-Reload-Failed", file.name)
-                        return@listen
-                    }
                 }
             }.also {
                 // 成功加载和评估的提示

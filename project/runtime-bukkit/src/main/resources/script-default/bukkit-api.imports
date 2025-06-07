@@ -1,3 +1,6 @@
 # Default Bukkit Imports
 org.bukkit.*
 org.bukkit.inventory.*
+
+# Utils
+cn.fd.ratziel.common.message.AdventureBukkitKt.*

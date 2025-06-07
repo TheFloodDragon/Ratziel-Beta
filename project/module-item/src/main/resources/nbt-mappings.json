@@ -24,7 +24,7 @@
   },
   "ItemEnchant.enchantments": {
     "0": "Enchantments",
-    "12005": "minecraft:enchants"
+    "12005": "minecraft:enchantments"
   },
   "ItemEnchant.enchantable": {
     "12005": "minecraft:enchantable"
