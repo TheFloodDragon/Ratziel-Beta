@@ -13,9 +13,9 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
-import cn.fd.ratziel.module.item.impl.component.serializers.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.internal.serializers.*
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -24,7 +24,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.serializer
-import org.bukkit.enchantments.Enchantment
 import taboolib.common.LifeCycle
 import taboolib.library.xseries.XItemFlag
 import taboolib.module.nms.MinecraftVersion
@@ -67,7 +66,6 @@ object ItemElement : ElementHandler {
             // Common Serializers
             contextual(ItemMaterial::class, ItemMaterialSerializer)
             // Bukkit Serializers
-            contextual(Enchantment::class, EnchantmentSerializer)
             contextual(XItemFlag::class, HideFlagSerializer)
             contextual(Attribute::class, AttributeSerializer)
             contextual(AttributeModifier::class, AttributeModifierSerializer)
@@ -86,6 +84,7 @@ object ItemElement : ElementHandler {
         register(if (MinecraftVersion.versionId >= 12005) ItemDisplay.serializer() else LegacyItemDisplaySerializer)
         register<ItemDurability>()
         register<ItemHideFlag>()
+        register<ItemEnchant>()
     }
 
     init {

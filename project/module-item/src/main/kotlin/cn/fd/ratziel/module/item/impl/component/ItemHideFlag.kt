@@ -6,6 +6,7 @@ import cn.altawk.nbt.NbtDecoder
 import cn.altawk.nbt.NbtEncoder
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.internal.serializers.HideFlagSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.KeepGeneratedSerializer
@@ -15,6 +16,8 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonNames
 import taboolib.library.xseries.XItemFlag
 import taboolib.library.xseries.XMaterial
+
+typealias HideFlag = @Serializable(HideFlagSerializer::class) XItemFlag
 
 /**
  * ItemHideFlag
@@ -29,13 +32,13 @@ class ItemHideFlag(
      * 物品隐藏标签
      */
     @JsonNames("hideflag", "hideflags", "hideFlag")
-    var hideFlags: MutableSet<XItemFlag>? = null,
+    var hideFlags: MutableSet<HideFlag>? = null,
 ) {
 
     /**
      * 添加物品隐藏标签
      */
-    fun add(vararg flags: XItemFlag) {
+    fun add(vararg flags: HideFlag) {
         val hideFlags = this.hideFlags
         if (hideFlags == null) {
             this.hideFlags = HashSet(flags.toList())
@@ -45,7 +48,7 @@ class ItemHideFlag(
     /**
      * 删除物品隐藏标签
      */
-    fun remove(vararg flags: XItemFlag) {
+    fun remove(vararg flags: HideFlag) {
         hideFlags?.removeAll(flags)
     }
 

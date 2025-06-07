@@ -11,12 +11,14 @@ import kotlinx.serialization.descriptors.SerialDescriptor
  */
 internal object NbtNameDeterminer : SerialNameDeterminer {
 
+    private const val EOF = "\u0000"
+
     override fun determineName(index: Int, descriptor: SerialDescriptor): String {
         val parent = descriptor.serialName.substringAfterLast('.')
         val elementName = descriptor.getElementName(index)
         val mappedName = ItemSheet.mappings[parent to elementName]
-        // 空代表不支持, 返回 EOF 让他不编码
-        return mappedName?.ifEmpty { "\u0000" } ?: elementName
+        // 空字符串代表不支持, 返回 EOF 让他不编码
+        return mappedName?.ifEmpty { EOF } ?: elementName // 映射表里没有就用原来的
     }
 
     override fun mapName(elementName: String, descriptor: SerialDescriptor): String {

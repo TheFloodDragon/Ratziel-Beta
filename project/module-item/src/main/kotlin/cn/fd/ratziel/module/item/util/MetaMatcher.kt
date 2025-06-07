@@ -28,11 +28,13 @@ object MetaMatcher {
      * 匹配物品魔咒
      */
     @JvmStatic
-    fun matchEnchantment(source: String): Enchantment {
+    fun matchEnchantment(source: String): XEnchantment {
         val name = trim(source)
-        return XEnchantment.of(name).getOrNull()?.get() // XSeries match
-            ?: Enchantment.getByName(name) // Bukkit match
-            ?: Enchantment.values().maxBy { Strings.similarDegree(it.name, name) } // Similar
+        return XEnchantment.of(name).getOrElse { // XSeries match
+            (Enchantment.getByName(name)  // Bukkit match
+                ?: Enchantment.values().maxBy { Strings.similarDegree(it.name, name) }) // Similar
+                .let { XEnchantment.of(it) }
+        }
     }
 
     /**

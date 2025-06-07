@@ -23,7 +23,7 @@ object ActionInterceptor : ItemInterceptor {
     /**
      * 动作节点名称
      */
-    val nodeNames = arrayOf("action", "actions", "act", "acts")
+    val nodeNames = arrayOf("action", "actions", "event", "events")
 
     /**
      * 从配置中解析成触发器表

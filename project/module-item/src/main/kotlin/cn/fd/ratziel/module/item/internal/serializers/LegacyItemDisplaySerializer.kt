@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package cn.fd.ratziel.module.item.impl.component.serializers
+package cn.fd.ratziel.module.item.internal.serializers
 
 import cn.altawk.nbt.NbtTransformingSerializer
 import cn.altawk.nbt.tag.NbtCompound

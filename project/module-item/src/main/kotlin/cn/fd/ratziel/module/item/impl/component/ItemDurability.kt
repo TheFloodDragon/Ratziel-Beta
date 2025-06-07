@@ -15,7 +15,7 @@ import kotlinx.serialization.json.JsonNames
 @Serializable
 class ItemDurability(
     /**
-     * 物品最大耐久
+     * 物品最大耐久 (1.20.5+)
      */
     @JsonNames("maxDamage", "max-damage", "max-durability", "durability")
     var maxDurability: Int? = null,
@@ -28,5 +28,5 @@ class ItemDurability(
      * 物品是否无法破坏
      */
     @JsonNames("isUnbreakable")
-    var unbreakable: Boolean? = null
+    var unbreakable: Boolean? = null,
 )

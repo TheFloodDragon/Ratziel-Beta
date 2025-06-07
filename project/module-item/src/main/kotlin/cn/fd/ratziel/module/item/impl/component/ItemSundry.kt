@@ -3,15 +3,13 @@
 
 package cn.fd.ratziel.module.item.impl.component
 
-import cn.fd.ratziel.module.item.impl.component.serializers.AttributeModifierSerializer
-import cn.fd.ratziel.module.item.impl.component.serializers.AttributeSerializer
-import cn.fd.ratziel.module.item.impl.component.serializers.HideFlagSerializer
+import cn.fd.ratziel.module.item.internal.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.module.item.internal.serializers.AttributeSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 import org.bukkit.inventory.EquipmentSlot
 
-typealias HideFlag = @Serializable(HideFlagSerializer::class) org.bukkit.inventory.ItemFlag
 typealias Attribute = @Serializable(AttributeSerializer::class) org.bukkit.attribute.Attribute
 typealias AttributeModifier = @Serializable(AttributeModifierSerializer::class) org.bukkit.attribute.AttributeModifier
 

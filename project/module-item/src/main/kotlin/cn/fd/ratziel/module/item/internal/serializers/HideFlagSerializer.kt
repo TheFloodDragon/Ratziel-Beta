@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl.component.serializers
+package cn.fd.ratziel.module.item.internal.serializers
 
 import cn.fd.ratziel.module.item.util.MetaMatcher
 import kotlinx.serialization.KSerializer
@@ -16,7 +16,7 @@ import taboolib.library.xseries.XItemFlag
  */
 object HideFlagSerializer : KSerializer<XItemFlag> {
 
-    override val descriptor = PrimitiveSerialDescriptor("bukkit.HideFlag", PrimitiveKind.STRING)
+    override val descriptor = PrimitiveSerialDescriptor("xseries.HideFlag", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): XItemFlag = MetaMatcher.matchHideFlag(decoder.decodeString())
 
