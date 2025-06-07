@@ -6,8 +6,6 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonPrimitive
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
@@ -30,38 +28,13 @@ class TaggedSectionResolver(
 
     constructor(vararg resolvers: ItemTagResolver) : this(listOf(*resolvers))
 
-    override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
-        // 根节点展开
-        DefaultResolver.makeFiltered(node).unfold {
-            // 解析单个节点
-            resolveSingle(it, context)
-        }
-    }
-
-    /**
-     * 解析单个节点
-     */
-    private fun resolveSingle(node: JsonTree.Node, context: ArgumentContext) {
-        // 单个节点只解析 Primitive 类型, 即字符串
-        if (node !is JsonTree.PrimitiveNode) return
-        // 节点内容
-        val value = node.value
-        // 判断有效节点
-        if (value.isString && value !is JsonNull) {
-            // 解析字符串
-            val resolved = resolveString(node.value.content, context)
-            // 更新节点内容
-            node.value = JsonPrimitive(resolved)
-        }
-    }
-
     /**
      * 解析字符串
      * @return 解析后的字符串
      */
-    private fun resolveString(content: String, context: ArgumentContext): String {
+    override fun resolve(section: String, context: ArgumentContext): String {
         // 读取标签, 拼接字符串片段并返回
-        val parts = reader.readToFlatten(content)
+        val parts = reader.readToFlatten(section)
         return if (parts.isNotEmpty()) {
             parts.joinToString("") {
                 // 如果标签片段
@@ -72,7 +45,7 @@ class TaggedSectionResolver(
                     handled ?: (reader.start + it.text + reader.end)
                 } else it.text // 原文本
             }
-        } else content
+        } else section
     }
 
     /**
@@ -116,9 +89,9 @@ class TaggedSectionResolver(
          * @param context 上下文
          */
         @JvmStatic
-        fun resolveWithSingle(resolver: ItemTagResolver, tree: JsonTree, context: ArgumentContext) {
-            TaggedSectionResolver(Collections.singletonList(resolver))
-                .resolve(tree.root, context)
+        suspend fun resolveWithSingle(resolver: ItemTagResolver, tree: JsonTree, context: ArgumentContext) {
+            val resolver = TaggedSectionResolver(Collections.singletonList(resolver))
+            DefaultResolver.resolveTreeWithSectionResolver(resolver, tree, context)
         }
 
     }

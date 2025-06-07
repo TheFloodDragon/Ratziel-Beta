@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.serialization.json.JsonTree
 
 /**
  * ItemSectionResolver
@@ -12,11 +11,11 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 interface ItemSectionResolver {
 
     /**
-     * 解析处理 [JsonTree.Node] 节点
+     * 解析处理字符串
      *
-     * @param node 要解析处理的节点
+     * @param section 要解析处理的部分 (字符串)
      * @param context 上下文
      */
-    fun resolve(node: JsonTree.Node, context: ArgumentContext)
+    fun resolve(section: String, context: ArgumentContext): String
 
 }

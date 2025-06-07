@@ -1,20 +1,17 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
-import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
+import cn.fd.ratziel.module.item.internal.IdentifiedCache
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.JsonObject
-import taboolib.common.platform.event.SubscribeEvent
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * DefinitionInterceptor
@@ -34,21 +31,21 @@ object DefinitionInterceptor : ItemInterceptor {
         }
     }
 
-    private val cache: MutableMap<String, Map<String, ExecutableBlock>> = ConcurrentHashMap()
+    private val cache = IdentifiedCache<Map<String, ExecutableBlock>>()
 
     override suspend fun intercept(stream: ItemStream) {
         val element = stream.fetchElement()
         if (element !is JsonObject) return
-        val id = stream.identifier.content
+        val id = stream.identifier
 
         // 获取语句块表
-        val blocks = cache[id]
+        val blocks = cache.map[id]
             ?: run {
                 // 读取定义
                 val define = element["define"] as? JsonObject ?: return@run null
                 val map = buildBlockMap(define)
                 // 加入到缓存
-                cache[id] = map
+                cache.map[id] = map
                 map
             } ?: return
 
@@ -78,18 +75,6 @@ object DefinitionInterceptor : ItemInterceptor {
                 it.key to it.value.execute(context) // 执行语句块
             }
         }.awaitAll().toTypedArray())
-    }
-
-    @SubscribeEvent
-    private fun onProcess(event: ElementEvaluateEvent.Process) {
-        if (event.handler !is ItemElement) return
-        this.cache.remove(event.element.name)
-    }
-
-    @SubscribeEvent
-    private fun onStart(event: ElementEvaluateEvent.Start) {
-        if (event.handler !is ItemElement) return
-        this.cache.clear()
     }
 
 }

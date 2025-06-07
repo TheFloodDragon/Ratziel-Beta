@@ -83,13 +83,14 @@ object NativeDataInterceptor : ItemInterceptor {
         // 标签解析 (物品数据虽然没有使用到, 但仍需拿锁, 确保NativeDataResolver和其他东西的线程安全)
         stream.tree.togetherWith(stream.data) { tree, _ ->
             // 将物品放入上下文
-            stream.context.put(stream.item)
+            val context = stream.context
+            context.put(stream.item)
             // 执行标签解析
             TaggedSectionResolver.resolveWithSingle(
-                NativeDataResolver, tree, stream.context
+                NativeDataResolver, tree, context
             )
             // 清理物品上下文
-            stream.context.remove(RatzielItem::class.java)
+            context.remove(RatzielItem::class.java)
         }
 
     }
