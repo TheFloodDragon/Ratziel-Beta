@@ -23,6 +23,7 @@ class GraalJsScriptExecutor : EnginedScriptExecutor() {
             .hostClassLoader(this::class.java.classLoader)
             .allowAllAccess(true) // 全开了算了
             .allowExperimentalOptions(true)
+            .option("js.ecmascript-version", "latest")
             .option("js.nashorn-compat", "true") // Nashorn 兼容模式
     }
 

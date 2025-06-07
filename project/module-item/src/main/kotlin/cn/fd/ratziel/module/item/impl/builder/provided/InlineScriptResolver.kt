@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.util.scriptEnv
+import cn.fd.ratziel.platform.bukkit.util.player
 import taboolib.common.util.VariableReader
 import java.util.concurrent.ConcurrentHashMap
 
@@ -37,14 +38,14 @@ object InlineScriptResolver : ItemSectionResolver {
         val index = content.indexOf(':')
         // 获取脚本语言
         val language = if (index != -1) {
-            ScriptType.match(content.substring(0, index)) ?: ScriptManager.defaultLanguage
+            ScriptType.match(content.substring(0, index).trim()) ?: ScriptManager.defaultLanguage
         } else ScriptManager.defaultLanguage
 
         // 创建执行器
         val executor = language.newExecutor()
 
         val text = content.substring(index + 1)
-        val environment = context.scriptEnv()
+        val environment = createEnvironment(context)
 
         // 构建脚本
         val stream = context.popOrNull(ItemStream::class.java)
@@ -56,6 +57,11 @@ object InlineScriptResolver : ItemSectionResolver {
 
         // 评估脚本并返回结果
         return executor.evaluate(script, environment).toString()
+    }
+
+    @JvmStatic
+    private fun createEnvironment(context: ArgumentContext) = context.scriptEnv().apply {
+        set("player", context.player())
     }
 
     /** 标签读取器 **/

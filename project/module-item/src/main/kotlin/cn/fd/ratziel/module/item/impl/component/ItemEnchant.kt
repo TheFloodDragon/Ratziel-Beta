@@ -39,6 +39,7 @@ class ItemEnchant(
     init {
         // 检查附魔表
         enchantments?.forEach { check(it.value) }
+        enchantable = enchantable?.coerceAtLeast(0)
     }
 
     /**

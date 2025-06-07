@@ -85,32 +85,23 @@ object DefaultResolver : ItemInterceptor {
     @JvmStatic
     suspend fun resolveTreeWithSectionResolver(resolver: ItemSectionResolver, tree: JsonTree, context: ArgumentContext) = coroutineScope {
         makeFiltered(tree.root).unfold {
+            // 先解析节点
+            resolver.resolve(it, context)
+            // 解析字符串
             // 单个节点只解析 Primitive 类型, 即字符串
             if (it !is JsonTree.PrimitiveNode) return@unfold
-            // 启动协程处理字符串
+            // 启动协程处理字符串 (一般来说不会有太大问题)
             this@coroutineScope.launch {
-                val result = resolveSection(resolver, it, context)
-                if (result != null) {
+                val value = it.value
+                // 判断有效节点
+                if (value.isString && value !is JsonNull) {
+                    // 解析字符串
+                    val result = resolver.resolve(value.content, context)
                     // 更新节点内容
                     it.value = JsonPrimitive(result)
                 }
             }
         }
-    }
-
-    /**
-     * 使用 [ItemSectionResolver] 解析单个节点
-     */
-    @JvmStatic
-    fun resolveSection(resolver: ItemSectionResolver, node: JsonTree.PrimitiveNode, context: ArgumentContext): String? {
-        // 节点内容
-        val value = node.value
-        // 判断有效节点
-        if (value.isString && value !is JsonNull) {
-            // 解析字符串
-            return resolver.resolve(node.value.content, context)
-        }
-        return null
     }
 
     /**
