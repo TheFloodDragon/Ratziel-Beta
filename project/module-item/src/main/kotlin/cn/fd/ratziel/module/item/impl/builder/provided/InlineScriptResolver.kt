@@ -38,7 +38,7 @@ object InlineScriptResolver : ItemSectionResolver {
         val index = content.indexOf(':')
         // 获取脚本语言
         val language = if (index != -1) {
-            ScriptType.match(content.substring(0, index).trim()) ?: ScriptManager.defaultLanguage
+            ScriptType.match(content.substring(0, index)) ?: ScriptManager.defaultLanguage
         } else ScriptManager.defaultLanguage
 
         // 创建执行器

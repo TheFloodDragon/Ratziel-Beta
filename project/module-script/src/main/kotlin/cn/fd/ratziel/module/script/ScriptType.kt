@@ -67,8 +67,11 @@ interface ScriptType {
          * 匹配脚本类型
          */
         @JvmStatic
-        fun match(name: String): ScriptType? = registry.find { s ->
-            s.name.equals(name, true) || s.alias.any { it.equals(name, true) }
+        fun match(name: String): ScriptType? {
+            val trimed = name.trim()
+            return registry.find { type ->
+                type.name.equals(trimed, true) || type.alias.any { it.equals(trimed, true) }
+            }
         }
 
         /**

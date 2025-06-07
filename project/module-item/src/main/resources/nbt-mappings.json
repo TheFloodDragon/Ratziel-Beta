@@ -26,9 +26,6 @@
     "0": "Enchantments",
     "12005": "minecraft:enchantments"
   },
-  "ItemEnchant.enchantable": {
-    "12005": "minecraft:enchantable"
-  },
   "ItemEnchant.glintOverride": {
     "12005": "minecraft:enchantment_glint_override"
   },

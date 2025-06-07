@@ -29,17 +29,11 @@ class ItemEnchant(
      */
     @JsonNames("glint")
     var glintOverride: Boolean? = null,
-    /**
-     * 物品的附魔能力 (1.20.5+)
-     * 当附魔能力为 0 时, 物品无法被附魔
-     */
-    var enchantable: Int? = null,
 ) {
 
     init {
         // 检查附魔表
         enchantments?.forEach { check(it.value) }
-        enchantable = enchantable?.coerceAtLeast(0)
     }
 
     /**
