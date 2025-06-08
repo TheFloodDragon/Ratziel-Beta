@@ -33,24 +33,24 @@ object WorldContactListener {
 
     /** 左右键交互具体事物 **/
     @JvmField
-    val INTERACT_LEFT_CLICK_AIR = registerTrigger("onLeftAir", "left-air")
+    val INTERACT_LEFT_CLICK_AIR = registerTrigger("onLeftClickAir", "onLeftAir", "left-air")
 
     @JvmField
-    val INTERACT_RIGHT_CLICK_AIR = registerTrigger("onRightAir", "right-air")
+    val INTERACT_RIGHT_CLICK_AIR = registerTrigger("onRightClickAir", "onRightAir", "right-air")
 
     @JvmField
-    val INTERACT_LEFT_CLICK_BLOCK = registerTrigger("onLeftBlock", "left-block")
+    val INTERACT_LEFT_CLICK_BLOCK = registerTrigger("onLeftClickBlock", "onLeftBlock", "left-block")
 
     @JvmField
-    val INTERACT_RIGHT_CLICK_BLOCK = registerTrigger("onRightBlock", "right-block")
+    val INTERACT_RIGHT_CLICK_BLOCK = registerTrigger("onRightClickBlock", "onRightBlock", "right-block")
 
     /** 同样也是攻击触发器 (EntityDamageByEntityEvent) **/
     @JvmField
-    val INTERACT_LEFT_CLICK_ENTITY = registerTrigger("onLeftEntity", "left-entity", "onAttack", "onAtk", "attack", "atk")
+    val INTERACT_LEFT_CLICK_ENTITY = registerTrigger("onLeftClickEntity", "onLeftEntity", "left-entity", "onAttack", "onAtk", "attack", "atk")
 
     /** PlayerInteractAtEntityEvent **/
     @JvmField
-    val INTERACT_RIGHT_CLICK_ENTITY = registerTrigger("onRightEntity", "right-entity")
+    val INTERACT_RIGHT_CLICK_ENTITY = registerTrigger("onRightClickEntity", "onRightEntity", "right-entity")
 
     @SubscribeEvent
     fun onWorldContact(event: PlayerWorldContactEvent) {
@@ -75,8 +75,6 @@ object WorldContactListener {
                    最后所看的也只会是 RatzielItem 转化成的 ItemStack 罢了
                 */
             }
-            // 向事件的 ItemStack 写入 RatzielItem 的数据
-            ratzielItem.writeTo(itemStack)
         }
 
         // 任意交互
@@ -110,10 +108,12 @@ object WorldContactListener {
 
             event.isRightClickEntity -> trigger(INTERACT_RIGHT_CLICK_ENTITY) {
                 val action = event.action as PlayerWorldContactEvent.Action.RightClickEntity
-                set("taget", action.entity)
+                set("target", action.entity)
             }
-
         }
+
+        // 向事件的 ItemStack 写入 RatzielItem 的数据
+        ratzielItem.writeTo(itemStack)
     }
 
 }

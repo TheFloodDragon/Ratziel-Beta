@@ -3,10 +3,13 @@ package cn.fd.ratziel.module.item.impl.action
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.serialization.json.getBy
+import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.action.ActionMap
 import cn.fd.ratziel.module.item.api.action.ItemAction
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.function.severe
 
@@ -29,17 +32,21 @@ object ActionInterceptor : ItemInterceptor.ElementInterceptor {
     fun parse(identifier: Identifier, element: JsonObject): ActionMap {
         // 创建触发器表
         val map = LinkedHashMap<ItemTrigger, ItemAction>()
-        for ((triggerName, content) in element) {
-            // 匹配触发器
-            val trigger = ActionManager.registry[triggerName]
-            if (trigger == null) {
-                severe("Unknown trigger: \"$triggerName\" !")
-                continue
+        runBlocking(ItemElement.coroutineContext) {
+            for ((triggerName, content) in element) {
+                // 匹配触发器
+                val trigger = ActionManager.registry[triggerName]
+                if (trigger == null) {
+                    severe("Unknown trigger: \"$triggerName\" !")
+                    continue
+                }
+                launch {
+                    // 构建脚本块
+                    val block = trigger.build(identifier, content)
+                    // 创建脚本动作, 放入表中
+                    map[trigger] = SimpleAction(content, block)
+                }
             }
-            // 构建脚本块
-            val block = trigger.build(identifier, content)
-            // 创建脚本动作, 放入表中
-            map[trigger] = SimpleAction(content, block)
         }
         return ActionMap(map)
     }

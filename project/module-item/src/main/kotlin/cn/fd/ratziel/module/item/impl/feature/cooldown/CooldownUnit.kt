@@ -56,6 +56,11 @@ class CooldownUnit(
     val isInCooldown: Boolean get() = endMark.hasNotPassedNow()
 
     /**
+     * 剩余冷却时间
+     */
+    val remaining: Duration get() = endMark.elapsedNow().absoluteValue
+
+    /**
      * 设置冷却时长
      */
     @Synchronized
@@ -104,7 +109,7 @@ class CooldownUnit(
         if (MinecraftVersion.versionId < 11102) return
         val player = Bukkit.getPlayer(uuid.toJavaUuid()) ?: return
         // 剩余冷却时间 (ticks)
-        val left = endMark.elapsedNow().absoluteValue.inWholeMilliseconds / 50
+        val left = remaining.inWholeMilliseconds / 50 // 1 tick = 50 ms
         // 小薯片说 1.11.2 才有这个
         // void setCooldown(@NotNull Material var1, int var2)
         player.setCooldown(material.toBukkit(), left.toInt())
