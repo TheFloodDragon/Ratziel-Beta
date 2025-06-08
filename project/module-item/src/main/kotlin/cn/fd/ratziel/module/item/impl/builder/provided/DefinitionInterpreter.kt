@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
@@ -14,12 +14,12 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.JsonObject
 
 /**
- * DefinitionInterceptor
+ * DefinitionInterpreter
  *
  * @author TheFloodDragon
  * @since 2025/5/10 19:49
  */
-object DefinitionInterceptor : ItemInterceptor {
+object DefinitionInterpreter : ItemInterpreter {
 
     class DefinitionResolver(
         val values: Map<String, Any?>,
@@ -33,7 +33,7 @@ object DefinitionInterceptor : ItemInterceptor {
 
     private val cache = IdentifiedCache<Map<String, ExecutableBlock>>()
 
-    override suspend fun intercept(stream: ItemStream) {
+    override suspend fun interpret(stream: ItemStream) {
         val element = stream.fetchElement()
         if (element !is JsonObject) return
         val id = stream.identifier

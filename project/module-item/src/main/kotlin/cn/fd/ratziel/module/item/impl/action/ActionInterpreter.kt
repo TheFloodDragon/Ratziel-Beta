@@ -7,19 +7,19 @@ import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.action.ActionMap
 import cn.fd.ratziel.module.item.api.action.ItemAction
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
-import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.function.severe
 
 /**
- * ActionInterceptor
+ * ActionInterpreter
  *
  * @author TheFloodDragon
  * @since 2025/5/10 16:38
  */
-object ActionInterceptor : ItemInterceptor.ElementInterceptor {
+object ActionInterpreter : ItemInterpreter.ElementInterpreter {
 
     /**
      * 动作节点名称
@@ -51,7 +51,7 @@ object ActionInterceptor : ItemInterceptor.ElementInterceptor {
         return ActionMap(map)
     }
 
-    override fun intercept(identifier: Identifier, element: Element) {
+    override fun interpret(identifier: Identifier, element: Element) {
         val property = element.property
         // 仅处理 JsonObject 类型
         if (property !is JsonObject) return

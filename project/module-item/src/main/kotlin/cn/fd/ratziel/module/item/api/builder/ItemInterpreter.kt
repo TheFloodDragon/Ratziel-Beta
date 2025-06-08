@@ -4,24 +4,24 @@ import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 
 /**
- * ItemInterceptor - 物品解释器
+ * ItemInterpreter - 物品解释器
  *
  * @author TheFloodDragon
  * @since 2025/5/10 15:22
  */
-interface ItemInterceptor {
+interface ItemInterpreter {
 
     /**
      * 解释物品流
      *
      * @param stream 物品流
      */
-    suspend fun intercept(stream: ItemStream)
+    suspend fun interpret(stream: ItemStream)
 
     /**
-     * ElementInterceptor
+     * ElementInterpreter
      */
-    interface ElementInterceptor : ItemInterceptor {
+    interface ElementInterpreter : ItemInterpreter {
 
         /**
          * 解释物品元素
@@ -29,12 +29,12 @@ interface ItemInterceptor {
          * @param identifier 物品标识符
          * @param element 物品元素
          */
-        fun intercept(identifier: Identifier, element: Element)
+        fun interpret(identifier: Identifier, element: Element)
 
         /**
          * 解释物品流
          */
-        override suspend fun intercept(stream: ItemStream) = intercept(stream.identifier, stream.origin)
+        override suspend fun interpret(stream: ItemStream) = interpret(stream.identifier, stream.origin)
 
     }
 

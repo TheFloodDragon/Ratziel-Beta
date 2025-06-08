@@ -5,7 +5,7 @@ import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.TemplateElement
-import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
@@ -21,16 +21,16 @@ import taboolib.common.platform.function.warning
  * @author TheFloodDragon
  * @since 2025/5/4 15:44
  */
-object InheritResolver : ItemInterceptor, ItemTagResolver {
+object InheritResolver : ItemInterpreter, ItemTagResolver {
 
     init {
         // 注册拦截器
-        ItemRegistry.registerInterceptor(this)
+        ItemRegistry.registerInterpreter(this)
         // 注册解析器 (不支持动态解析器)
         DefaultResolver.registerResolver(this)
     }
 
-    override suspend fun intercept(stream: ItemStream) {
+    override suspend fun interpret(stream: ItemStream) {
         stream.tree.withValue { resolveTree(it) }
     }
 

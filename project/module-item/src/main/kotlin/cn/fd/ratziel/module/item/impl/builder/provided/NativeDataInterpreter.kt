@@ -4,7 +4,7 @@ import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.DataHolder
-import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.RatzielItem
@@ -17,12 +17,12 @@ import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * NativeDataInterceptor
+ * NativeDataInterpreter
  *
  * @author TheFloodDragon
  * @since 2025/5/24 18:21
  */
-object NativeDataInterceptor : ItemInterceptor {
+object NativeDataInterpreter : ItemInterpreter {
 
     /**
      * 原生数据解析器
@@ -49,7 +49,7 @@ object NativeDataInterceptor : ItemInterceptor {
 
     private val cache: MutableMap<String, Map<String, ExecutableBlock>> = ConcurrentHashMap()
 
-    override suspend fun intercept(stream: ItemStream) {
+    override suspend fun interpret(stream: ItemStream) {
         // 需求 NativeItemStream
         if (stream !is NativeItemStream) return
 
@@ -62,13 +62,13 @@ object NativeDataInterceptor : ItemInterceptor {
             ?: run {
                 // 读取数据
                 val define = element["data"] as? JsonObject ?: return@run null
-                val map = DefinitionInterceptor.buildBlockMap(define)
+                val map = DefinitionInterpreter.buildBlockMap(define)
                 // 加入到缓存
                 cache[id] = map
                 map
             } ?: return
 
-        val result = DefinitionInterceptor.executeAll(blocks, stream.context)
+        val result = DefinitionInterpreter.executeAll(blocks, stream.context)
 
         // 写入到物品数据里
         stream.data.withValue {

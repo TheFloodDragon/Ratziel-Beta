@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.item
 
-import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
-import cn.fd.ratziel.module.item.internal.SourceInterceptor
+import cn.fd.ratziel.module.item.internal.SourceInterpreter
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -23,7 +23,7 @@ object ItemRegistry {
     /**
      * 物品解释器注册表
      */
-    val interceptors: MutableList<ItemInterceptor> = CopyOnWriteArrayList()
+    val interpreters: MutableList<ItemInterpreter> = CopyOnWriteArrayList()
 
     /**
      * 注册组件
@@ -54,8 +54,8 @@ object ItemRegistry {
      * 注册物品解释器
      */
     @JvmStatic
-    fun registerInterceptor(interceptor: ItemInterceptor) {
-        interceptors.add(interceptor)
+    fun registerInterpreter(interpreter: ItemInterpreter) {
+        interpreters.add(interpreter)
     }
 
     /**
@@ -63,14 +63,13 @@ object ItemRegistry {
      */
     @JvmStatic
     fun registerSource(source: ItemSource) {
-        val interceptor = SourceInterceptor(source)
-        registerInterceptor(interceptor)
+        val interpreter = SourceInterpreter(source)
+        registerInterpreter(interpreter)
     }
 
     /**
      * 物品组件集成
      * @param serializer 序列化器
-     * @param processor 物品数据处理器
      */
     class Integrated<T>(
         /** 物品组件类型 **/

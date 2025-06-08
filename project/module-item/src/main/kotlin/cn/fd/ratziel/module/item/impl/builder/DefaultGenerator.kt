@@ -9,7 +9,7 @@ import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
-import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.async
@@ -41,12 +41,12 @@ class DefaultGenerator(
     override fun build(context: ArgumentContext) = buildAsync(SimpleData(), context)
 
     init {
-        // 提前使用 ElementInterceptor 的物品解释器
+        // 提前使用 ElementInterpreter 的物品解释器
         runBlocking(ItemElement.coroutineContext) {
-            for (interceptor in ItemRegistry.interceptors) {
-                if (interceptor is ItemInterceptor.ElementInterceptor) {
+            for (interpreter in ItemRegistry.interpreters) {
+                if (interpreter is ItemInterpreter.ElementInterpreter) {
                     launch {
-                        interceptor.intercept(NativeSource.identifier(origin), origin)
+                        interpreter.interpret(NativeSource.identifier(origin), origin)
                     }
                 }
             }
@@ -64,12 +64,12 @@ class DefaultGenerator(
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
 
         // 解释器解释元素
-        val interceptorTasks = ItemRegistry.interceptors
-            .filter { it !is ItemInterceptor.ElementInterceptor } // 上面处理过了
-            .map { launch { it.intercept(stream) } }
+        val interpreterTasks = ItemRegistry.interpreters
+            .filter { it !is ItemInterpreter.ElementInterpreter } // 上面处理过了
+            .map { launch { it.interpret(stream) } }
 
         // 序列化任务需要完全在解释后, 故等待解释任务的完成
-        interceptorTasks.joinAll()
+        interpreterTasks.joinAll()
 
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->

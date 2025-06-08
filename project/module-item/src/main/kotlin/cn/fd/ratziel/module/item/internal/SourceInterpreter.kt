@@ -1,19 +1,19 @@
 package cn.fd.ratziel.module.item.internal
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 
 /**
- * SourceInterceptor
+ * SourceInterpreter
  *
  * @author TheFloodDragon
  * @since 2025/5/17 14:38
  */
-class SourceInterceptor(val source: ItemSource) : ItemInterceptor {
+class SourceInterpreter(val source: ItemSource) : ItemInterpreter {
 
-    override suspend fun intercept(stream: ItemStream) {
+    override suspend fun interpret(stream: ItemStream) {
         val element = Element(stream.origin.identifier, stream.fetchElement())
         // 生成物品
         val item = source.generateItem(element, stream.context) ?: return

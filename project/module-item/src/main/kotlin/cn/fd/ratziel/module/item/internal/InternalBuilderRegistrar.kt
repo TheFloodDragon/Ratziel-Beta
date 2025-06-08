@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.internal
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.module.item.ItemRegistry
-import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.feature.dynamic.DynamicTagService
@@ -31,10 +31,10 @@ class InternalBuilderRegistrar : ClassVisitor(10) {
             DynamicTagService.registerResolver(resolver) // 默认支持动态解析
         }
 
-        // 注册 ItemInterceptor
-        if (clazz.hasInterface(ItemInterceptor::class.java)) {
-            val interceptor = findInstance(clazz) as ItemInterceptor
-            ItemRegistry.registerInterceptor(interceptor)
+        // 注册 ItemInterpreter
+        if (clazz.hasInterface(ItemInterpreter::class.java)) {
+            val interpreter = findInstance(clazz) as ItemInterpreter
+            ItemRegistry.registerInterpreter(interpreter)
         }
 
     }
