@@ -21,7 +21,7 @@ object ItemDropListener {
     val ON_DROP = registerTrigger("onDrop", "drop")
 
     @SubscribeEvent
-    fun onEntityDeath(event: PlayerDropItemEvent) {
+    fun onItemDropped(event: PlayerDropItemEvent) {
         // 掉落物 (实体)
         val dropped = event.itemDrop
         // 特征物品处理

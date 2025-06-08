@@ -110,13 +110,3 @@ class PlayerInventorySlot private constructor(
     }
 
 }
-
-fun inferEquipmentSlot(slot: String) = when (slot) {
-    "main-hand", "main", "hand" -> BukkitEquipment.HAND
-    "off-hand", "off" -> BukkitEquipment.OFF_HAND
-    "helmet", "head" -> BukkitEquipment.HEAD
-    "chestplate", "chest" -> BukkitEquipment.CHEST
-    "leggings", "legs" -> BukkitEquipment.LEGS
-    "boots", "feet" -> BukkitEquipment.FEET
-    else -> null
-}

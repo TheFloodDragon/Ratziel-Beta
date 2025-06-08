@@ -36,10 +36,7 @@ import java.util.concurrent.Executors
  * @author TheFloodDragon
  * @since 2023/10/14 18:55
  */
-@NewElement(
-    name = "meta",
-    space = "test"
-)
+@NewElement("item")
 @ElementConfig(
     lifeCycle = LifeCycle.ENABLE,
     requires = [TemplateElement::class]
