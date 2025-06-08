@@ -7,6 +7,7 @@ import cn.fd.ratziel.module.item.ItemElement
 import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.function.BiConsumer
 
 /**
  * IdentifiedCache
@@ -16,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 class IdentifiedCache<T>(
     val map: MutableMap<Identifier, T> = ConcurrentHashMap(),
+    val onUpdate: BiConsumer<Identifier, T> = BiConsumer { _, _ -> },
 ) {
 
     init {
@@ -30,7 +32,13 @@ class IdentifiedCache<T>(
         private fun onProcess(event: ElementEvaluateEvent.Process) {
             if (event.handler !is ItemElement) return
             for (cache in caches) {
-                cache.map.remove(SimpleIdentifier(event.element.name))
+                val identifier = SimpleIdentifier(event.element.name)
+                val value = cache.map[identifier] ?: continue
+                // 删除要被更新的元素
+                cache.map.remove(identifier)
+                // 回调
+                @Suppress("UNCHECKED_CAST")
+                (cache as IdentifiedCache<Any?>).onUpdate.accept(identifier, value)
             }
         }
 

@@ -19,7 +19,8 @@ import taboolib.platform.util.killer
 @Awake
 object EntityDeathListener {
 
-    /* 击杀生物时 */
+    /** 击杀生物时 **/
+    @JvmField
     val KILL_ENTITY = registerTrigger("onKill", "kill")
 
     @SubscribeEvent

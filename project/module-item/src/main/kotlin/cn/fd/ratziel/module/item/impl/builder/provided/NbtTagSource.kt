@@ -21,7 +21,7 @@ object NbtTagSource : ItemSource {
 
     override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
         val property = (element.property as? JsonObject) ?: return null
-        val json = property["tag"] as? JsonObject ?: return null
+        val json = property["nbt"] as? JsonObject ?: return null
         // 转化成 Nbt标签
         val tag = ItemElement.json.decodeFromJsonElement(NbtSerializer, json)
         val data = SimpleData(tag = tag as? NbtCompound ?: return null)

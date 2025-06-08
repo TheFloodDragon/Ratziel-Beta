@@ -2,13 +2,11 @@ package cn.fd.ratziel.module.item.internal.command
 
 import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.*
-import cn.fd.ratziel.module.item.util.getItemBySlot
 import cn.fd.ratziel.module.item.util.modifyTag
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.nbt.NbtSerializer
 import cn.fd.ratziel.module.nbt.delete
 import cn.fd.ratziel.module.nbt.write
-import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.CommandBody
@@ -45,7 +43,8 @@ object NBTCommand {
     val view = subCommand {
         slot {
             execute<ProxyPlayer> { player, _, arg ->
-                player.cast<Player>().inventory.getItemBySlot(arg)?.modifyTag { tag ->
+                val slot = PlayerInventorySlot.infer(arg)
+                slot.getItemFrom(player.cast())?.modifyTag { tag ->
                     if (tag.isNotEmpty()) {
                         // 构建消息组件并发送
                         nbtAsComponent(player, tag, 0, arg).sendTo(player)
@@ -68,7 +67,8 @@ object NBTCommand {
                         // 获取基本信息
                         val path = NbtPath(ctx.args()[2])
                         val rawValue = ctx.args()[3]
-                        player.cast<Player>().inventory.getItemBySlot(ctx.args()[1])?.modifyTag { tag ->
+                        val slot = PlayerInventorySlot.infer(ctx.args()[1])
+                        slot.getItemFrom(player.cast())?.modifyTag { tag ->
                             val value = NbtSerializer.deserializeFromString(rawValue)
                             tag.write(path, value, true)
                             player.sendLang(
@@ -94,7 +94,8 @@ object NBTCommand {
                 execute<ProxyPlayer> { player, ctx, _ ->
                     // 获取基本信息
                     val path = NbtPath(ctx.args()[2])
-                    player.cast<Player>().inventory.getItemBySlot(ctx.args()[1])?.modifyTag { tag ->
+                    val slot = PlayerInventorySlot.infer(ctx.args()[1])
+                    slot.getItemFrom(player.cast())?.modifyTag { tag ->
                         tag.delete(path)
                         player.sendLang("NBTAction-Remove", path.toString())
                     } ?: player.sendLang("NBTAction-EmptyTag")

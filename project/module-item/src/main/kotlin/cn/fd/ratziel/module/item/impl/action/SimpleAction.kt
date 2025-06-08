@@ -13,10 +13,6 @@ import kotlinx.serialization.json.JsonElement
  */
 class SimpleAction(
     /**
-     * 动作名称
-     */
-    override val name: String,
-    /**
      * 动作内容
      */
     override val content: JsonElement,
@@ -30,6 +26,6 @@ class SimpleAction(
         block.execute(context)
     }
 
-    override fun toString() = "SimpleAction(name=$name, block=$block, content=$content)"
+    override fun toString() = "SimpleAction(block=$block, content=$content)"
 
 }

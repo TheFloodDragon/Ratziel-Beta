@@ -12,11 +12,6 @@ import kotlinx.serialization.json.JsonElement
 interface ItemAction {
 
     /**
-     * 动作名称
-     */
-    val name: String
-
-    /**
      * 动作内容
      */
     val content: JsonElement

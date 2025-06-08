@@ -1,6 +1,9 @@
 package cn.fd.ratziel.module.item.impl.action
 
+import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
+import cn.fd.ratziel.module.script.block.BlockBuilder
+import kotlinx.serialization.json.JsonElement
 
 /**
  * SimpleTrigger
@@ -8,7 +11,7 @@ import cn.fd.ratziel.module.item.api.action.ItemTrigger
  * @author TheFloodDragon
  * @since 2025/5/2 12:48
  */
-class SimpleTrigger(
+open class SimpleTrigger(
     /**
      * 触发器名称
      */
@@ -18,6 +21,7 @@ class SimpleTrigger(
      */
     vararg val alias: String,
 ) : ItemTrigger {
+    override fun build(identifier: Identifier, element: JsonElement) = BlockBuilder.build(element)
     override fun toString() = "SimpleTrigger(name=$name, alias=${alias.contentToString()})"
 }
 
@@ -33,11 +37,12 @@ fun registerTrigger(name: String, vararg alias: String): SimpleTrigger {
 /**
  * 注册简易的 [ItemTrigger] - [SimpleTrigger]
  */
-fun registerTrigger(trigger: SimpleTrigger) {
+fun registerTrigger(trigger: SimpleTrigger): SimpleTrigger {
     // 注册主名
     ActionManager.registry.put(trigger.name, trigger)
     // 注册别名
     for (alia in trigger.alias) {
         ActionManager.registry.put(alia, trigger)
     }
+    return trigger
 }

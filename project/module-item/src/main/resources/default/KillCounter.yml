@@ -1,6 +1,6 @@
 # 案例: 杀敌数统计
 KillCounter:
-  meta:
+  item:
     material: diamond_sword
     # dynamic 表示动态标签, 在非创造模式下动态解析, 并呈现给玩家
     name: '<blue>已击杀: <yellow>{dynamic:data:kill_count}'

@@ -7,9 +7,7 @@ import cn.fd.ratziel.module.item.api.action.ItemAction
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
-import cn.fd.ratziel.module.script.block.BlockBuilder
 import kotlinx.serialization.json.JsonObject
-import taboolib.common.io.digest
 import taboolib.common.platform.function.severe
 
 /**
@@ -39,10 +37,9 @@ object ActionInterceptor : ItemInterceptor {
                 continue
             }
             // 构建脚本块
-            val block = BlockBuilder.build(content)
+            val block = trigger.build(identifier, content)
             // 创建脚本动作, 放入表中
-            val name = trigger.name + "#" + identifier.content + "@" + content.toString().digest("SHA-256")
-            map[trigger] = SimpleAction(name, content, block)
+            map[trigger] = SimpleAction(content, block)
         }
         return ActionMap(map)
     }
