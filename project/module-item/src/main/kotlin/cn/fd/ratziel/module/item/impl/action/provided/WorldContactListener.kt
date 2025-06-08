@@ -21,35 +21,23 @@ import taboolib.platform.util.attacker
 object WorldContactListener {
 
     /** 任意交互 **/
-    @JvmField
     val INTERACT_ANY = registerTrigger("onInteract", "Interact", "interact")
 
     /** 左右键交互 **/
-    @JvmField
     val INTERACT_LEFT = registerTrigger("onLeft", "left")
-
-    @JvmField
     val INTERACT_RIGHT = registerTrigger("onRight", "right")
 
     /** 左右键交互具体事物 **/
-    @JvmField
     val INTERACT_LEFT_CLICK_AIR = registerTrigger("onLeftClickAir", "onLeftAir", "left-air")
-
-    @JvmField
     val INTERACT_RIGHT_CLICK_AIR = registerTrigger("onRightClickAir", "onRightAir", "right-air")
 
-    @JvmField
     val INTERACT_LEFT_CLICK_BLOCK = registerTrigger("onLeftClickBlock", "onLeftBlock", "left-block")
-
-    @JvmField
     val INTERACT_RIGHT_CLICK_BLOCK = registerTrigger("onRightClickBlock", "onRightBlock", "right-block")
 
     /** 同样也是攻击触发器 (EntityDamageByEntityEvent) **/
-    @JvmField
     val INTERACT_LEFT_CLICK_ENTITY = registerTrigger("onLeftClickEntity", "onLeftEntity", "left-entity", "onAttack", "onAtk", "attack", "atk")
 
     /** PlayerInteractAtEntityEvent **/
-    @JvmField
     val INTERACT_RIGHT_CLICK_ENTITY = registerTrigger("onRightClickEntity", "onRightEntity", "right-entity")
 
     @Awake

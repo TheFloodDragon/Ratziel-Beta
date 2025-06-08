@@ -25,15 +25,10 @@ import taboolib.platform.util.onlinePlayers
  * @author TheFloodDragon
  * @since 2025/6/8 10:15
  */
-@Awake
 object TickTrigger : SimpleTrigger("onTick", "tick") {
 
-    /** 指定 ticks 内执行一次 **/
-    @JvmField
-    val ON_TICK = registerTrigger(TickTrigger)
-
-    private val cache = IdentifiedCache<PlatformExecutor.PlatformTask> { _, task ->
-        task.cancel() // 更新时必须取消上一个任务
+    private val cache = IdentifiedCache<PlatformExecutor.PlatformTask> {
+        it.cancel() // 更新时必须取消上一个任务
     }
 
     override fun build(identifier: Identifier, element: JsonElement): ExecutableBlock {
@@ -66,10 +61,13 @@ object TickTrigger : SimpleTrigger("onTick", "tick") {
         if (ratzielItem.identifier != identifier) return
 
         // 触发动作
-        ON_TICK.trigger(identifier, player, ratzielItem) {
+        TickTrigger.trigger(identifier, player, ratzielItem) {
             set("player", player)
             set("item", ratzielItem)
         }
     }
+
+    @Awake
+    private fun register() = registerTrigger(TickTrigger)
 
 }

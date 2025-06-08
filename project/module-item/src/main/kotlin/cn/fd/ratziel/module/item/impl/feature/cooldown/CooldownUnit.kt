@@ -10,6 +10,7 @@ import taboolib.module.nms.MinecraftVersion
 import kotlin.time.Duration
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
+import kotlin.time.toJavaDuration
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toJavaUuid
@@ -58,7 +59,8 @@ class CooldownUnit(
     /**
      * 剩余冷却时间
      */
-    val remaining: Duration get() = endMark.elapsedNow().absoluteValue
+    @get:JvmName("getRemaining")
+    val remaining: java.time.Duration get() = endMark.elapsedNow().absoluteValue.toJavaDuration()
 
     /**
      * 设置冷却时长
@@ -109,7 +111,7 @@ class CooldownUnit(
         if (MinecraftVersion.versionId < 11102) return
         val player = Bukkit.getPlayer(uuid.toJavaUuid()) ?: return
         // 剩余冷却时间 (ticks)
-        val left = remaining.inWholeMilliseconds / 50 // 1 tick = 50 ms
+        val left = remaining.seconds / 50 // 1 tick = 50 ms
         // 小薯片说 1.11.2 才有这个
         // void setCooldown(@NotNull Material var1, int var2)
         player.setCooldown(material.toBukkit(), left.toInt())
