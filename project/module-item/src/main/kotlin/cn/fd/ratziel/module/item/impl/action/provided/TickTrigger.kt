@@ -49,6 +49,8 @@ object TickTrigger : SimpleTrigger("onTick", "tick") {
                     for (player in onlinePlayers) tick(player, identifier, slot)
                 }
             }
+            // 构建脚本块并返回
+            return super.build(identifier, element.getBy("run", "code") ?: throw IllegalArgumentException("Code in onTrigger must not be null!"))
         }
         return super.build(identifier, element)
     }

@@ -7,7 +7,6 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.impl.action.ActionInterceptor
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
@@ -97,7 +96,6 @@ object ItemElement : ElementHandler {
         ItemRegistry.registerSource(SkullSource)
         ItemRegistry.registerSource(NbtTagSource)
         ItemRegistry.registerSource(NativeSource.MaterialSource)
-        ItemRegistry.registerInterceptor(ActionInterceptor)
         ItemRegistry.registerInterceptor(DefinitionInterceptor)
         ItemRegistry.registerInterceptor(NativeDataInterceptor)
         ItemRegistry.registerInterceptor(DefaultResolver)
