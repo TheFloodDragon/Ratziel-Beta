@@ -14,6 +14,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
 import org.bukkit.entity.Player
+import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.platform.util.onlinePlayers
@@ -24,6 +25,7 @@ import taboolib.platform.util.onlinePlayers
  * @author TheFloodDragon
  * @since 2025/6/8 10:15
  */
+@Awake
 object TickTrigger : SimpleTrigger("onTick", "tick") {
 
     /** 指定 ticks 内执行一次 **/

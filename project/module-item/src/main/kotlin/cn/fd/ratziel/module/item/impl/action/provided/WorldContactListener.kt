@@ -52,6 +52,12 @@ object WorldContactListener {
     @JvmField
     val INTERACT_RIGHT_CLICK_ENTITY = registerTrigger("onRightClickEntity", "onRightEntity", "right-entity")
 
+    @Awake
+    private fun init() {
+        /* 交互空气的事件默认被服务端取消, 故需要将 ignoreCancelled 设置为 false */
+        PlayerWorldContactEvent.ignoreCancelled = false
+    }
+
     @SubscribeEvent
     fun onWorldContact(event: PlayerWorldContactEvent) {
         // 交互用的物品

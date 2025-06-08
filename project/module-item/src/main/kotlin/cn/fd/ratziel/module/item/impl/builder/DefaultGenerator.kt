@@ -64,7 +64,9 @@ class DefaultGenerator(
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
 
         // 解释器解释元素
-        val interceptorTasks = ItemRegistry.interceptors.map { launch { it.intercept(stream) } }
+        val interceptorTasks = ItemRegistry.interceptors
+            .filter { it !is ItemInterceptor.ElementInterceptor } // 上面处理过了
+            .map { launch { it.intercept(stream) } }
 
         // 序列化任务需要完全在解释后, 故等待解释任务的完成
         interceptorTasks.joinAll()
