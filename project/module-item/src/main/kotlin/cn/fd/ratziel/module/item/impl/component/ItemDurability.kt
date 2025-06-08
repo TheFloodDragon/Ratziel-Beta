@@ -2,6 +2,8 @@
 
 package cn.fd.ratziel.module.item.impl.component
 
+import cn.altawk.nbt.NbtDecoder
+import cn.altawk.nbt.NbtEncoder
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -43,14 +45,14 @@ class ItemDurability(
 
         override fun serialize(encoder: Encoder, value: Boolean) {
             // 1.20.5 之后 unbreakable 类型被改成了 Compound
-            if (MinecraftVersion.versionId >= 12005 && value) {
+            if (encoder is NbtEncoder && MinecraftVersion.versionId >= 12005 && value) {
                 encoder.encodeSerializableValue(Unit.serializer(), Unit)
             } else encoder.encodeBoolean(value)
         }
 
         override fun deserialize(decoder: Decoder): Boolean {
             // 1.20.5 之后 unbreakable 类型被改成了 Compound
-            return if (MinecraftVersion.versionId >= 12005) {
+            return if (decoder is NbtDecoder && MinecraftVersion.versionId >= 12005) {
                 decoder.decodeNullableSerializableValue(Unit.serializer()) != null
             } else decoder.decodeBoolean()
         }
