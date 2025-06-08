@@ -2,8 +2,8 @@ package cn.fd.ratziel.module.item.internal
 
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.module.item.ItemElement
+import cn.fd.ratziel.module.item.impl.builder.NativeSource
 import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -32,7 +32,7 @@ class IdentifiedCache<T>(
         private fun onProcess(event: ElementEvaluateEvent.Process) {
             if (event.handler !is ItemElement) return
             for (cache in caches) {
-                val identifier = SimpleIdentifier(event.element.name)
+                val identifier = NativeSource.identifier(event.element)
                 val value = cache.map[identifier] ?: continue
                 // 删除要被更新的元素
                 cache.map.remove(identifier)

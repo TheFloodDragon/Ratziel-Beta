@@ -9,12 +9,14 @@ import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
+import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
 
@@ -38,10 +40,21 @@ class DefaultGenerator(
      */
     override fun build(context: ArgumentContext) = buildAsync(SimpleData(), context)
 
+    init {
+        // 提前使用 ElementInterceptor 的物品解释器
+        runBlocking(ItemElement.coroutineContext) {
+            for (interceptor in ItemRegistry.interceptors) {
+                if (interceptor is ItemInterceptor.ElementInterceptor) {
+                    launch {
+                        interceptor.intercept(NativeSource.identifier(origin), origin)
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * 异步生成物品
-     *
-     * 注: 此处使用多线程进行 反序列化和应用数据 的操作
      */
     fun buildAsync(sourceData: ItemData, context: ArgumentContext) = ItemElement.scope.async {
         // 创建物品流

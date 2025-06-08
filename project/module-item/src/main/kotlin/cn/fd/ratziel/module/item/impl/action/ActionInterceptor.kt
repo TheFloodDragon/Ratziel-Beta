@@ -1,12 +1,12 @@
 package cn.fd.ratziel.module.item.impl.action
 
 import cn.fd.ratziel.core.Identifier
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.serialization.json.getBy
 import cn.fd.ratziel.module.item.api.action.ActionMap
 import cn.fd.ratziel.module.item.api.action.ItemAction
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
 import cn.fd.ratziel.module.item.api.builder.ItemInterceptor
-import cn.fd.ratziel.module.item.api.builder.ItemStream
 import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.function.severe
 
@@ -16,7 +16,7 @@ import taboolib.common.platform.function.severe
  * @author TheFloodDragon
  * @since 2025/5/10 16:38
  */
-object ActionInterceptor : ItemInterceptor {
+object ActionInterceptor : ItemInterceptor.ElementInterceptor {
 
     /**
      * 动作节点名称
@@ -44,18 +44,17 @@ object ActionInterceptor : ItemInterceptor {
         return ActionMap(map)
     }
 
-    override suspend fun intercept(stream: ItemStream) {
-        // 获取元素
-        val element = stream.fetchElement()
-        // 仅处理 Object 类型
-        if (element !is JsonObject) return
+    override fun intercept(identifier: Identifier, element: Element) {
+        val property = element.property
+        // 仅处理 JsonObject 类型
+        if (property !is JsonObject) return
         // 获取原始动作
-        val raw = element.getBy(*nodeNames) ?: return
+        val raw = property.getBy(*nodeNames) ?: return
         if (raw is JsonObject) {
             // 解析触发器表
-            val triggerMap = parse(stream.identifier, raw)
+            val triggerMap = parse(identifier, raw)
             // 加入到动作表中
-            ActionManager.service[stream.identifier] = triggerMap
+            ActionManager.service[identifier] = triggerMap
         } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
     }
 

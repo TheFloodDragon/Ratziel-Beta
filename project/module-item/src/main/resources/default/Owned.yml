@@ -1,0 +1,11 @@
+owned:
+  item:
+    mat: diamond_sword
+    name: "哥我认主"
+    actions:
+      onDrop: 'dropped.setOwner(player.getUniqueId())'
+      onPick: |-
+        owner = picked.getOwner()
+        if (owner && entity.getUniqueId() != owner) {
+            event.setCancelled(true)
+        }
