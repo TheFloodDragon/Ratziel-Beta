@@ -18,6 +18,10 @@ class SimpleContext(
         for (value in values) this.map.put(value::class.java, value)
     }
 
+    constructor(action: ArgumentContext.() -> Unit) : this() {
+        action(this)
+    }
+
     override fun <T> pop(type: Class<T>): T & Any {
         return popOrNull(type) ?: throw ArgumentNotFoundException(type)
     }

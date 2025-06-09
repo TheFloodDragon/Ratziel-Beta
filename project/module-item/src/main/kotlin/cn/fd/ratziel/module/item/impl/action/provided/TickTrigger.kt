@@ -5,7 +5,6 @@ import cn.fd.ratziel.core.serialization.json.getBy
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.SimpleTrigger
-import cn.fd.ratziel.module.item.impl.action.registerTrigger
 import cn.fd.ratziel.module.item.internal.IdentifiedCache
 import cn.fd.ratziel.module.item.internal.command.PlayerInventorySlot
 import cn.fd.ratziel.module.script.block.ExecutableBlock
@@ -14,7 +13,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
 import org.bukkit.entity.Player
-import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.platform.util.onlinePlayers
@@ -66,8 +64,5 @@ object TickTrigger : SimpleTrigger("onTick", "tick") {
             set("item", ratzielItem)
         }
     }
-
-    @Awake
-    private fun register() = registerTrigger(TickTrigger)
 
 }

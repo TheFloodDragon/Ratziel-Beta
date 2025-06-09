@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.internal.command
 import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.util.toItemStack
+import cn.fd.ratziel.module.script.impl.VariablesMap
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.ProxyCommandSender
@@ -57,12 +58,17 @@ object ItemCommand {
         }
     }
 
-    private fun giveById(player: ProxyPlayer, id: String, amount: Int): CompletableFuture<ItemStack?> {
+    private fun giveById(player: Player, id: String, amount: Int): CompletableFuture<ItemStack?> {
         val future = CompletableFuture<ItemStack?>()
         // 获取物品生成器
         val generator = ItemManager.registry[id] ?: return CompletableFuture.completedFuture(null)
         // 上下文参数
-        val args = SimpleContext().apply { put(player) }
+        val args = SimpleContext {
+            put(player)
+            put(VariablesMap {
+                put("player", player)
+            })
+        }
         // 开始生成物品
         val time = TimeSource.Monotonic.markNow()
         generator.build(args).thenAccept {
@@ -72,7 +78,7 @@ object ItemCommand {
             val item = it.toItemStack().apply { setAmount(amount) }
             submit {
                 // 给予物品
-                player.cast<Player>().giveItem(item)
+                player.giveItem(item)
                 future.complete(item)
             }
         }
@@ -82,7 +88,7 @@ object ItemCommand {
     private fun cmdGive(sender: ProxyCommandSender, players: List<ProxyPlayer>, id: String, amount: Int) {
         if (players.size == 1) {
             val player = players[0]
-            giveById(player, id, amount).thenRun {
+            giveById(player.cast(), id, amount).thenRun {
                 // 发送给命名发送者
                 sender.sendLang("Item-Give", player.name, id, amount)
                 // 发送给物品接收者
@@ -90,7 +96,7 @@ object ItemCommand {
             }
         } else {
             val futures = players.map { player ->
-                giveById(player, id, amount).thenRun {
+                giveById(player.cast(), id, amount).thenRun {
                     // 发送给物品接收者
                     if (sender.name != player.name) player.sendLang("Item-Get", id, amount)
                 }

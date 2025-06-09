@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.internal.IdentifiedCache
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.module.script.impl.VariablesMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -21,12 +22,11 @@ import kotlinx.serialization.json.JsonObject
  */
 object DefinitionInterpreter : ItemInterpreter {
 
-    class DefinitionResolver(
-        val values: Map<String, Any?>,
-    ) : ItemTagResolver {
+    object DefinitionResolver : ItemTagResolver {
         override val alias = arrayOf("define", "def", "definition")
         override fun resolve(args: List<String>, context: ArgumentContext): String? {
-            val value = values[args.firstOrNull() ?: return null]
+            val vars = context.popOrNull(VariablesMap::class.java) ?: return null
+            val value = vars[args.firstOrNull() ?: return null]
             return value.toString()
         }
     }
@@ -49,13 +49,14 @@ object DefinitionInterpreter : ItemInterpreter {
                 map
             } ?: return
 
-        // 创建新的定义
-        val values = executeAll(blocks, stream.context)
+        // 获取变量表
+        val vars = stream.context.popOr(VariablesMap::class.java) { VariablesMap().also { stream.context.put(it) } }
+        vars.putAll(executeAll(blocks, stream.context))
 
         // 等待所有任务完成, 并将 写入到环境里
         stream.tree.togetherWith(stream.data) { tree, data ->
             TaggedSectionResolver.resolveWithSingle(
-                DefinitionResolver(values),
+                DefinitionResolver,
                 tree, stream.context
             )
         }

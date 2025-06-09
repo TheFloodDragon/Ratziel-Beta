@@ -2,8 +2,10 @@ package cn.fd.ratziel.module.item.impl.action
 
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.module.item.api.action.ItemTrigger
+import cn.fd.ratziel.module.item.impl.action.provided.TickTrigger
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import kotlinx.serialization.json.JsonElement
+import taboolib.common.platform.Awake
 
 /**
  * SimpleTrigger
@@ -45,4 +47,9 @@ fun registerTrigger(trigger: SimpleTrigger): SimpleTrigger {
         ActionManager.registry.put(alia, trigger)
     }
     return trigger
+}
+
+@Awake
+private fun registerAll() {
+    registerTrigger(TickTrigger)
 }
