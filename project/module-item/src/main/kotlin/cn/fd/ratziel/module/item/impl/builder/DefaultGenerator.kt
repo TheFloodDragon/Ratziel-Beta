@@ -5,18 +5,19 @@ import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SimpleContext
+import cn.fd.ratziel.core.function.replenish
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
+import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.function.severe
 import taboolib.common.reflect.hasAnnotation
 
@@ -40,6 +41,9 @@ class DefaultGenerator(
      */
     override fun build(context: ArgumentContext) = buildAsync(context)
 
+    /**
+     * 基础物品流 (经过预处理生成的流)
+     */
     val baseStream = ItemElement.scope.async {
         // 预解释物品流
         val stream = createNativeStream(SimpleData(), SimpleContext())
@@ -53,15 +57,53 @@ class DefaultGenerator(
     }
 
     /**
+     * 静态物品流
+     *
+     * @param replenish 每获取一次补充一次 (执行一次 [generateStaticStream])
+     */
+    val staticStreamGenerating by replenish { generateStaticStream() }
+
+    /**
      * 异步生成物品
      */
     fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
-        // 生成物品流
-        val stream = baseStream.await().copyWith(context)
+        // 获取物品流
+        val stream = staticStreamGenerating.await()
+        // 更新上下文
+        stream.context = context
 
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
 
+        // 处理物品流
+        processStream(stream, this)
+
+        // 呼出生成结束的事件
+        val event = ItemGenerateEvent.Post(stream.identifier, this@DefaultGenerator, context, stream.item)
+        event.call()
+        event.item // 返回最终结果
+    }.asCompletableFuture()
+
+    /**
+     * 生成静态物品流
+     */
+    fun generateStaticStream(): Deferred<NativeItemStream> = ItemElement.scope.async {
+        val stream = baseStream.await().copyWith(SimpleContext())
+        // 获取静态配置
+        val property = stream.fetchElement() as? JsonObject
+        val staticProperty = property?.get("static") ?: return@async stream // 没有就算了, 前面走个拷贝就走
+        // 替换物品流的元素内容
+        stream.updateElement(staticProperty)
+        // 好戏开场: 处理静态物品流
+        processStream(stream, this).join()
+        // 处理完了返回就是了
+        return@async stream
+    }
+
+    /**
+     * 处理物品流 (解释 -> 序列化)
+     */
+    fun processStream(stream: ItemStream, scope: CoroutineScope) = scope.launch {
         // 解释器解释元素
         val interpreterTasks = ItemRegistry.interpreters
             .filter { !isPreInterpretable(it) } // 上面处理过了
@@ -84,12 +126,7 @@ class DefaultGenerator(
 
         // 等待所有序列化任务完成
         serializationTasks.joinAll()
-
-        // 呼出生成结束的事件
-        val event = ItemGenerateEvent.Post(stream.identifier, this@DefaultGenerator, context, stream.item)
-        event.call()
-        event.item // 返回最终结果
-    }.asCompletableFuture()
+    }
 
     /**
      * 创建原生物品流

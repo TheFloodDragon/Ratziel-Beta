@@ -30,7 +30,7 @@ interface ItemStream {
      * [JsonElement] 树
      * 由解释器处理, 供序列化使用
      */
-    val tree: SynchronizedValue<JsonTree>
+    val tree: SynchronizedValue.Mutable<JsonTree>
 
     /**
      * 物品数据 (最终产物)
@@ -48,6 +48,13 @@ interface ItemStream {
      */
     suspend fun fetchElement(): JsonElement {
         return tree.withValue { it.toElement() }
+    }
+
+    /**
+     * 更新 [tree] 的元素内容
+     */
+    suspend fun updateElement(element: JsonElement) {
+        return tree.update { JsonTree(element) }
     }
 
 }

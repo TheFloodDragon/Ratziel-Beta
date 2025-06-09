@@ -106,8 +106,8 @@ object ItemElement : ElementHandler {
         ItemRegistry.registerInterpreter(ActionInterpreter)
         ItemRegistry.registerInterpreter(DefaultResolver)
         ItemRegistry.registerSource(SkullSource)
-        ItemRegistry.registerSource(NativeSource.MaterialSource)
         ItemRegistry.registerSource(NbtTagSource)
+        ItemRegistry.registerSource(NativeSource.MaterialSource)
         ItemRegistry.registerInterpreter(NativeDataInterpreter)
         ItemRegistry.registerInterpreter(DefinitionInterpreter)
     }
