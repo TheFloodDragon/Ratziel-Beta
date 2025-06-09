@@ -14,8 +14,8 @@ Plugin-Enabled: '&8[&6Ratziel&8] &b信息 &8| &3加载完毕. Ratziel &av{0} &3�
 Plugin-Reloaded: '&8[&6R&8] &7插件已重载完毕 &8({0}ms)'
 
 # 工作空间
-Workspace-Initiated: '&8[&6R&8] &7已初始化 &a{0} &7个工作空间... 开始加载配置 &8({1}ms)'
-Workspace-Loaded: '&8[&6R&8] &7成功载入 &a{0} &7个有效元素... &8({1}ms)'
+Workspace-Initiated: '&8[&6R&8] &7成功载入 &a{0} &7个工作空间... &8({1}ms)'
+Workspace-Loaded: '&8[&6R&8] &7成功评估了 &a{0} &7个有效元素... &8({1}ms)'
 Element-File-Load-Failed: '&8[&6R&8] &c加载文件 &7{0} &c失败.'
 Element-File-Evaluate-Failed: '&8[&6R&8] &c评估元素 &7{0} ({1}) &c时失败.'
 Element-File-Reload-Failed: '&8[&6R&8] &c自动重载 &7{0} &c失败.'

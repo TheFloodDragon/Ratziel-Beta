@@ -49,7 +49,8 @@ class IdentifiedCache<T>(
                 // 触发更新回调
                 @Suppress("UNCHECKED_CAST")
                 cache.map.forEach {
-                    (cache as IdentifiedCache<Any?>).onUpdate.accept(it)
+                    // 你妈找了一上午, 神tm问题在这, 传 Map.Entry 去了。。。
+                    (cache as IdentifiedCache<Any?>).onUpdate.accept(it.value)
                 }
                 // 清空缓存
                 cache.map.clear()

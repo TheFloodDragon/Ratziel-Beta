@@ -29,5 +29,5 @@ data class Workspace(
     /**
      * 统一的元素类型, 空代表不统一类型
      */
-    val unifiedElementType: ElementType?
+    val unifiedElementType: ElementType?,
 )

@@ -46,22 +46,14 @@ object WorkspaceLoader {
     /**
      * 初始化工作空间
      */
-    private fun init(sender: ProxyCommandSender) = measureTimeMillis {
-        WorkspaceManager.initializeAllWorkspace()
-    }.also { sender.sendLang("Workspace-Initiated", WorkspaceManager.workspaces.size, it) }
-
-    /**
-     * 加载工作空间中的元素
-     */
-    private fun load(sender: ProxyCommandSender): CompletableFuture<Duration> {
-        val result = CompletableFuture<Duration>()
-        WorkspaceLoadEvent.Start().call() // 事件 - 开始加载
-
+    private fun init(sender: ProxyCommandSender): CompletableFuture<Duration> {
         // 开始记录时间
         val timeMark = TimeSource.Monotonic.markNow()
 
+        WorkspaceManager.initializeAllWorkspace() // 初始化工作空间
         FileListener.clear() // 清空监听器
-        ElementEvaluator.clear() // 清空评估器
+        livingElements.clear() // 清空加载过的元素表
+        ElementEvaluator.clear()  // 清空评估器
 
         // 创建任务工厂
         val tasks = ArrayList<CompletableFuture<Unit>>()
@@ -90,9 +82,24 @@ object WorkspaceLoader {
                 }, executor))
             }
         }
+
         // 所有加载任务结束后执行
-        CompletableFuture.allOf(*tasks.toTypedArray()).thenRun {
-            val loadTime = timeMark.elapsedNow() // 加载文件所耗费的时间
+        return CompletableFuture.allOf(*tasks.toTypedArray()).thenApply {
+            timeMark.elapsedNow().also {
+                sender.sendLang("Workspace-Initiated", WorkspaceManager.workspaces.size, it)
+            }
+        }
+    }
+
+    /**
+     * 加载工作空间中的元素
+     */
+    private fun load(sender: ProxyCommandSender, initTask: CompletableFuture<Duration>): CompletableFuture<Duration> {
+        val result = CompletableFuture<Duration>()
+
+        WorkspaceLoadEvent.Start().call() // 事件 - 开始加载
+
+        initTask.thenAccept { loadTime ->
             // 评估器开始评估
             ElementEvaluator.evaluateCycled().thenAccept { evalTime ->
                 val time = loadTime.plus(evalTime) // 计算最终时间 = 加载时间 + 评估时间
@@ -101,12 +108,14 @@ object WorkspaceLoader {
                 result.complete(time) // 完成最后任务
             }
         }
+
         // 返回任务
         return result
     }
 
     private fun listenFile(workspace: Workspace, file: File, sender: ProxyCommandSender) {
         FileListener.listen(file) { file ->
+            if (!file.exists()) return@listen
             measureTimeMillis {
                 // 加载文件
                 val result = ElementLoader.load(workspace, file)
@@ -138,16 +147,16 @@ object WorkspaceLoader {
      */
     fun reload(sender: ProxyCommandSender) {
         // 初始化工作空间
-        init(sender)
+        val initTask = init(sender)
         // 加载元素文件
-        load(sender).join()
+        load(sender, initTask).join()
     }
 
 
     @Awake(LifeCycle.LOAD)
     private fun load() {
-        init(console())
-        load(console())
+        val initTask = init(console())
+        load(console(), initTask)
     }
 
 }
