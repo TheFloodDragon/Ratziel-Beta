@@ -111,7 +111,7 @@ class CooldownUnit(
         if (MinecraftVersion.versionId < 11102) return
         val player = Bukkit.getPlayer(uuid.toJavaUuid()) ?: return
         // 剩余冷却时间 (ticks)
-        val left = remaining.seconds / 50 // 1 tick = 50 ms
+        val left = remaining.toMillis() / 50 // 1 tick = 50 ms
         // 小薯片说 1.11.2 才有这个
         // void setCooldown(@NotNull Material var1, int var2)
         player.setCooldown(material.toBukkit(), left.toInt())
