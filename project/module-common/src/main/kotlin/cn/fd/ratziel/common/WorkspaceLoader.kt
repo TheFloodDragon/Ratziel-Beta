@@ -61,16 +61,17 @@ object WorkspaceLoader {
         for (workspace in WorkspaceManager.workspaces) {
             // 加载工作空间内的文件
             for (file in workspace.files) {
-                // 监听自动重载的文件
-                if (workspace.listen) listenFile(workspace, file, sender)
-
                 // 提交加载任务
                 tasks.add(CompletableFuture.supplyAsync({
                     // 加载文件
                     val result = ElementLoader.load(workspace, file)
                     if (result.isSuccess) {
                         for (loadedElement in result.getOrThrow()) {
-                            // 加入到 livingElements
+                            // 检查重复元素
+                            if (livingElements[loadedElement.name] != null) {
+                                sender.sendLang("Element-File-Duplicated", loadedElement.name, file)
+                                continue // 跳过加载
+                            }
                             livingElements[loadedElement.name] = loadedElement
                             // 提交到周期评估任务表里
                             ElementEvaluator.submit(loadedElement) { element, throwable ->
@@ -80,13 +81,15 @@ object WorkspaceLoader {
                         }
                     } else sender.sendLang("Element-File-Load-Failed", file.name)
                 }, executor))
+                // 监听自动重载的文件
+                if (workspace.listen) listenFile(workspace, file, sender)
             }
         }
 
         // 所有加载任务结束后执行
         return CompletableFuture.allOf(*tasks.toTypedArray()).thenApply {
             timeMark.elapsedNow().also {
-                sender.sendLang("Workspace-Initiated", WorkspaceManager.workspaces.size, it)
+                sender.sendLang("Workspace-Initiated", WorkspaceManager.workspaces.size, it.inWholeMilliseconds)
             }
         }
     }
@@ -94,19 +97,16 @@ object WorkspaceLoader {
     /**
      * 加载工作空间中的元素
      */
-    private fun load(sender: ProxyCommandSender, initTask: CompletableFuture<Duration>): CompletableFuture<Duration> {
+    private fun load(sender: ProxyCommandSender): CompletableFuture<Duration> {
         val result = CompletableFuture<Duration>()
 
         WorkspaceLoadEvent.Start().call() // 事件 - 开始加载
 
-        initTask.thenAccept { loadTime ->
-            // 评估器开始评估
-            ElementEvaluator.evaluateCycled().thenAccept { evalTime ->
-                val time = loadTime.plus(evalTime) // 计算最终时间 = 加载时间 + 评估时间
-                WorkspaceLoadEvent.End().call() // 事件 - 结束加载
-                sender.sendLang("Workspace-Loaded", ElementEvaluator.evaluatedElements.size, time.inWholeMilliseconds)
-                result.complete(time) // 完成最后任务
-            }
+        // 评估器开始评估
+        ElementEvaluator.evaluateCycled().thenAccept { time ->
+            WorkspaceLoadEvent.End().call() // 事件 - 结束加载
+            sender.sendLang("Workspace-Loaded", ElementEvaluator.evaluatedElements.size, time.inWholeMilliseconds)
+            result.complete(time) // 完成最后任务
         }
 
         // 返回任务
@@ -147,16 +147,16 @@ object WorkspaceLoader {
      */
     fun reload(sender: ProxyCommandSender) {
         // 初始化工作空间
-        val initTask = init(sender)
+        init(sender).join()
         // 加载元素文件
-        load(sender, initTask).join()
+        load(sender).join()
     }
 
 
     @Awake(LifeCycle.LOAD)
     private fun load() {
-        val initTask = init(console())
-        load(console(), initTask)
+        init(console()).join()
+        load(console())
     }
 
 }
