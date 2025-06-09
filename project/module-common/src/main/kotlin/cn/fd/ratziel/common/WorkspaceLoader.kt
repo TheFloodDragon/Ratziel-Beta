@@ -31,7 +31,7 @@ object WorkspaceLoader {
      * 线程池
      */
     val executor: ExecutorService by lazy {
-        Executors.newFixedThreadPool(4)
+        Executors.newFixedThreadPool(8)
     }
 
     /**

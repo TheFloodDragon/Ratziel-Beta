@@ -1,5 +1,6 @@
 package cn.fd.ratziel.common.element
 
+import cn.fd.ratziel.common.WorkspaceLoader
 import cn.fd.ratziel.common.element.ElementEvaluator.evaluations
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.ElementRegistry
@@ -8,7 +9,6 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.ElementIdentifier
 import cn.fd.ratziel.core.element.ElementType
-import kotlinx.coroutines.*
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.function.debug
@@ -16,6 +16,7 @@ import taboolib.common.platform.function.severe
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.ExecutorService
 import java.util.function.BiConsumer
 import java.util.function.Supplier
 import kotlin.time.Duration
@@ -30,9 +31,9 @@ import kotlin.time.TimeSource
 object ElementEvaluator {
 
     /**
-     * 协程作用域
+     * 线程池
      */
-    val scope = CoroutineScope(CoroutineName("ElementEvaluator") + Dispatchers.Default)
+    val executor: ExecutorService get() = WorkspaceLoader.executor
 
     /**
      * 评估任务表
@@ -92,9 +93,12 @@ object ElementEvaluator {
                 // 开始记录时间
                 val timeMark = TimeSource.Monotonic.markNow()
                 // 评估所有组内的所有任务
-                for (group in groups) group.evaluate()
-                // 完成并回传处理时间
-                future.complete(timeMark.elapsedNow())
+                val tasks = groups.map { it.evaluate() }
+                // 合并任务
+                CompletableFuture.allOf(*tasks.toTypedArray()).thenRun {
+                    // 完成并回传处理时间
+                    future.complete(timeMark.elapsedNow())
+                }
             }
         }
         return CompletableFuture.allOf(*cycleTasks.toTypedArray()).thenApply {
@@ -163,10 +167,10 @@ object ElementEvaluator {
          * 评估所有任务 (只执行一次)
          */
         @Synchronized
-        fun evaluate() {
+        fun evaluate(): CompletableFuture<*> {
             // 完成后不再执行
             if (isDone) {
-                return
+                return CompletableFuture.completedFuture(Unit)
             } else {
                 // 标记所有任务完成
                 isDone = true
@@ -180,33 +184,29 @@ object ElementEvaluator {
             // 触发 ElementEvaluateEvent.Start
             ElementEvaluateEvent.Start(handler, elements).call()
 
-            // 开启阻塞协程
-            runBlocking {
-
-                // 异步任务列表
-                val asyncTasks = ArrayList<Deferred<Throwable?>>()
-                // 同步任务列表
-                val syncTasks = ArrayList<Supplier<Throwable?>>()
-                // 提交任务
-                for (element in elements) {
-                    // 异步 & 同步 任务提交
-                    if (config.async) {
-                        asyncTasks.add(scope.async { handle(element) })
-                    } else {
-                        syncTasks.add(Supplier { handle(element) })
-                    }
+            // 异步任务列表
+            val asyncTasks = ArrayList<CompletableFuture<Throwable?>>()
+            // 同步任务列表
+            val syncTasks = ArrayList<Supplier<Throwable?>>()
+            // 提交任务
+            for (element in elements) {
+                // 异步 & 同步 任务提交
+                if (config.async) {
+                    asyncTasks.add(CompletableFuture.supplyAsync({ handle(element) }, executor))
+                } else {
+                    syncTasks.add(Supplier { handle(element) })
                 }
-                // 执行同步任务
-                syncTasks.forEach { it.get() }
-                // 等待所有异步任务完成 (必须在同步之后再等待)
-                awaitAll(*asyncTasks.toTypedArray())
-
             }
+            // 执行同步任务
+            syncTasks.forEach { it.get() }
 
-            // 触发 ElementHandler#onEnd
-            handler.onEnd()
-            // 触发 ElementEvaluateEvent.End
-            ElementEvaluateEvent.End(handler).call()
+            // 返回异步任务
+            return CompletableFuture.allOf(*asyncTasks.toTypedArray()).thenRun {
+                // 触发 ElementHandler#onEnd
+                handler.onEnd()
+                // 触发 ElementEvaluateEvent.End
+                ElementEvaluateEvent.End(handler).call()
+            }
         }
 
         private fun checkDependencies() {
@@ -217,7 +217,7 @@ object ElementEvaluator {
                 val group = evaluations[type]
                 // 完成其任务组
                 if (group != null) {
-                    group.evaluate()
+                    group.evaluate().get()
                     debug("[EvaluationGroup] Depended handler '${dependencyClass.java}' for '$handler' has been evaluated.")
                 }
             }
@@ -226,7 +226,6 @@ object ElementEvaluator {
         private fun handle(element: Element): Throwable? {
             // 触发 ElementEvaluateEvent.Process
             ElementEvaluateEvent.Process(handler, element).call()
-
             // 开始处理
             val result = handleElement(handler, element)
             // 完成回调
