@@ -43,6 +43,13 @@ class RatzielItem private constructor(
      */
     override val service get() = GlobalServiceManager[identifier]
 
+    /**
+     * 克隆 [RatzielItem]
+     */
+    fun clone(): RatzielItem {
+        return RatzielItem(this.info, this.data.clone())
+    }
+
     override fun toString(): String {
         return "RatzielItem(info=$info, data=$data)"
     }

@@ -16,9 +16,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.severe
+import taboolib.common.reflect.hasAnnotation
 
 /**
  * DefaultGenerator
@@ -38,34 +38,33 @@ class DefaultGenerator(
     /**
      * 构建物品
      */
-    override fun build(context: ArgumentContext) = buildAsync(SimpleData(), context)
+    override fun build(context: ArgumentContext) = buildAsync(context)
 
-    init {
-        // 提前使用 ElementInterpreter 的物品解释器
-        runBlocking(ItemElement.coroutineContext) {
-            for (interpreter in ItemRegistry.interpreters) {
-                if (interpreter is ItemInterpreter.ElementInterpreter) {
-                    launch {
-                        interpreter.interpret(NativeSource.identifier(origin), origin)
-                    }
-                }
-            }
-        }
+    val baseStream = ItemElement.scope.async {
+        // 预解释物品流
+        val stream = createNativeStream(SimpleData(), SimpleContext())
+        // 预解释任务
+        val tasks = ItemRegistry.interpreters
+            .filter { isPreInterpretable(it) }
+            .map { launch { it.interpret(stream) } }
+        // 等待预解释完成并返回结果
+        tasks.joinAll()
+        return@async stream
     }
 
     /**
      * 异步生成物品
      */
-    fun buildAsync(sourceData: ItemData, context: ArgumentContext) = ItemElement.scope.async {
-        // 创建物品流
-        val stream = createNativeStream(sourceData, context)
+    fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
+        // 生成物品流
+        val stream = baseStream.await().copyWith(context)
 
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
 
         // 解释器解释元素
         val interpreterTasks = ItemRegistry.interpreters
-            .filter { it !is ItemInterpreter.ElementInterpreter } // 上面处理过了
+            .filter { !isPreInterpretable(it) } // 上面处理过了
             .map { launch { it.interpret(stream) } }
 
         // 序列化任务需要完全在解释后, 故等待解释任务的完成
@@ -135,6 +134,13 @@ class DefaultGenerator(
             ex.printStackTrace()
             return Result.failure(ex)
         }
+    }
+
+    /**
+     * 判断一个 [ItemInterpreter] 是不是 可预解释的
+     */
+    private fun isPreInterpretable(interpreter: ItemInterpreter): Boolean {
+        return interpreter::class.java.hasAnnotation(ItemInterpreter.PreInterpretable::class.java)
     }
 
 }

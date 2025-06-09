@@ -9,6 +9,7 @@ import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import taboolib.common.platform.function.debug
+import taboolib.common.platform.function.severe
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -36,6 +37,18 @@ object ActionManager {
             { service[it] },
             { k, v -> service[k] = v }
         )
+    }
+
+    /**
+     * 匹配触发器
+     */
+    @JvmStatic
+    fun matchTrigger(name: String): ItemTrigger? {
+        val trigger = registry[name]
+        if (trigger == null) {
+            severe("Unknown trigger: \"$name\" !")
+            return null
+        } else return trigger
     }
 
     /**

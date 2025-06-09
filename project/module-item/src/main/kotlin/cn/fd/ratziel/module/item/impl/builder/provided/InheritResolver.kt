@@ -21,6 +21,7 @@ import taboolib.common.platform.function.warning
  * @author TheFloodDragon
  * @since 2025/5/4 15:44
  */
+@ItemInterpreter.PreInterpretable
 object InheritResolver : ItemInterpreter, ItemTagResolver {
 
     init {
