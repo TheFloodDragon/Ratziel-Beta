@@ -5,7 +5,7 @@ import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.NeoItem
 
 /**
- * ItemSource
+ * ItemSource - 物品源
  *
  * @author TheFloodDragon
  * @since 2025/4/4 14:57
@@ -19,5 +19,20 @@ interface ItemSource {
      * @param context 上下文
      */
     fun generateItem(element: Element, context: ArgumentContext): NeoItem?
+
+    /**
+     * Named
+     *
+     * @author TheFloodDragon
+     * @since 2025/6/9 19:19
+     */
+    interface Named : ItemSource {
+
+        /**
+         * 物品源名称
+         */
+        val names: Array<String>
+
+    }
 
 }

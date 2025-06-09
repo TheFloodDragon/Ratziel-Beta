@@ -91,16 +91,25 @@ object ItemElement : ElementHandler {
         register<ItemEnchant>()
     }
 
+
+    /*
+     * 尽管解释器 (Resolver, Interpreter, Source) 在解释的过程中是并行的,
+     * 但是启动协程的顺序就近乎决定了解释器获取同步锁的顺序,
+     * 比如解析器 (Resolver) 的执行是一开始就尝试拿锁的, 故而但看解析器执行链, 会发现它们其实是串行的.
+     * 其他的同理也不是完全的并行或者串行, 这种方式虽说有可能会带来错位解释 (不按照启动的顺序),
+     * 但相比来说, 却极为简洁, 在大多情况下无异常.
+     */
+
     init {
         // 注册默认解释器
         ItemRegistry.registerInterpreter(InheritResolver)
-        ItemRegistry.registerSource(SkullSource)
-        ItemRegistry.registerSource(NbtTagSource)
-        ItemRegistry.registerSource(NativeSource.MaterialSource)
         ItemRegistry.registerInterpreter(ActionInterpreter)
-        ItemRegistry.registerInterpreter(DefinitionInterpreter)
-        ItemRegistry.registerInterpreter(NativeDataInterpreter)
         ItemRegistry.registerInterpreter(DefaultResolver)
+        ItemRegistry.registerSource(SkullSource)
+        ItemRegistry.registerSource(NativeSource.MaterialSource)
+        ItemRegistry.registerSource(NbtTagSource)
+        ItemRegistry.registerInterpreter(NativeDataInterpreter)
+        ItemRegistry.registerInterpreter(DefinitionInterpreter)
     }
 
     override fun handle(element: Element) {

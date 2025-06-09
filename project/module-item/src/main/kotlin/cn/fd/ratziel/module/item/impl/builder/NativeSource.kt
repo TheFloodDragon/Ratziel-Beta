@@ -45,13 +45,13 @@ object NativeSource {
         return RatzielItem.of(info, sourceData)
     }
 
-    object MaterialSource : ItemSource {
+    object MaterialSource : ItemSource.Named {
 
-        val materialNames = listOf("material", "mat", "materials", "mats")
+        override val names = arrayOf("material", "mat", "materials", "mats")
 
         override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
             val property = (element.property as? JsonObject) ?: return null
-            val name = (property.getBy(materialNames) as? JsonPrimitive)?.contentOrNull ?: return null
+            val name = (property.getBy(*names) as? JsonPrimitive)?.contentOrNull ?: return null
             val data = SimpleData(material = MetaMatcher.matchMaterial(name))
             return SimpleItem(data)
         }

@@ -12,8 +12,8 @@ class VariablesMap(
     private val vars: MutableMap<String, Any?> = ConcurrentHashMap(),
 ) : MutableMap<String, Any?> by vars {
 
-    constructor(action: MutableMap<String, Any?>.() -> Unit) : this() {
-        action(this.vars)
+    constructor(action: VariablesMap.() -> Unit) : this() {
+        action(this)
     }
 
 }

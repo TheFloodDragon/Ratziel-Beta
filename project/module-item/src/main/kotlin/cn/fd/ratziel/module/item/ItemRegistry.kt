@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
-import cn.fd.ratziel.module.item.internal.SourceInterpreter
+import cn.fd.ratziel.module.item.impl.builder.provided.SourceInterpreter
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 

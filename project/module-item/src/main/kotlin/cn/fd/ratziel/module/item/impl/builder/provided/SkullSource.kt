@@ -18,14 +18,14 @@ import kotlinx.serialization.json.contentOrNull
  * @author TheFloodDragon
  * @since 2025/5/25 08:58
  */
-object SkullSource : ItemSource {
+object SkullSource : ItemSource.Named {
 
-    val skullNames = listOf("skull", "head")
+    override val names = arrayOf("skull", "head")
 
     override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
         val property = (element.property as? JsonObject) ?: return null
         // 头颅数据值
-        val value = (property.getBy(skullNames) as? JsonPrimitive)?.contentOrNull ?: return null
+        val value = (property.getBy(*names) as? JsonPrimitive)?.contentOrNull ?: return null
 
         // 创建物品
         val itemStack = SkullUtil.fetchSkull(value)

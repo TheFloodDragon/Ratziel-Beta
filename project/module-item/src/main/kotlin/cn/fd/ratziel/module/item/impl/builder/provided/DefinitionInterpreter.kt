@@ -4,6 +4,9 @@ import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
+import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
+import cn.fd.ratziel.module.item.impl.action.registerTrigger
+import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.internal.IdentifiedCache
 import cn.fd.ratziel.module.script.block.BlockBuilder
@@ -22,6 +25,9 @@ import kotlinx.serialization.json.JsonObject
  */
 object DefinitionInterpreter : ItemInterpreter {
 
+    /** 处理触发器 **/
+    val PROCESS_TRIGGER = registerTrigger("onProcess", "process")
+
     object DefinitionResolver : ItemTagResolver {
         override val alias = arrayOf("define", "def", "definition")
         override fun resolve(args: List<String>, context: ArgumentContext): String? {
@@ -36,16 +42,15 @@ object DefinitionInterpreter : ItemInterpreter {
     override suspend fun interpret(stream: ItemStream) {
         val element = stream.fetchElement()
         if (element !is JsonObject) return
-        val id = stream.identifier
 
         // 获取语句块表
-        val blocks = cache.map[id]
+        val blocks = cache.map[stream.identifier]
             ?: run {
                 // 读取定义
                 val define = element["define"] as? JsonObject ?: return@run null
                 val map = buildBlockMap(define)
                 // 加入到缓存
-                cache.map[id] = map
+                cache.map[stream.identifier] = map
                 map
             } ?: return
 
@@ -54,11 +59,21 @@ object DefinitionInterpreter : ItemInterpreter {
         vars.putAll(executeAll(blocks, stream.context))
 
         // 等待所有任务完成, 并将 写入到环境里
-        stream.tree.togetherWith(stream.data) { tree, data ->
-            TaggedSectionResolver.resolveWithSingle(
-                DefinitionResolver,
-                tree, stream.context
-            )
+        stream.data.withValue { _ ->
+            // 替换定义标签
+            stream.tree.withValue { tree ->
+                TaggedSectionResolver.resolveWithSingle(
+                    DefinitionResolver,
+                    tree, stream.context
+                )
+            }
+            // 触发触发器
+            PROCESS_TRIGGER.trigger(stream.identifier) {
+                // 尝试获取 RatzielItem 物品
+                set("item", (stream as? NativeItemStream)?.item)
+                // 导入变量表
+                bindings.putAll(vars)
+            }
         }
     }
 
