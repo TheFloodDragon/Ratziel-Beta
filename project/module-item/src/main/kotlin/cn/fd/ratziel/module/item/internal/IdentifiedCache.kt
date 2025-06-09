@@ -34,11 +34,11 @@ class IdentifiedCache<T>(
             for (cache in caches) {
                 val identifier = NativeSource.identifier(event.element)
                 val value = cache.map[identifier] ?: continue
-                // 删除要被更新的元素
-                cache.map.remove(identifier)
                 // 触发更新回调
                 @Suppress("UNCHECKED_CAST")
                 (cache as IdentifiedCache<Any?>).onUpdate.accept(value)
+                // 删除要被更新的元素
+                cache.map.remove(identifier)
             }
         }
 

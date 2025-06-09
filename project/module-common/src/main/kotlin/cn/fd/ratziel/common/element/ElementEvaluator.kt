@@ -56,6 +56,8 @@ object ElementEvaluator {
      * 使用 [handler] 处理元素 [element]
      */
     fun handleElement(handler: ElementHandler, element: Element): Throwable? {
+        // 触发 ElementEvaluateEvent.Process
+        ElementEvaluateEvent.Process(handler, element).call()
         try {
             // 处理元素
             handler.handle(element)
@@ -224,8 +226,6 @@ object ElementEvaluator {
         }
 
         private fun handle(element: Element): Throwable? {
-            // 触发 ElementEvaluateEvent.Process
-            ElementEvaluateEvent.Process(handler, element).call()
             // 开始处理
             val result = handleElement(handler, element)
             // 完成回调
