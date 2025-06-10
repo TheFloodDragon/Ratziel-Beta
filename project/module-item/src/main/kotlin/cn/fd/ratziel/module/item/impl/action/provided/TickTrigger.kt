@@ -39,6 +39,7 @@ object TickTrigger : SimpleTrigger("onTick", "tick") {
                 ?: PlayerInventorySlot.MAIN_HAND
             // 提交任务 (缓存里没有时才提交, 避免每生成一个物品注册了一个Timer的情况)
             cache.map.computeIfAbsent(identifier) {
+                // TODO 貌似不能这样submit
                 submit(period = period.toLong()) {
                     // 全部 tick 一遍
                     for (player in onlinePlayers) tick(player, identifier, slot)

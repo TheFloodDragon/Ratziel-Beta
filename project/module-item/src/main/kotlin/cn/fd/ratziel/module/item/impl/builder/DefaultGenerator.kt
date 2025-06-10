@@ -117,15 +117,10 @@ class DefaultGenerator(
                 anno == null || !anno.onlyPre
             } // 上面处理过了
             .map {
-                launch {
-                    measureTimeMillis {
-                        it.interpret(stream)
-                    }.let { t -> debug("[TIME MARK] $it costs $t ms.") }
-                }
+                measureTimeMillis {
+                    it.interpret(stream)
+                }.let { t -> debug("[TIME MARK] $it costs $t ms.") }
             }
-
-        // 序列化任务需要完全在解释后, 故等待解释任务的完成
-        interpreterTasks.joinAll()
 
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->
