@@ -16,8 +16,7 @@ import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.*
 import taboolib.common.platform.function.severe
 import taboolib.common.reflect.hasAnnotation
 
@@ -92,10 +91,12 @@ class DefaultGenerator(
         // 获取静态配置
         val property = stream.fetchElement() as? JsonObject
         val staticProperty = property?.get("static") ?: return@async stream // 没有就算了, 前面走个拷贝就走
+        val delected = staticProperty is JsonPrimitive && staticProperty.booleanOrNull == true // static 是否为 true
         // 替换物品流的元素内容
-        stream.updateElement(staticProperty)
+        if (!delected) stream.updateElement(staticProperty)
         // 好戏开场: 处理静态物品流
         processStream(stream, this).join()
+        if (delected) stream.updateElement(JsonNull)
         // 处理完了返回就是了
         return@async stream
     }

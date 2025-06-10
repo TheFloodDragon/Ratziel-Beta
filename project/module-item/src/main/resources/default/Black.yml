@@ -1,10 +1,10 @@
 BlackApple:
   item:
-    static: # 静态物品解析
-      material: APPLE
-      name: "<black>Bad Black <red>Apple"
-      lore:
-        - "<white>But it tastes great!"
-        - "<gold>Mr.Black's Apple <green>is so good!"
-        - "<blue>Let me press <key:key.jump> to jump!"
-      unbreakable: true # 黑黑不可破坏！
+    static: true # 静态物品解析
+    material: APPLE
+    name: "<black>Bad Black <red>Apple"
+    lore:
+      - "<white>But it tastes great!"
+      - "<gold>Mr.Black's Apple <green>is so good!"
+      - "<blue>Let me press <key:key.jump> to jump!"
+    unbreakable: true # 黑黑不可破坏！

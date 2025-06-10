@@ -12,6 +12,7 @@ import cn.fd.ratziel.module.item.internal.IdentifiedCache
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.VariablesMap
+import cn.fd.ratziel.module.script.util.varsMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -55,24 +56,21 @@ object DefinitionInterpreter : ItemInterpreter {
             } ?: return
 
         // 获取变量表
-        val vars = stream.context.popOr(VariablesMap::class.java) { VariablesMap().also { stream.context.put(it) } }
+        val vars = stream.context.varsMap()
         vars.putAll(executeAll(blocks, stream.context))
 
         // 等待所有任务完成, 并将 写入到环境里
         stream.data.withValue { _ ->
             // 替换定义标签
             stream.tree.withValue { tree ->
-                TaggedSectionResolver.resolveWithSingle(
-                    DefinitionResolver,
-                    tree, stream.context
-                )
+                TaggedSectionResolver.resolveWithSingle(DefinitionResolver, tree, stream.context)
             }
             // 触发触发器
             PROCESS_TRIGGER.trigger(stream.identifier) {
-                // 尝试获取 RatzielItem 物品
-                set("item", (stream as? NativeItemStream)?.item)
                 // 导入变量表
                 bindings.putAll(vars)
+                // 尝试获取 RatzielItem 物品
+                set("item", (stream as? NativeItemStream)?.item)
             }
         }
     }

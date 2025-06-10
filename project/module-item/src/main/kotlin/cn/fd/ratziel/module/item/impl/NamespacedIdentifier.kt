@@ -28,6 +28,8 @@ data class NamespacedIdentifier(
 
     companion object {
 
+        const val MINECRAFT: String = "minecraft"
+
         /**
          * 从字符串中解析 [NamespacedIdentifier]
          */
@@ -41,7 +43,7 @@ data class NamespacedIdentifier(
          * Minecraft 默认命名空间的 [NamespacedIdentifier]
          */
         fun minecraft(identifier: String): NamespacedIdentifier {
-            return NamespacedIdentifier("minecraft", identifier)
+            return NamespacedIdentifier(MINECRAFT, identifier)
         }
 
     }
