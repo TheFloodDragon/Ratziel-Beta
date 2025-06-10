@@ -16,9 +16,14 @@ import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.severe
-import taboolib.common.reflect.hasAnnotation
+import taboolib.common.reflect.getAnnotationIfPresent
+import kotlin.system.measureTimeMillis
 
 /**
  * DefaultGenerator
@@ -48,7 +53,7 @@ class DefaultGenerator(
         val stream = createNativeStream(SimpleData(), SimpleContext())
         // 预解释任务
         val tasks = ItemRegistry.interpreters
-            .filter { isPreInterpretable(it) }
+            .filter { getPreInterpretable(it)?.onlyPre == true }
             .map { launch { it.interpret(stream) } }
         // 等待预解释完成并返回结果
         tasks.joinAll()
@@ -96,7 +101,7 @@ class DefaultGenerator(
         if (!delected) stream.updateElement(staticProperty)
         // 好戏开场: 处理静态物品流
         processStream(stream, this).join()
-        if (delected) stream.updateElement(JsonNull)
+        if (delected) stream.updateElement(JsonObject(HashMap()))
         // 处理完了返回就是了
         return@async stream
     }
@@ -107,8 +112,17 @@ class DefaultGenerator(
     fun processStream(stream: ItemStream, scope: CoroutineScope) = scope.launch {
         // 解释器解释元素
         val interpreterTasks = ItemRegistry.interpreters
-            .filter { !isPreInterpretable(it) } // 上面处理过了
-            .map { launch { it.interpret(stream) } }
+            .filter {
+                val anno = getPreInterpretable(it)
+                anno == null || !anno.onlyPre
+            } // 上面处理过了
+            .map {
+                launch {
+                    measureTimeMillis {
+                        it.interpret(stream)
+                    }.let { t -> debug("[TIME MARK] $it costs $t ms.") }
+                }
+            }
 
         // 序列化任务需要完全在解释后, 故等待解释任务的完成
         interpreterTasks.joinAll()
@@ -177,8 +191,8 @@ class DefaultGenerator(
     /**
      * 判断一个 [ItemInterpreter] 是不是 可预解释的
      */
-    private fun isPreInterpretable(interpreter: ItemInterpreter): Boolean {
-        return interpreter::class.java.hasAnnotation(ItemInterpreter.PreInterpretable::class.java)
+    private fun getPreInterpretable(interpreter: ItemInterpreter): ItemInterpreter.PreInterpretable? {
+        return interpreter::class.java.getAnnotationIfPresent(ItemInterpreter.PreInterpretable::class.java)
     }
 
 }

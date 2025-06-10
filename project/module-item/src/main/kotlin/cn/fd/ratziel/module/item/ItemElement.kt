@@ -18,7 +18,7 @@ import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.internal.serializers.*
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -27,8 +27,6 @@ import kotlinx.serialization.serializer
 import taboolib.common.LifeCycle
 import taboolib.library.xseries.XItemFlag
 import taboolib.module.nms.MinecraftVersion
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 /**
  * ItemElement
@@ -44,17 +42,10 @@ import java.util.concurrent.Executors
 object ItemElement : ElementHandler {
 
     /**
-     * 构建物品用到的线程池
-     */
-    val executor: ExecutorService by lazy {
-        Executors.newFixedThreadPool(8)
-    }
-
-    /**
      * 协程上下文
      */
     val coroutineContext by lazy {
-        CoroutineName("ItemElement") + executor.asCoroutineDispatcher()
+        CoroutineName("ItemElement") + Dispatchers.Default
     }
 
     /**
@@ -103,13 +94,13 @@ object ItemElement : ElementHandler {
     init {
         // 注册默认解释器
         ItemRegistry.registerInterpreter(InheritResolver)
+        ItemRegistry.registerSource(SkullSource)
+        ItemRegistry.registerSource(NbtTagSource)
+        ItemRegistry.registerSource(NativeSource.MaterialSource)
         ItemRegistry.registerInterpreter(ActionInterpreter)
         ItemRegistry.registerInterpreter(DefinitionInterpreter)
         ItemRegistry.registerInterpreter(NativeDataInterpreter)
         ItemRegistry.registerInterpreter(DefaultResolver)
-        ItemRegistry.registerSource(SkullSource)
-        ItemRegistry.registerSource(NbtTagSource)
-        ItemRegistry.registerSource(NativeSource.MaterialSource)
     }
 
     override fun handle(element: Element) {

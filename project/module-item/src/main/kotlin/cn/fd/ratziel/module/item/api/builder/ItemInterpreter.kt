@@ -18,6 +18,6 @@ interface ItemInterpreter {
     /**
      * PreInterpretable - 标记 [ItemInterpreter] 为 可预解释型
      */
-    annotation class PreInterpretable
+    annotation class PreInterpretable(val onlyPre: Boolean = true)
 
 }
