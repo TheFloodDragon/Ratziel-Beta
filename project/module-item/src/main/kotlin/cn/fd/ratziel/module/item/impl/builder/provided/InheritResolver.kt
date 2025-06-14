@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.altawk.nbt.NbtPath
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
-import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.TemplateElement
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
@@ -21,17 +20,14 @@ import taboolib.common.platform.function.warning
  * @author TheFloodDragon
  * @since 2025/5/4 15:44
  */
-@ItemInterpreter.PreInterpretable
-object InheritResolver : ItemInterpreter, ItemTagResolver {
+object InheritResolver : ItemInterpreter.PreInterpretable, ItemTagResolver {
 
     init {
-        // 注册拦截器
-        ItemRegistry.registerInterpreter(this)
         // 注册解析器 (不支持动态解析器)
         DefaultResolver.registerResolver(this)
     }
 
-    override suspend fun interpret(stream: ItemStream) {
+    override suspend fun preFlow(stream: ItemStream) {
         stream.tree.withValue { resolveTree(it) }
     }
 

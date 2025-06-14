@@ -16,8 +16,7 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/5/10 16:38
  */
-@ItemInterpreter.PreInterpretable
-object ActionInterpreter : ItemInterpreter {
+object ActionInterpreter : ItemInterpreter.PreInterpretable {
 
     /**
      * 动作节点名称
@@ -44,7 +43,7 @@ object ActionInterpreter : ItemInterpreter {
     }
 
 
-    override suspend fun interpret(stream: ItemStream) {
+    override suspend fun preFlow(stream: ItemStream) {
         val property = stream.fetchElement()
         // 仅处理 JsonObject 类型
         if (property !is JsonObject) return

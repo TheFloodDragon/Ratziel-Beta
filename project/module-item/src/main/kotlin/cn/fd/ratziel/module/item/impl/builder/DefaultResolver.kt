@@ -22,44 +22,40 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @author TheFloodDragon
  * @since 2025/5/3 18:32
  */
-class DefaultResolver : ItemInterpreter {
+object DefaultResolver : ItemInterpreter {
 
-    companion object {
+    /**
+     * 允许访问的节点列表, 仅在 限制性解析 时使用
+     */
+    val accessibleNodes: MutableSet<String> by lazy {
+        CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
+    }
 
-        /**
-         * 允许访问的节点列表, 仅在 限制性解析 时使用
-         */
-        val accessibleNodes: MutableSet<String> by lazy {
-            CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
-        }
+    /**
+     * 默认的标签解析器列表
+     */
+    val tagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
 
-        /**
-         * 默认的标签解析器列表
-         */
-        val tagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
+    /**
+     * 注册默认的标签解析器
+     */
+    @JvmStatic
+    fun registerResolver(resolver: ItemTagResolver) {
+        tagResolvers.add(resolver)
+    }
 
-        /**
-         * 注册默认的标签解析器
-         */
-        @JvmStatic
-        fun registerResolver(resolver: ItemTagResolver) {
-            tagResolvers.add(resolver)
-        }
-
-        /**
-         * 限制性解析: 仅保留允许访问的节点
-         * @param root 根节点
-         * @return 过滤后的根节点 [JsonTree.Node]
-         */
-        @JvmStatic
-        fun makeFiltered(root: JsonTree.Node): JsonTree.Node {
-            return if (root is JsonTree.ObjectNode) {
-                // 限制性解析: 过滤掉限制的节点
-                root.value.filter { it.key in accessibleNodes }
-                    .let { JsonTree.ObjectNode(it, null) }
-            } else root
-        }
-
+    /**
+     * 限制性解析: 仅保留允许访问的节点
+     * @param root 根节点
+     * @return 过滤后的根节点 [JsonTree.Node]
+     */
+    @JvmStatic
+    fun makeFiltered(root: JsonTree.Node): JsonTree.Node {
+        return if (root is JsonTree.ObjectNode) {
+            // 限制性解析: 过滤掉限制的节点
+            root.value.filter { it.key in accessibleNodes }
+                .let { JsonTree.ObjectNode(it, null) }
+        } else root
     }
 
     override suspend fun interpret(stream: ItemStream) {
