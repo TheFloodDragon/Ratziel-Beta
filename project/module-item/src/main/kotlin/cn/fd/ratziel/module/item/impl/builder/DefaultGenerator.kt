@@ -17,12 +17,8 @@ import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
 import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.severe
-import taboolib.common.reflect.getAnnotationIfPresent
 import kotlin.system.measureTimeMillis
 
 /**
@@ -46,41 +42,57 @@ class DefaultGenerator(
     override fun build(context: ArgumentContext) = buildAsync(context)
 
     /**
+     * 解释器表
+     */
+    val interpreters = ItemRegistry.interpreters.map { it.get() }
+
+    /**
      * 基础物品流 (经过预处理生成的流)
      */
-    val baseStream = ItemElement.scope.async {
+    val baseStream: NativeItemStream = runBlocking {
         // 预解释物品流
         val stream = createNativeStream(SimpleData(), SimpleContext())
         // 预解释任务
-        val tasks = ItemRegistry.interpreters
-            .filter { getPreInterpretable(it)?.onlyPre == true }
-            .map { launch { it.interpret(stream) } }
+        val tasks = interpreters.mapNotNull {
+            if (it is ItemInterpreter.PreInterpretable) {
+                launch { it.preFlow(stream) }
+            } else null
+        }
         // 等待预解释完成并返回结果
         tasks.joinAll()
-        return@async stream
+        return@runBlocking stream
     }
 
     /**
-     * 静态物品流
-     *
-     * @param replenish 每获取一次补充一次 (执行一次 [generateStaticStream])
+     * 静态物品策略
      */
-    val staticStreamGenerating by replenish { generateStaticStream() }
+    val staticStrategy: StaticStrategy = runBlocking {
+        StaticStrategy(baseStream.fetchElement())
+    }
+
+    /**
+     * 物品流生成
+     *
+     * @param replenish 每获取一次补充一次 (执行一次 [generateStream])
+     */
+    val streamGenerating by replenish { generateStream() }
 
     /**
      * 异步生成物品
      */
     fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
         // 获取物品流
-        val stream = staticStreamGenerating.await()
+        val stream = streamGenerating.await()
         // 更新上下文
         stream.context = context
 
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
 
-        // 处理物品流
-        processStream(stream, this)
+        if (!staticStrategy.enabled || !staticStrategy.fullStaticMode) {
+            // 处理物品流 (非纯静态物品)
+            processStream(stream, this)
+        }
 
         // 呼出生成结束的事件
         val event = ItemGenerateEvent.Post(stream.identifier, this@DefaultGenerator, context, stream.item)
@@ -89,20 +101,22 @@ class DefaultGenerator(
     }.asCompletableFuture()
 
     /**
-     * 生成静态物品流
+     * 生成处理后的物品流
      */
-    fun generateStaticStream(): Deferred<NativeItemStream> = ItemElement.scope.async {
-        val stream = baseStream.await().copyWith(SimpleContext())
-        // 获取静态配置
-        val property = stream.fetchElement() as? JsonObject
-        val staticProperty = property?.get("static") ?: return@async stream // 没有就算了, 前面走个拷贝就走
-        val delected = staticProperty is JsonPrimitive && staticProperty.booleanOrNull == true // static 是否为 true
-        // 替换物品流的元素内容
-        if (!delected) stream.updateElement(staticProperty)
-        // 好戏开场: 处理静态物品流
-        processStream(stream, this).join()
-        if (delected) stream.updateElement(JsonObject(HashMap()))
-        // 处理完了返回就是了
+    fun generateStream(): Deferred<NativeItemStream> = ItemElement.scope.async {
+        // 复制一下 (必须要复制哈)
+        val stream = baseStream.copy()
+        // 静态物品处理
+        if (staticStrategy.enabled) {
+            // 原始元素
+            val origin = stream.fetchElement()
+            // 生成静态物品
+            stream.updateElement(staticStrategy.staticProperty ?: return@async stream)
+            // 好戏开场: 处理静态物品流
+            processStream(stream, this).join()
+            // 换回去
+            stream.updateElement(origin)
+        }
         return@async stream
     }
 
@@ -111,16 +125,11 @@ class DefaultGenerator(
      */
     fun processStream(stream: ItemStream, scope: CoroutineScope) = scope.launch {
         // 解释器解释元素
-        val interpreterTasks = ItemRegistry.interpreters
-            .filter {
-                val anno = getPreInterpretable(it)
-                anno == null || !anno.onlyPre
-            } // 上面处理过了
-            .map {
-                measureTimeMillis {
-                    it.interpret(stream)
-                }.let { t -> debug("[TIME MARK] $it costs $t ms.") }
-            }
+        val interpreterTasks = interpreters.map {
+            measureTimeMillis {
+                it.interpret(stream)
+            }.let { t -> debug("[TIME MARK] $it costs $t ms.") }
+        }
 
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->
@@ -181,13 +190,6 @@ class DefaultGenerator(
             ex.printStackTrace()
             return Result.failure(ex)
         }
-    }
-
-    /**
-     * 判断一个 [ItemInterpreter] 是不是 可预解释的
-     */
-    private fun getPreInterpretable(interpreter: ItemInterpreter): ItemInterpreter.PreInterpretable? {
-        return interpreter::class.java.getAnnotationIfPresent(ItemInterpreter.PreInterpretable::class.java)
     }
 
 }

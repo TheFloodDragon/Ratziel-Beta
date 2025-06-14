@@ -16,8 +16,17 @@ interface ItemInterpreter {
     suspend fun interpret(stream: ItemStream)
 
     /**
-     * PreInterpretable - 标记 [ItemInterpreter] 为 可预解释型
+     * PreInterpretable - 可预解释型 [ItemInterpreter]
      */
-    annotation class PreInterpretable(val onlyPre: Boolean = true)
+    interface PreInterpretable : ItemInterpreter {
+
+        /**
+         * 预解释
+         */
+        suspend fun preFlow(stream: ItemStream)
+
+        override suspend fun interpret(stream: ItemStream) = Unit
+
+    }
 
 }

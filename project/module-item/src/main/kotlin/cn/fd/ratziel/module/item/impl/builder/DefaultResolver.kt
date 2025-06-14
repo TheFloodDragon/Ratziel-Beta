@@ -11,8 +11,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.InlineScriptResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import java.util.concurrent.CopyOnWriteArrayList
@@ -24,26 +22,44 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @author TheFloodDragon
  * @since 2025/5/3 18:32
  */
-object DefaultResolver : ItemInterpreter {
+class DefaultResolver : ItemInterpreter {
 
-    /**
-     * 允许访问的节点列表, 仅在 限制性解析 时使用
-     */
-    val accessibleNodes: MutableSet<String> by lazy {
-        CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
-    }
+    companion object {
 
-    /**
-     * 默认的标签解析器列表
-     */
-    val tagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
+        /**
+         * 允许访问的节点列表, 仅在 限制性解析 时使用
+         */
+        val accessibleNodes: MutableSet<String> by lazy {
+            CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
+        }
 
-    /**
-     * 注册默认的标签解析器
-     */
-    @JvmStatic
-    fun registerResolver(resolver: ItemTagResolver) {
-        tagResolvers.add(resolver)
+        /**
+         * 默认的标签解析器列表
+         */
+        val tagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
+
+        /**
+         * 注册默认的标签解析器
+         */
+        @JvmStatic
+        fun registerResolver(resolver: ItemTagResolver) {
+            tagResolvers.add(resolver)
+        }
+
+        /**
+         * 限制性解析: 仅保留允许访问的节点
+         * @param root 根节点
+         * @return 过滤后的根节点 [JsonTree.Node]
+         */
+        @JvmStatic
+        fun makeFiltered(root: JsonTree.Node): JsonTree.Node {
+            return if (root is JsonTree.ObjectNode) {
+                // 限制性解析: 过滤掉限制的节点
+                root.value.filter { it.key in accessibleNodes }
+                    .let { JsonTree.ObjectNode(it, null) }
+            } else root
+        }
+
     }
 
     override suspend fun interpret(stream: ItemStream) {
@@ -74,40 +90,23 @@ object DefaultResolver : ItemInterpreter {
     /**
      * 使用 [ItemSectionResolver] 解析 [JsonTree]
      */
-    @JvmStatic
-    suspend fun resolveTreeWithSectionResolver(resolver: ItemSectionResolver, tree: JsonTree, context: ArgumentContext) = coroutineScope {
+    fun resolveTreeWithSectionResolver(resolver: ItemSectionResolver, tree: JsonTree, context: ArgumentContext) {
         makeFiltered(tree.root).unfold {
             // 先解析节点
             resolver.resolve(it, context)
             // 解析字符串
             // 单个节点只解析 Primitive 类型, 即字符串
             if (it !is JsonTree.PrimitiveNode) return@unfold
-            // 启动协程处理字符串 (一般来说不会有太大问题)
-            this@coroutineScope.launch {
-                val value = it.value
-                // 判断有效节点
-                if (value.isString && value !is JsonNull) {
-                    // 解析字符串
-                    val result = resolver.resolve(value.content, context)
-                    // 更新节点内容
-                    it.value = JsonPrimitive(result)
-                }
+            // 处理字符串
+            val value = it.value
+            // 判断有效节点
+            if (value.isString && value !is JsonNull) {
+                // 解析字符串
+                val result = resolver.resolve(value.content, context)
+                // 更新节点内容
+                it.value = JsonPrimitive(result)
             }
         }
-    }
-
-    /**
-     * 限制性解析: 仅保留允许访问的节点
-     * @param root 根节点
-     * @return 过滤后的根节点 [JsonTree.Node]
-     */
-    @JvmStatic
-    fun makeFiltered(root: JsonTree.Node): JsonTree.Node {
-        return if (root is JsonTree.ObjectNode) {
-            // 限制性解析: 过滤掉限制的节点
-            root.value.filter { it.key in accessibleNodes }
-                .let { JsonTree.ObjectNode(it, null) }
-        } else root
     }
 
 }

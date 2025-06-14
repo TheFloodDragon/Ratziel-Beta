@@ -18,8 +18,8 @@ subprojects {
     repositories {
         // 中央库
         mavenCentral()
-        // 坏黑私人库
-        maven("http://sacredcraft.cn:8081/repository/releases") { isAllowInsecureProtocol = true }
+        // Taboolib 仓库
+        maven("https://repo.tabooproject.org/repository/releases")
         // PaperMC
         maven("https://papermc.io/repo/repository/maven-public/")
         // JitPack

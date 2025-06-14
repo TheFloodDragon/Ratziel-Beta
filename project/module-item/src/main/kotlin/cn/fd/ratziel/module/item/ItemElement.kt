@@ -84,14 +84,14 @@ object ItemElement : ElementHandler {
 
     init {
         // 注册默认解释器
-        ItemRegistry.registerInterpreter(InheritResolver)
+        ItemRegistry.registerInterpreter { InheritResolver }
+        ItemRegistry.registerInterpreter { ActionInterpreter }
+        ItemRegistry.registerInterpreter { DefaultResolver() }
         ItemRegistry.registerSource(SkullSource)
         ItemRegistry.registerSource(NbtTagSource)
         ItemRegistry.registerSource(NativeSource.MaterialSource)
-        ItemRegistry.registerInterpreter(ActionInterpreter)
-        ItemRegistry.registerInterpreter(DefinitionInterpreter)
-        ItemRegistry.registerInterpreter(NativeDataInterpreter)
-        ItemRegistry.registerInterpreter(DefaultResolver)
+        ItemRegistry.registerInterpreter { DefinitionInterpreter() }
+        ItemRegistry.registerInterpreter { NativeDataInterpreter() }
     }
 
     override fun handle(element: Element) {

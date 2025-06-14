@@ -1,8 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
-import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
@@ -13,8 +11,6 @@ import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.impl.feature.dynamic.DynamicTagService
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonObject
-import taboolib.common.platform.event.SubscribeEvent
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * NativeDataInterpreter
@@ -22,13 +18,18 @@ import java.util.concurrent.ConcurrentHashMap
  * @author TheFloodDragon
  * @since 2025/5/24 18:21
  */
-object NativeDataInterpreter : ItemInterpreter {
+class NativeDataInterpreter : ItemInterpreter.PreInterpretable {
 
     /**
      * 原生数据解析器
      * 因为从中使用了 [RatzielItem], 故需要手动控制
      */
     object NativeDataResolver : ItemTagResolver {
+        init {
+            // 支持动态标签解析
+            DynamicTagService.registerResolver(NativeDataResolver)
+        }
+
         override val alias = arrayOf("data")
         override fun resolve(args: List<String>, context: ArgumentContext): String? {
             // 数据名称
@@ -42,31 +43,25 @@ object NativeDataInterpreter : ItemInterpreter {
         }
     }
 
-    init {
-        // 支持动态标签解析
-        DynamicTagService.registerResolver(NativeDataResolver)
-    }
+    private lateinit var cachedBlocks: Map<String, ExecutableBlock>
 
-    private val cache: MutableMap<String, Map<String, ExecutableBlock>> = ConcurrentHashMap()
+    override suspend fun preFlow(stream: ItemStream) {
+        val element = stream.fetchElement()
+        if (element !is JsonObject) return
+
+        // 读取数据
+        val define = element["data"] as? JsonObject ?: return
+        val map = DefinitionInterpreter.buildBlockMap(define)
+        // 加入到缓存
+        this.cachedBlocks = map
+    }
 
     override suspend fun interpret(stream: ItemStream) {
         // 需求 NativeItemStream
         if (stream !is NativeItemStream) return
 
-        val element = stream.fetchElement()
-        if (element !is JsonObject) return
-        val id = stream.identifier.content
-
         // 获取语句块表
-        val blocks = cache[id]
-            ?: run {
-                // 读取数据
-                val define = element["data"] as? JsonObject ?: return@run null
-                val map = DefinitionInterpreter.buildBlockMap(define)
-                // 加入到缓存
-                cache[id] = map
-                map
-            } ?: return
+        val blocks = if (::cachedBlocks.isInitialized) cachedBlocks else return
 
         val result = DefinitionInterpreter.executeAll(blocks, stream.context)
 
@@ -93,18 +88,6 @@ object NativeDataInterpreter : ItemInterpreter {
             context.remove(RatzielItem::class.java)
         }
 
-    }
-
-    @SubscribeEvent
-    private fun onProcess(event: ElementEvaluateEvent.Process) {
-        if (event.handler !is ItemElement) return
-        this.cache.remove(event.element.name)
-    }
-
-    @SubscribeEvent
-    private fun onStart(event: ElementEvaluateEvent.Start) {
-        if (event.handler !is ItemElement) return
-        this.cache.clear()
     }
 
 }
