@@ -31,12 +31,6 @@ class InternalBuilderRegistrar : ClassVisitor(10) {
             DynamicTagService.registerResolver(resolver) // 默认支持动态解析
         }
 
-        // 注册 ItemInterpreter
-        if (clazz.hasInterface(ItemInterpreter::class.java)) {
-            val interpreter = findInstance(clazz) as ItemInterpreter
-            ItemRegistry.registerInterpreter(interpreter)
-        }
-
     }
 
     override fun getLifeCycle(): LifeCycle {
