@@ -10,6 +10,7 @@ import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * TaggedSectionResolver
@@ -25,8 +26,6 @@ class TaggedSectionResolver(
      */
     val tagResolvers: Iterable<ItemTagResolver> = emptyList(),
 ) : ItemSectionResolver {
-
-    constructor(vararg resolvers: ItemTagResolver) : this(listOf(*resolvers))
 
     /**
      * 解析字符串
@@ -72,8 +71,21 @@ class TaggedSectionResolver(
         }
     }
 
-
     companion object {
+
+
+        /**
+         * 默认的标签解析器列表
+         */
+        val defaultTagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
+
+        /**
+         * 注册默认的标签解析器
+         */
+        @JvmStatic
+        fun registerTagResolver(resolver: ItemTagResolver) {
+            defaultTagResolvers.add(resolver)
+        }
 
         /** 标签读取器 **/
         @JvmStatic
@@ -82,6 +94,9 @@ class TaggedSectionResolver(
         /** 标签参数分隔符 **/
         const val TAG_ARG_SEPARATION = ":"
 
+        @JvmStatic
+        fun single(resolver: ItemTagResolver) = TaggedSectionResolver(Collections.singletonList(resolver))
+
         /**
          * 解析带有单个标签的 [JsonTree]
          * @param resolver 标签解析器
@@ -89,9 +104,8 @@ class TaggedSectionResolver(
          * @param context 上下文
          */
         @JvmStatic
-        suspend fun resolveWithSingle(resolver: ItemTagResolver, tree: JsonTree, context: ArgumentContext) {
-            val resolver = TaggedSectionResolver(Collections.singletonList(resolver))
-            DefaultResolver.resolveTreeWithSectionResolver(resolver, tree, context)
+        fun resolveWithSingle(resolver: ItemTagResolver, tree: JsonTree, context: ArgumentContext) {
+            DefaultResolver.resolveTree(tree, context, Collections.singletonList(single(resolver)))
         }
 
     }

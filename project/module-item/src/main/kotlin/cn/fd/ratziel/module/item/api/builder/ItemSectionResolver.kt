@@ -27,4 +27,9 @@ interface ItemSectionResolver {
      */
     fun resolve(section: String, context: ArgumentContext): String = section
 
+    /**
+     * 接受要处理的字符串时调用
+     */
+    fun accept(section: String) = Unit
+
 }

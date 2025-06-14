@@ -7,14 +7,12 @@ import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemStream
-import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
-import cn.fd.ratziel.module.item.impl.builder.provided.InlineScriptResolver
-import cn.fd.ratziel.module.item.impl.builder.provided.PapiResolver
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
+import java.util.function.Supplier
 
 /**
  * DefaultResolver
@@ -22,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @author TheFloodDragon
  * @since 2025/5/3 18:32
  */
-object DefaultResolver : ItemInterpreter {
+object DefaultResolver : ItemInterpreter.PreInterpretable {
 
     /**
      * 允许访问的节点列表, 仅在 限制性解析 时使用
@@ -32,16 +30,70 @@ object DefaultResolver : ItemInterpreter {
     }
 
     /**
-     * 默认的标签解析器列表
+     * 默认 [ItemSectionResolver] 列表
      */
-    val tagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
+    val defaultSectionResolvers: MutableList<Supplier<ItemSectionResolver>> = CopyOnWriteArrayList()
 
     /**
-     * 注册默认的标签解析器
+     * 注册默认的 [ItemSectionResolver]
      */
     @JvmStatic
-    fun registerResolver(resolver: ItemTagResolver) {
-        tagResolvers.add(resolver)
+    fun registerSectionResolver(resolver: Supplier<ItemSectionResolver>) {
+        defaultSectionResolvers.add(resolver)
+    }
+
+    val sectionResolvers get() =  defaultSectionResolvers.map { it.get() }
+
+    override suspend fun preFlow(stream: ItemStream) {
+        stream.tree.withValue { tree ->
+            makeFiltered(tree.root).unfold {
+                if (it is JsonTree.PrimitiveNode && isValidSection(it.value)) {
+                    for (resolver in sectionResolvers) {
+                        // 接受 section
+                        resolver.accept(it.value.content)
+                    }
+                }
+            }
+        }
+    }
+
+    override suspend fun interpret(stream: ItemStream) {
+        stream.tree.withValue { tree ->
+            resolveTree(tree, stream.context, sectionResolvers)
+        }
+    }
+
+
+    /**
+     * 解析 [JsonTree]
+     *
+     * @param tree [JsonTree]
+     * @param context 上下文
+     * @param resolvers 使用到的 [ItemSectionResolver] 列表
+     */
+    @JvmStatic
+    fun resolveTree(tree: JsonTree, context: ArgumentContext, resolvers: List<ItemSectionResolver>) {
+        makeFiltered(tree.root).unfold {
+            for (resolver in resolvers) {
+                // 先解析节点 (包括所有类型的节点)
+                resolver.resolve(it, context)
+                // 解析字符串
+                if (it is JsonTree.PrimitiveNode && isValidSection(it.value)) {
+                    // 解析字符串
+                    val result = resolver.resolve(it.value.content, context)
+                    // 更新节点内容
+                    it.value = JsonPrimitive(result)
+                }
+            }
+        }
+    }
+
+    /**
+     * 判断部分的有效性
+     */
+    @JvmStatic
+    fun isValidSection(element: JsonElement): Boolean {
+        return element is JsonPrimitive && element.isString && element !is JsonNull
     }
 
     /**
@@ -56,53 +108,6 @@ object DefaultResolver : ItemInterpreter {
             root.value.filter { it.key in accessibleNodes }
                 .let { JsonTree.ObjectNode(it, null) }
         } else root
-    }
-
-    override suspend fun interpret(stream: ItemStream) {
-        stream.tree.withValue { tree ->
-            val resolvers = arrayOf(
-                // 内联脚本解析
-                InlineScriptResolver,
-                // Papi 解析
-                PapiResolver,
-                // 标签解析
-                TaggedSectionResolver(tagResolvers),
-                /*
-                  内接增强列表解析
-                  这里解释下为什么要放在标签解析的后面:
-                  放在标签解析的后面, 则是因为有些标签解析器可能会返回带有换行的字符串,
-                  就比如 InheritResolver (SectionTagResolver),
-                  因为列表是不能边遍历边修改的, 所以只能采用换行字符的方式.
-                */
-                EnhancedListResolver,
-            )
-            // 挨个解析
-            for (resolver in resolvers) {
-                resolveTreeWithSectionResolver(resolver, tree, stream.context)
-            }
-        }
-    }
-
-    /**
-     * 使用 [ItemSectionResolver] 解析 [JsonTree]
-     */
-    fun resolveTreeWithSectionResolver(resolver: ItemSectionResolver, tree: JsonTree, context: ArgumentContext) {
-        makeFiltered(tree.root).unfold {
-            // 先解析节点
-            resolver.resolve(it, context)
-            // 解析字符串
-            // 单个节点只解析 Primitive 类型, 即字符串
-            if (it !is JsonTree.PrimitiveNode) return@unfold
-            // 处理字符串
-            val value = it.value
-            // 判断有效节点
-            if (value.isString && value !is JsonNull) {
-                // 解析字符串
-                val result = resolver.resolve(value.content, context)
-                // 更新节点内容
-                it.value = JsonPrimitive(result)
-            }
-        }
     }
 
 }
