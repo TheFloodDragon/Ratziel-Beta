@@ -14,6 +14,7 @@ import cn.fd.ratziel.module.item.impl.builder.NativeSource
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
+import cn.fd.ratziel.module.item.impl.feature.dynamic.DynamicTagService
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.internal.serializers.*
@@ -101,6 +102,8 @@ object ItemElement : ElementHandler {
         DefaultResolver.registerSectionResolver { TaggedSectionResolver(TaggedSectionResolver.defaultTagResolvers) }
         DefaultResolver.registerSectionResolver { PapiResolver }
         DefaultResolver.registerSectionResolver { EnhancedListResolver }
+        // 纯动态解析器
+        DynamicTagService.registerResolver(NativeDataInterpreter.NativeDataResolver)
     }
 
     override fun handle(element: Element) {

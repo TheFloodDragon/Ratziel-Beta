@@ -103,7 +103,7 @@ class DefaultGenerator(
      */
     fun generateStream(): Deferred<NativeItemStream> = ItemElement.scope.async {
         // 复制一下 (必须要复制哈)
-        val stream = baseStream.copy()
+        val stream = baseStream.copyWith(SimpleContext())
         // 静态物品处理
         if (staticStrategy.enabled) {
             // 原始元素
@@ -131,8 +131,9 @@ class DefaultGenerator(
 
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->
+            val element = stream.fetchElement()
             launch {
-                val generated = serializeComponent(integrated, stream.fetchElement()).getOrNull()
+                val generated = serializeComponent(integrated, element).getOrNull()
                 // 合并数据
                 if (generated as? NbtCompound != null) stream.data.withValue {
                     // 合并标签

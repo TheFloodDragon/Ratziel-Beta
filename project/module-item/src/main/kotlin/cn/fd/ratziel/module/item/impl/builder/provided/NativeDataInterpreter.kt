@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
-import cn.fd.ratziel.module.item.impl.feature.dynamic.DynamicTagService
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonObject
 
@@ -25,11 +24,6 @@ class NativeDataInterpreter : ItemInterpreter.PreInterpretable {
      * 因为从中使用了 [RatzielItem], 故需要手动控制
      */
     object NativeDataResolver : ItemTagResolver {
-        init {
-            // 支持动态标签解析
-            DynamicTagService.registerResolver(NativeDataResolver)
-        }
-
         override val alias = arrayOf("data")
         override fun resolve(args: List<String>, context: ArgumentContext): String? {
             // 数据名称

@@ -8,8 +8,10 @@ import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.module.script.impl.LiteralScriptContent
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -29,14 +31,14 @@ class ScriptBlock(
     val executor: ScriptExecutor,
 ) : ExecutableBlock {
 
-    /** 脚本 **/
-    lateinit var script: ScriptContent
+    /** 编译后的脚本 **/
+    lateinit var compiledScript: ScriptContent
         @Synchronized private set
         @Synchronized get
 
     init {
         if (executor is NonStrictCompilation) {
-            compile(SimpleContext())
+            compile(SimpleContext()) // 预编译脚本
         }
     }
 
@@ -45,10 +47,10 @@ class ScriptBlock(
      */
     fun compile(context: ArgumentContext): Throwable? {
         // 不重复编译
-        if (!::script.isInitialized) {
+        if (!::compiledScript.isInitialized) {
             try {
                 val environment = context.scriptEnv()
-                script = executor.build(source, environment)
+                compiledScript = executor.build(source, environment)
             } catch (e: Exception) {
                 return e
             }
@@ -58,14 +60,18 @@ class ScriptBlock(
 
     override fun execute(context: ArgumentContext): Any? {
         measureTimeMillisWithResult {
-            // 初次运行编译
-            compile(context)
             // 获取环境
             val environment = context.scriptEnv()
+            // 获取脚本
+            val script = if (::compiledScript.isInitialized) {
+                compiledScript
+            } else {
+                LiteralScriptContent(source, executor)
+            }
             // 评估
             script.executor.evaluate(script, environment)
         }.also { (time, result) ->
-            debug("[TIME MARK] ScriptBlock executed in $time ms. Content: $source")
+            debug("[TIME MARK] ScriptBlock(${::compiledScript.isInitialized}) executed in $time ms. Content: $source")
             return result
         }
     }
@@ -104,11 +110,18 @@ class ScriptBlock(
                 }
             }
             // 解析字符串脚本
-            else if (element is JsonPrimitive && element.isString) {
-                // 创建脚本块并返回
-                val block = ScriptBlock(element.content, currentExecutor)
-                blocks.add(block) // 记录一下
-                return block
+            else {
+                var content: String? = null
+                if (element is JsonPrimitive && element.isString) {
+                    content = element.content
+                } else if (element is JsonArray && element.all { it is JsonPrimitive }) {
+                    content = element.joinToString("\n")
+                }
+                if (content != null) {
+                    val block = ScriptBlock(content, currentExecutor)
+                    blocks.add(block) // 记录一下
+                    return block
+                }
             }
             return null
         }

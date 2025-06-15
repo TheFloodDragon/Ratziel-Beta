@@ -36,11 +36,11 @@ class NativeItemStream(
     /**
      * 复制一份新的 [NativeItemStream]
      */
-    suspend fun copy(): NativeItemStream {
+    suspend fun copyWith(newContext: ArgumentContext): NativeItemStream {
         return NativeItemStream(
             this.origin,
             this.item.clone(),
-            this.context,
+            newContext,
             fetchElement()
         )
     }
