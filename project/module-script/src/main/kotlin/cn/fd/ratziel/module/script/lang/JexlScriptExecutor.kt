@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.CompletableScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
@@ -73,5 +74,7 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
         }
 
     }
+
+    override fun getLanguage() = ScriptType.JEXL
 
 }

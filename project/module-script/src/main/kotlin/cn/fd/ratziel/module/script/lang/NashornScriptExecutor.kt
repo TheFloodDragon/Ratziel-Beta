@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
@@ -59,5 +60,7 @@ class NashornScriptExecutor : EnginedScriptExecutor() {
         }
 
     }
+
+    override fun getLanguage() = ScriptType.JAVASCRIPT
 
 }

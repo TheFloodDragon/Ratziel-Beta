@@ -27,10 +27,6 @@ object InheritResolver : ItemSectionResolver, ItemTagResolver {
     }
 
     override fun prepare(node: JsonTree.Node) {
-        resolve(node)
-    }
-
-    fun resolve(node: JsonTree.Node) {
         // 仅处理根节点, 根节点需为对象节点
         if (node.parent != null || node !is JsonTree.ObjectNode) return
         // 寻找继承字段

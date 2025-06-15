@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
@@ -61,5 +62,7 @@ class GraalJsScriptExecutor : EnginedScriptExecutor() {
             for (script in JavaScriptExecutor.getGlobalScripts()) eval(script)
         }
     }
+
+    override fun getLanguage() = ScriptType.JAVASCRIPT
 
 }

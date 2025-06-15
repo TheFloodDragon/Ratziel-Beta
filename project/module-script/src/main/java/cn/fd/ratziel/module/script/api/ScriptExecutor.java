@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.api;
 
+import cn.fd.ratziel.module.script.ScriptType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,5 +32,8 @@ public interface ScriptExecutor {
      */
     @Nullable
     Object evaluate(@NotNull ScriptContent script, @NotNull ScriptEnvironment environment) throws ScriptException;
+
+    @NotNull
+    ScriptType getLanguage();
 
 }

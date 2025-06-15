@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.lang
 
+import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
@@ -46,5 +47,7 @@ object KetherExecutor : ScriptExecutor, ScriptBootstrap {
         val tolerance = settings.getBoolean("tolerance", true)
         Kether.isAllowToleranceParser = tolerance
     }
+
+    override fun getLanguage() = ScriptType.KETHER
 
 }

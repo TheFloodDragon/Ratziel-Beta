@@ -75,7 +75,7 @@ class ItemHideFlag(
             return if (decoder is NbtDecoder) {
                 val ref = RefItemStack.of(XMaterial.STONE)
                 ref.tag = decoder.decodeNbtTag() as? NbtCompound ?: return ItemHideFlag(null)
-                val flags = XItemFlag.HIDE_DYE.getFlags(ref.bukkitStack)?.toMutableSet()
+                val flags = XItemFlag.getFlags(ref.bukkitStack).toMutableSet()
                 ItemHideFlag(flags)
             } else generatedSerializer().deserialize(decoder)
         }
