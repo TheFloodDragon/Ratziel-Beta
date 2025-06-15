@@ -1,11 +1,11 @@
 package cn.fd.ratziel.module.item.impl.action.provided
 
+import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.serialization.json.getBy
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.SimpleTrigger
-import cn.fd.ratziel.module.item.internal.IdentifiedCache
 import cn.fd.ratziel.module.item.internal.command.PlayerInventorySlot
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonElement
@@ -13,9 +13,11 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
 import org.bukkit.entity.Player
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.platform.util.onlinePlayers
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * TickTrigger
@@ -25,9 +27,7 @@ import taboolib.platform.util.onlinePlayers
  */
 object TickTrigger : SimpleTrigger("onTick", "tick") {
 
-    private val cache = IdentifiedCache<PlatformExecutor.PlatformTask> {
-        it.cancel() // 更新时必须取消上一个任务
-    }
+    private val tasks = ConcurrentHashMap<Identifier, PlatformExecutor.PlatformTask>()
 
     override fun build(identifier: Identifier, element: JsonElement): ExecutableBlock {
         if (element is JsonObject) {
@@ -38,7 +38,7 @@ object TickTrigger : SimpleTrigger("onTick", "tick") {
                 ?.let { PlayerInventorySlot.infer(it.content) }
                 ?: PlayerInventorySlot.MAIN_HAND
             // 提交任务 (缓存里没有时才提交, 避免每生成一个物品注册了一个Timer的情况)
-            cache.map.computeIfAbsent(identifier) {
+            tasks.computeIfAbsent(identifier) {
                 submit(period = period.toLong()) {
                     // 全部 tick 一遍
                     for (player in onlinePlayers) tick(player, identifier, slot)
@@ -63,6 +63,16 @@ object TickTrigger : SimpleTrigger("onTick", "tick") {
             set("player", player)
             set("item", ratzielItem)
         }
+    }
+
+    @Suppress("unused")
+    @SubscribeEvent
+    private fun onUpdate(event: ElementEvaluateEvent.Start) {
+        for (task in tasks) {
+            // 更新时必须取消上一个任务
+            task.value.cancel()
+        }
+        tasks.clear()
     }
 
 }

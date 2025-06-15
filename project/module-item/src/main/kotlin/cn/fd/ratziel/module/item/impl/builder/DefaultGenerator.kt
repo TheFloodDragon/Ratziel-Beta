@@ -34,6 +34,11 @@ class DefaultGenerator(
     val origin: Element,
 ) : ItemGenerator {
 
+    /**
+     * 解释器编排器
+     */
+    override val compositor = DefaultCompositor()
+
     override fun build() = build(SimpleContext())
 
     /**
@@ -42,24 +47,17 @@ class DefaultGenerator(
     override fun build(context: ArgumentContext) = buildAsync(context)
 
     /**
-     * 解释器表
-     */
-    val interpreters = ItemRegistry.interpreters.map { it.get() }
-
-    /**
      * 基础物品流 (经过预处理生成的流)
      */
     val baseStream: NativeItemStream = runBlocking {
         // 预解释物品流
         val stream = createNativeStream(SimpleData(), SimpleContext())
         // 预解释任务
-        val tasks = interpreters.mapNotNull {
+        compositor.interpreters.mapNotNull {
             if (it is ItemInterpreter.PreInterpretable) {
-                launch { it.preFlow(stream) }
+                it.preFlow(stream)
             } else null
         }
-        // 等待预解释完成并返回结果
-        tasks.joinAll()
         return@runBlocking stream
     }
 
@@ -125,7 +123,7 @@ class DefaultGenerator(
      */
     fun processStream(stream: ItemStream, scope: CoroutineScope) = scope.launch {
         // 解释器解释元素
-        val interpreterTasks = interpreters.map {
+        val interpreterTasks = compositor.interpreters.map {
             measureTimeMillis {
                 it.interpret(stream)
             }.let { t -> debug("[TIME MARK] $it costs $t ms.") }

@@ -11,6 +11,7 @@ import cn.fd.ratziel.module.item.impl.action.ActionInterpreter
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
+import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
@@ -84,14 +85,22 @@ object ItemElement : ElementHandler {
 
     init {
         // 注册默认解释器
-        ItemRegistry.registerInterpreter { InheritResolver }
         ItemRegistry.registerInterpreter { ActionInterpreter }
-        ItemRegistry.registerInterpreter { DefaultResolver }
+        ItemRegistry.registerInterpreter { DefaultResolver() }
+        ItemRegistry.registerInterpreter { DefinitionInterpreter() }
+        ItemRegistry.registerInterpreter { NativeDataInterpreter() }
         ItemRegistry.registerSource(SkullSource)
         ItemRegistry.registerSource(NbtTagSource)
         ItemRegistry.registerSource(NativeSource.MaterialSource)
-        ItemRegistry.registerInterpreter { DefinitionInterpreter() }
-        ItemRegistry.registerInterpreter { NativeDataInterpreter() }
+    }
+
+    init {
+        // 注册默认的解析器
+        DefaultResolver.registerSectionResolver { InheritResolver }
+        DefaultResolver.registerSectionResolver { InlineScriptResolver() }
+        DefaultResolver.registerSectionResolver { TaggedSectionResolver(TaggedSectionResolver.defaultTagResolvers) }
+        DefaultResolver.registerSectionResolver { PapiResolver }
+        DefaultResolver.registerSectionResolver { EnhancedListResolver }
     }
 
     override fun handle(element: Element) {

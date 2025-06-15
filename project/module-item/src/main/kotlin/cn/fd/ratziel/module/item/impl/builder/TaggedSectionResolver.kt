@@ -24,18 +24,19 @@ class TaggedSectionResolver(
     /**
      * 标签解析器列表
      */
-    val tagResolvers: Iterable<ItemTagResolver> = emptyList(),
+    val tagResolvers: Iterable<ItemTagResolver>,
 ) : ItemSectionResolver {
 
     /**
      * 解析字符串
      * @return 解析后的字符串
      */
-    override fun resolve(section: String, context: ArgumentContext): String {
+    override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
+        val section = node.validSection() ?: return
         // 读取标签, 拼接字符串片段并返回
-        val parts = reader.readToFlatten(section)
-        return if (parts.isNotEmpty()) {
-            parts.joinToString("") {
+        val parts = reader.readToFlatten(section.value.content)
+        if (parts.isNotEmpty()) {
+            val resolved = parts.joinToString("") {
                 // 如果标签片段
                 if (it.isVariable) {
                     // 解析标签
@@ -44,7 +45,8 @@ class TaggedSectionResolver(
                     handled ?: (reader.start + it.text + reader.end)
                 } else it.text // 原文本
             }
-        } else section
+            section.literal(resolved)
+        }
     }
 
     /**

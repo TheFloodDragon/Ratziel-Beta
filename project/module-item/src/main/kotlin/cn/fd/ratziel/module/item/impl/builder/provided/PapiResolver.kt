@@ -6,8 +6,6 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.platform.bukkit.util.player
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonPrimitive
 import taboolib.platform.compat.replacePlaceholder
 
 /**
@@ -20,11 +18,12 @@ import taboolib.platform.compat.replacePlaceholder
 object PapiResolver : ItemSectionResolver, ItemTagResolver {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
-        if (node !is JsonTree.PrimitiveNode || !node.value.isString || node.value is JsonNull) return
+        val section = node.validSection() ?: return
         // 仅当有玩家参数的时候解析
         val player = context.player() ?: return
         // 解析 PlaceholderAPI 变量
-        node.value = JsonPrimitive(node.value.content.replacePlaceholder(player))
+        val replaced = section.value.content.replacePlaceholder(player)
+        section.literal(replaced)
     }
 
     override val alias = arrayOf("papi", "p")

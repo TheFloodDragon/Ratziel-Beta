@@ -13,6 +13,11 @@ import java.util.concurrent.CompletableFuture
 interface ItemGenerator {
 
     /**
+     * 解释器编排器
+     */
+    val compositor: InterpreterCompositor
+
+    /**
      * 构建物品
      * @return [CompletableFuture] - [NeoItem]
      */

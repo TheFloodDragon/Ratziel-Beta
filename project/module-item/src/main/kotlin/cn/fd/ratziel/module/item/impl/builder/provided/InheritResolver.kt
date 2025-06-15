@@ -4,10 +4,9 @@ import cn.altawk.nbt.NbtPath
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.TemplateElement
-import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
-import cn.fd.ratziel.module.item.api.builder.ItemStream
+import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
+import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -20,28 +19,28 @@ import taboolib.common.platform.function.warning
  * @author TheFloodDragon
  * @since 2025/5/4 15:44
  */
-object InheritResolver : ItemInterpreter.PreInterpretable, ItemTagResolver {
+object InheritResolver : ItemSectionResolver, ItemTagResolver {
 
     init {
-        // 注册解析器 (不支持动态解析器)
-        DefaultResolver.registerResolver(this)
+        // 注册标签解析器 (不支持动态解析器)
+        TaggedSectionResolver.registerTagResolver(this)
     }
 
-    override suspend fun preFlow(stream: ItemStream) {
-        stream.tree.withValue { resolveTree(it) }
+    override fun prepare(node: JsonTree.Node) {
+        resolve(node)
     }
 
-    fun resolveTree(tree: JsonTree) {
+    fun resolve(node: JsonTree.Node) {
         // 仅处理根节点, 根节点需为对象节点
-        val root = tree.root as? JsonTree.ObjectNode ?: return
+        if (node.parent != null || node !is JsonTree.ObjectNode) return
         // 寻找继承字段
-        val field = root.value["inherit"] as? JsonTree.PrimitiveNode ?: return
-        root.value = root.value.filter { it.key != "inherit" } // 删除继承节点
+        val field = node.value["inherit"] as? JsonTree.PrimitiveNode ?: return
+        node.value = node.value.filter { it.key != "inherit" } // 删除继承节点
         val name = field.value.content
         // 处理继承
         val target = findElement(name) ?: return
         // 合并对象
-        merge(root, target)
+        merge(node, target)
     }
 
     override val alias = arrayOf("extend", "inherit")

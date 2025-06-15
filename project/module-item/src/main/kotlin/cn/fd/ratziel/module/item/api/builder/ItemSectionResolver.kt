@@ -2,6 +2,9 @@ package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * ItemSectionResolver
@@ -12,7 +15,12 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 interface ItemSectionResolver {
 
     /**
-     * 解析处理 [JsonTree.Node]
+     * 准备解析阶段处理
+     */
+    fun prepare(node: JsonTree.Node) = Unit
+
+    /**
+     * 解析处理 [JsonTree.Node] (所有类型的节点)
      *
      * @param node 要解析处理节点
      * @param context 上下文
@@ -20,16 +28,22 @@ interface ItemSectionResolver {
     fun resolve(node: JsonTree.Node, context: ArgumentContext) = Unit
 
     /**
-     * 解析处理字符串
-     *
-     * @param section 要解析处理的部分 (字符串)
-     * @param context 上下文
+     * 直接尝试获取有效字符串部分
      */
-    fun resolve(section: String, context: ArgumentContext): String = section
+    fun JsonTree.Node.validSection(): JsonTree.PrimitiveNode? {
+        return (this as? JsonTree.PrimitiveNode)?.takeIf { isValidSection(it.value) }
+    }
 
-    /**
-     * 接受要处理的字符串时调用
-     */
-    fun accept(section: String) = Unit
+    companion object {
+
+        /**
+         * 判断部分的有效性
+         */
+        @JvmStatic
+        fun isValidSection(element: JsonElement): Boolean {
+            return element is JsonPrimitive && element.isString && element !is JsonNull
+        }
+
+    }
 
 }
