@@ -31,7 +31,6 @@ object InheritResolver : ItemSectionResolver, ItemTagResolver {
         if (node.parent != null || node !is JsonTree.ObjectNode) return
         // 寻找继承字段
         val field = node.value["inherit"] as? JsonTree.PrimitiveNode ?: return
-        node.value = node.value.filter { it.key != "inherit" } // 删除继承节点
         val name = field.value.content
         // 处理继承
         val target = findElement(name) ?: return
@@ -126,7 +125,7 @@ object InheritResolver : ItemSectionResolver, ItemTagResolver {
         for ((key, targetValue) in target) {
             // 获取自身的数据
             val ownValue = map[key]
-            // 如果自身数据不存在, 或者允许替换, 则直接替换, 反则跳出循环
+            // 如果自身数据不存在, 则直接替换, 反则跳出循环
             map[key] = when (targetValue) {
                 // 目标值为 Compound 类型
                 is JsonObject -> (ownValue as? JsonTree.ObjectNode)

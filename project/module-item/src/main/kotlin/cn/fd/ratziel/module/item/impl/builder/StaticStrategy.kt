@@ -32,12 +32,12 @@ class StaticStrategy(val element: JsonElement) {
     var staticProperty: JsonElement? = null
         private set
 
-    // TODO 完成下这个
-//    /**
-//     * 是否可变
-//     */
-//    var mutable: Boolean = true
-//        private set
+    /**
+     * 是否可变
+     * TODO 完成下这个的实现
+     */
+    var mutable: Boolean = true
+        private set
 
     init {
         initialize()
@@ -57,7 +57,7 @@ class StaticStrategy(val element: JsonElement) {
             this.enabled = boolean(property, "enabled") ?: true
             // 选项调控全静态模式的启用 (默认禁用)
             this.fullStaticMode = boolean(property, "full-static") ?: false
-//            this.mutable = boolean(property, "mutable") ?: false
+            this.mutable = boolean(property, "mutable") ?: false
         }
 
         // 全静态模式和半静态模式的属性

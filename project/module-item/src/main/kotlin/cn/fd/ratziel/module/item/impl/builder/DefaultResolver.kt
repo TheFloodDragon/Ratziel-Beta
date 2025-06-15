@@ -23,7 +23,7 @@ class DefaultResolver(
 
     override suspend fun preFlow(stream: ItemStream) {
         stream.tree.withValue { tree ->
-            makeFiltered(tree.root).unfold {
+            tree.root.unfold {
                 for (resolver in sectionResolvers) {
                     // 准备阶段
                     resolver.prepare(it)
@@ -40,6 +40,7 @@ class DefaultResolver(
 
 
     companion object {
+
         /**
          * 允许访问的节点列表, 仅在 限制性解析 时使用
          */

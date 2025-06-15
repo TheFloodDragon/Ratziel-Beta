@@ -19,6 +19,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      */
     abstract val engine: ScriptEngine
 
+    @Synchronized
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
         return engine.eval(script, createContext(engine, environment))
     }
@@ -29,10 +30,12 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      * @param script 原始脚本
      * @param environment 脚本环境 (默认情况下不被使用, 若需要导入环境, 请重写此方法)
      */
+    @Synchronized
     override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
         return (engine as Compilable).compile(script)
     }
 
+    @Synchronized
     override fun evalCompiled(script: CompiledScript, environment: ScriptEnvironment): Any? {
         return script.eval(createContext(script.engine, environment))
     }
@@ -43,6 +46,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      * @param engine 脚本引擎
      * @param environment 脚本环境
      */
+    @Synchronized
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
         // 环境的绑定键
         val environmentBindings = environment.bindings

@@ -66,10 +66,8 @@ class InlineScriptResolver : ItemSectionResolver {
     }
 
     @AutoRegister
-    companion object InlineScriptTagResolver : ItemTagResolver {
-
+    object InlineScriptTagResolver : ItemTagResolver {
         override val alias = arrayOf("script")
-
         override fun resolve(args: List<String>, context: ArgumentContext): String? {
             if (args.isEmpty()) return null
             // 匹配脚本语言和内容
@@ -89,6 +87,10 @@ class InlineScriptResolver : ItemSectionResolver {
             // 评估脚本并返回结果
             return executor.evaluate(script, createEnvironment(context)).toString()
         }
+
+    }
+
+    companion object {
 
         @JvmStatic
         private fun createEnvironment(context: ArgumentContext) = context.scriptEnv().apply {
