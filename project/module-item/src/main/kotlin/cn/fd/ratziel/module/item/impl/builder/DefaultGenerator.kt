@@ -9,14 +9,11 @@ import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
-import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
-import taboolib.common.platform.function.debug
-import kotlin.system.measureTimeMillis
 
 /**
  * DefaultGenerator
@@ -32,31 +29,16 @@ class DefaultGenerator(
 ) : ItemGenerator {
 
     /**
-     * 解释器编排器
-     */
-    override val compositor = DefaultCompositor()
-
-    override fun build() = build(SimpleContext())
-
-    /**
-     * 构建物品
-     */
-    override fun build(context: ArgumentContext) = buildAsync(context)
-
-    /**
      * 基础物品流 (经过预处理生成的流)
      */
-    val baseStream: NativeItemStream = runBlocking {
-        // 预解释物品流
-        val stream = createNativeStream(SimpleData(), SimpleContext())
-        // 预解释任务
-        compositor.interpreters.mapNotNull {
-            if (it is ItemInterpreter.PreInterpretable) {
-                it.preFlow(stream)
-            } else null
-        }
-        return@runBlocking stream
+    val baseStream: NativeItemStream by lazy {
+        createNativeStream(SimpleData(), SimpleContext())
     }
+
+    /**
+     * 解释器编排器
+     */
+    override val compositor = DefaultCompositor(baseStream)
 
     /**
      * 静态物品策略
@@ -71,6 +53,13 @@ class DefaultGenerator(
      * @param replenish 每获取一次补充一次 (执行一次 [generateStream])
      */
     val streamGenerating by replenish { generateStream() }
+
+    override fun build() = build(SimpleContext())
+
+    /**
+     * 构建物品
+     */
+    override fun build(context: ArgumentContext) = buildAsync(context)
 
     /**
      * 异步生成物品
@@ -119,12 +108,13 @@ class DefaultGenerator(
      * 处理物品流 (解释 -> 序列化)
      */
     fun processStream(stream: ItemStream, scope: CoroutineScope) = scope.launch {
-        // 解释器解释元素
-        val interpreterTasks = compositor.interpreters.map {
-            measureTimeMillis {
-                it.interpret(stream)
-            }.let { t -> debug("[TIME MARK] $it costs $t ms.") }
-        }
+//        // 解释器解释元素
+//        val interpreterTasks = compositor.interpreters.map {
+//            measureTimeMillis {
+//                it.interpret(stream)
+//            }.let { t -> debug("[TIME MARK] $it costs $t ms.") }
+//        }
+        compositor.runTask(stream)
 
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val serializationTasks = ItemRegistry.registry.map { integrated ->

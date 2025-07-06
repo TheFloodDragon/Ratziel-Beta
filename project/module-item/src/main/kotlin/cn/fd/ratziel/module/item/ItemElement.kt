@@ -7,7 +7,6 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
-import cn.fd.ratziel.module.item.impl.action.ActionInterpreter
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
@@ -85,11 +84,7 @@ object ItemElement : ElementHandler {
     }
 
     init {
-        // 注册默认解释器
-        ItemRegistry.registerInterpreter { ActionInterpreter }
-        ItemRegistry.registerInterpreter { DefaultResolver() }
-        ItemRegistry.registerInterpreter { DefinitionInterpreter() }
-        ItemRegistry.registerInterpreter { NativeDataInterpreter() }
+        // 物品源注册
         ItemRegistry.registerSource(SkullSource)
         ItemRegistry.registerSource(NbtTagSource)
         ItemRegistry.registerSource(NativeSource.MaterialSource)

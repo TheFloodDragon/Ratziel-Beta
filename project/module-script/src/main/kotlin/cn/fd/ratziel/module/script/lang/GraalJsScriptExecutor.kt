@@ -40,7 +40,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor() {
      * 用来导入包和类的脚本
      */
     private val importingScript by lazy {
-        this::class.java.classLoader.getResourceAsStream("script-default/graaljs.scriptengine.js")!!.reader(Charsets.UTF_8)
+        this::class.java.classLoader.getResourceAsStream("script-default/graaljs.scriptengine.js")!!.reader().readText()
     }
 
 }

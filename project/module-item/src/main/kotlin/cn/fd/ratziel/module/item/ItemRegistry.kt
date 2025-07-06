@@ -27,6 +27,11 @@ object ItemRegistry {
     val interpreters: MutableList<Supplier<ItemInterpreter>> = CopyOnWriteArrayList()
 
     /**
+     * 物品源列表
+     */
+    val sources: MutableList<ItemSource> = CopyOnWriteArrayList()
+
+    /**
      * 注册组件
      *
      * @param serializer 组件序列化器
@@ -66,6 +71,7 @@ object ItemRegistry {
     fun registerSource(source: ItemSource) {
         val interpreter = SourceInterpreter(source)
         registerInterpreter { interpreter }
+        this.sources.add(source)
     }
 
     /**

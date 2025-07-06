@@ -8,14 +8,6 @@ package cn.fd.ratziel.module.item.api.builder
  */
 interface InterpreterCompositor {
 
-    /**
-     * 所有的解释器列表
-     */
-    val interpreters: Iterable<ItemInterpreter>
-
-    /**
-     * 获取解释器
-     */
-    fun <T : ItemInterpreter> get(type: Class<T>): T
+    suspend fun runTask(stream: ItemStream)
 
 }
