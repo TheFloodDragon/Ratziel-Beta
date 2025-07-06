@@ -29,7 +29,7 @@ object ElementMatcher {
         val split = expression.split(':')
         return when {
             // 命名空间:类型名称(或别名)
-            split.size >= 2 -> match(split[0], split[1])
+            split.size >= 2 -> matchAll(split[0], split[1])
             // 类型名称(或别名)
             split.size == 1 -> matchName(split[0])
             // 错误的表达式
@@ -40,12 +40,11 @@ object ElementMatcher {
     /**
      * 匹配名称和命名空间
      */
-    fun match(space: String, name: String): ElementType? = matchName(name, matchSpace(space))
+    fun matchAll(space: String, name: String): ElementType? = matchName(name, matchSpace(space))
 
     /**
      * 匹配命名空间
      * @param space 命名空间
-     * @param types 元素类型列表
      */
     fun matchSpace(space: String): List<ElementType> {
         return ElementRegistry.registry.keys.filter { it.space == space }
@@ -54,13 +53,13 @@ object ElementMatcher {
     /**
      * 匹配类型名称
      * @param name 目标名称
-     * @param types 从中查找
+     * @param space 命名空间
      */
     fun matchName(
         name: String,
-        types: Iterable<ElementType> = ElementRegistry.registry.keys,
+        space: Iterable<ElementType> = ElementRegistry.registry.keys,
     ): ElementType? {
-        return types.find { it.name == name || it.alias.contains(name) }
+        return space.find { it.name == name || it.alias.contains(name) }
     }
 
 }

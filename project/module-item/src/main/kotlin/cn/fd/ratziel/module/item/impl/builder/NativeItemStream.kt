@@ -6,6 +6,7 @@ import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SynchronizedValue
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import kotlinx.serialization.json.JsonElement
 
@@ -16,11 +17,11 @@ import kotlinx.serialization.json.JsonElement
  * @since 2025/5/15 20:46
  */
 class NativeItemStream(
-    origin: Element,
+    override val origin: Element,
     val item: RatzielItem,
     context: ArgumentContext,
     rawElement: JsonElement = origin.property,
-) : BaseItemStream(origin, context) {
+) : ItemStream {
 
     override val identifier: Identifier get() = item.identifier
 
@@ -28,26 +29,20 @@ class NativeItemStream(
 
     override val data: SynchronizedValue<ItemData> = SynchronizedValue.getter { item.data }
 
-    companion object {
+    override var context: ArgumentContext = context
+        @Synchronized get
+        @Synchronized set
 
-        /**
-         * 创建一个新的原生物品流 [NativeItemStream]
-         */
-        @JvmStatic
-        suspend fun create(
-            base: BaseItemStream,
-            newItem: RatzielItem,
-            newContext: ArgumentContext? = null,
-        ): NativeItemStream {
-            // 创建物品流
-            return NativeItemStream(
-                base.origin,
-                newItem,
-                newContext ?: base.context,
-                base.fetchElement() // 使用基流中的元素
-            )
-        }
-
+    /**
+     * 复制一份新的 [NativeItemStream]
+     */
+    suspend fun copy(newContext: ArgumentContext? = null): NativeItemStream {
+        return NativeItemStream(
+            this.origin,
+            this.item.clone(),
+            newContext ?: this.context,
+            fetchElement()
+        )
     }
 
 }

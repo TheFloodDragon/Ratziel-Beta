@@ -7,10 +7,12 @@ import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.core.function.replenish
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
+import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
+import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
 import taboolib.common.platform.function.debug
@@ -44,9 +46,9 @@ class DefaultGenerator(
     /**
      * 基础物品流 (经过预处理生成的流)
      */
-    val baseStream: BaseItemStream = runBlocking {
+    val baseStream: NativeItemStream = runBlocking {
         // 预解释物品流
-        val stream = BaseItemStream(origin)
+        val stream = createNativeStream(SimpleData(), SimpleContext())
         // 预解释任务
         compositor.interpreters.mapNotNull {
             if (it is ItemInterpreter.PreInterpretable) {
@@ -98,7 +100,7 @@ class DefaultGenerator(
      */
     fun generateStream(): Deferred<NativeItemStream> = ItemElement.scope.async {
         // 复制一下 (必须要复制哈)
-        val stream = createNativeStream()
+        val stream = baseStream.copy()
         // 静态物品处理
         if (staticStrategy.enabled) {
             // 原始元素
@@ -144,13 +146,12 @@ class DefaultGenerator(
     /**
      * 创建原生物品流
      */
-    suspend fun createNativeStream(): NativeItemStream {
-        val sourceData = baseStream.data.withValue { it.clone() }
+    fun createNativeStream(sourceData: ItemData, context: ArgumentContext): NativeItemStream {
         // 生成基本物品 (本地源物品)
         val item = NativeSource.generateItem(origin, sourceData)
             ?: throw IllegalStateException("Failed to generate item source!")
-        // 创建物品流
-        return NativeItemStream.create(baseStream, item)
+        // 创建物品流并返回
+        return NativeItemStream(origin, item, context)
     }
 
 }

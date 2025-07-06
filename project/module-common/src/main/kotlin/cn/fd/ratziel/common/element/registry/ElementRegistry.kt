@@ -22,6 +22,7 @@ object ElementRegistry {
     /**
      * 获取元素处理器
      */
+    @JvmStatic
     operator fun get(key: ElementType): ElementHandler {
         return registry[key] ?: throw IllegalStateException("Element type ${key.name} not registered.")
     }
@@ -29,6 +30,7 @@ object ElementRegistry {
     /**
      * 寻找元素处理器对应的 元素类型 [ElementType]
      */
+    @JvmStatic
     fun findType(clazz: Class<out ElementHandler>): ElementType {
         return registry.entries.find { it.value::class.java == clazz }?.key ?: throw IllegalStateException("Cannot find element type for '$clazz'.")
     }
