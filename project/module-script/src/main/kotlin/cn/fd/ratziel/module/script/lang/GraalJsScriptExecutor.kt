@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
+import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
 import javax.script.ScriptEngine
@@ -11,7 +12,7 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-object GraalJsScriptExecutor : EnginedScriptExecutor() {
+object GraalJsScriptExecutor : EnginedScriptExecutor(), NonStrictCompilation {
 
     /**
      * 创建一个新的 [Context.Builder]

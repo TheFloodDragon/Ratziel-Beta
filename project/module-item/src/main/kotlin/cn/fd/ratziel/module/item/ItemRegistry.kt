@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
-import cn.fd.ratziel.module.item.impl.builder.provided.SourceInterpreter
+import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Supplier
@@ -69,8 +69,10 @@ object ItemRegistry {
      */
     @JvmStatic
     fun registerSource(source: ItemSource) {
-        val interpreter = SourceInterpreter(source)
-        registerInterpreter { interpreter }
+        // 注册物品源名称以便其参与解析
+        if (source is ItemSource.Named) {
+            DefaultResolver.accessibleNodes.addAll(source.names)
+        }
         this.sources.add(source)
     }
 

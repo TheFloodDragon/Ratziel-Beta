@@ -7,6 +7,7 @@ import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemStream
+import taboolib.common.platform.function.debug
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Supplier
@@ -35,6 +36,7 @@ class DefaultResolver(
     override suspend fun interpret(stream: ItemStream) {
         stream.tree.withValue { tree ->
             resolveTree(tree, stream.context, sectionResolvers)
+            debug("DefaultResolver", "Resolved tree: ${tree.toElement()}")
         }
     }
 

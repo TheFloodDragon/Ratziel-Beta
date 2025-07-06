@@ -4,7 +4,6 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.api.builder.ItemStream
-import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 
 /**
  * SourceInterpreter
@@ -13,13 +12,6 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
  * @since 2025/5/17 14:38
  */
 class SourceInterpreter(val source: ItemSource) : ItemInterpreter {
-
-    init {
-        // 注册物品源名称以便其参与解析
-        if (source is ItemSource.Named) {
-            DefaultResolver.accessibleNodes.addAll(source.names)
-        }
-    }
 
     override suspend fun interpret(stream: ItemStream) {
         val element = Element(stream.origin.identifier, stream.fetchElement())
