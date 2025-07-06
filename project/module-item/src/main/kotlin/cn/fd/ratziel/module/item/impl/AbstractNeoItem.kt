@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.ItemRegistry
-import cn.fd.ratziel.module.item.api.NeoItem
+import cn.fd.ratziel.module.item.api.IdentifiedItem
 import cn.fd.ratziel.module.item.impl.builder.ComponentConverter
 
 /**
@@ -11,7 +11,7 @@ import cn.fd.ratziel.module.item.impl.builder.ComponentConverter
  * @author TheFloodDragon
  * @since 2025/5/3 17:57
  */
-abstract class AbstractNeoItem : NeoItem {
+abstract class AbstractNeoItem : IdentifiedItem {
 
     /**
      * 获取组件

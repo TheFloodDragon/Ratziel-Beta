@@ -155,9 +155,9 @@ object ScriptManager {
         internal fun initialize() {
             // 读取文件
             val imports = JarUtil.getEntries { it.name.startsWith("script-default/") && it.name.endsWith(".imports") }
-                .flatMap { reader ->
+                .flatMap { stream ->
                     // 读取导入的类
-                    reader.readText().trim().lines().filter { it.isNotBlank() && !it.startsWith('#') }
+                    stream.reader().readLines().filter { it.isNotBlank() && !it.startsWith('#') }
                 }
             // 初始化
             val packages = ArrayList<PackageImport>()

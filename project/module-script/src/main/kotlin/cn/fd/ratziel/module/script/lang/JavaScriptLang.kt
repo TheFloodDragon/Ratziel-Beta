@@ -6,7 +6,6 @@ import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
 import taboolib.library.configuration.ConfigurationSection
-import java.io.Reader
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -26,7 +25,7 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
     /**
      * 全局脚本列表
      */
-    val globalScripts: MutableList<Reader> = CopyOnWriteArrayList()
+    val globalScripts: MutableList<String> = CopyOnWriteArrayList()
 
     /**
      * 选择的脚本执行器 (Nashorn 或 GraalJS)
@@ -55,7 +54,7 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
         // 读取全局脚本
         globalScripts.addAll(JarUtil.getEntries {
             it.name.startsWith("script-default/") && it.name.endsWith("extensions.js")
-        })
+        }.map { it.reader().readText() })
     }
 
 }

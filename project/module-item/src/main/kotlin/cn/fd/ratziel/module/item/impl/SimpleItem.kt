@@ -10,7 +10,9 @@ import cn.fd.ratziel.module.item.api.service.ItemService
  * @author TheFloodDragon
  * @since 2025/5/25 09:04
  */
-open class SimpleItem(override val data: ItemData) : NeoItem {
+open class SimpleItem(
+    override val data: ItemData = SimpleData(),
+) : NeoItem {
 
     override val service: ItemService
         get() = throw UnsupportedOperationException("Service is not supported for SimpleItem!")

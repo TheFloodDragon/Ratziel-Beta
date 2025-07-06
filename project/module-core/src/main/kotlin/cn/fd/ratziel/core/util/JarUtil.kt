@@ -1,7 +1,7 @@
 package cn.fd.ratziel.core.util
 
 import java.io.File
-import java.io.InputStreamReader
+import java.io.InputStream
 import java.util.function.Function
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -27,12 +27,12 @@ object JarUtil {
      * @return 符合条件的条目输入流列表
      */
     @JvmStatic
-    fun getEntries(jarFile: File, filter: Function<JarEntry, Boolean>): List<InputStreamReader> = buildList {
+    fun getEntries(jarFile: File, filter: Function<JarEntry, Boolean>): List<InputStream> = buildList {
         val jar = JarFile(jarFile)
         findInJar(jar) {
             !it.isDirectory && filter.apply(it)
         }.forEach { jarEntry ->
-            add(jar.getInputStream(jarEntry).reader(Charsets.UTF_8))
+            add(jar.getInputStream(jarEntry))
         }
     }
 

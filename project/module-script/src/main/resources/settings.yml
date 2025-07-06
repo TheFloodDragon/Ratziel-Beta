@@ -8,14 +8,9 @@ Script:
       enabled: true
       # 使用的脚本引擎 (Nashorn/GraalJS)
       engine: nashorn
-    # Kether (暂不支持)
-    Kether:
-      enabled: true
-      # 是否启用宽容解析
-      tolerance: true
     # Jexl
     Jexl:
       enabled: true
-    # Kotlin Scripting (暂不支持)
-    KotlinScripting:
-      enabled: false
+#    # Kotlin Scripting (暂不支持)
+#    KotlinScripting:
+#      enabled: false

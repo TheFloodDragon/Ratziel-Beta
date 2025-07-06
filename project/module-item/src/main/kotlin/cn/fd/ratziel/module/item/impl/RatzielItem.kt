@@ -36,7 +36,7 @@ class RatzielItem private constructor(
     /**
      * 物品标识符
      */
-    val identifier: Identifier get() = info.identity
+    override val identifier: Identifier get() = info.identity
 
     /**
      * 物品服务
@@ -46,7 +46,7 @@ class RatzielItem private constructor(
     /**
      * 克隆 [RatzielItem]
      */
-    fun clone(): RatzielItem {
+    override fun clone(): RatzielItem {
         return RatzielItem(this.info, this.data.clone())
     }
 
