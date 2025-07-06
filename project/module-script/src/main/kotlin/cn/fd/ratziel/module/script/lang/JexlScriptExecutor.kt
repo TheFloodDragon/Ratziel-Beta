@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.script.lang
 
-import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.CompletableScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
@@ -18,10 +16,6 @@ import javax.script.ScriptContext
  * @since 2025/4/25 17:37
  */
 object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
-
-    init {
-        ScriptManager.loadDependencies("jexl")
-    }
 
     /**
      * Jexl引擎实例
@@ -55,7 +49,6 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
         constructor(environment: ScriptEnvironment) : this(
             ImportedScriptContext().apply {
                 setBindings(environment.bindings, ScriptContext.ENGINE_SCOPE)
-                setBindings(ScriptManager.Global.globalBindings, ScriptContext.GLOBAL_SCOPE)
             }
         )
 
@@ -74,7 +67,5 @@ object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
         }
 
     }
-
-    override fun getLanguage() = ScriptType.JEXL
 
 }

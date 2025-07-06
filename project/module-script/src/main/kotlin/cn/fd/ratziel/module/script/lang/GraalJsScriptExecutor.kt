@@ -1,11 +1,8 @@
 package cn.fd.ratziel.module.script.lang
 
-import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
-import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
 /**
@@ -14,7 +11,7 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-class GraalJsScriptExecutor : EnginedScriptExecutor() {
+object GraalJsScriptExecutor : EnginedScriptExecutor() {
 
     /**
      * 创建一个新的 [Context.Builder]
@@ -28,41 +25,22 @@ class GraalJsScriptExecutor : EnginedScriptExecutor() {
             .option("js.nashorn-compat", "true") // Nashorn 兼容模式
     }
 
-    override val engine: ScriptEngine by lazy {
-        GraalJSScriptEngine.create(null, builder).apply {
-            // 设置脚本引擎的全局绑定键
-            setBindings(ScriptManager.Global.globalBindings, ScriptContext.GLOBAL_SCOPE)
-            // 导入要导入的包和类
-            eval(
-                """
-                var oldNoSuchProperty = Object.__noSuchProperty__;
-                Object.defineProperty(this, "__noSuchProperty__", {
-                    writable: true, configurable: true, enumerable: false,
-                    value: function(name) {
-                        'use strict';
-                        var global = Java.type('cn.fd.ratziel.module.script.ScriptManager.Global');
-                        var clazz = global.getImportedClass(name)
-                        if (clazz) {
-                            return Java.type(clazz.name);
-                        }
-                        if (oldNoSuchProperty) {
-                            return oldNoSuchProperty.call(this, name);
-                        } else {
-                            if (this === undefined) {
-                                throw new ReferenceError(name + " is not defined");
-                            } else {
-                                return undefined;
-                            }
-                        }
-                    }
-                });
-             """.trimIndent()
-            )
-            // 加载全局扩展脚本
-            for (script in JavaScriptExecutor.getGlobalScripts()) eval(script)
+    override fun newEngine(): ScriptEngine {
+        val engine = GraalJSScriptEngine.create(null, builder)
+        // 导入要导入的包和类
+        engine.eval(importingScript)
+        // 加载全局扩展脚本
+        for (script in JavaScriptLang.globalScripts) {
+            engine.eval(script)
         }
+        return engine
     }
 
-    override fun getLanguage() = ScriptType.JAVASCRIPT
+    /**
+     * 用来导入包和类的脚本
+     */
+    private val importingScript by lazy {
+        this::class.java.classLoader.getResourceAsStream("script-default/graaljs.scriptengine.js")!!.reader(Charsets.UTF_8)
+    }
 
 }

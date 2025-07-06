@@ -1,10 +1,7 @@
 package cn.fd.ratziel.module.script.impl
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import javax.script.Compilable
-import javax.script.CompiledScript
-import javax.script.ScriptContext
-import javax.script.ScriptEngine
+import javax.script.*
 
 /**
  * EnginedScriptExecutor
@@ -15,12 +12,13 @@ import javax.script.ScriptEngine
 abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>() {
 
     /**
-     * 脚本引擎实例
+     * 创建脚本引擎实例
      */
-    abstract val engine: ScriptEngine
+    abstract fun newEngine(): ScriptEngine
 
     @Synchronized
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
+        val engine = newEngine()
         return engine.eval(script, createContext(engine, environment))
     }
 
@@ -32,6 +30,8 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      */
     @Synchronized
     override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
+        val engine = newEngine()
+        engine.context = createContext(engine, environment)
         return (engine as Compilable).compile(script)
     }
 
@@ -48,15 +48,19 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      */
     @Synchronized
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
-        // 环境的绑定键
-        val environmentBindings = environment.bindings
-        if (environmentBindings.isNotEmpty()) {
-            // 导入环境的绑定键
-            engine.context.getBindings(ScriptContext.ENGINE_SCOPE)
-                .putAll(environmentBindings)
-        }
+        // 获取执行器上下文
+        val contextualBindings = environment.getExecutorContext(this) as? Bindings
+            ?: engine.getBindings(ScriptContext.ENGINE_SCOPE)
+                .also { environment.setExecutorContext(this, it) }
+
+        val context = engine.context
+        // 执行器上下文的绑定键
+        context.setBindings(contextualBindings, ScriptContext.ENGINE_SCOPE)
+        // 环境的绑定键 (直接导入全局域多好)
+        context.setBindings(environment.bindings, ScriptContext.GLOBAL_SCOPE)
+
         // 返回引擎上下文
-        return engine.context
+        return context
     }
 
 }

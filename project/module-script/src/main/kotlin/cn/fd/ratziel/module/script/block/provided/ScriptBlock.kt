@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.script.block.provided
 
 import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.function.SimpleContext
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
@@ -9,6 +8,7 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.LiteralScriptContent
+import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
@@ -38,24 +38,13 @@ class ScriptBlock(
 
     init {
         if (executor is NonStrictCompilation) {
-            compile(SimpleContext()) // 预编译脚本
-        }
-    }
-
-    /**
-     * 编译脚本
-     */
-    fun compile(context: ArgumentContext): Throwable? {
-        // 不重复编译
-        if (!::compiledScript.isInitialized) {
+            // 预编译脚本
             try {
-                val environment = context.scriptEnv()
-                compiledScript = executor.build(source, environment)
+                compiledScript = executor.build(source, SimpleScriptEnvironment())
             } catch (e: Exception) {
-                return e
+                e.printStackTrace()
             }
         }
-        return null
     }
 
     override fun execute(context: ArgumentContext): Any? {
@@ -81,14 +70,8 @@ class ScriptBlock(
         /** 创建的语句块列表 **/
         val blocks: MutableList<ScriptBlock> = ArrayList()
 
-        /**
-         * 每个语言使用一个执行器
-         * 该表用来记录每个语言的执行器实例
-         */
-        private val executors: MutableMap<ScriptType, ScriptExecutor> = HashMap()
-
         /** 当前执行器 **/
-        private var currentExecutor: ScriptExecutor = executors.computeIfAbsent(ScriptManager.defaultLanguage) { it.newExecutor() }
+        private var currentExecutor: ScriptExecutor = ScriptManager.defaultLanguage.executor
 
         override fun parse(element: JsonElement, scheduler: BlockParser): ExecutableBlock? {
             if (element is JsonObject && element.size == 1) {
@@ -100,7 +83,7 @@ class ScriptBlock(
                     // 记录当前执行器
                     val lastExecutor = currentExecutor
                     // 设置当前执行器
-                    currentExecutor = executors.computeIfAbsent(type) { it.newExecutor() } // 获取或创建执行器
+                    currentExecutor = type.executor // 获取或创建执行器
                     // 使用调度器解析结果
                     val result = scheduler.parse(entry.value, scheduler)
                     // 恢复上一个执行器

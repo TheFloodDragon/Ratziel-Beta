@@ -1,12 +1,9 @@
 package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.module.script.api.ScriptExecutor
-import cn.fd.ratziel.module.script.internal.ScriptBootstrap
-import cn.fd.ratziel.module.script.lang.JavaScriptExecutor
-import cn.fd.ratziel.module.script.lang.JexlScriptExecutor
-import cn.fd.ratziel.module.script.lang.KetherExecutor
+import cn.fd.ratziel.module.script.lang.JavaScriptLang
+import cn.fd.ratziel.module.script.lang.JexlLang
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.function.Supplier
 
 /**
  * ScriptTypes - 脚本类型
@@ -22,19 +19,15 @@ interface ScriptType {
     val name: String
 
     /**
-     * 是否启用脚本
-     */
-    var enabled: Boolean
-
-    /**
      * 别名
      */
     val alias: Array<out String>
 
     /**
-     * 创建一个执行器
+     * 获取脚本执行器
      */
-    fun newExecutor(): ScriptExecutor
+    val executor: ScriptExecutor
+        get() = throw UnsupportedOperationException("There's no executor of language '$name'.")
 
     companion object {
 
@@ -44,33 +37,32 @@ interface ScriptType {
         @JvmStatic
         val registry: MutableSet<ScriptType> = CopyOnWriteArraySet()
 
+        /**
+         * 启用的脚本语言列表
+         */
+        var activeLanguages: Set<ScriptType> = registry
+            internal set
+
         /** JavaScript **/
         @JvmStatic
-        val JAVASCRIPT = register("JavaScript", "Js", bootstrap = JavaScriptExecutor) { JavaScriptExecutor() }
-
-        /** Kether **/
-        @Suppress("unused")
-        @JvmStatic
-        val KETHER = register("Kether", "ke", "ks", bootstrap = KetherExecutor) { KetherExecutor }
+        val JAVASCRIPT = register(JavaScriptLang)
 
         /** Jexl **/
-        @Suppress("unused")
         @JvmStatic
-        val JEXL = register("Jexl", "Jexl3") { JexlScriptExecutor }
+        val JEXL = register(JexlLang)
 
-        /** Kotlin Scripting **/
-        @Suppress("unused")
-        @JvmStatic
-        val KOTLIN_SCRIPTING = register("KotlinScripting", "Kotlin", "kts") { null }
+//        /** Kotlin Scripting **/
+//        @JvmStatic
+//        val KOTLIN_SCRIPTING = register("KotlinScripting", "Kotlin", "kts") { null }
 
         /**
          * 匹配脚本类型
          */
         @JvmStatic
         fun match(name: String): ScriptType? {
-            val trimed = name.trim()
-            return registry.find { type ->
-                type.name.equals(trimed, true) || type.alias.any { it.equals(trimed, true) }
+            val trimmed = name.trim()
+            return activeLanguages.find { type ->
+                type.name.equals(trimmed, true) || type.alias.any { it.equals(trimmed, true) }
             }
         }
 
@@ -78,34 +70,13 @@ interface ScriptType {
          * 匹配脚本类型 (无法找到时抛出异常)
          */
         @JvmStatic
-        fun matchOrThrow(name: String): ScriptType =
-            match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
+        fun matchOrThrow(name: String) = match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
 
-        private fun register(name: String, vararg alias: String, bootstrap: ScriptBootstrap? = null, executor: Supplier<ScriptExecutor?>): ScriptType {
-            val type = BuiltinScriptType(name, *alias, executorGetter = executor)
-            this.registry.add(type)
-            if (bootstrap != null) {
-                ScriptManager.bootstraps[type] = bootstrap
-            }
-            return type
+
+        private fun <T : ScriptType> register(scriptType: T): T {
+            this.registry.add(scriptType)
+            return scriptType
         }
-
-    }
-
-    private class BuiltinScriptType(
-        override val name: String,
-        override vararg val alias: String,
-        /** 执行器获取器 **/
-        val executorGetter: Supplier<ScriptExecutor?>,
-    ) : ScriptType {
-
-        /** 是否启用脚本 (需手动开启) **/
-        override var enabled = false
-
-        /** 创建执行器 (不支持时抛出异常) **/
-        override fun newExecutor() = this.executorGetter.get() ?: throw UnsupportedOperationException("There's no executor of language '$name'.")
-
-        override fun toString() = "ScriptType(name=$name, enabled=$enabled, alias=${this.alias.contentToString()})"
 
     }
 

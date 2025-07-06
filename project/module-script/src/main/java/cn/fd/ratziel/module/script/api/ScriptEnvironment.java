@@ -16,7 +16,8 @@ public interface ScriptEnvironment {
     /**
      * 获取脚本的绑定键
      */
-    @NotNull Bindings getBindings();
+    @NotNull
+    Bindings getBindings();
 
     /**
      * 设置脚本的绑定键
@@ -32,5 +33,16 @@ public interface ScriptEnvironment {
     default void set(@NotNull String key, @Nullable Object value) {
         getBindings().put(key, value);
     }
+
+    /**
+     * 获取执行器上下文
+     */
+    @Nullable
+    Object getExecutorContext(@NotNull ScriptExecutor executor);
+
+    /**
+     * 设置执行器上下文
+     */
+    void setExecutorContext(@NotNull ScriptExecutor executor, @Nullable Object context);
 
 }

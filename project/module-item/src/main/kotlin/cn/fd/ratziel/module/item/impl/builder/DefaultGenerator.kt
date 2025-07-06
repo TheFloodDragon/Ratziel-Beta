@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.function.ArgumentContext
 import cn.fd.ratziel.core.function.SimpleContext
@@ -16,9 +15,7 @@ import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.serialization.json.JsonElement
 import taboolib.common.platform.function.debug
-import taboolib.common.platform.function.severe
 import kotlin.system.measureTimeMillis
 
 /**
@@ -133,7 +130,7 @@ class DefaultGenerator(
         val serializationTasks = ItemRegistry.registry.map { integrated ->
             val element = stream.fetchElement()
             launch {
-                val generated = serializeComponent(integrated, element).getOrNull()
+                val generated = ComponentConverter.transformToNbtTag(integrated, element).getOrNull()
                 // 合并数据
                 if (generated as? NbtCompound != null) stream.data.withValue {
                     // 合并标签
@@ -158,37 +155,6 @@ class DefaultGenerator(
         // 将物品流放入上下文中 (某些情况需要用)
         context.put(stream)
         return stream
-    }
-
-    /**
-     * 序列化组件
-     */
-    fun serializeComponent(
-        integrated: ItemRegistry.Integrated<*>,
-        element: JsonElement,
-    ): Result<NbtTag> {
-        // 获取序列化器
-        @Suppress("UNCHECKED_CAST")
-        val serializer = (integrated as ItemRegistry.Integrated<Any>).serializer
-        // 第一步: 解码成物品组件
-        val component = try {
-            // 解码
-            ItemElement.json.decodeFromJsonElement(serializer, element)
-        } catch (ex: Exception) {
-            severe("Failed to deserialize element by '$serializer'!")
-            ex.printStackTrace()
-            return Result.failure(ex)
-        }
-        // 第二步: 编码成组件数据
-        try {
-            // 编码
-            val tag = ItemElement.nbt.encodeToNbtTag(serializer, component)
-            return Result.success(tag)
-        } catch (ex: Exception) {
-            severe("Failed to transform component by '$serializer'! Source component: $component")
-            ex.printStackTrace()
-            return Result.failure(ex)
-        }
     }
 
 }

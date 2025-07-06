@@ -12,7 +12,8 @@ val systemOS: String
     get() = System.getProperty("os.name").lowercase()
 
 val systemIP: String
-    get() = URL("http://ipinfo.io/ip").readText()
+    @Suppress("DEPRECATION")
+    get() = URL("https://ipinfo.io/ip").readText()
 
 val String.escapedVersion
     get() = this.replace(Regex("[._-]"), "")

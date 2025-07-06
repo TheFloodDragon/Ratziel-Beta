@@ -1,10 +1,10 @@
 package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
+import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
@@ -15,15 +15,21 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:33
  */
-class NashornScriptExecutor : EnginedScriptExecutor() {
+object NashornScriptExecutor : EnginedScriptExecutor(), NonStrictCompilation {
 
-    override val engine: ScriptEngine by lazy {
-        newEngine().apply {
-            // 设置脚本引擎的全局绑定键
-            setBindings(ScriptManager.Global.globalBindings, ScriptContext.GLOBAL_SCOPE)
-            // 加载全局扩展脚本
-            for (script in JavaScriptExecutor.getGlobalScripts()) eval(script)
+    /**
+     * 创建脚本引擎实例
+     */
+    override fun newEngine(): ScriptEngine {
+        // 创建脚本引擎
+        val engine = scriptEngineFactory?.getScriptEngine(
+            arrayOf("-Dnashorn.args=--language=es6"), this::class.java.classLoader
+        ) ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript(Nashorn) Language")
+        // 加载全局扩展脚本
+        for (script in JavaScriptLang.globalScripts) {
+            engine.eval(script)
         }
+        return engine
     }
 
     /**
@@ -41,26 +47,10 @@ class NashornScriptExecutor : EnginedScriptExecutor() {
         }
     }
 
-    companion object {
-
-        val scriptEngineFactory by lazy {
-            ScriptManager.engineManager.engineFactories.find {
-                it.engineName == "OpenJDK Nashorn"
-            } as? NashornScriptEngineFactory
-        }
-
-        /**
-         * 创建脚本引擎实例
-         */
-        fun newEngine(): ScriptEngine {
-            val engine = scriptEngineFactory?.getScriptEngine(
-                arrayOf("-Dnashorn.args=--language=es6"), this::class.java.classLoader
-            ) ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript(Nashorn) Language")
-            return engine
-        }
-
+    val scriptEngineFactory by lazy {
+        ScriptManager.engineManager.engineFactories.find {
+            it.engineName == "OpenJDK Nashorn"
+        } as? NashornScriptEngineFactory
     }
-
-    override fun getLanguage() = ScriptType.JAVASCRIPT
 
 }

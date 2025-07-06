@@ -19,7 +19,7 @@ object ItemRegistry {
     /**
      * 组件集成注册表
      */
-    val registry: MutableList<Integrated<*>> = CopyOnWriteArrayList()
+    val registry: MutableList<ComponentIntegrated<*>> = CopyOnWriteArrayList()
 
     /**
      * 物品解释器注册表
@@ -36,7 +36,7 @@ object ItemRegistry {
         type: Class<T>,
         serializer: KSerializer<T>,
     ) {
-        val integrated = Integrated(type, serializer)
+        val integrated = ComponentIntegrated(type, serializer)
         registry.add(integrated)
     }
 
@@ -44,11 +44,11 @@ object ItemRegistry {
      * 获取组件集成构建器
      */
     @JvmStatic
-    fun <T> getComponent(type: Class<T>): Integrated<T> {
+    fun <T> getComponent(type: Class<T>): ComponentIntegrated<T> {
         val integrated = registry.find { it.type == type }
             ?: throw ComponentNotFoundException(type)
         @Suppress("UNCHECKED_CAST")
-        return integrated as Integrated<T>
+        return integrated as ComponentIntegrated<T>
     }
 
     /**
@@ -72,7 +72,7 @@ object ItemRegistry {
      * 物品组件集成
      * @param serializer 序列化器
      */
-    class Integrated<T>(
+    class ComponentIntegrated<T>(
         /** 物品组件类型 **/
         val type: Class<T>,
         /** 物品组件序列化器 **/

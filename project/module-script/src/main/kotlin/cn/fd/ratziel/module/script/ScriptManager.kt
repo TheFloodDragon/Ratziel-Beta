@@ -1,21 +1,15 @@
 package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.common.config.Settings
-import cn.fd.ratziel.core.util.findInJar
-import cn.fd.ratziel.module.script.internal.ScriptBootstrap
+import cn.fd.ratziel.core.util.JarUtil
+import cn.fd.ratziel.module.script.ScriptType.Companion.activeLanguages
+import cn.fd.ratziel.module.script.impl.ScriptBootstrap
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
-import taboolib.common.platform.function.getJarFile
 import taboolib.common.platform.function.severe
-import java.io.InputStreamReader
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.Function
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import javax.script.Bindings
 import javax.script.ScriptEngineManager
-import javax.script.SimpleBindings
 
 
 /**
@@ -27,14 +21,9 @@ import javax.script.SimpleBindings
 object ScriptManager {
 
     /**
-     * 脚本启动器表
-     */
-    val bootstraps: MutableMap<ScriptType, ScriptBootstrap> = HashMap()
-
-    /**
      * 默认使用的的脚本语言
      */
-    var defaultLanguage = ScriptType.JAVASCRIPT
+    var defaultLanguage: ScriptType = ScriptType.JAVASCRIPT
         private set
 
     /**
@@ -48,7 +37,7 @@ object ScriptManager {
     @Awake(LifeCycle.INIT)
     private fun initialize() {
         // 初始化全局环境
-        Global.initialize()
+        Importer.initialize()
 
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!
@@ -59,25 +48,19 @@ object ScriptManager {
         for (key in languages.getKeys(false)) {
             val type = ScriptType.match(key) ?: continue
             val settings = languages.getConfigurationSection(key)!!
-            type.enabled = settings.getBoolean("enabled", false)
-            if (!type.enabled) continue // 禁用的直接跳过
-            try {
-                // 初始化脚本
-                bootstraps[type]?.initialize(settings)
-            } catch (ex: Exception) {
-                type.enabled = false // 禁用
-                severe("Failed to enable script-language '${type.name}'!")
-                ex.printStackTrace()
+            // 初始化脚本
+            val enabled = settings.getBoolean("enabled", false)
+            if (enabled && type is ScriptBootstrap) {
+                try {
+                    type.initialize(settings)
+                    continue // 成功启用脚本, 初始化下一个
+                } catch (ex: Exception) {
+                    severe("Failed to enable script-language '${type.name}'!")
+                    ex.printStackTrace()
+                }
             }
-        }
-    }
-
-    fun getEntries(filter: Function<JarEntry, Boolean>): List<InputStreamReader> = buildList {
-        val jar = JarFile(getJarFile())
-        findInJar(jar) {
-            !it.isDirectory && filter.apply(it)
-        }.forEach { jarEntry ->
-            add(jar.getInputStream(jarEntry).reader(Charsets.UTF_8))
+            // 失败后禁用脚本
+            activeLanguages = activeLanguages.minus(type)
         }
     }
 
@@ -91,16 +74,10 @@ object ScriptManager {
     }
 
     /**
-     * Global
+     * Importer
      *   - 默认导入的类和包 (有些脚本语言可能不支持或部分支持)
-     *   - 提供全局的 [Bindings] 对象
      */
-    object Global {
-
-        /**
-         * 全局的 [Bindings] 对象, 提供全局变量支持
-         */
-        val globalBindings: Bindings = SimpleBindings(ConcurrentHashMap())
+    object Importer {
 
         /**
          * 导入包
@@ -177,7 +154,7 @@ object ScriptManager {
 
         internal fun initialize() {
             // 读取文件
-            val imports = getEntries { it.name.startsWith("script-default/") && it.name.endsWith(".imports") }
+            val imports = JarUtil.getEntries { it.name.startsWith("script-default/") && it.name.endsWith(".imports") }
                 .flatMap { reader ->
                     // 读取导入的类
                     reader.readText().trim().lines().filter { it.isNotBlank() && !it.startsWith('#') }

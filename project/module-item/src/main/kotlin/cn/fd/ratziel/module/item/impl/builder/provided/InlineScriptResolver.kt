@@ -30,7 +30,7 @@ class InlineScriptResolver : ItemSectionResolver {
         val section = node.validSection() ?: return
         for (part in analyzeParts(section.value.content)) {
             if (part.language != null) {
-                val executor = part.language.newExecutor()
+                val executor = part.language.executor
                 cachedScrips[part] = executor.build(part.content, SimpleScriptEnvironment())
             }
         }
@@ -42,7 +42,7 @@ class InlineScriptResolver : ItemSectionResolver {
             if (part.language != null) {
                 // 获取脚本
                 val script = cachedScrips.getOrElse(part) {
-                    LiteralScriptContent(part.content, part.language.newExecutor())
+                    LiteralScriptContent(part.content, part.language.executor)
                 }
                 // 评估脚本并返回结果
                 script.executor.evaluate(script, createEnvironment(context)).toString()
@@ -82,7 +82,7 @@ class InlineScriptResolver : ItemSectionResolver {
                 }
             }
             // 解析内联脚本
-            val executor = (language ?: ScriptManager.defaultLanguage).newExecutor()
+            val executor = (language ?: ScriptManager.defaultLanguage).executor
             val script = LiteralScriptContent(content, executor)
             // 评估脚本并返回结果
             return executor.evaluate(script, createEnvironment(context)).toString()

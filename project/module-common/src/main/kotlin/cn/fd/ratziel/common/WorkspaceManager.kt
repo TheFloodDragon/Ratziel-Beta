@@ -2,7 +2,7 @@ package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.ElementMatcher
-import cn.fd.ratziel.core.util.findInJar
+import cn.fd.ratziel.core.util.JarUtil
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.getJarFile
@@ -81,7 +81,7 @@ object WorkspaceManager {
      */
     private fun releaseDefaultWorkspace(folder: File) {
         val jar = JarFile(getJarFile())
-        findInJar(jar) {
+        JarUtil.findInJar(jar) {
             !it.isDirectory && it.name.startsWith("default/")
         }.forEach {
             newFile(File(folder, it.name.substringAfter('/'))).writeBytes(jar.getInputStream(it).readBytes())

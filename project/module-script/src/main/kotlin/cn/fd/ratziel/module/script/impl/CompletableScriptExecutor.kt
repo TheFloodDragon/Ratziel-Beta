@@ -44,7 +44,7 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
      * 构建脚本
      * @param compile 是否启用编译
      */
-    fun build(script: String, environment: ScriptEnvironment, compile: Boolean = true): CachedScript<T> {
+    fun build(script: String, environment: ScriptEnvironment, compile: Boolean): CachedScript<T> {
         val sc = CachedScript<T>(script, this)
         if (compile && sc.completed == null) {
             try {
@@ -58,7 +58,7 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
     }
 
     override fun build(script: String, environment: ScriptEnvironment): ScriptContent {
-        return build(script, environment, compile = true)
+        return build(script, environment, compile = false)
     }
 
 }
