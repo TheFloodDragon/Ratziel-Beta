@@ -6,11 +6,13 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
+import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.measureTimedValue
 
 /**
  * TaggedSectionResolver
@@ -61,16 +63,22 @@ class TaggedSectionResolver(
         // 获取解析器
         val resolver = tagResolvers.find { it.alias.contains(name) } ?: return null
         // 解析并返回
-        return try {
-            resolver.resolve(split.drop(1), context)
+        try {
+            measureTimedValue {
+                // 解析节点 (包括所有类型的节点)
+                resolver.resolve(split.drop(1), context)
+            }.let {
+                val t = it.duration.inWholeMilliseconds
+                if (t > 2) debug("[TIME MARK] $resolver costs $t ms.")
+                return it.value
+            }
         } catch (ex: ArgumentNotFoundException) {
             warning("Missing argument '${ex.missingType.simpleName}' for $resolver")
-            return null
         } catch (ex: Exception) {
             severe("Failed to resolve element by $resolver!")
             ex.printStackTrace()
-            return null
         }
+        return null
     }
 
     companion object {

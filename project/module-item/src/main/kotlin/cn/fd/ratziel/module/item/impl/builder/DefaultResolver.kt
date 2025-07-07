@@ -71,7 +71,7 @@ object DefaultResolver : ItemInterpreter.PreInterpretable {
                 measureTimeMillis {
                     // 解析节点 (包括所有类型的节点)
                     resolver.resolve(it, context)
-                }.let { t -> debug("[TIME MARK] $this costs $t ms.") }
+                }.also { t -> if (t > 2) debug("[TIME MARK] $resolver costs $t ms.") }
             }
         }
     }
