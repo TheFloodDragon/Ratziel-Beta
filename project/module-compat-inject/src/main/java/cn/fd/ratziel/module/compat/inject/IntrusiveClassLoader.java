@@ -14,10 +14,12 @@ import java.net.URL;
 public final class IntrusiveClassLoader extends ClassLoader {
 
     private final String ACCESS_GROUP_NAME;
+    private final String ACCESS_LIBRARIES_NAME;
 
     IntrusiveClassLoader(ClassLoader parent, String groupName) {
         super(parent);
         this.ACCESS_GROUP_NAME = groupName;
+        this.ACCESS_LIBRARIES_NAME = groupName + ".libraries.";
     }
 
     @Override
@@ -28,6 +30,11 @@ public final class IntrusiveClassLoader extends ClassLoader {
     @Override
     public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(name)) {
+            // 依赖包重定向
+            if (name.startsWith(ACCESS_LIBRARIES_NAME)) {
+                return loadClass(name.substring(ACCESS_LIBRARIES_NAME.length()));
+            }
+
             // 优先父级加载
             Class<?> find = loadClassOrNull(getParent(), name);
             // 隔离类加载器加载 (不检查其父级)
@@ -36,6 +43,7 @@ public final class IntrusiveClassLoader extends ClassLoader {
                 find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
             } catch (ClassNotFoundException ignored) {
             }
+
             // 检查结果
             if (find == null) throw new ClassNotFoundException(name);
             // 返回值

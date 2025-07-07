@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.functional.CacheContext
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
@@ -24,7 +25,10 @@ import kotlinx.serialization.json.JsonObject
  * @since 2025/5/10 19:49
  */
 @ItemInterpreter.AsyncInterpretation
-class DefinitionInterpreter : ItemInterpreter.PreInterpretable {
+object DefinitionInterpreter : ItemInterpreter.PreInterpretable {
+
+    /** 处理触发器 **/
+    val PROCESS_TRIGGER = registerTrigger("onProcess", "process")
 
     object DefinitionResolver : ItemTagResolver {
         override val alias = arrayOf("define", "def", "definition")
@@ -35,7 +39,7 @@ class DefinitionInterpreter : ItemInterpreter.PreInterpretable {
         }
     }
 
-    private lateinit var cachedBlocks: Map<String, ExecutableBlock>
+    private val blocksCacher = CacheContext.Catcher<Map<String, ExecutableBlock>>(this)
 
     override suspend fun preFlow(stream: ItemStream) {
         val element = stream.fetchElement()
@@ -44,11 +48,11 @@ class DefinitionInterpreter : ItemInterpreter.PreInterpretable {
         val define = element["define"] as? JsonObject ?: return
         val map = buildBlockMap(define)
         // 加入到缓存
-        this.cachedBlocks = map
+        blocksCacher.setCache(stream.context, map)
     }
 
     override suspend fun interpret(stream: ItemStream) {
-        val blocks = if (::cachedBlocks.isInitialized) cachedBlocks else return
+        val blocks = blocksCacher.catch(stream.context) ?: return
 
         // 获取变量表
         val vars = stream.context.varsMap()
@@ -70,27 +74,20 @@ class DefinitionInterpreter : ItemInterpreter.PreInterpretable {
         }
     }
 
-    companion object {
+    internal suspend fun buildBlockMap(element: JsonObject): Map<String, ExecutableBlock> = coroutineScope {
+        mapOf(*element.map {
+            async {
+                it.key to BlockBuilder.build(it.value) // 构建语句块
+            }
+        }.awaitAll().toTypedArray())
+    }
 
-        /** 处理触发器 **/
-        val PROCESS_TRIGGER = registerTrigger("onProcess", "process")
-
-        internal suspend fun buildBlockMap(element: JsonObject): Map<String, ExecutableBlock> = coroutineScope {
-            mapOf(*element.map {
-                async {
-                    it.key to BlockBuilder.build(it.value) // 构建语句块
-                }
-            }.awaitAll().toTypedArray())
-        }
-
-        internal suspend fun executeAll(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): Map<String, Any?> = coroutineScope {
-            mapOf(*blocks.map {
-                async {
-                    it.key to it.value.execute(context) // 执行语句块
-                }
-            }.awaitAll().toTypedArray())
-        }
-
+    internal suspend fun executeAll(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): Map<String, Any?> = coroutineScope {
+        mapOf(*blocks.map {
+            async {
+                it.key to it.value.execute(context) // 执行语句块
+            }
+        }.awaitAll().toTypedArray())
     }
 
 }

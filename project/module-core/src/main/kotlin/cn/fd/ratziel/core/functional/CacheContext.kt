@@ -28,6 +28,13 @@ class CacheContext(val context: MutableMap<Any, Any> = ConcurrentHashMap()) {
     }
 
     /**
+     * 设置缓存
+     */
+    fun put(key: Any, value: Any) {
+        context[key] = value
+    }
+
+    /**
      * 缓存捕获器 - 用于确定缓存类型
      */
     class Catcher<T : Any>(val key: Any) {
@@ -44,6 +51,13 @@ class CacheContext(val context: MutableMap<Any, Any> = ConcurrentHashMap()) {
          */
         fun catch(context: ArgumentContext, ifAbsent: Supplier<T>): T {
             return context.cacheContext().fetch(key, ifAbsent)
+        }
+
+        /**
+         * 设置缓存
+         */
+        fun setCache(context: ArgumentContext, value: T) {
+            context.cacheContext().put(key, value)
         }
 
         private fun ArgumentContext.cacheContext() =

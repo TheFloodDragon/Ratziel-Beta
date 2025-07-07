@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.script.impl
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import taboolib.common.platform.function.warning
 
 /**
@@ -62,3 +63,16 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
     }
 
 }
+
+/**
+ * 尝试编译脚本, 若编译失败或者语言不支持空脚本环境, 则返回一个脚本文本内容
+ */
+fun ScriptExecutor.compileOrLiteral(script: String): ScriptContent =
+    if (this is NonStrictCompilation) {
+        // 预编译脚本
+        try {
+            this.build(script, SimpleScriptEnvironment())
+        } catch (e: Exception) {
+            e.printStackTrace(); LiteralScriptContent(script, this)
+        }
+    } else LiteralScriptContent(script, this)

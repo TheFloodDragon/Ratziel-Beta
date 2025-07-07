@@ -12,6 +12,7 @@ import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.impl.LiteralScriptContent
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
+import cn.fd.ratziel.module.script.impl.compileOrLiteral
 import cn.fd.ratziel.module.script.util.scriptEnv
 import cn.fd.ratziel.module.script.util.varsMap
 import pers.neige.neigeitems.utils.StringUtils.joinToString
@@ -87,12 +88,13 @@ object InlineScriptResolver : ItemSectionResolver {
                 }
             }
             // 解析内联脚本
-            val executor = (language ?: ScriptManager.defaultLanguage).executor
-
-            val part = ScriptPart(content, language ?: ScriptManager.defaultLanguage)
+            if (language == null) language = ScriptManager.defaultLanguage
+            val executor = language.executor
 
             val script: ScriptContent = scripsCatcher.catch(context) { ConcurrentHashMap() }
-                .getOrElse(part) { LiteralScriptContent(content, executor) }
+                .getOrPut(ScriptPart(content, language)) {
+                    executor.compileOrLiteral(content)
+                }
 
             // 评估脚本并返回结果
             return executor.evaluate(script, createEnvironment(context)).toString()

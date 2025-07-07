@@ -5,8 +5,8 @@ import cn.fd.ratziel.module.item.api.builder.InterpreterCompositor
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.internal.SourceInterpreter
-import io.rokuko.azureflow.utils.debug
 import kotlinx.coroutines.*
+import taboolib.common.platform.function.debug
 import taboolib.common.reflect.hasAnnotation
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.system.measureTimeMillis
@@ -19,12 +19,10 @@ import kotlin.system.measureTimeMillis
  */
 class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
 
-    val interpreters = ItemRegistry.interpreters.map { it.get() }
-
     init {
         runBlocking {
             // 预先解释 (处理基流)
-            interpreters.forEach {
+            ItemRegistry.interpreters.forEach {
                 if (it is ItemInterpreter.PreInterpretable) it.preFlow(baseStream)
             }
         }
@@ -41,7 +39,7 @@ class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
         val asyncTasks = ConcurrentLinkedQueue<Job>()
 
         // 解释器处理
-        for (interpreter in interpreters) {
+        for (interpreter in ItemRegistry.interpreters) {
             // 是否支持异步解释
             if (interpreter::class.java.hasAnnotation(ItemInterpreter.AsyncInterpretation::class.java)) {
                 // 异步解释任务

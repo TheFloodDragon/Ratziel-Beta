@@ -8,8 +8,7 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.LiteralScriptContent
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
-import cn.fd.ratziel.module.script.internal.NonStrictCompilation
+import cn.fd.ratziel.module.script.impl.compileOrLiteral
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -32,35 +31,17 @@ class ScriptBlock(
 ) : ExecutableBlock {
 
     /** 编译后的脚本 **/
-    lateinit var compiledScript: ScriptContent
-        @Synchronized private set
-        @Synchronized get
-
-    init {
-        if (executor is NonStrictCompilation) {
-            // 预编译脚本
-            try {
-                compiledScript = executor.build(source, SimpleScriptEnvironment())
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
+    val script: ScriptContent = executor.compileOrLiteral(source)
 
     override fun execute(context: ArgumentContext): Any? {
         measureTimeMillisWithResult {
             // 获取环境
             val environment = context.scriptEnv()
             // 获取脚本
-            val script = if (::compiledScript.isInitialized) {
-                compiledScript
-            } else {
-                LiteralScriptContent(source, executor)
-            }
             // 评估
             script.executor.evaluate(script, environment)
         }.also { (time, result) ->
-            debug("[TIME MARK] ScriptBlock(${::compiledScript.isInitialized}) executed in $time ms. Content: $source")
+            debug("[TIME MARK] ScriptBlock(${script !is LiteralScriptContent}) executed in $time ms. Content: $source")
             return result
         }
     }

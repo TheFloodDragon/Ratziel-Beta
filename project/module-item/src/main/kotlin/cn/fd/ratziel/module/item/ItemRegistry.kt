@@ -6,7 +6,6 @@ import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.function.Supplier
 
 /**
  * ItemRegistry - 物品注册表
@@ -24,7 +23,7 @@ object ItemRegistry {
     /**
      * 物品解释器注册表
      */
-    val interpreters: MutableList<Supplier<ItemInterpreter>> = CopyOnWriteArrayList()
+    val interpreters: MutableList<ItemInterpreter> = CopyOnWriteArrayList()
 
     /**
      * 物品源列表
@@ -60,7 +59,7 @@ object ItemRegistry {
      * 注册物品解释器
      */
     @JvmStatic
-    fun registerInterpreter(interpreter: Supplier<ItemInterpreter>) {
+    fun registerInterpreter(interpreter: ItemInterpreter) {
         interpreters.add(interpreter)
     }
 
