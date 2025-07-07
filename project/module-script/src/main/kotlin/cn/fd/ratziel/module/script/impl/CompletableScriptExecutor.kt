@@ -58,7 +58,7 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
     }
 
     override fun build(script: String, environment: ScriptEnvironment): ScriptContent {
-        return build(script, environment, compile = false)
+        return build(script, environment, compile = true)
     }
 
 }

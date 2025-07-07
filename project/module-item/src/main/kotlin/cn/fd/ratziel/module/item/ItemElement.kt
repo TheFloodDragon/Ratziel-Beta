@@ -7,6 +7,7 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.impl.action.ActionInterpreter
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
@@ -81,6 +82,14 @@ object ItemElement : ElementHandler {
         register<ItemDurability>()
         register<ItemHideFlag>()
         register<ItemEnchant>()
+    }
+
+    init {
+        // 物品解释器注册
+        ItemRegistry.registerInterpreter { ActionInterpreter }
+        ItemRegistry.registerInterpreter { DefaultResolver() }
+        ItemRegistry.registerInterpreter { DefinitionInterpreter() }
+        ItemRegistry.registerInterpreter { NativeDataInterpreter() }
     }
 
     init {

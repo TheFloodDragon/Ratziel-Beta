@@ -108,17 +108,13 @@ class DefaultGenerator(
      * 处理物品流 (解释 -> 序列化)
      */
     fun processStream(stream: ItemStream, scope: CoroutineScope) = scope.launch {
-//        // 解释器解释元素
-//        val interpreterTasks = compositor.interpreters.map {
-//            measureTimeMillis {
-//                it.interpret(stream)
-//            }.let { t -> debug("[TIME MARK] $it costs $t ms.") }
-//        }
-        compositor.runTask(stream)
+
+        // 调度编排器处理物品流
+        compositor.dispatch(stream)
 
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
+        val element = stream.fetchElement()
         val serializationTasks = ItemRegistry.registry.map { integrated ->
-            val element = stream.fetchElement()
             launch {
                 val generated = ComponentConverter.transformToNbtTag(integrated, element).getOrNull()
                 // 合并数据

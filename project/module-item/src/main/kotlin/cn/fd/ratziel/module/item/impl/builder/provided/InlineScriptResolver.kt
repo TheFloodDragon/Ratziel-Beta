@@ -87,7 +87,6 @@ class InlineScriptResolver : ItemSectionResolver {
             // 评估脚本并返回结果
             return executor.evaluate(script, createEnvironment(context)).toString()
         }
-
     }
 
     companion object {

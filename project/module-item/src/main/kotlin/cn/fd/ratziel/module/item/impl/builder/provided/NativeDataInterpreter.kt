@@ -17,6 +17,7 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/5/24 18:21
  */
+@ItemInterpreter.AsyncInterpretation
 class NativeDataInterpreter : ItemInterpreter.PreInterpretable {
 
     /**

@@ -23,6 +23,7 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/5/10 19:49
  */
+@ItemInterpreter.AsyncInterpretation
 class DefinitionInterpreter : ItemInterpreter.PreInterpretable {
 
     object DefinitionResolver : ItemTagResolver {

@@ -8,6 +8,9 @@ package cn.fd.ratziel.module.item.api.builder
  */
 interface InterpreterCompositor {
 
-    suspend fun runTask(stream: ItemStream)
+    /**
+     * 调度物品解释器并执行. (编排任务并处理物品流)
+     */
+    suspend fun dispatch(stream: ItemStream)
 
 }
