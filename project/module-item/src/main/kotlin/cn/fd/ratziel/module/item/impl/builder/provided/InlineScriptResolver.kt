@@ -9,10 +9,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.internal.ScriptPart
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.module.script.api.ScriptContent
-import cn.fd.ratziel.module.script.impl.LiteralScriptContent
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
-import cn.fd.ratziel.module.script.impl.compileOrLiteral
+import cn.fd.ratziel.module.script.block.provided.ScriptBlock
 import cn.fd.ratziel.module.script.util.scriptEnv
 import cn.fd.ratziel.module.script.util.varsMap
 import pers.neige.neigeitems.utils.StringUtils.joinToString
@@ -27,16 +24,15 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object InlineScriptResolver : ItemSectionResolver {
 
-    internal val scripsCatcher = CacheContext.Catcher<MutableMap<ScriptPart, ScriptContent>>(this)
+    internal val scripsCatcher = CacheContext.Catcher<MutableMap<String, ScriptBlock>>(this)
 
     override fun prepare(node: JsonTree.Node, context: ArgumentContext) {
         val section = node.validSection() ?: return
 
         val scripts = analyzeParts(section.value.content).mapNotNull { part ->
             if (part.language != null) {
-                val executor = part.language.executor
-                val compiledScript = executor.build(part.content, SimpleScriptEnvironment())
-                part to compiledScript
+                val block = ScriptBlock(part.content, part.language.executor)
+                block.source to block
             } else null
         }
         scripsCatcher.catch(context) { ConcurrentHashMap(scripts.toMap()) }
@@ -47,11 +43,11 @@ object InlineScriptResolver : ItemSectionResolver {
         val resolved = analyzeParts(section.value.content).joinToString("") { part ->
             if (part.language != null) {
                 // 获取脚本
-                val script = scripsCatcher.catch(context) { ConcurrentHashMap() }.getOrElse(part) {
-                    LiteralScriptContent(part.content, part.language.executor)
+                val script = scripsCatcher.catch(context) { ConcurrentHashMap() }.getOrElse(part.content) {
+                    ScriptBlock(part.content, part.language.executor)
                 }
                 // 评估脚本并返回结果
-                script.executor.evaluate(script, createEnvironment(context)).toString()
+                script.evaluate(createEnvironment(context)).toString()
             } else part.content
         }
         section.literal(resolved)
@@ -87,17 +83,15 @@ object InlineScriptResolver : ItemSectionResolver {
                     content = args.drop(1).joinToString("")
                 }
             }
-            // 解析内联脚本
-            if (language == null) language = ScriptManager.defaultLanguage
-            val executor = language.executor
 
-            val script: ScriptContent = scripsCatcher.catch(context) { ConcurrentHashMap() }
-                .getOrPut(ScriptPart(content, language)) {
-                    executor.compileOrLiteral(content)
+            // 解析内联脚本
+            val script: ScriptBlock = scripsCatcher.catch(context) { ConcurrentHashMap() }
+                .getOrPut(content) {
+                    ScriptBlock(content, (language ?: ScriptManager.defaultLanguage).executor)
                 }
 
             // 评估脚本并返回结果
-            return executor.evaluate(script, createEnvironment(context)).toString()
+            return script.evaluate(createEnvironment(context)).toString()
         }
     }
 

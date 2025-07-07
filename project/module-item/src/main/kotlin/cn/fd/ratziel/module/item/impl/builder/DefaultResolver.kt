@@ -7,10 +7,8 @@ import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemStream
-import taboolib.common.platform.function.debug
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
-import kotlin.system.measureTimeMillis
 
 /**
  * DefaultResolver
@@ -68,10 +66,8 @@ object DefaultResolver : ItemInterpreter.PreInterpretable {
     fun resolveTree(tree: JsonTree, context: ArgumentContext, resolvers: List<ItemSectionResolver>) {
         makeFiltered(tree.root).unfold {
             for (resolver in resolvers) {
-                measureTimeMillis {
-                    // 解析节点 (包括所有类型的节点)
-                    resolver.resolve(it, context)
-                }.also { t -> if (t > 2) debug("[TIME MARK] $resolver costs $t ms.") }
+                // 解析节点 (包括所有类型的节点)
+                resolver.resolve(it, context)
             }
         }
     }

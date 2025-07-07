@@ -4,11 +4,13 @@ import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
+import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.LiteralScriptContent
-import cn.fd.ratziel.module.script.impl.compileOrLiteral
+import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
+import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -31,19 +33,32 @@ class ScriptBlock(
 ) : ExecutableBlock {
 
     /** 编译后的脚本 **/
-    val script: ScriptContent = executor.compileOrLiteral(source)
+    val script: ScriptContent = compileOrLiteral(executor, source)
 
-    override fun execute(context: ArgumentContext): Any? {
+    override fun execute(context: ArgumentContext) = evaluate(context.scriptEnv())
+
+    fun evaluate(environment: ScriptEnvironment): Any? {
         measureTimeMillisWithResult {
-            // 获取环境
-            val environment = context.scriptEnv()
-            // 获取脚本
-            // 评估
-            script.executor.evaluate(script, environment)
+            evaluate(environment)
         }.also { (time, result) ->
             debug("[TIME MARK] ScriptBlock(${script !is LiteralScriptContent}) executed in $time ms. Content: $source")
             return result
         }
+    }
+
+    /**
+     * 尝试编译脚本, 若编译失败或者语言不支持空脚本环境, 则返回一个脚本文本内容
+     */
+    fun compileOrLiteral(executor: ScriptExecutor, script: String): ScriptContent {
+        if (executor is NonStrictCompilation) {
+            // 预编译脚本
+            try {
+                return executor.build(script, SimpleScriptEnvironment())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return LiteralScriptContent(script, executor)
     }
 
     class Parser : BlockParser {
