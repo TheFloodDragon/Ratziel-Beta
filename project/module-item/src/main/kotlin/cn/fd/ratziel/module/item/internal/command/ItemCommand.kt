@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.internal.command
 
-import cn.fd.ratziel.core.function.SimpleContext
+import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.util.toItemStack
 import cn.fd.ratziel.module.script.impl.VariablesMap

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.function
+package cn.fd.ratziel.core.functional
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty

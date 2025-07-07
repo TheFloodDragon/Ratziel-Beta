@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -17,7 +17,7 @@ interface ItemSectionResolver {
     /**
      * 准备解析阶段处理
      */
-    fun prepare(node: JsonTree.Node) = Unit
+    fun prepare(node: JsonTree.Node, context: ArgumentContext) = Unit
 
     /**
      * 解析处理 [JsonTree.Node] (所有类型的节点)

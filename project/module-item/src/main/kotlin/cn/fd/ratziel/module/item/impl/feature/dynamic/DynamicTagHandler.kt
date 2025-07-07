@@ -1,9 +1,10 @@
 package cn.fd.ratziel.module.item.impl.feature.dynamic
 
 import cn.fd.ratziel.common.message.Message
-import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.function.SimpleContext
+import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.module.item.ItemElement
+import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
@@ -90,7 +91,8 @@ object DynamicTagHandler {
         val ratzielItem = RatzielItem.of(refItem.extractData()) ?: return
 
         // 生成上下文
-        val context = SimpleContext(ratzielItem, event.player)
+        val cacheContext = ItemManager.getCacheContext(ratzielItem.identifier) // 缓存上下文
+        val context = SimpleContext(ratzielItem, event.player, cacheContext)
 
         // 处理显示组件
         handleDisplay(ratzielItem, context)

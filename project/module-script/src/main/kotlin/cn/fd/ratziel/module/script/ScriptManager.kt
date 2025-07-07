@@ -37,7 +37,7 @@ object ScriptManager {
     @Awake(LifeCycle.INIT)
     private fun initialize() {
         // 初始化全局环境
-        Importer.initialize()
+        Imports.initialize()
 
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!
@@ -74,10 +74,10 @@ object ScriptManager {
     }
 
     /**
-     * Importer
+     * Imports
      *   - 默认导入的类和包 (有些脚本语言可能不支持或部分支持)
      */
-    object Importer {
+    object Imports {
 
         /**
          * 导入包

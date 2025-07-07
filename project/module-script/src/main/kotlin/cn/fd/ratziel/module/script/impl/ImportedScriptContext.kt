@@ -30,7 +30,7 @@ open class ImportedScriptContext() : SimpleScriptContext() {
     }
 
     open fun getImport(name: String): Any? {
-        return ScriptManager.Importer.getImportedClass(name)
+        return ScriptManager.Imports.getImportedClass(name)
     }
 
     override fun getAttribute(name: String): Any? {

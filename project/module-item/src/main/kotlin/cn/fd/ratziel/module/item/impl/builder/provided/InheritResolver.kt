@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.altawk.nbt.NbtPath
-import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.TemplateElement
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
@@ -26,7 +26,7 @@ object InheritResolver : ItemSectionResolver, ItemTagResolver {
         TaggedSectionResolver.registerTagResolver(this)
     }
 
-    override fun prepare(node: JsonTree.Node) {
+    override fun prepare(node: JsonTree.Node, context: ArgumentContext) {
         // 仅处理根节点, 根节点需为对象节点
         if (node.parent != null || node !is JsonTree.ObjectNode) return
         // 寻找继承字段

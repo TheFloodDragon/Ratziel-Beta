@@ -4,9 +4,12 @@ import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.InterpreterCompositor
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
+import cn.fd.ratziel.module.item.internal.SourceInterpreter
+import io.rokuko.azureflow.utils.debug
 import kotlinx.coroutines.*
 import taboolib.common.reflect.hasAnnotation
 import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.system.measureTimeMillis
 
 /**
  * DefaultCompositor
@@ -29,19 +32,20 @@ class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
 
     override suspend fun dispatch(stream: ItemStream) = coroutineScope {
 
-        val asyncTasks = ConcurrentLinkedQueue<Job>()
-
-        // 物品源处理
-        val sourceTasks = ItemRegistry.sources.map {
-            launch { it.generateItem(stream.origin, stream.context) }
+        suspend fun ItemInterpreter.interpret() {
+            measureTimeMillis {
+                this.interpret(stream)
+            }.let { t -> debug("[TIME MARK] $this costs $t ms.") }
         }
+
+        val asyncTasks = ConcurrentLinkedQueue<Job>()
 
         // 解释器处理
         for (interpreter in interpreters) {
             // 是否支持异步解释
             if (interpreter::class.java.hasAnnotation(ItemInterpreter.AsyncInterpretation::class.java)) {
                 // 异步解释任务
-                val task = launch { interpreter.interpret(stream) }
+                val task = launch { interpreter.interpret() }
                 asyncTasks += task // 进入队列
                 // 完成后跳出队列
                 task.invokeOnCompletion { asyncTasks.remove(task) }
@@ -49,7 +53,14 @@ class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
                 // 等待前面的异步任务完成
                 asyncTasks.joinAll()
                 // 同步解释任务
-                interpreter.interpret(stream)
+                interpreter.interpret()
+            }
+        }
+
+        // 物品源处理
+        val sourceTasks = ItemRegistry.sources.map {
+            launch {
+                SourceInterpreter(it).interpret()
             }
         }
 

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl.builder.provided
+package cn.fd.ratziel.module.item.internal
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter

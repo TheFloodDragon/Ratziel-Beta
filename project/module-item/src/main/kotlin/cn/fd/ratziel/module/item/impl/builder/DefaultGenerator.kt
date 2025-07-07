@@ -2,9 +2,10 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.function.ArgumentContext
-import cn.fd.ratziel.core.function.SimpleContext
-import cn.fd.ratziel.core.function.replenish
+import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.functional.CacheContext
+import cn.fd.ratziel.core.functional.SimpleContext
+import cn.fd.ratziel.core.functional.replenish
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
@@ -29,10 +30,15 @@ class DefaultGenerator(
 ) : ItemGenerator {
 
     /**
+     * 缓存上下文
+     */
+    val cacheContext = CacheContext()
+
+    /**
      * 基础物品流 (经过预处理生成的流)
      */
     val baseStream: NativeItemStream by lazy {
-        createNativeStream(SimpleData(), SimpleContext())
+        createNativeStream(SimpleData(), SimpleContext(cacheContext))
     }
 
     /**
@@ -67,6 +73,7 @@ class DefaultGenerator(
     fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
         // 获取物品流
         val stream = streamGenerating.await()
+        context.put(cacheContext)
         // 更新上下文
         stream.context = context
 

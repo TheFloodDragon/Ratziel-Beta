@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.action
 
-import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.module.item.api.action.ItemAction
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonElement

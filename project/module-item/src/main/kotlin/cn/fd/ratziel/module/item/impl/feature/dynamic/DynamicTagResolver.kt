@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.feature.dynamic
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
-import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver

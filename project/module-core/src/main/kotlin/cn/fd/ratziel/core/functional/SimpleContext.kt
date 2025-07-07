@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.function
+package cn.fd.ratziel.core.functional
 
 import cn.fd.ratziel.core.exception.ArgumentNotFoundException
 import java.util.concurrent.ConcurrentHashMap

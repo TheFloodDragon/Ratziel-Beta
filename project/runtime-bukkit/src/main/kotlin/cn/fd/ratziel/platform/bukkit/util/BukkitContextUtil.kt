@@ -1,6 +1,6 @@
 package cn.fd.ratziel.platform.bukkit.util
 
-import cn.fd.ratziel.core.function.ArgumentContext
+import cn.fd.ratziel.core.functional.ArgumentContext
 import org.bukkit.OfflinePlayer
 import taboolib.common.platform.ProxyPlayer
 

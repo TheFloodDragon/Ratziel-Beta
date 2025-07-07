@@ -87,7 +87,7 @@ object ItemElement : ElementHandler {
     init {
         // 物品解释器注册
         ItemRegistry.registerInterpreter { ActionInterpreter }
-        ItemRegistry.registerInterpreter { DefaultResolver() }
+        ItemRegistry.registerInterpreter { DefaultResolver }
         ItemRegistry.registerInterpreter { DefinitionInterpreter() }
         ItemRegistry.registerInterpreter { NativeDataInterpreter() }
     }
@@ -101,11 +101,11 @@ object ItemElement : ElementHandler {
 
     init {
         // 注册默认的解析器
-        DefaultResolver.registerSectionResolver { InheritResolver }
-        DefaultResolver.registerSectionResolver { InlineScriptResolver() }
-        DefaultResolver.registerSectionResolver { TaggedSectionResolver(TaggedSectionResolver.defaultTagResolvers) }
-        DefaultResolver.registerSectionResolver { PapiResolver }
-        DefaultResolver.registerSectionResolver { EnhancedListResolver }
+        DefaultResolver.registerSectionResolver(InheritResolver)
+        DefaultResolver.registerSectionResolver(InlineScriptResolver)
+        DefaultResolver.registerSectionResolver(TaggedSectionResolver(TaggedSectionResolver.defaultTagResolvers))
+        DefaultResolver.registerSectionResolver(PapiResolver)
+        DefaultResolver.registerSectionResolver(EnhancedListResolver)
         // 纯动态解析器
         DynamicTagService.registerResolver(NativeDataInterpreter.NativeDataResolver)
     }

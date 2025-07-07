@@ -7,12 +7,14 @@ if (typeof getImportedClass == 'undefined' || !(getImportedClass instanceof Func
         value: (function () {
             var global = this;
             var oldNoSuchProperty = global.__noSuchProperty__;
-            var ScriptImporter = Java.type('cn.fd.ratziel.module.script.ScriptManager.Importer');
+            var ScriptImporter = Java.type('cn.fd.ratziel.module.script.ScriptManager.Imports');
             var __noSuchProperty__ = function (name) {
                 'use strict';
                 var clazz = ScriptImporter.getImportedClass(name);
                 if (clazz) {
-                    return Java.type(clazz.name);
+                    var jsClass = Java.type(clazz.getName());
+                    global[clazz.getSimpleName()] = jsClass;
+                    return jsClass;
                 }
                 if (oldNoSuchProperty) {
                     return oldNoSuchProperty.call(this, name);
