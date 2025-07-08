@@ -28,9 +28,9 @@ interface ItemSectionResolver {
     fun resolve(node: JsonTree.Node, context: ArgumentContext) = Unit
 
     /**
-     * 直接尝试获取有效字符串部分
+     * 直接尝试获取字符串部分
      */
-    fun JsonTree.Node.validSection(): JsonTree.PrimitiveNode? {
+    fun JsonTree.Node.stringSection(): JsonTree.PrimitiveNode? {
         return (this as? JsonTree.PrimitiveNode)?.takeIf { isValidSection(it.value) }
     }
 

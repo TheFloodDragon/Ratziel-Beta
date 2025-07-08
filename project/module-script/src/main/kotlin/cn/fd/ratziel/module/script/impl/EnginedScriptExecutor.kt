@@ -12,14 +12,18 @@ import javax.script.*
 abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>() {
 
     /**
+     * 全局脚本引擎实例
+     */
+    open val globalEngine: ScriptEngine by lazy { newEngine() }
+
+    /**
      * 创建脚本引擎实例
      */
     abstract fun newEngine(): ScriptEngine
 
     @Synchronized
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        val engine = newEngine()
-        return engine.eval(script, createContext(engine, environment))
+        return globalEngine.eval(script, createContext(globalEngine, environment))
     }
 
     /**

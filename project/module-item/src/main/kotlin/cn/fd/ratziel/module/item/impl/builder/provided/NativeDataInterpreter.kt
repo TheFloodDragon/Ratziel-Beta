@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.CacheContext
 import cn.fd.ratziel.module.item.api.DataHolder
+import cn.fd.ratziel.module.item.api.builder.AsyncInterpretation
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
@@ -18,7 +19,7 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/5/24 18:21
  */
-@ItemInterpreter.AsyncInterpretation
+@AsyncInterpretation
 object NativeDataInterpreter : ItemInterpreter.PreInterpretable {
 
     /**
@@ -39,7 +40,7 @@ object NativeDataInterpreter : ItemInterpreter.PreInterpretable {
         }
     }
 
-    private val blocksCacher = CacheContext.Catcher<Map<String, ExecutableBlock>>(this)
+    private val blocksCacher = CacheContext.Catcher<Map<String, ExecutableBlock>>(this) { emptyMap() }
 
     override suspend fun preFlow(stream: ItemStream) {
         val element = stream.fetchElement()
@@ -53,11 +54,11 @@ object NativeDataInterpreter : ItemInterpreter.PreInterpretable {
     }
 
     override suspend fun interpret(stream: ItemStream) {
-        // 需求 NativeItemStream
-        if (stream !is NativeItemStream) return
+        // 需求 NativeItemStream 和 RatzielItem
+        if (stream !is NativeItemStream || stream.item !is RatzielItem) return
 
         // 获取语句块表
-        val blocks = blocksCacher.catch(stream.context) ?: return
+        val blocks = blocksCacher.catch(stream.context)
 
         val result = DefinitionInterpreter.executeAll(blocks, stream.context)
 

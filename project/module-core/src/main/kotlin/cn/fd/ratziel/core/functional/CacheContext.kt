@@ -9,14 +9,14 @@ import java.util.function.Supplier
  * @author TheFloodDragon
  * @since 2025/7/7 18:36
  */
-class CacheContext(val context: MutableMap<Any, Any> = ConcurrentHashMap()) {
+class CacheContext(val cache: MutableMap<Any, Any> = ConcurrentHashMap()) {
 
     /**
      * 获取缓存
      */
     fun <T : Any> fetch(key: Any, ifAbsent: Supplier<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return context.computeIfAbsent(key) { ifAbsent.get() } as T
+        return cache.computeIfAbsent(key) { ifAbsent.get() } as T
     }
 
     /**
@@ -24,33 +24,26 @@ class CacheContext(val context: MutableMap<Any, Any> = ConcurrentHashMap()) {
      */
     fun <T> fetchOrNull(key: Any): T? {
         @Suppress("UNCHECKED_CAST")
-        return context[key] as? T
+        return cache[key] as? T
     }
 
     /**
      * 设置缓存
      */
     fun put(key: Any, value: Any) {
-        context[key] = value
+        cache[key] = value
     }
 
     /**
      * 缓存捕获器 - 用于确定缓存类型
      */
-    class Catcher<T : Any>(val key: Any) {
+    class Catcher<T : Any>(val key: Any, val initializer: Supplier<T>) {
 
         /**
          * 捕获缓存
          */
-        fun catch(context: ArgumentContext): T? {
-            return context.cacheContext().fetchOrNull(key)
-        }
-
-        /**
-         * 捕获缓存
-         */
-        fun catch(context: ArgumentContext, ifAbsent: Supplier<T>): T {
-            return context.cacheContext().fetch(key, ifAbsent)
+        fun catch(context: ArgumentContext): T {
+            return context.cacheContext().fetch(key, initializer)
         }
 
         /**

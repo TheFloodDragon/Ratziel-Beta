@@ -71,15 +71,19 @@ object ItemCommand {
         }
         // 开始生成物品
         val time = TimeSource.Monotonic.markNow()
-        generator.build(args).thenAccept {
+        generator.build(args).handle { item, throwable ->
             val duration = time.elapsedNow()
             debug("[TIME MARK] Generated item '$id' in ${duration.inWholeMilliseconds}ms.")
-            // 将生成结果打包成 BukkitItemStack
-            val item = it.toItemStack().apply { setAmount(amount) }
-            submit {
-                // 给予物品
-                player.giveItem(item)
-                future.complete(item)
+            if (throwable == null) {
+                // 将生成结果打包成 BukkitItemStack
+                val itemStack = item.toItemStack().apply { setAmount(amount) }
+                submit {
+                    // 给予物品
+                    player.giveItem(itemStack)
+                    future.complete(itemStack)
+                }
+            } else {
+                throwable.printStackTrace()
             }
         }
         return future

@@ -5,9 +5,9 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.SynchronizedValue
 import cn.fd.ratziel.core.serialization.json.JsonTree
+import cn.fd.ratziel.module.item.api.IdentifiedItem
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemStream
-import cn.fd.ratziel.module.item.impl.RatzielItem
 import kotlinx.serialization.json.JsonElement
 
 /**
@@ -18,7 +18,7 @@ import kotlinx.serialization.json.JsonElement
  */
 class NativeItemStream(
     override val origin: Element,
-    val item: RatzielItem,
+    val item: IdentifiedItem,
     context: ArgumentContext,
     rawElement: JsonElement = origin.property,
 ) : ItemStream {

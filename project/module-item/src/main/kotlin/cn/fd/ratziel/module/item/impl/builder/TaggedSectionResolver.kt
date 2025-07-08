@@ -32,7 +32,7 @@ class TaggedSectionResolver(
      * @return 解析后的字符串
      */
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
-        val section = node.validSection() ?: return
+        val section = node.stringSection() ?: return
         // 读取标签, 拼接字符串片段并返回
         val parts = reader.readToFlatten(section.value.content)
         if (parts.isNotEmpty()) {
@@ -45,7 +45,7 @@ class TaggedSectionResolver(
                     handled ?: (reader.start + it.text + reader.end)
                 } else it.text // 原文本
             }
-            section.literal(resolved)
+            section.value(resolved)
         }
     }
 

@@ -29,9 +29,4 @@ interface ItemInterpreter {
 
     }
 
-    /**
-     * AsyncInterpretation - 可异步解释标记
-     */
-    annotation class AsyncInterpretation
-
 }

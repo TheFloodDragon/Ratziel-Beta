@@ -54,7 +54,7 @@ class DefaultGenerator(
             // 纯静态物品模式处理
             if (strategy.fullStaticMode) {
                 // 直接将静态属性应用到基流
-                applyStaticProperty(baseStream)
+                applyStaticProperty(strategy, baseStream)
             }
         }
     }
@@ -69,7 +69,7 @@ class DefaultGenerator(
             val stream = baseStream.copy()
             // 静态物品模式启用, 并且不是全静态模式
             if (staticStrategy.enabled && !staticStrategy.fullStaticMode) {
-                applyStaticProperty(stream) // 应用静态属性
+                applyStaticProperty(staticStrategy, stream) // 应用静态属性
             }
             return@async stream
         }
@@ -133,11 +133,11 @@ class DefaultGenerator(
     /**
      * 应用静态属性 (使用静态的配置处理流)
      */
-    suspend fun applyStaticProperty(stream: ItemStream) {
+    suspend fun applyStaticProperty(strategy: StaticStrategy, stream: ItemStream) {
         // 原始元素
         val origin = stream.fetchElement()
         // 生成静态物品
-        stream.updateElement(staticStrategy.staticContent ?: return)
+        stream.updateElement(strategy.staticContent ?: return)
         // 好戏开场: 使用静态配置处理流数据
         processStream(stream)
         // 换回去

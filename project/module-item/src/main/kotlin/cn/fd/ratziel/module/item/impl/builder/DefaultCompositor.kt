@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.module.item.ItemRegistry
+import cn.fd.ratziel.module.item.api.builder.AsyncInterpretation
 import cn.fd.ratziel.module.item.api.builder.InterpreterCompositor
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
@@ -41,15 +42,13 @@ class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
         // 解释器处理
         for (interpreter in ItemRegistry.interpreters) {
             // 是否支持异步解释
-            if (interpreter::class.java.hasAnnotation(ItemInterpreter.AsyncInterpretation::class.java)) {
+            if (interpreter::class.java.hasAnnotation(AsyncInterpretation::class.java)) {
                 // 异步解释任务
-                val task = launch { interpreter.interpret() }
-                asyncTasks += task // 进入队列
-                // 完成后跳出队列
-                task.invokeOnCompletion { asyncTasks.remove(task) }
+                asyncTasks += launch { interpreter.interpret() }
             } else {
                 // 等待前面的异步任务完成
                 asyncTasks.joinAll()
+                asyncTasks.clear()
                 // 同步解释任务
                 interpreter.interpret()
             }
@@ -57,14 +56,17 @@ class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
 
         // 物品源处理
         val sourceTasks = ItemRegistry.sources.map {
-            launch {
-                SourceInterpreter(it).interpret()
+            async {
+                SourceInterpreter(it).interpret(stream)
             }
         }
 
         // 等待所有任务完成
-        sourceTasks.joinAll()
         asyncTasks.joinAll()
+        val sourceResults = sourceTasks.awaitAll()
+
+        // 源任务材质重排序
+        SourceInterpreter.sequenceMaterial(stream, sourceResults)
 
     }
 

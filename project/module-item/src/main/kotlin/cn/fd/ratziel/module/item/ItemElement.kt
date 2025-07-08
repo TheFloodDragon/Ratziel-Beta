@@ -94,9 +94,9 @@ object ItemElement : ElementHandler {
 
     init {
         // 物品源注册
+        ItemRegistry.registerSource(NativeSource.MaterialSource)
         ItemRegistry.registerSource(SkullSource)
         ItemRegistry.registerSource(NbtTagSource)
-        ItemRegistry.registerSource(NativeSource.MaterialSource)
     }
 
     init {

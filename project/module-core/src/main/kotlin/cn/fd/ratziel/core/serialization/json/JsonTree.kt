@@ -68,7 +68,7 @@ class JsonTree(
         var value: JsonPrimitive,
         override val parent: Node?,
     ) : Node {
-        fun literal(value: String) {
+        fun value(value: String) {
             this.value = JsonPrimitive(value)
         }
     }

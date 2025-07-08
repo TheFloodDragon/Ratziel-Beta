@@ -18,12 +18,12 @@ import taboolib.platform.compat.replacePlaceholder
 object PapiResolver : ItemSectionResolver, ItemTagResolver {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
-        val section = node.validSection() ?: return
+        val section = node.stringSection() ?: return
         // 仅当有玩家参数的时候解析
         val player = context.player() ?: return
         // 解析 PlaceholderAPI 变量
         val replaced = section.value.content.replacePlaceholder(player)
-        section.literal(replaced)
+        section.value(replaced)
     }
 
     override val alias = arrayOf("papi", "p")

@@ -41,7 +41,7 @@ class ScriptBlock(
         measureTimeMillisWithResult {
             executor.evaluate(script, environment)
         }.also { (time, result) ->
-            debug("[TIME MARK] ScriptBlock(${script !is LiteralScriptContent}) executed in $time ms. Content: $source")
+            debug("[TIME MARK] ScriptBlock(${script::class.java != LiteralScriptContent::class.java}) executed in $time ms. Content: $source")
             return result
         }
     }

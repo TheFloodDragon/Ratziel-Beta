@@ -24,33 +24,33 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object InlineScriptResolver : ItemSectionResolver {
 
-    internal val scripsCatcher = CacheContext.Catcher<MutableMap<String, ScriptBlock>>(this)
+    internal val scripsCatcher = CacheContext.Catcher<MutableMap<String, ScriptBlock>>(this) { ConcurrentHashMap() }
 
     override fun prepare(node: JsonTree.Node, context: ArgumentContext) {
-        val section = node.validSection() ?: return
+        val section = node.stringSection() ?: return
 
         val scripts = analyzeParts(section.value.content).mapNotNull { part ->
             if (part.language != null) {
-                val block = ScriptBlock(part.content, part.language.executor)
-                block.source to block
+                ScriptBlock(part.content, part.language.executor)
             } else null
         }
-        scripsCatcher.catch(context) { ConcurrentHashMap(scripts.toMap()) }
+        // 扔到缓存里
+        scripsCatcher.catch(context).putAll(scripts.associateBy { it.source })
     }
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
-        val section = node.validSection() ?: return
+        val section = node.stringSection() ?: return
         val resolved = analyzeParts(section.value.content).joinToString("") { part ->
             if (part.language != null) {
                 // 获取脚本
-                val script = scripsCatcher.catch(context) { ConcurrentHashMap() }.getOrElse(part.content) {
+                val script = scripsCatcher.catch(context).getOrPut(part.content) {
                     ScriptBlock(part.content, part.language.executor)
                 }
                 // 评估脚本并返回结果
                 script.evaluate(createEnvironment(context)).toString()
             } else part.content
         }
-        section.literal(resolved)
+        section.value(resolved)
     }
 
     fun analyzeParts(content: String): List<ScriptPart> {
@@ -85,10 +85,9 @@ object InlineScriptResolver : ItemSectionResolver {
             }
 
             // 解析内联脚本
-            val script: ScriptBlock = scripsCatcher.catch(context) { ConcurrentHashMap() }
-                .getOrPut(content) {
-                    ScriptBlock(content, (language ?: ScriptManager.defaultLanguage).executor)
-                }
+            val script: ScriptBlock = scripsCatcher.catch(context).getOrPut(content) {
+                ScriptBlock(content, (language ?: ScriptManager.defaultLanguage).executor)
+            }
 
             // 评估脚本并返回结果
             return script.evaluate(createEnvironment(context)).toString()
