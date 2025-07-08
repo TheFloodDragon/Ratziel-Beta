@@ -39,7 +39,7 @@ class ScriptBlock(
 
     fun evaluate(environment: ScriptEnvironment): Any? {
         measureTimeMillisWithResult {
-            evaluate(environment)
+            executor.evaluate(script, environment)
         }.also { (time, result) ->
             debug("[TIME MARK] ScriptBlock(${script !is LiteralScriptContent}) executed in $time ms. Content: $source")
             return result

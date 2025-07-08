@@ -50,15 +50,30 @@ class DefaultGenerator(
      * 静态物品策略
      */
     val staticStrategy: StaticStrategy = runBlocking {
-        StaticStrategy(baseStream.fetchElement())
+        StaticStrategy(baseStream.fetchElement()).also { strategy ->
+            // 纯静态物品模式处理
+            if (strategy.fullStaticMode) {
+                // 直接将静态属性应用到基流
+                applyStaticProperty(baseStream)
+            }
+        }
     }
 
     /**
      * 物品流生成
      *
-     * @param replenish 每获取一次补充一次 (执行一次 [generateStream])
+     * @param replenish 每获取一次补充一次
      */
-    val streamGenerating by replenish { generateStream() }
+    val streamGenerating: Deferred<NativeItemStream> by replenish {
+        ItemElement.scope.async {
+            val stream = baseStream.copy()
+            // 静态物品模式启用, 并且不是全静态模式
+            if (staticStrategy.enabled && !staticStrategy.fullStaticMode) {
+                applyStaticProperty(stream) // 应用静态属性
+            }
+            return@async stream
+        }
+    }
 
     override fun build() = build(SimpleContext())
 
@@ -80,9 +95,9 @@ class DefaultGenerator(
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
 
-        if (!staticStrategy.enabled || !staticStrategy.fullStaticMode) {
-            // 处理物品流 (非纯静态物品)
-            processStream(stream, this)
+        // 非纯静态物品处理物品流
+        if (!staticStrategy.fullStaticMode) {
+            processStream(stream)
         }
 
         // 呼出生成结束的事件
@@ -92,30 +107,9 @@ class DefaultGenerator(
     }.asCompletableFuture()
 
     /**
-     * 生成处理后的物品流
-     */
-    fun generateStream(): Deferred<NativeItemStream> = ItemElement.scope.async {
-        // 复制一下 (必须要复制哈)
-        val stream = baseStream.copy()
-        // 静态物品处理
-        if (staticStrategy.enabled) {
-            // 原始元素
-            val origin = stream.fetchElement()
-            // 生成静态物品
-            stream.updateElement(staticStrategy.staticProperty ?: return@async stream)
-            // 好戏开场: 处理静态物品流
-            processStream(stream, this).join()
-            // 换回去
-            stream.updateElement(origin)
-        }
-        return@async stream
-    }
-
-    /**
      * 处理物品流 (解释 -> 序列化)
      */
-    fun processStream(stream: ItemStream, scope: CoroutineScope) = scope.launch {
-
+    suspend fun processStream(stream: ItemStream) = coroutineScope {
         // 调度编排器处理物品流
         compositor.dispatch(stream)
 
@@ -134,6 +128,20 @@ class DefaultGenerator(
 
         // 等待所有序列化任务完成
         serializationTasks.joinAll()
+    }
+
+    /**
+     * 应用静态属性 (使用静态的配置处理流)
+     */
+    suspend fun applyStaticProperty(stream: ItemStream) {
+        // 原始元素
+        val origin = stream.fetchElement()
+        // 生成静态物品
+        stream.updateElement(staticStrategy.staticContent ?: return)
+        // 好戏开场: 使用静态配置处理流数据
+        processStream(stream)
+        // 换回去
+        stream.updateElement(origin)
     }
 
     /**

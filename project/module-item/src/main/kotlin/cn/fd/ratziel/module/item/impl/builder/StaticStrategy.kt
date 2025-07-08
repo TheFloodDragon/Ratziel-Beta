@@ -21,50 +21,36 @@ class StaticStrategy(val element: JsonElement) {
         private set
 
     /**
-     * 全静态模式
+     * 静态元素内容
+     */
+    var staticContent: JsonElement? = null
+        private set
+
+    /**
+     * 全静态模式 (如果是全静态模式，则整个原始元素都是静态内容)
      */
     var fullStaticMode: Boolean = false
         private set
 
-    /**
-     * 静态属性
-     */
-    var staticProperty: JsonElement? = null
-        private set
-
-    /**
-     * 是否可变
-     * TODO 完成下这个的实现
-     */
-    var mutable: Boolean = true
-        private set
-
     init {
-        initialize()
-    }
-
-    private fun initialize() {
         // 静态物品字段的属性
-        val property = (element as? JsonObject)?.get("static") ?: return
+        val property = (element as? JsonObject)?.get("static")
 
         if (property is JsonPrimitive) {
             // 启用静态物品模式
-            this.enabled = true
-            // 全静态模式: static 是否为 true
-            this.fullStaticMode = property.booleanOrNull == true
+            enabled = property.booleanOrNull == true
+            // 全静态模式
+            if (enabled) fullStaticMode = true
         } else if (property is JsonObject) {
             // 选项调控静态模式的启用 (默认启用)
-            this.enabled = boolean(property, "enabled") ?: true
+            enabled = boolean(property, "enabled") ?: true
             // 选项调控全静态模式的启用 (默认禁用)
-            this.fullStaticMode = boolean(property, "full-static") ?: false
-            this.mutable = boolean(property, "mutable") ?: false
+            if (enabled) fullStaticMode = boolean(property, "full-static") ?: false
         }
 
-        // 全静态模式和半静态模式的属性
-        if (this.fullStaticMode) {
-            this.staticProperty = element
-        } else {
-            this.staticProperty = property
+        if (enabled) {
+            // 如果是全静态模式，则整个原始元素都是静态内容, 反则就是 static 节点下的内容
+            staticContent = if (fullStaticMode) element else property
         }
     }
 

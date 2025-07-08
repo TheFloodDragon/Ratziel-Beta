@@ -10,17 +10,17 @@ import kotlin.reflect.KProperty
  * @since 2025/5/11 10:07
  */
 class Replenishment<T>(
-    private val initializer: () -> T,
+    private val getter: () -> T,
 ) : ReadOnlyProperty<Any?, T> {
 
-    private var value: T = initializer()
+    private var value: T = getter()
 
     @Synchronized
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         // 获取当前的值
         val nowValue = value
         // 重新初始化
-        value = initializer()
+        value = getter()
         // 返回保存的值
         return nowValue
     }
@@ -30,4 +30,4 @@ class Replenishment<T>(
 /**
  * 创建一个补充器
  */
-fun <T> replenish(initializer: () -> T) = Replenishment(initializer)
+fun <T> replenish(getter: () -> T) = Replenishment(getter)
