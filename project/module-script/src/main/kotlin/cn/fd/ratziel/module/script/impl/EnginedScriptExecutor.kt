@@ -23,7 +23,10 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
 
     @Synchronized
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        return globalEngine.eval(script, createContext(globalEngine, environment))
+        val context = createContext(globalEngine, environment)
+        val result = globalEngine.eval(script, context)
+        context.getBindings(ScriptContext.ENGINE_SCOPE).clear() // 清除变量避免上一次的变量造成干扰
+        return result
     }
 
     /**
@@ -41,7 +44,10 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
 
     @Synchronized
     override fun evalCompiled(script: CompiledScript, environment: ScriptEnvironment): Any? {
-        return script.eval(createContext(script.engine, environment))
+        val context = createContext(script.engine, environment)
+        val result = script.eval(createContext(script.engine, environment))
+        context.getBindings(ScriptContext.ENGINE_SCOPE).clear() // 清除变量避免上一次的变量造成干扰
+        return result
     }
 
     /**
