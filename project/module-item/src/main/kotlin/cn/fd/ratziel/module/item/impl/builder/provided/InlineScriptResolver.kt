@@ -12,7 +12,6 @@ import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.block.provided.ScriptBlock
 import cn.fd.ratziel.module.script.util.scriptEnv
 import cn.fd.ratziel.module.script.util.varsMap
-import pers.neige.neigeitems.utils.StringUtils.joinToString
 import taboolib.common.util.VariableReader
 import java.util.concurrent.ConcurrentHashMap
 
