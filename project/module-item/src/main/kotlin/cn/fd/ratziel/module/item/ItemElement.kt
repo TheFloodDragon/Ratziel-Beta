@@ -20,7 +20,7 @@ import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.internal.serializers.*
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -29,6 +29,8 @@ import kotlinx.serialization.serializer
 import taboolib.common.LifeCycle
 import taboolib.library.xseries.XItemFlag
 import taboolib.module.nms.MinecraftVersion
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 /**
  * ItemElement
@@ -44,10 +46,17 @@ import taboolib.module.nms.MinecraftVersion
 object ItemElement : ElementHandler {
 
     /**
+     * 线程池
+     */
+    val executor: ExecutorService by lazy {
+        Executors.newFixedThreadPool(8)
+    }
+
+    /**
      * 协程上下文
      */
     val coroutineContext by lazy {
-        CoroutineName("ItemElement") + Dispatchers.Default
+        CoroutineName("ItemElement") + executor.asCoroutineDispatcher()
     }
 
     /**

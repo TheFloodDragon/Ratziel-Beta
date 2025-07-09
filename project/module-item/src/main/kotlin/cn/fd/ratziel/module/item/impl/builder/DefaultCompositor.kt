@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder
 
+import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.AsyncInterpretation
 import cn.fd.ratziel.module.item.api.builder.InterpreterCompositor
@@ -21,7 +22,7 @@ import kotlin.system.measureTimeMillis
 class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
 
     init {
-        runBlocking {
+        runBlocking(ItemElement.coroutineContext) {
             // 预先解释 (处理基流)
             ItemRegistry.interpreters.forEach {
                 if (it is ItemInterpreter.PreInterpretable) it.preFlow(baseStream)
