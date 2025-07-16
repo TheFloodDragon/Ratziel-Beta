@@ -39,6 +39,7 @@ class SourceInterpreter(val source: ItemSource) {
         /**
          * 物品材料重排序
          */
+        @JvmStatic
         suspend fun sequenceMaterial(stream: ItemStream, results: List<NeoItem?>) {
             stream.data.withValue { data ->
                 sequenceMaterial(data, results.mapNotNull { it?.data })
@@ -48,6 +49,7 @@ class SourceInterpreter(val source: ItemSource) {
         /**
          * 物品材料重排序
          */
+        @JvmStatic
         fun sequenceMaterial(data: ItemData, results: List<ItemData>) {
             for (targetData in results) {
                 if (!targetData.material.isEmpty()) {

@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.CacheContext
-import cn.fd.ratziel.module.item.api.builder.AsyncInterpretation
+import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
@@ -25,7 +25,7 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/5/10 19:49
  */
-@AsyncInterpretation
+@ParallelInterpretation
 object DefinitionInterpreter : ItemInterpreter.PreInterpretable {
 
     /** 处理触发器 **/

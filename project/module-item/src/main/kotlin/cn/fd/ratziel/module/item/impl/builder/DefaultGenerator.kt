@@ -1,20 +1,20 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.CacheContext
 import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.core.functional.replenish
 import cn.fd.ratziel.module.item.ItemElement
-import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
+import kotlinx.coroutines.runBlocking
 
 /**
  * DefaultGenerator
@@ -22,7 +22,7 @@ import kotlinx.coroutines.future.asCompletableFuture
  * @author TheFloodDragon
  * @since 2025/3/22 15:32
  */
-class DefaultGenerator(
+open class DefaultGenerator(
     /**
      * 原始物品配置 (元素)
      */
@@ -32,12 +32,12 @@ class DefaultGenerator(
     /**
      * 缓存上下文
      */
-    val cacheContext = CacheContext()
+    open val cacheContext = CacheContext()
 
     /**
      * 基础物品流 (经过预处理生成的流)
      */
-    val baseStream: NativeItemStream by lazy {
+    open val baseStream: NativeItemStream by lazy {
         createNativeStream(SimpleData(), SimpleContext(cacheContext))
     }
 
@@ -49,7 +49,7 @@ class DefaultGenerator(
     /**
      * 静态物品策略
      */
-    val staticStrategy: StaticStrategy = runBlocking(ItemElement.coroutineContext) {
+    open val staticStrategy: StaticStrategy = runBlocking(ItemElement.coroutineContext) {
         StaticStrategy(baseStream.fetchElement()).also { strategy ->
             // 纯静态物品模式处理
             if (strategy.fullStaticMode) {
@@ -64,7 +64,7 @@ class DefaultGenerator(
      *
      * @param replenish 每获取一次补充一次
      */
-    val streamGenerating: Deferred<NativeItemStream> by replenish {
+    open val streamGenerating: Deferred<NativeItemStream> by replenish {
         ItemElement.scope.async {
             val stream = baseStream.copy()
             // 静态物品模式启用, 并且不是全静态模式
@@ -85,7 +85,7 @@ class DefaultGenerator(
     /**
      * 异步生成物品
      */
-    fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
+    open fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
         // 获取物品流
         val stream = streamGenerating.await()
         context.put(cacheContext)
@@ -97,7 +97,7 @@ class DefaultGenerator(
 
         // 非纯静态物品处理物品流
         if (!staticStrategy.fullStaticMode) {
-            processStream(stream)
+            compositor.dispatch(stream)
         }
 
         // 呼出生成结束的事件
@@ -107,39 +107,15 @@ class DefaultGenerator(
     }.asCompletableFuture()
 
     /**
-     * 处理物品流 (解释 -> 序列化)
-     */
-    suspend fun processStream(stream: ItemStream) = coroutineScope {
-        // 调度编排器处理物品流
-        compositor.dispatch(stream)
-
-        // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
-        val element = stream.fetchElement()
-        val serializationTasks = ItemRegistry.registry.map { integrated ->
-            launch {
-                val generated = ComponentConverter.transformToNbtTag(integrated, element).getOrNull()
-                // 合并数据
-                if (generated as? NbtCompound != null) stream.data.withValue {
-                    // 合并标签
-                    it.tag.merge(generated, true)
-                }
-            }
-        }
-
-        // 等待所有序列化任务完成
-        serializationTasks.joinAll()
-    }
-
-    /**
      * 应用静态属性 (使用静态的配置处理流)
      */
-    suspend fun applyStaticProperty(strategy: StaticStrategy, stream: ItemStream) {
+    open suspend fun applyStaticProperty(strategy: StaticStrategy, stream: ItemStream) {
         // 原始元素
         val origin = stream.fetchElement()
         // 生成静态物品
         stream.updateElement(strategy.staticContent ?: return)
         // 好戏开场: 使用静态配置处理流数据
-        processStream(stream)
+        compositor.dispatch(stream)
         // 换回去
         stream.updateElement(origin)
     }
@@ -147,7 +123,7 @@ class DefaultGenerator(
     /**
      * 创建原生物品流
      */
-    fun createNativeStream(sourceData: ItemData, context: ArgumentContext): NativeItemStream {
+    open fun createNativeStream(sourceData: ItemData, context: ArgumentContext): NativeItemStream {
         // 生成基本物品 (本地源物品)
         val item = NativeSource.generateItem(origin, sourceData)
             ?: throw IllegalStateException("Failed to generate item source!")

@@ -23,10 +23,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
 
     @Synchronized
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        val context = createContext(globalEngine, environment)
-        val result = globalEngine.eval(script, context)
-        context.getBindings(ScriptContext.ENGINE_SCOPE).clear() // 清除变量避免上一次的变量造成干扰
-        return result
+        return globalEngine.eval(script, createContext(globalEngine, environment))
     }
 
     /**
@@ -44,10 +41,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
 
     @Synchronized
     override fun evalCompiled(script: CompiledScript, environment: ScriptEnvironment): Any? {
-        val context = createContext(script.engine, environment)
-        val result = script.eval(createContext(script.engine, environment))
-        context.getBindings(ScriptContext.ENGINE_SCOPE).clear() // 清除变量避免上一次的变量造成干扰
-        return result
+        return script.eval(createContext(script.engine, environment))
     }
 
     /**
@@ -58,12 +52,12 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      */
     @Synchronized
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
+        val context = engine.context
         // 获取执行器上下文
         val contextualBindings = environment.getExecutorContext(this) as? Bindings
-            ?: engine.getBindings(ScriptContext.ENGINE_SCOPE)
+            ?: (context.getBindings(ScriptContext.ENGINE_SCOPE) ?: engine.createBindings())
                 .also { environment.setExecutorContext(this, it) }
 
-        val context = engine.context
         // 执行器上下文的绑定键
         context.setBindings(contextualBindings, ScriptContext.ENGINE_SCOPE)
         // 环境的绑定键 (直接导入全局域多好)

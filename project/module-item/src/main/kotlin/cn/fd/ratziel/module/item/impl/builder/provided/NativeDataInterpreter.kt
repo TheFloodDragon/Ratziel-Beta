@@ -3,10 +3,10 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.CacheContext
 import cn.fd.ratziel.module.item.api.DataHolder
-import cn.fd.ratziel.module.item.api.builder.AsyncInterpretation
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
+import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
@@ -19,7 +19,7 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/5/24 18:21
  */
-@AsyncInterpretation
+@ParallelInterpretation
 object NativeDataInterpreter : ItemInterpreter.PreInterpretable {
 
     /**

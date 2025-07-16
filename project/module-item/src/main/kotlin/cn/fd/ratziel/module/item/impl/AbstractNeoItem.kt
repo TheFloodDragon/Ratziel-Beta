@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item.impl
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.IdentifiedItem
-import cn.fd.ratziel.module.item.impl.builder.ComponentConverter
+import cn.fd.ratziel.module.item.util.ComponentConverter
 
 /**
  * AbstractNeoItem
