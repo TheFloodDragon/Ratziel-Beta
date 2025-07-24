@@ -34,23 +34,28 @@ class PhysicalLayer(
         val LAYER_PATH = RatzielItem.RATZIEL_PATH + NbtPath.NameNode("layer")
 
         /** 内部信息 - 当前图层 **/
-        const val CURRENT_LAYER_NAME = "current_layer"
-
-        /** 内部信息 - 原始图层数据 **/
-        const val ORIGINAL_LAYER_NAME = "original_layer"
+        const val CURRENT_LAYER_NAME = "current"
 
         /** 内部信息 - 存储的图层表 **/
-        const val STORAGE_LAYERS_NAME = "storage_layers"
+        const val STORAGE_LAYERS_NAME = "layers"
+
+        /** 默认图层名称 **/
+        const val DEFAULT_LAYER_NAME = "_"
 
         /**
          * 获取图层
          */
         @JvmStatic
-        fun getLayer(itemData: ItemData, name: String): ItemLayer? =
-            (((itemData.tag.read(LAYER_PATH) as? NbtCompound)
-                ?.get(STORAGE_LAYERS_NAME) as? NbtCompound)
-                ?.get(name) as? NbtCompound)
-                ?.let { PhysicalLayer(name, it) }
+        fun getLayer(itemData: ItemData, name: String): ItemLayer? {
+            val layerInfo = itemData.tag.read(LAYER_PATH, true) as NbtCompound
+            return if (name == DEFAULT_LAYER_NAME) {
+                findLayer(layerInfo, name)
+            } else {
+                ((layerInfo[STORAGE_LAYERS_NAME] as? NbtCompound)
+                    ?.get(name) as? NbtCompound)
+                    ?.let { PhysicalLayer(name, it) }
+            }
+        }
 
         /**
          * 从物品中读取图层表
@@ -77,6 +82,18 @@ class PhysicalLayer(
             }
         }
 
+        /**
+         * 寻找 [ItemLayer], 找不到就一路创建
+         */
+        @JvmStatic
+        internal fun findLayer(tag: NbtCompound, name: String): PhysicalLayer {
+            val storage = tag[STORAGE_LAYERS_NAME] as? NbtCompound
+                ?: NbtCompound().also { tag[STORAGE_LAYERS_NAME] = it }
+            val layerData = storage[name] as? NbtCompound
+                ?: NbtCompound().also { storage[name] = it }
+            return PhysicalLayer(name, layerData)
+        }
+
     }
 
     /**
@@ -96,28 +113,29 @@ class PhysicalLayer(
         override fun render(item: NeoItem, layer: ItemLayer) {
             val root = item.data.tag // 物品数据根
             root.handle(LAYER_PATH) {
+                // 获取当前图层
+                val currentLayerName = get(CURRENT_LAYER_NAME)?.content as? String ?: DEFAULT_LAYER_NAME
+                val currentLayer = findLayer(this@handle, currentLayerName)
 
-                // 恢复之前存储的原始图层数据
-                val originalLayer = get(ORIGINAL_LAYER_NAME) as? NbtCompound
-                    ?: NbtCompound().also { put(ORIGINAL_LAYER_NAME, it) }
-                for ((key, value) in originalLayer) {
-                    if (value == REMOVE_MARK) {
-                        root.remove(key)
-                    } else {
-                        root.put(key, value)
+                // 将当前图层的数据存到 存储的图层表 中
+                val currentLayerData = currentLayer.data.tag
+                if (currentLayerData.isEmpty() && currentLayerName == DEFAULT_LAYER_NAME) {
+                    // 默认图层在 存储的图层表 中一开始没有, 故需要通过 要设置的图层 来初始化
+                    for ((key, _) in layer.data.tag) {
+                        currentLayerData[key] = root[key] ?: REMOVE_MARK
+                    }
+                } else {
+                    for ((key, _) in currentLayerData) {
+                        currentLayerData[key] = root[key] ?: REMOVE_MARK
                     }
                 }
-                originalLayer.clear() // 清空原始图层数据
 
-                if (layer !is ItemLayer.Default) {
-                    // 更换图层
-                    for ((key, value) in layer.data.tag) {
-                        // 将物品数据扔到原始图层
-                        originalLayer[key] = root[key] ?: REMOVE_MARK
-                        // 写入新图层数据
-                        root.put(key, value)
-                    }
+                // 更换图层
+                for ((key, value) in layer.data.tag) {
+                    // 写入新图层数据
+                    if (value == REMOVE_MARK) root.remove(key) else root.put(key, value)
                 }
+
                 // 设置当前图层
                 put(CURRENT_LAYER_NAME, layer.name)
             }

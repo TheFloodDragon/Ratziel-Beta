@@ -39,12 +39,4 @@ interface ItemLayer {
 
     }
 
-    /**
-     * 默认图层标记
-     */
-    object Default : ItemLayer {
-        override val name = "_"
-        override val data get() = throw IllegalAccessException("Default layer does not have data, use StaticLayer or other implementations instead.")
-    }
-
 }

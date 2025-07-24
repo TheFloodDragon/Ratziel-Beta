@@ -5,7 +5,6 @@ import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
-import org.graalvm.polyglot.proxy.ProxyObject
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
@@ -40,12 +39,10 @@ object GraalJsScriptExecutor : EnginedScriptExecutor(), NonStrictCompilation {
         return engine
     }
 
-    @Synchronized
     override fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
         val context = super.createContext(engine, environment)
         // GraalJS 导入全局类是从 全局域 导入到 引擎域, 所以此处需要重新导入下 (手动导入)
-        val proxy = ProxyObject.fromMap(context.getBindings(ScriptContext.ENGINE_SCOPE))
-        (engine as GraalJSScriptEngine).polyglotContext.getBindings("js").getMember("importScriptEngineGlobalBindings").execute(proxy)
+        context.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context.getBindings(ScriptContext.GLOBAL_SCOPE))
         return context
     }
 
