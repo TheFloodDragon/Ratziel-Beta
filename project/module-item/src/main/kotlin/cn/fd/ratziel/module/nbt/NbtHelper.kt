@@ -51,8 +51,8 @@ object NbtHelper {
      * 通过路径写入 [NbtTag]
      */
     @JvmStatic
-    fun write(tag: NbtTag, path: Iterable<NbtPath.Node>, target: NbtTag, create: Boolean) {
-        val find = read(tag, path.drop(1), create)
+    fun write(tag: NbtTag, path: List<NbtPath.Node>, target: NbtTag, create: Boolean) {
+        val find = read(tag, path.dropLast(1), create)
         val last = path.last()
         if (find is NbtCompound && last is NbtPath.NameNode) {
             find[last.name] = target
@@ -65,8 +65,8 @@ object NbtHelper {
      * 删除指定路径的数据
      */
     @JvmStatic
-    fun delete(tag: NbtTag, path: Iterable<NbtPath.Node>) {
-        val find = read(tag, path.drop(1), false)
+    fun delete(tag: NbtTag, path: List<NbtPath.Node>) {
+        val find = read(tag, path.dropLast(1), false)
         val last = path.last()
         if (find is NbtCompound && last is NbtPath.NameNode) {
             find.remove(last.name)

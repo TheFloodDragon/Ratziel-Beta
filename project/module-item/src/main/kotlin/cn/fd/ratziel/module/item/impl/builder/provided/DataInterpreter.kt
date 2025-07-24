@@ -2,7 +2,9 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.getBy
+import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.DataHolder
+import cn.fd.ratziel.module.item.api.IdentifiedItem
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
@@ -156,14 +158,28 @@ class DataInterpreter : ItemInterpreter {
     }
 
     /**
-     * 计算层标签解析器 - 由 [DataInterpreter] 管理 (不支持动态解析)
+     * 计算层标签解析器 - 由 [DataInterpreter] 管理 (支持动态解析)
      */
     object ComputationResolver : ItemTagResolver {
         override val alias = COMPUTATION_ALIAS + PROPERTIES_ALIAS
         override fun resolve(args: List<String>, context: ArgumentContext): String? {
-            val vars = context.popOrNull(VariablesMap::class.java) ?: return null
-            val value = vars[args.firstOrNull() ?: return null]
-            return value.toString()
+            val key = args.firstOrNull() ?: return null
+            val vars = context.popOrNull(VariablesMap::class.java)
+
+            if (vars == null || !vars.containsKey(key)) {
+                // 如果变量表中没有这个键, 则尝试从物品中获取
+                val item = context.popOrNull(IdentifiedItem::class.java) ?: return null
+                val interpreter = ItemManager.registry[item.identifier.content]?.compositor
+                    ?.getInterpreter(DataInterpreter::class.java) ?: return null
+                // 可以获取属性的或者计算值
+                return when {
+                    interpreter.properties.containsKey(key) -> interpreter.properties[key].toString()
+                    interpreter.computationBlocks.containsKey(key) -> interpreter.computationBlocks[key]?.execute(context).toString()
+                    else -> null
+                }
+            } else {
+                return vars[key].toString()
+            }
         }
     }
 

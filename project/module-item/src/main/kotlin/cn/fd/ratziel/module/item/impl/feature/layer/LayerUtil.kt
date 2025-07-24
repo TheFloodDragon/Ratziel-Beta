@@ -14,6 +14,14 @@ object LayerUtil {
      * 渲染物品图层
      */
     @JvmStatic
+    fun render(item: NeoItem, name: Int) {
+        render(item, name.toString())
+    }
+
+    /**
+     * 渲染物品图层
+     */
+    @JvmStatic
     fun render(item: NeoItem, name: String) {
         val layer = PhysicalLayer.getLayer(item.data, name)
             ?: throw IllegalArgumentException("Layer '$name' not found in item $item!")

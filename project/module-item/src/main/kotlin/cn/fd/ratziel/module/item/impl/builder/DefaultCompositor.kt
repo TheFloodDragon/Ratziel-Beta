@@ -77,4 +77,10 @@ class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
         ComponentInterpreter.interpret()
     }
 
+    override fun <T : ItemInterpreter> getInterpreter(type: Class<T>): T {
+        @Suppress("UNCHECKED_CAST")
+        return this.interpreters.find { it::class.java == type } as? T
+            ?: throw NoSuchElementException("Interpreter of type ${type.simpleName} not found.")
+    }
+
 }

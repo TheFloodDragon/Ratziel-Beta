@@ -119,6 +119,7 @@ object ItemElement : ElementHandler {
         ItemRegistry.registerStaticTagResolver(InheritResolver)
         // 只支持 *动态* 标签的标签解析器
         ItemRegistry.registerDynamicTagResolver(DataInterpreter.NativeDataResolver)
+        ItemRegistry.registerDynamicTagResolver(DataInterpreter.ComputationResolver)
     }
 
     override fun handle(element: Element) {

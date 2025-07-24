@@ -19,22 +19,22 @@ import cn.altawk.nbt.tag.NbtTag
  */
 inline fun NbtCompound.read(
     path: Iterable<NbtPath.Node>,
-    create: Boolean = false
+    create: Boolean = false,
 ): NbtTag? = NbtHelper.read(this, path, create)
 
 /**
  * 通过路径写入 [NbtTag]
  */
 inline fun NbtCompound.write(
-    path: Iterable<NbtPath.Node>,
+    path: List<NbtPath.Node>,
     target: NbtTag,
-    create: Boolean = true
+    create: Boolean = true,
 ) = NbtHelper.write(this, path, target, create)
 
 /**
  * 删除指定路径的数据
  */
-inline fun NbtCompound.delete(path: Iterable<NbtPath.Node>) = NbtHelper.delete(this, path)
+inline fun NbtCompound.delete(path: List<NbtPath.Node>) = NbtHelper.delete(this, path)
 
 /**
  * 通过路径获取 [NbtCompound] 并进行处理
@@ -42,7 +42,7 @@ inline fun NbtCompound.delete(path: Iterable<NbtPath.Node>) = NbtHelper.delete(t
 inline fun NbtCompound.handle(
     path: Iterable<NbtPath.Node>,
     create: Boolean = true,
-    noinline action: NbtCompound.() -> Unit
+    noinline action: NbtCompound.() -> Unit,
 ) = NbtHelper.handle(this, path, create, action)
 
 /**

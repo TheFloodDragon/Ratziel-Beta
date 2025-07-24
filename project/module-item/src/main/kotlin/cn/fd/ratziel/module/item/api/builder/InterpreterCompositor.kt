@@ -13,4 +13,9 @@ interface InterpreterCompositor {
      */
     suspend fun dispatch(stream: ItemStream)
 
+    /**
+     * 获取物品解释器.
+     */
+    fun <T : ItemInterpreter> getInterpreter(type: Class<T>): T
+
 }
