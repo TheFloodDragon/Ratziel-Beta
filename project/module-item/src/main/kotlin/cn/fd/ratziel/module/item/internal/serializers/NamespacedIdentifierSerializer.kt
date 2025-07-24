@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.internal.serializers
 
-import cn.fd.ratziel.module.item.impl.NamespacedIdentifier
+import cn.fd.ratziel.module.item.impl.component.NamespacedIdentifier
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

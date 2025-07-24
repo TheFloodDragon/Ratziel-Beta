@@ -6,6 +6,7 @@ import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
+import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
@@ -35,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author TheFloodDragon
  * @since 2025/7/24 11:44
  */
+@ParallelInterpretation
 class DataInterpreter : ItemInterpreter {
 
     /**

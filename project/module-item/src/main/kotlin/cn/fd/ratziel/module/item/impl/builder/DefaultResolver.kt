@@ -7,6 +7,7 @@ import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemStream
+import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -15,6 +16,7 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @author TheFloodDragon
  * @since 2025/5/3 18:32
  */
+@ParallelInterpretation
 object DefaultResolver : ItemInterpreter {
 
     override suspend fun preFlow(stream: ItemStream) {

@@ -14,6 +14,7 @@ import cn.fd.ratziel.module.item.impl.builder.NativeSource
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
+import cn.fd.ratziel.module.item.impl.feature.layer.PhysicalLayerInterpreter
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.internal.serializers.*
@@ -93,10 +94,11 @@ object ItemElement : ElementHandler {
     }
 
     init {
-        // 物品解释器注册 - 使用 Supplier 模式
+        // 物品解释器注册
         ItemRegistry.registerInterpreter(ActionInterpreter)
         ItemRegistry.registerInterpreter(DefaultResolver)
         ItemRegistry.registerInterpreter { DataInterpreter() }
+        ItemRegistry.registerInterpreter(PhysicalLayerInterpreter)
     }
 
     init {

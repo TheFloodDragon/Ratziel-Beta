@@ -69,7 +69,7 @@ class RatzielItem private constructor(
          * 物品数据节点
          */
         @JvmStatic
-        val RATZIEL_DATA_PATH = RATZIEL_PATH.plus(NbtPath.NameNode("data"))
+        val RATZIEL_DATA_PATH = RATZIEL_PATH + NbtPath.NameNode("data")
 
         /**
          * 由 [ItemData] 创建 [RatzielItem]
@@ -172,7 +172,7 @@ class RatzielItem private constructor(
              * 专有信息节点
              */
             @JvmStatic
-            private val INTERNAL_PATH = RATZIEL_PATH.plus(NbtPath.NameNode("internal"))
+            private val INTERNAL_PATH = RATZIEL_PATH + NbtPath.NameNode("internal")
 
             /**
              * 内部信息 - [identifier]

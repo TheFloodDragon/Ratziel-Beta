@@ -4,7 +4,7 @@ import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.*
 import cn.fd.ratziel.module.item.impl.builder.provided.ComponentInterpreter
-import cn.fd.ratziel.module.item.internal.SourceInterpreter
+import cn.fd.ratziel.module.item.impl.builder.provided.SourceInterpreter
 import kotlinx.coroutines.*
 import taboolib.common.platform.function.debug
 import taboolib.common.reflect.hasAnnotation

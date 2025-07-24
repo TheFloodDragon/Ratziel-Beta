@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.impl
+package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.internal.serializers.NamespacedIdentifierSerializer
 import kotlinx.serialization.Serializable
