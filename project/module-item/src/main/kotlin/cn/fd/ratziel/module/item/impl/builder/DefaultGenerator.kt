@@ -30,7 +30,7 @@ open class DefaultGenerator(
 ) : ItemGenerator {
 
     /**
-     * 缓存上下文
+     * 针对同元素物品的缓存上下文
      */
     open val cacheContext = CacheContext()
 

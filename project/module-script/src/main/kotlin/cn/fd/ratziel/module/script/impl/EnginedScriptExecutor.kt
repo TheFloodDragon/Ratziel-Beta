@@ -12,18 +12,13 @@ import javax.script.*
 abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>() {
 
     /**
-     * 全局脚本引擎实例
-     */
-    open val globalEngine: ScriptEngine by lazy { newEngine() }
-
-    /**
      * 创建脚本引擎实例
      */
     abstract fun newEngine(): ScriptEngine
 
-    @Synchronized
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        return globalEngine.eval(script, createContext(globalEngine, environment))
+        val engine = newEngine()
+        return engine.eval(script, createContext(engine, environment))
     }
 
     /**
@@ -32,7 +27,6 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      * @param script 原始脚本
      * @param environment 脚本环境 (默认情况下不被使用, 若需要导入环境, 请重写此方法)
      */
-    @Synchronized
     override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
         val engine = newEngine()
         engine.context = createContext(engine, environment)
@@ -50,7 +44,6 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      * @param engine 脚本引擎
      * @param environment 脚本环境
      */
-    @Synchronized
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
         val context = engine.context
         // 获取执行器上下文

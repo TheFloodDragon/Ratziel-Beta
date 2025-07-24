@@ -1,14 +1,10 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
-import cn.fd.ratziel.module.item.api.builder.InterpreterCompositor
-import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
-import cn.fd.ratziel.module.item.api.builder.ItemStream
-import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
+import cn.fd.ratziel.module.item.api.builder.*
+import cn.fd.ratziel.module.item.impl.builder.provided.ComponentInterpreter
 import cn.fd.ratziel.module.item.internal.SourceInterpreter
-import cn.fd.ratziel.module.item.util.ComponentConverter
 import kotlinx.coroutines.*
 import taboolib.common.platform.function.debug
 import taboolib.common.reflect.hasAnnotation
@@ -23,13 +19,20 @@ import kotlin.system.measureTimeMillis
  */
 class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
 
+    /**
+     * 物品解释器列表
+     */
+    val interpreters: List<ItemInterpreter> = ItemRegistry.getInterpreterInstances()
+
+    /**
+     * 物品源列表
+     */
+    val sources: List<ItemSource> = ItemRegistry.sources.toList()
+
     init {
         runBlocking(ItemElement.coroutineContext) {
-            // 预先解释 (处理基流)
-            ItemRegistry.interpreters.forEach {
-                // 预处理流
-                if (it is ItemInterpreter.PreInterpretable) it.preFlow(baseStream)
-            }
+            // 预解释 (预处理基流)
+            interpreters.forEach { it.preFlow(baseStream) }
         }
     }
 
@@ -44,61 +47,34 @@ class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
             }.let { t -> debug("[TIME MARK] $this costs $t ms.") }
         }
 
-        val asyncTasks = ConcurrentLinkedQueue<Job>()
+        val parallelTasks = ConcurrentLinkedQueue<Job>()
 
         // 解释器处理
-        for (interpreter in ItemRegistry.interpreters) {
-            // 是否支持异步解释
+        for (interpreter in interpreters) {
+            // 是否支持并行解释
             if (interpreter::class.java.hasAnnotation(ParallelInterpretation::class.java)) {
-                // 异步解释任务
-                asyncTasks += launch { interpreter.interpret() }
+                // 并行解释任务
+                parallelTasks += launch { interpreter.interpret() }
             } else {
-                // 等待前面的异步任务完成
-                asyncTasks.joinAll()
-                asyncTasks.clear()
-                // 同步解释任务
+                // 等待前面的并行任务完成
+                parallelTasks.joinAll()
+                parallelTasks.clear()
+                // 串行解释任务
                 interpreter.interpret()
             }
         }
 
+        // 等待所有并行任务完成
+        parallelTasks.joinAll()
+
         // 物品源处理
-        val sourceTasks = ItemRegistry.sources.map {
-            async {
-                SourceInterpreter(it).interpret(stream)
-            }
-        }
+        val sourcesTask = SourceInterpreter.parallelInterpret(sources, stream)
 
-        // 等待所有任务完成
-        asyncTasks.joinAll()
-        val sourceResults = sourceTasks.awaitAll()
+        // 物品源任务也需要在最后完成
+        sourcesTask.join()
 
-        // 源任务材质重排序
-        SourceInterpreter.sequenceMaterial(stream, sourceResults)
-
-        // 序列化任务解释
+        // 序列化任务解释 (手动调用)
         ComponentInterpreter.interpret()
-
-    }
-
-    private object ComponentInterpreter : ItemInterpreter {
-
-        override suspend fun interpret(stream: ItemStream) = coroutineScope {
-            // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
-            val element = stream.fetchElement()
-            val serializationTasks = ItemRegistry.registry.map { integrated ->
-                launch {
-                    val generated = ComponentConverter.transformToNbtTag(integrated, element).getOrNull()
-                    // 合并数据
-                    if (generated as? NbtCompound != null) stream.data.withValue {
-                        // 合并标签
-                        it.tag.merge(generated, true)
-                    }
-                }
-            }
-            // 等待所有序列化任务完成
-            serializationTasks.joinAll()
-        }
-
     }
 
 }

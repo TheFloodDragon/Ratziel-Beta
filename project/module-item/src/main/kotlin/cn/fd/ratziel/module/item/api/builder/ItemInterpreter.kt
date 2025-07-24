@@ -9,24 +9,15 @@ package cn.fd.ratziel.module.item.api.builder
 interface ItemInterpreter {
 
     /**
+     * 预解释
+     */
+    suspend fun preFlow(stream: ItemStream) = Unit
+
+    /**
      * 解释物品流
      *
      * @param stream 物品流
      */
-    suspend fun interpret(stream: ItemStream)
-
-    /**
-     * PreInterpretable - 可预解释型 [ItemInterpreter]
-     */
-    interface PreInterpretable : ItemInterpreter {
-
-        /**
-         * 预解释
-         */
-        suspend fun preFlow(stream: ItemStream)
-
-        override suspend fun interpret(stream: ItemStream) = Unit
-
-    }
+    suspend fun interpret(stream: ItemStream) = Unit
 
 }

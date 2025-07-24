@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @author TheFloodDragon
  * @since 2025/5/3 18:32
  */
-object DefaultResolver : ItemInterpreter.PreInterpretable {
+object DefaultResolver : ItemInterpreter {
 
     override suspend fun preFlow(stream: ItemStream) {
         stream.tree.withValue { tree ->

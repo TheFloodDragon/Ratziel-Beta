@@ -2,10 +2,10 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.CacheContext
-import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
+import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
@@ -26,7 +26,7 @@ import kotlinx.serialization.json.JsonObject
  * @since 2025/5/10 19:49
  */
 @ParallelInterpretation
-object DefinitionInterpreter : ItemInterpreter.PreInterpretable {
+object DefinitionInterpreter : ItemInterpreter {
 
     /** 处理触发器 **/
     val PROCESS_TRIGGER = registerTrigger("onProcess", "process")

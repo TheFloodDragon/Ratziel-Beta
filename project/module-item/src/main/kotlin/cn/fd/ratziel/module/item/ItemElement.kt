@@ -94,11 +94,10 @@ object ItemElement : ElementHandler {
     }
 
     init {
-        // 物品解释器注册
+        // 物品解释器注册 - 使用 Supplier 模式
         ItemRegistry.registerInterpreter(ActionInterpreter)
         ItemRegistry.registerInterpreter(DefaultResolver)
-        ItemRegistry.registerInterpreter(DefinitionInterpreter)
-        ItemRegistry.registerInterpreter(NativeDataInterpreter)
+        ItemRegistry.registerInterpreter { DataInterpreter() }
     }
 
     init {

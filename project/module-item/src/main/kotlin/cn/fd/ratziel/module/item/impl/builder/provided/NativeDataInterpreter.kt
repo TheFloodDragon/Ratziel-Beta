@@ -20,7 +20,7 @@ import kotlinx.serialization.json.JsonObject
  * @since 2025/5/24 18:21
  */
 @ParallelInterpretation
-object NativeDataInterpreter : ItemInterpreter.PreInterpretable {
+object NativeDataInterpreter : ItemInterpreter{
 
     /**
      * 原生数据解析器

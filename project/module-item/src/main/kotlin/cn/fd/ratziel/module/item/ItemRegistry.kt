@@ -6,6 +6,7 @@ import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.function.Supplier
 
 /**
  * ItemRegistry - 物品注册表
@@ -18,16 +19,19 @@ object ItemRegistry {
     /**
      * 组件集成注册表
      */
+    @JvmField
     val registry: MutableList<ComponentIntegrated<*>> = CopyOnWriteArrayList()
 
     /**
      * 物品解释器注册表
      */
-    val interpreters: MutableList<ItemInterpreter> = CopyOnWriteArrayList()
+    @JvmField
+    val interpreters: MutableList<InterpreterIntegrated<*>> = CopyOnWriteArrayList()
 
     /**
      * 物品源列表
      */
+    @JvmField
     val sources: MutableList<ItemSource> = CopyOnWriteArrayList()
 
     /**
@@ -59,8 +63,27 @@ object ItemRegistry {
      * 注册物品解释器
      */
     @JvmStatic
-    fun registerInterpreter(interpreter: ItemInterpreter) {
-        interpreters.add(interpreter)
+    @JvmOverloads
+    inline fun <reified T : ItemInterpreter> registerInterpreter(priority: Int = 0, interpreter: Supplier<T>) {
+        interpreters.add(InterpreterIntegrated(T::class.java, interpreter, priority))
+    }
+
+    /**
+     * 注册物品解释器
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun registerInterpreter(interpreter: ItemInterpreter, priority: Int = 0) {
+        interpreters.add(InterpreterIntegrated(interpreter::class.java, { interpreter }, priority))
+    }
+
+    /**
+     * 获取物品解释器列表 (排序并获取完实例的列表)
+     */
+    @JvmStatic
+    fun getInterpreterInstances(): List<ItemInterpreter> {
+        // 按照优先级排序
+        return interpreters.sortedBy { it.priority }.map { it.getter.get() }
     }
 
     /**
@@ -74,6 +97,18 @@ object ItemRegistry {
         }
         this.sources.add(source)
     }
+
+    /**
+     * 物品解释器集成
+     */
+    class InterpreterIntegrated<T : ItemInterpreter>(
+        /** 物品解释器类型 **/
+        val type: Class<out T>,
+        /** 物品解释器构建器 **/
+        val getter: Supplier<T>,
+        /** 物品解释器优先级 **/
+        val priority: Int,
+    )
 
     /**
      * 物品组件集成

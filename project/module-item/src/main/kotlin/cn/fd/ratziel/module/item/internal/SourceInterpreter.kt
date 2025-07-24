@@ -1,10 +1,10 @@
 package cn.fd.ratziel.module.item.internal
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.api.builder.ItemStream
+import kotlinx.coroutines.*
 
 /**
  * SourceInterpreter
@@ -37,31 +37,36 @@ class SourceInterpreter(val source: ItemSource) {
     companion object {
 
         /**
-         * 物品材料重排序
+         * 并行解释物品源表
          */
         @JvmStatic
-        suspend fun sequenceMaterial(stream: ItemStream, results: List<NeoItem?>) {
-            stream.data.withValue { data ->
-                sequenceMaterial(data, results.mapNotNull { it?.data })
-            }
-        }
+        suspend fun parallelInterpret(sources: List<ItemSource>, stream: ItemStream): Job = coroutineScope {
+            launch {
+                // 物品源解释任务
+                val tasks = sources.map {
+                    // 并行解释每个物品源
+                    async { SourceInterpreter(it).interpret(stream) }
+                }
 
-        /**
-         * 物品材料重排序
-         */
-        @JvmStatic
-        fun sequenceMaterial(data: ItemData, results: List<ItemData>) {
-            for (targetData in results) {
-                if (!targetData.material.isEmpty()) {
-                    data.material = targetData.material
-                    break
+                // 等待所有任务完成并收集数据
+                val results = tasks.awaitAll().mapNotNull { it?.data }
+
+                // 物品材料重排序
+                stream.data.withValue { data ->
+                    for (targetData in results) {
+                        if (!targetData.material.isEmpty()) {
+                            data.material = targetData.material
+                            break
+                        }
+                    }
+                    for (targetData in results) {
+                        if (targetData.amount > 1) {
+                            data.amount = targetData.amount
+                            break
+                        }
+                    }
                 }
-            }
-            for (targetData in results) {
-                if (targetData.amount > 1) {
-                    data.amount = targetData.amount
-                    break
-                }
+
             }
         }
 

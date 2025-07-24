@@ -16,7 +16,7 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/5/10 16:38
  */
-object ActionInterpreter : ItemInterpreter.PreInterpretable {
+object ActionInterpreter : ItemInterpreter {
 
     /**
      * 动作节点名称
