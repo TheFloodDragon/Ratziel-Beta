@@ -7,7 +7,6 @@ import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemStream
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -21,7 +20,7 @@ object DefaultResolver : ItemInterpreter {
     override suspend fun preFlow(stream: ItemStream) {
         stream.tree.withValue { tree ->
             tree.root.unfold {
-                for (resolver in sectionResolvers) {
+                for (resolver in ItemRegistry.sectionResolvers) {
                     // 准备阶段
                     resolver.prepare(it, stream.context)
                 }
@@ -31,7 +30,7 @@ object DefaultResolver : ItemInterpreter {
 
     override suspend fun interpret(stream: ItemStream) {
         stream.tree.withValue { tree ->
-            resolveTree(tree, stream.context, sectionResolvers)
+            resolveTree(tree, stream.context, ItemRegistry.sectionResolvers)
         }
     }
 
@@ -40,19 +39,6 @@ object DefaultResolver : ItemInterpreter {
      */
     val accessibleNodes: MutableSet<String> by lazy {
         CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
-    }
-
-    /**
-     * 默认 [ItemSectionResolver] 列表
-     */
-    val sectionResolvers: MutableList<ItemSectionResolver> = CopyOnWriteArrayList()
-
-    /**
-     * 注册默认的 [ItemSectionResolver]
-     */
-    @JvmStatic
-    fun registerSectionResolver(resolver: ItemSectionResolver) {
-        sectionResolvers.add(resolver)
     }
 
     /**

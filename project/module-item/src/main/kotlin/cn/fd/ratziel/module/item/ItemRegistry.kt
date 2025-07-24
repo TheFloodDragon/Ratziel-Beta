@@ -1,9 +1,12 @@
 package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
+import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSource
+import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
+import cn.fd.ratziel.module.item.impl.feature.dynamic.DynamicTagService
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Supplier
@@ -33,6 +36,17 @@ object ItemRegistry {
      */
     @JvmField
     val sources: MutableList<ItemSource> = CopyOnWriteArrayList()
+
+    /**
+     * 物品解析器列表
+     */
+    val sectionResolvers: MutableList<ItemSectionResolver> = CopyOnWriteArrayList()
+
+    /**
+     * 默认的静态物品标签解析器列表
+     */
+    @JvmField
+    val staticTagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
 
     /**
      * 注册组件
@@ -96,6 +110,30 @@ object ItemRegistry {
             DefaultResolver.accessibleNodes.addAll(source.names)
         }
         this.sources.add(source)
+    }
+
+    /**
+     * 注册 [ItemSectionResolver]
+     */
+    @JvmStatic
+    fun registerSectionResolver(resolver: ItemSectionResolver) {
+        sectionResolvers.add(resolver)
+    }
+
+    /**
+     * 注册默认的静态物品标签解析器
+     */
+    @JvmStatic
+    fun registerStaticTagResolver(resolver: ItemTagResolver) {
+        staticTagResolvers.add(resolver)
+    }
+
+    /**
+     * 注册默认的动态物品标签解析器
+     */
+    @JvmStatic
+    fun registerDynamicTagResolver(resolver: ItemTagResolver) {
+        DynamicTagService.registerResolver(resolver)
     }
 
     /**

@@ -6,7 +6,6 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.TemplateElement
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -20,11 +19,6 @@ import taboolib.common.platform.function.warning
  * @since 2025/5/4 15:44
  */
 object InheritResolver : ItemSectionResolver, ItemTagResolver {
-
-    init {
-        // 注册标签解析器 (不支持动态解析器)
-        TaggedSectionResolver.registerTagResolver(this)
-    }
 
     override fun prepare(node: JsonTree.Node, context: ArgumentContext) {
         // 仅处理根节点, 根节点需为对象节点

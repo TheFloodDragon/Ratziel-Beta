@@ -14,7 +14,6 @@ import cn.fd.ratziel.module.item.impl.builder.NativeSource
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
-import cn.fd.ratziel.module.item.impl.feature.dynamic.DynamicTagService
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.internal.serializers.*
@@ -109,13 +108,15 @@ object ItemElement : ElementHandler {
 
     init {
         // 注册默认的解析器
-        DefaultResolver.registerSectionResolver(InheritResolver)
-        DefaultResolver.registerSectionResolver(InlineScriptResolver)
-        DefaultResolver.registerSectionResolver(TaggedSectionResolver(TaggedSectionResolver.defaultTagResolvers))
-        DefaultResolver.registerSectionResolver(PapiResolver)
-        DefaultResolver.registerSectionResolver(EnhancedListResolver)
-        // 默认支持的动态标签解析器
-        DynamicTagService.registerResolver(NativeDataInterpreter.NativeDataResolver)
+        ItemRegistry.registerSectionResolver(InheritResolver)
+        ItemRegistry.registerSectionResolver(InlineScriptResolver)
+        ItemRegistry.registerSectionResolver(TaggedSectionResolver(ItemRegistry.staticTagResolvers))
+        ItemRegistry.registerSectionResolver(PapiResolver)
+        ItemRegistry.registerSectionResolver(EnhancedListResolver)
+        // 只支持 *静态* 标签的标签解析器
+        ItemRegistry.registerStaticTagResolver(InheritResolver)
+        // 只支持 *动态* 标签的标签解析器
+        ItemRegistry.registerDynamicTagResolver(DataInterpreter.NativeDataResolver)
     }
 
     override fun handle(element: Element) {

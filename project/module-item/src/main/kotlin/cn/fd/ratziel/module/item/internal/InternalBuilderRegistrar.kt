@@ -1,9 +1,8 @@
 package cn.fd.ratziel.module.item.internal
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
+import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
-import cn.fd.ratziel.module.item.impl.feature.dynamic.DynamicTagService
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
@@ -25,8 +24,8 @@ class InternalBuilderRegistrar : ClassVisitor(10) {
         // 注册 ItemTagResolver
         if (clazz.hasInterface(ItemTagResolver::class.java)) {
             val resolver = findInstance(clazz) as? ItemTagResolver ?: return
-            TaggedSectionResolver.registerTagResolver(resolver)
-            DynamicTagService.registerResolver(resolver) // 默认支持动态解析
+            ItemRegistry.registerStaticTagResolver(resolver)
+            ItemRegistry.registerDynamicTagResolver(resolver) // 默认支持动态解析
         }
 
     }

@@ -43,7 +43,7 @@ class SimpleContext(
     }
 
     override fun remove(type: Class<*>) {
-        map.remove(type)
+        map.entries.removeIf { type.isAssignableFrom(it.key) }
     }
 
     override fun args(): Collection<Any> = map.values

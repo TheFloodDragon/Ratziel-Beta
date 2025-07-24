@@ -6,10 +6,14 @@ import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
+import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.action.registerTrigger
+import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
+import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.VariablesMap
+import cn.fd.ratziel.module.script.util.varsMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -81,11 +85,59 @@ class DataInterpreter : ItemInterpreter {
     }
 
     override suspend fun interpret(stream: ItemStream) {
-        TODO()
+        // 获取上下文变量表
+        val vars = stream.context.varsMap()
+
+        // 导入常量层属性数据
+        vars.putAll(properties)
+        // 执行数据层语句块, 导入数据层数据
+        val dataResults = executeBlocks(dataBlocks, stream.context)
+        vars.putAll(dataResults)
+        // 执行计算层语句块, 导入计算层数据
+        vars.putAll(executeBlocks(computationBlocks, stream.context))
+
+        // 计算层标签处理 (实际上此标签处理的过程中可以获取到三个层的数据)
+        stream.tree.withValue { tree ->
+            TaggedSectionResolver.resolveSingle(ComputationResolver, tree, stream.context)
+        }
+
+        // 处理物品数据
+        if (stream is NativeItemStream) {
+            stream.data.withValue { data ->
+
+                // 数据层处理
+                if (stream.item is DataHolder) {
+                    val holder = stream.item
+                    // 将数据层结果写入到物品数据中
+                    for ((key, value) in dataResults) {
+                        holder[key] = value ?: continue
+                    }
+                    // 数据层标签解析
+                    stream.tree.withValue { tree ->
+                        // 将物品放入上下文
+                        stream.context.put(holder)
+                        // 执行标签解析
+                        TaggedSectionResolver.resolveSingle(NativeDataResolver, tree, stream.context)
+                        // 清理物品上下文
+                        stream.context.remove(DataHolder::class.java)
+                    }
+                }
+
+                // 触发触发器
+                PROCESS_TRIGGER.trigger(stream.identifier) {
+                    // 导入变量表
+                    bindings.putAll(vars)
+                    // 尝试获取 RatzielItem 物品
+                    set("item", stream.item)
+                }
+
+            }
+        }
+
     }
 
     /**
-     * 数据层标签解析器 - 由 [DataInterpreter] 管理
+     * 数据层标签解析器 - 由 [DataInterpreter] 管理 (支持动态解析)
      */
     object NativeDataResolver : ItemTagResolver {
         override val alias = DATA_ALIAS
@@ -102,10 +154,10 @@ class DataInterpreter : ItemInterpreter {
     }
 
     /**
-     * 计算层标签解析器 - 由 [DataInterpreter] 管理
+     * 计算层标签解析器 - 由 [DataInterpreter] 管理 (不支持动态解析)
      */
     object ComputationResolver : ItemTagResolver {
-        override val alias = COMPUTATION_ALIAS
+        override val alias = COMPUTATION_ALIAS + PROPERTIES_ALIAS
         override fun resolve(args: List<String>, context: ArgumentContext): String? {
             val vars = context.popOrNull(VariablesMap::class.java) ?: return null
             val value = vars[args.firstOrNull() ?: return null]

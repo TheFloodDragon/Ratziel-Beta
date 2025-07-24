@@ -10,7 +10,6 @@ import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * TaggedSectionResolver
@@ -75,19 +74,6 @@ class TaggedSectionResolver(
 
     companion object {
 
-        /**
-         * 默认的标签解析器列表
-         */
-        val defaultTagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
-
-        /**
-         * 注册默认的标签解析器
-         */
-        @JvmStatic
-        fun registerTagResolver(resolver: ItemTagResolver) {
-            defaultTagResolvers.add(resolver)
-        }
-
         /** 标签读取器 **/
         @JvmStatic
         private val reader = VariableReader("{", "}")
@@ -105,7 +91,7 @@ class TaggedSectionResolver(
          * @param context 上下文
          */
         @JvmStatic
-        fun resolveWithSingle(resolver: ItemTagResolver, tree: JsonTree, context: ArgumentContext) {
+        fun resolveSingle(resolver: ItemTagResolver, tree: JsonTree, context: ArgumentContext) {
             DefaultResolver.resolveTree(tree, context, Collections.singletonList(single(resolver)))
         }
 
