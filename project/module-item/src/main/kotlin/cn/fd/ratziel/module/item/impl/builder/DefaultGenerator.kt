@@ -49,7 +49,7 @@ open class DefaultGenerator(
     /**
      * 静态物品策略
      */
-    open val staticStrategy: StaticStrategy = runBlocking(ItemElement.coroutineContext) {
+    open val staticStrategy: StaticStrategy = runBlocking {
         StaticStrategy(baseStream.fetchElement()).also { strategy ->
             // 纯静态物品模式处理
             if (strategy.fullStaticMode) {

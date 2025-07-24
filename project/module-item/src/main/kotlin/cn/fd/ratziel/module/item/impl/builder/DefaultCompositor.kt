@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.*
 import cn.fd.ratziel.module.item.impl.builder.provided.ComponentInterpreter
@@ -30,7 +29,7 @@ class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
     val sources: List<ItemSource> = ItemRegistry.sources.toList()
 
     init {
-        runBlocking(ItemElement.coroutineContext) {
+        runBlocking {
             // 预解释 (预处理基流)
             interpreters.forEach { it.preFlow(baseStream) }
         }

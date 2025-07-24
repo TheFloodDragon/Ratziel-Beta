@@ -40,7 +40,7 @@ class PhysicalLayer(
         const val STORAGE_LAYERS_NAME = "layers"
 
         /** 默认图层名称 **/
-        const val DEFAULT_LAYER_NAME = "_"
+        const val DEFAULT_LAYER_NAME = "0"
 
         /**
          * 获取图层

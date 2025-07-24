@@ -14,8 +14,8 @@ object LayerUtil {
      * 渲染物品图层
      */
     @JvmStatic
-    fun render(item: NeoItem, name: Int) {
-        render(item, name.toString())
+    fun render(item: NeoItem, id: Int) {
+        render(item, id.toString())
     }
 
     /**

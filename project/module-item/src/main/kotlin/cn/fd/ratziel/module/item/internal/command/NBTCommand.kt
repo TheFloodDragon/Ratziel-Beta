@@ -1,7 +1,10 @@
 package cn.fd.ratziel.module.item.internal.command
 
 import cn.altawk.nbt.NbtPath
-import cn.altawk.nbt.tag.*
+import cn.altawk.nbt.tag.NbtByte
+import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NbtList
+import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.module.item.util.modifyTag
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.nbt.NbtSerializer
@@ -74,7 +77,6 @@ object NBTCommand {
                             player.sendLang(
                                 "NBTAction-Set",
                                 path.toString(), asString(value),
-                                translateType(player, value).toLegacyText()
                             )
                         } ?: player.sendLang("NBTAction-EmptyTag")
                     }
@@ -152,7 +154,7 @@ object NBTCommand {
             基本类型处理:
             值 (类型)
              */
-            else -> append(componentValue(sender, nbt)).append(translateType(sender, nbt))
+            else -> append(componentValue(sender, nbt))
         }
     }
 
@@ -177,25 +179,6 @@ object NBTCommand {
     private fun getTypeJson(sender: ProxyCommandSender, node: String): TypeJson =
         sender.getLocaleFile()?.nodes?.get(node)?.let { if (it is TypeList) it.list.first() else it } as? TypeJson
             ?: TypeJson().apply { text = listOf("{$node}") }
-
-    /**
-     * 快捷匹配类型组件
-     */
-    private fun translateType(sender: ProxyCommandSender, nbt: NbtTag): ComponentText = when (nbt.type) {
-        NbtType.STRING -> "NbtFormat-Type-String"
-        NbtType.BYTE -> "NbtFormat-Type-Byte"
-        NbtType.SHORT -> "NbtFormat-Type-Short"
-        NbtType.INT -> "NbtFormat-Type-Int"
-        NbtType.LONG -> "NbtFormat-Type-Long"
-        NbtType.FLOAT -> "NbtFormat-Type-Float"
-        NbtType.DOUBLE -> "NbtFormat-Type-Double"
-        NbtType.BYTE_ARRAY -> "NbtFormat-Type-ByteArray"
-        NbtType.INT_ARRAY -> "NbtFormat-Type-IntArray"
-        NbtType.LONG_ARRAY -> "NbtFormat-Type-LongArray"
-        NbtType.LIST -> "NbtFormat-Type-List"
-        NbtType.COMPOUND -> "NbtFormat-Type-Compound"
-        else -> null
-    }?.let { Components.parseSimple(sender.asLangText(it)).build { colored() } } ?: Components.empty()
 
     /**
      * 获取 [NbtTag] 的字符串形式
