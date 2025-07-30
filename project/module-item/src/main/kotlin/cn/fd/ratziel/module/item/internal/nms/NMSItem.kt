@@ -164,28 +164,25 @@ class NMSItemImpl1 : NMSItem() {
     }
 
     /**
-     * private NBTTagCompound A
      * private NBTTagCompound tag
      */
     val nmsTagField by lazy {
-        ReflexClass.of(RefItemStack.nmsClass).structure.getField(if (MinecraftVersion.isUniversal) "A" else "tag")
+        ReflexClass.of(RefItemStack.nmsClass).getField("tag", remap = true)
     }
 
     /**
-     * public nms.ItemStack p()
+     * public nms.ItemStack copy()
      * public nms.ItemStack cloneItemStack()
-     * public ItemStack s()
      */
     val nmsCloneMethod by lazy {
-        ReflexClass.of(RefItemStack.nmsClass).structure.getMethodByType(
-            if (MinecraftVersion.versionId >= 12005) "s"
-            else if (MinecraftVersion.isUniversal) "p"
-            else "cloneItemStack"
+        ReflexClass.of(RefItemStack.nmsClass).getMethod(
+            if (MinecraftVersion.isUniversal) "copy"
+            else "cloneItemStack", remap = true
         )
     }
 
     val srcMapField by lazy {
-        ReflexClass.of(NBTTagCompound12::class.java).getField(if (MinecraftVersion.isUniversal) "x" else "map")
+        ReflexClass.of(NBTTagCompound12::class.java).getField(if (MinecraftVersion.isUniversal) "tags" else "map", remap = true)
     }
 
 }

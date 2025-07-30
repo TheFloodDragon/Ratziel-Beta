@@ -22,7 +22,7 @@ subprojects {
             // 镜像中央仓库
             repoCentral = "https://repo.huaweicloud.com/repository/maven/"
             // Debug Mode
-            debug = true
+            debug = false
             // Isolated Mode
             enableIsolatedClassloader = true
             // Common Modules
