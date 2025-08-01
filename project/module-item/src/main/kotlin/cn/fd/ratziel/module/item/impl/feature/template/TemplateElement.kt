@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item
+package cn.fd.ratziel.module.item.impl.feature.template
 
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element

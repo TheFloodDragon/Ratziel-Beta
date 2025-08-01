@@ -90,8 +90,11 @@ object DynamicTagHandler {
         val ratzielItem = RatzielItem.of(refItem.extractData()) ?: return
 
         // 生成上下文
-        val cacheContext = ItemManager.getCacheContext(ratzielItem.identifier) // 缓存上下文
-        val context = SimpleContext(ratzielItem, event.player, cacheContext)
+        val context = SimpleContext(ratzielItem, event.player)
+        // 导入生成器的上下文
+        val generator = ItemManager.registry[ratzielItem.identifier.content]
+        val args = generator?.contextProvider?.newContext()?.args()
+        if (args != null) context.putAll(args)
 
         // 处理显示组件
         handleDisplay(ratzielItem, context)

@@ -13,5 +13,10 @@ fun ArgumentContext.scriptEnv(): ScriptEnvironment {
 
 fun ArgumentContext.varsMap(): VariablesMap =
     popOr(VariablesMap::class.java) {
-        VariablesMap().also { put(it) }
+        val vars = VariablesMap()
+        // 加入到上下文中
+        this.put(vars)
+        // 接受上下文, 将上下文中的参数转化为变量导入 vars
+        vars.accept(this)
+        return@popOr vars
     }

@@ -1,8 +1,9 @@
-package cn.fd.ratziel.module.script.lang
+package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
+import cn.fd.ratziel.module.script.lang.JavaScriptLang
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine
 import org.graalvm.polyglot.Context
 import javax.script.ScriptContext
@@ -40,9 +41,14 @@ object GraalJsScriptExecutor : EnginedScriptExecutor(), NonStrictCompilation {
     }
 
     override fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
+        val globalBindings = engine.context.getBindings(ScriptContext.GLOBAL_SCOPE)
+        val engineBindings = engine.context.getBindings(ScriptContext.ENGINE_SCOPE)
+        // 清除原有的环境导入
+        for ((key, _) in globalBindings) engineBindings?.remove(key)
+        // 创建上下文 (导入环境到全局域)
         val context = super.createContext(engine, environment)
-        // GraalJS 导入全局类是从 全局域 导入到 引擎域, 所以此处需要重新导入下 (手动导入)
-        context.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context.getBindings(ScriptContext.GLOBAL_SCOPE))
+        // GraalJS 导入全局类是从 全局域 导入到 引擎域, 所以此处需要重新导入下环境 (手动导入)
+        engineBindings.putAll(globalBindings)
         return context
     }
 

@@ -15,6 +15,7 @@ import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.impl.feature.layer.PhysicalLayerInterpreter
+import cn.fd.ratziel.module.item.impl.feature.template.TemplateElement
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.internal.serializers.*
@@ -27,6 +28,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.serializer
 import taboolib.common.LifeCycle
+import taboolib.common.io.isDebugMode
 import taboolib.library.xseries.XItemFlag
 import taboolib.module.nms.MinecraftVersion
 
@@ -116,14 +118,17 @@ object ItemElement : ElementHandler {
     override fun handle(element: Element) {
         val generator = DefaultGenerator(element)
 
-        val item = generator.build().get()
+        if (isDebugMode) {
 
-        println(item.data)
+            val item = generator.build().get()
+            println(item.data)
 
-        val ri = RefItemStack.of(item.data)
-        println(ri.tag)
-        val bi = ri.bukkitStack
-        println(bi)
+            val ri = RefItemStack.of(item.data)
+            println(ri.tag)
+            val bi = ri.bukkitStack
+            println(bi)
+
+        }
 
         // 注册
         ItemManager.registry[element.name] = generator

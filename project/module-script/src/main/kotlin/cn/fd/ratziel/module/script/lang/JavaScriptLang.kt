@@ -5,6 +5,8 @@ import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
+import cn.fd.ratziel.module.script.lang.js.GraalJsScriptExecutor
+import cn.fd.ratziel.module.script.lang.js.NashornScriptExecutor
 import taboolib.library.configuration.ConfigurationSection
 import java.util.concurrent.CopyOnWriteArrayList
 

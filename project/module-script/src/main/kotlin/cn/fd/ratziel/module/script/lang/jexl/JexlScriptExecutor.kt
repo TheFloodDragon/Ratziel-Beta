@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.script.lang
+package cn.fd.ratziel.module.script.lang.jexl
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.CompletableScriptExecutor

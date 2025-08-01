@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.altawk.nbt.NbtPath
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
-import cn.fd.ratziel.module.item.TemplateElement
+import cn.fd.ratziel.module.item.impl.feature.template.TemplateElement
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import kotlinx.serialization.json.JsonArray

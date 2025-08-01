@@ -40,6 +40,13 @@ public interface ArgumentContext {
     void put(@NotNull Object element);
 
     /**
+     * 添加多个参数
+     */
+    default void putAll(@NotNull Iterable<@NotNull Object> elements) {
+        for (Object element : elements) put(element);
+    }
+
+    /**
      * 删除一个参数
      */
     void remove(@NotNull Class<?> type);

@@ -18,7 +18,7 @@ class SimpleContext(
         for (value in values) this.map.put(value::class.java, value)
     }
 
-    constructor(action: ArgumentContext.() -> Unit) : this() {
+    constructor(vararg values: Any, action: ArgumentContext.() -> Unit) : this(values) {
         action(this)
     }
 

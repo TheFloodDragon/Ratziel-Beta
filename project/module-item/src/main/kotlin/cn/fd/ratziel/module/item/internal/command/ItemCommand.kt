@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.internal.command
 import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.util.toItemStack
-import cn.fd.ratziel.module.script.impl.VariablesMap
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.ProxyCommandSender
@@ -63,12 +62,7 @@ object ItemCommand {
         // 获取物品生成器
         val generator = ItemManager.registry[id] ?: return CompletableFuture.completedFuture(null)
         // 上下文参数
-        val args = SimpleContext {
-            put(player)
-            put(VariablesMap {
-                put("player", player)
-            })
-        }
+        val args = SimpleContext(player)
         // 开始生成物品
         val time = TimeSource.Monotonic.markNow()
         generator.build(args).handle { item, throwable ->

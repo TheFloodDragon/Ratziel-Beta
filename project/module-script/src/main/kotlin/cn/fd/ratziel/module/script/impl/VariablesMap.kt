@@ -1,6 +1,10 @@
 package cn.fd.ratziel.module.script.impl
 
+import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.module.script.impl.VariablesMap.Companion.transformers
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.function.Consumer
 
 /**
  * VariablesMap
@@ -14,6 +18,22 @@ class VariablesMap(
 
     constructor(action: VariablesMap.() -> Unit) : this() {
         action(this)
+    }
+
+    /**
+     * Transformer 机制: 接受 [context] 并使用 [transformers] 转化变量
+     */
+    fun accept(context: ArgumentContext) {
+        transformers.forEach { it.accept(context) }
+    }
+
+    companion object {
+
+        /**
+         * Transformer 机制: 从 [ArgumentContext] 中获取 [VariablesMap] 在实际运用中可能用到的变量
+         */
+        val transformers: MutableList<Consumer<ArgumentContext>> = CopyOnWriteArrayList()
+
     }
 
 }

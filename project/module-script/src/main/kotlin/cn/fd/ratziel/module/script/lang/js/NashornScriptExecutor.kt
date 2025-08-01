@@ -1,10 +1,11 @@
-package cn.fd.ratziel.module.script.lang
+package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
+import cn.fd.ratziel.module.script.lang.JavaScriptLang
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
 import javax.script.ScriptContext
 import javax.script.ScriptEngine

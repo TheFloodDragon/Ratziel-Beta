@@ -1,10 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.functional.ArgumentContext
-import cn.fd.ratziel.core.functional.CacheContext
-import cn.fd.ratziel.core.functional.SimpleContext
-import cn.fd.ratziel.core.functional.replenish
+import cn.fd.ratziel.core.functional.*
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
@@ -32,13 +29,18 @@ open class DefaultGenerator(
     /**
      * 针对同元素物品的缓存上下文
      */
-    open val cacheContext = CacheContext()
+    protected open val cacheContext = CacheContext()
+
+    /**
+     * 上下文提供者 (目前就是为了提供 [cacheContext])
+     */
+    override val contextProvider = ArgumentContextProvider { SimpleContext(cacheContext) }
 
     /**
      * 基础物品流 (经过预处理生成的流)
      */
     open val baseStream: NativeItemStream by lazy {
-        createNativeStream(SimpleData(), SimpleContext(cacheContext))
+        createNativeStream(SimpleData(), contextProvider.newContext())
     }
 
     /**
@@ -88,7 +90,7 @@ open class DefaultGenerator(
     open fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
         // 获取物品流
         val stream = streamGenerating.await()
-        context.put(cacheContext)
+        context.putAll(contextProvider.newContext().args())
         // 更新上下文
         stream.context = context
 
