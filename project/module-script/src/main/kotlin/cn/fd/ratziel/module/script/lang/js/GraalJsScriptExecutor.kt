@@ -41,7 +41,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor(), NonStrictCompilation {
     }
 
     override fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
-        val globalBindings = engine.context.getBindings(ScriptContext.GLOBAL_SCOPE)
+        val globalBindings = engine.context.getBindings(ScriptContext.GLOBAL_SCOPE) ?: emptyMap()
         val engineBindings = engine.context.getBindings(ScriptContext.ENGINE_SCOPE)
         // 清除原有的环境导入
         for ((key, _) in globalBindings) engineBindings?.remove(key)

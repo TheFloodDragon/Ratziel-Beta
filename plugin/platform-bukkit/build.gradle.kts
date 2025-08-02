@@ -9,8 +9,7 @@ dependencies {
     // Compat
     implementation(projects.project.moduleCompatCore)
     implementation(projects.project.moduleCompatInject)
-    implementation(projects.project.moduleCompatBukkit)
-    implementation(projects.project.moduleCompatBukkit.jdk23)
+    shadow(projects.project.moduleCompatBukkit)
     // Extension - Item
     implementation(projects.project.moduleItem)
 }

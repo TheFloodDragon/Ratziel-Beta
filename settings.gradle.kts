@@ -12,6 +12,6 @@ fun applyAll(name: String) {
     File(rootDir, name).walk().filter { f ->
         f.isDirectory && f.listFiles().any { it.nameWithoutExtension.endsWith("gradle") }
     }.forEach {
-        include(it.relativeTo(rootDir).path.replace('\\', ':'))
+        include(it.relativeTo(rootDir).path.replace('\\', ':').replace('/', ':'))
     }
 }

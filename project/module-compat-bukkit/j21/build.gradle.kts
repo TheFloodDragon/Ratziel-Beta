@@ -15,7 +15,13 @@ dependencies {
     compileOnly(fileTree("libs"))
 }
 
-
 kotlin {
-    jvmToolchain(23)
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }

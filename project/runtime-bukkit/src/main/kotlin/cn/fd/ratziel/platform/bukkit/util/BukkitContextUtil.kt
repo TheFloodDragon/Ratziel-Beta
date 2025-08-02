@@ -18,6 +18,7 @@ fun ArgumentContext.player() = popOrNull(ProxyPlayer::class.java)?.cast() ?: pop
 @Awake
 private fun transformer() {
     VariablesMap.transformers.add {
-        it.varsMap().put("player", it.player())
+        val player = it.player() ?: return@add
+        it.varsMap().put("player", player)
     }
 }
