@@ -12,6 +12,7 @@ import cn.fd.ratziel.platform.bukkit.util.readOrThrow
 import kotlinx.coroutines.*
 import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.GameMode
+import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerGameModeChangeEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
@@ -38,40 +39,43 @@ object DynamicTagHandler {
         }
     }
 
+    private val higherThan1_21_2 = MinecraftVersion.versionId >= 12102
+
     @SubscribeEvent
     private fun onSend(event: PacketSendEvent) {
-        when (event.packet.name) {
-            "PacketPlayOutSetSlot", "ClientboundContainerSetSlotPacket" ->
-                // 玩家模式不处理创造模式, 原因: 创造强制设置库存
-                if (event.player.gameMode != GameMode.CREATIVE) handleSetSlotPacket(event)
+        // 玩家模式不处理创造模式, 原因: 创造强制设置库存
+        if (event.player.gameMode == GameMode.CREATIVE) return
 
-            "PacketPlayOutWindowItems", "ClientboundContainerSetContentPacket" ->
-                // 玩家模式不处理创造模式, 原因: 创造强制设置库存
-                if (event.player.gameMode != GameMode.CREATIVE) handleWindowItemsPacket(event)
+        when (event.packet.name) {
+            "PacketPlayOutSetSlot", "ClientboundContainerSetSlotPacket" -> handleSetSlotPacket(event)
+            "PacketPlayOutWindowItems", "ClientboundContainerSetContentPacket" -> handleWindowItemsPacket(event)
+            // 1.21.2 +
+            "ClientboundSetCursorItemPacket" -> if (higherThan1_21_2) handleSetCursorItemPacket(event)
+            "ClientboundSetPlayerInventoryPacket" -> if (higherThan1_21_2) handleSetPlayerInventoryPacket(event)
         }
     }
 
-    private val itemStackFiledInSetSlotPacket = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17)) "itemStack" else "c"
+    private val itemStackFiledInSetSlotPacket = if (MinecraftVersion.isUniversal) "itemStack" else "c"
 
     fun handleSetSlotPacket(event: PacketSendEvent) {
         val nmsItem = event.packet.readOrThrow<Any>(itemStackFiledInSetSlotPacket)
-        handleItem(nmsItem, event)
+        handleItem(nmsItem, event.player)
     }
 
-    private val itemsFieldInWindowItemsPacket = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17)) "items" else "b"
+    private val itemsFieldInWindowItemsPacket = if (MinecraftVersion.isUniversal) "items" else "b"
 
-    private val carriedItemFieldInWindowItemsPacket = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17)) "carriedItem" else "c"
+    private val carriedItemFieldInWindowItemsPacket = if (MinecraftVersion.isUniversal) "carriedItem" else "c"
 
     fun handleWindowItemsPacket(event: PacketSendEvent) {
         val packetItems = event.packet.readOrThrow<List<Any>>(itemsFieldInWindowItemsPacket)
         runBlocking {
             // 处理每个物品
-            val itemTasks = packetItems.map { launch { handleItem(it, event) } }
+            val itemTasks = packetItems.map { launch { handleItem(it, event.player) } }
 
             // 处理手持物品 (carriedItem 在 1.12 后才有)
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
                 val packetCarriedItem = event.packet.readOrThrow<Any>(carriedItemFieldInWindowItemsPacket)
-                handleItem(packetCarriedItem, event)
+                handleItem(packetCarriedItem, event.player)
             }
 
             // 等待所有任务完成
@@ -79,18 +83,28 @@ object DynamicTagHandler {
         }
     }
 
+    fun handleSetCursorItemPacket(event: PacketSendEvent) {
+        val nmsItem = event.packet.readOrThrow<Any>("contents")
+        handleItem(nmsItem, event.player)
+    }
+
+    fun handleSetPlayerInventoryPacket(event: PacketSendEvent) {
+        val nmsItem = event.packet.readOrThrow<Any>("contents")
+        handleItem(nmsItem, event.player)
+    }
+
     /**
      * 处理物品
      *
      * @param nmsItem NMS 物品实例
      */
-    fun handleItem(nmsItem: Any, event: PacketSendEvent) {
+    fun handleItem(nmsItem: Any, player: Player) {
         val refItem = RefItemStack.ofNms(nmsItem)
         // 生成 RatzielItem 实例 (如果不是就跳过处理)
         val ratzielItem = RatzielItem.of(refItem.extractData()) ?: return
 
         // 生成上下文
-        val context = SimpleContext(ratzielItem, event.player)
+        val context = SimpleContext(ratzielItem, player)
         // 导入生成器的上下文
         val generator = ItemManager.registry[ratzielItem.identifier.content]
         val args = generator?.contextProvider?.newContext()?.args()

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.compat
+package cn.fd.ratziel.module.compat.impl
 
 import cc.trixey.invero.common.Invero
 import cc.trixey.invero.common.ItemSourceProvider
@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.compat.hook.HookInject
 import cn.fd.ratziel.module.compat.hook.PluginHook
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.util.toItemStack
-import cn.fd.ratziel.platform.bukkit.util.player
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -38,7 +37,7 @@ object InveroHook : PluginHook {
             val generator = ItemManager.registry[identifier] ?: return null
             val player = (context as? Context)?.viewer?.get<Player>()
             return if (player != null) {
-                generator.build(SimpleContext { player(player) }).get().toItemStack()
+                generator.build(SimpleContext(player)).get().toItemStack()
             } else {
                 generator.build().get().toItemStack()
             }

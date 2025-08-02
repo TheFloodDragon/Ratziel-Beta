@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.compat
+package cn.fd.ratziel.module.compat.impl
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.ArgumentContext

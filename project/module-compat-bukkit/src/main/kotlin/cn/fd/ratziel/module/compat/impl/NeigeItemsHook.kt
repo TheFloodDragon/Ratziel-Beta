@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal.compat
+package cn.fd.ratziel.module.compat.impl
 
 import cn.fd.ratziel.module.compat.hook.HookInject
 import cn.fd.ratziel.module.compat.hook.PluginHook

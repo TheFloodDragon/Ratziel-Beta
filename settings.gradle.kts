@@ -9,7 +9,9 @@ include("plugin:platform-all")
 include("plugin:platform-bukkit")
 
 fun applyAll(name: String) {
-    File(rootDir, name).listFiles()?.filter { it.isDirectory && it.name != "build" }?.forEach {
-        include("$name:${it.name}")
+    File(rootDir, name).walk().filter { f ->
+        f.isDirectory && f.listFiles().any { it.nameWithoutExtension.endsWith("gradle") }
+    }.forEach {
+        include(it.relativeTo(rootDir).path.replace('\\', ':'))
     }
 }

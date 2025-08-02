@@ -33,7 +33,7 @@ subprojects {
         compileOnly(kotlin("stdlib"))
 
         // 项目依赖
-        if (parent?.name == "project") {
+        if (path.contains("project")) {
             // Kotlin 序列化工具
             compileOnly(rootProject.libs.kotlinx.serialization.json)
             // Kotlin 协程工具
