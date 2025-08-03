@@ -1,11 +1,12 @@
 [versions]
 taboolib = "6.2.3-ad29825"
 taboolibPlugin = "2.0.23"
-adventureApi = "4.23.0"
-adventurePlatform = "4.3.4"
 kotlin = "2.1.0"
 serialization = "1.8.0"
 coroutines = "1.10.1"
+adventureApi = "4.23.0"
+adventurePlatform = "4.3.4"
+nbt = "1.0.0"
 shadowPlugin = "9.0.0-beta12"
 nashorn = "15.4"
 graaljs = "24.2.1"
@@ -15,11 +16,15 @@ jexl = "3.4.0"
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+# Altawk Nbt
+altawk-nbt = { group = "com.github.Altawk.nbt", name = "nbt-jvm", version.ref = "nbt" }
+# Adventure
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventureApi" }
 adventure-text-serializer-gson = { group = "net.kyori", name = "adventure-text-serializer-gson", version.ref = "adventureApi" }
 adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventureApi" }
 adventure-text-serializer-legacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "adventureApi" }
 adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventurePlatform" }
+# Script Engine
 nashorn = { group = "org.openjdk.nashorn", name = "nashorn-core", version.ref = "nashorn" }
 graalvm-polyglot = { group = "org.graalvm.polyglot", name = "polyglot", version.ref = "graaljs" }
 graalvm-js = { group = "org.graalvm.js", name = "js-scriptengine", version.ref = "graaljs" }
@@ -41,7 +46,6 @@ taboolib-platform-bukkit = { group = "io.izzel.taboolib", name = "platform-bukki
 taboolib-platform-bukkit-impl = { group = "io.izzel.taboolib", name = "platform-bukkit-impl", version.ref = "taboolib" }
 taboolib-bukkit-nms = { group = "io.izzel.taboolib", name = "bukkit-nms", version.ref = "taboolib" }
 taboolib-bukkit-nms-stable = { group = "io.izzel.taboolib", name = "bukkit-nms-stable", version.ref = "taboolib" }
-taboolib-bukkit-xseries = { group = "io.izzel.taboolib", name = "bukkit-xseries", version.ref = "taboolib" }
 taboolib-bukkit-util = { group = "io.izzel.taboolib", name = "bukkit-util", version.ref = "taboolib" }
 taboolib-bukkit-hook = { group = "io.izzel.taboolib", name = "bukkit-hook", version.ref = "taboolib" }
 

@@ -1,10 +1,9 @@
 dependencies {
-    implementation("com.github.Altawk.nbt:nbt-jvm:1.0.0") { isTransitive = false }
+    implementation(libs.altawk.nbt) { isTransitive = false }
     compileOnly(libs.taboolib.platform.bukkit)
     compileOnly(libs.taboolib.platform.bukkit.impl)
     compileOnly(libs.taboolib.bukkit.nms)
     compileOnly(libs.taboolib.bukkit.nms.stable)
-    compileOnly(libs.taboolib.bukkit.xseries)
     compileOnly(libs.taboolib.bukkit.util)
     compileOnly(libs.taboolib.bukkit.hook)
     compileOnly(projects.project.runtimeBukkit)
@@ -14,5 +13,8 @@ dependencies {
     compileNMS()
     compileCore(12005, mapped = true)
     compileCore(12105, mapped = true)
-    compileOnly(fileTree("libs"))
+}
+
+tasks.shadowJar {
+    from(zipTree(project(":project:module-item:j21").tasks.jar.get().archiveFile))
 }

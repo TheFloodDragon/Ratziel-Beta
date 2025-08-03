@@ -29,7 +29,7 @@ object NativeVirtualPacketHandler {
     private fun onReceive(event: PacketReceiveEvent) {
         when (event.packet.name) {
             "PacketPlayInSetCreativeSlot", "ServerboundSetCreativeModeSlotPacket" -> handleSetCreativeSlot(event)
-            "PacketPlayInWindowClick", "ServerboundContainerClickPacket" -> Unit//handleContainerClick(event)
+            "PacketPlayInWindowClick", "ServerboundContainerClickPacket" -> NMSVirtualItem.INSTANCE.handleContainerClick(event)
         }
     }
 
@@ -38,7 +38,7 @@ object NativeVirtualPacketHandler {
     fun handleSetCreativeSlot(event: PacketReceiveEvent) {
         val nmsItem = event.packet.readOrThrow<Any>(itemStackFiledInSetCreativeSlotPacket)
         // 恢复物品
-        handleItem(nmsItem) { NativeVirtualItemRenderer.recover(it) }
+        handleItem(nmsItem) { NativeVirtualItemRenderer.recover(it, true) }
     }
 
     @SubscribeEvent

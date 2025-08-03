@@ -4,6 +4,7 @@ import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.put
 import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
@@ -71,10 +72,14 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         }
     }
 
-    override fun recover(virtual: NeoItem) {
+    override fun recover(virtual: NeoItem) = this.recover(virtual, false)
+
+    /**
+     * @param delete 处理的时候是否删除虚拟物品数据 (设置创造库存适用)
+     */
+    fun recover(virtual: NeoItem, delete: Boolean) {
         val virtualData = virtual.data.tag.read(VIRTUAL_PATH) as? NbtCompound ?: return
-        // recover 目前仅用作创造模式库存, 用完就把数据记录删了
-        virtual.data.tag.delete(VIRTUAL_PATH)
+        if (delete) virtual.data.tag.delete(VIRTUAL_PATH)
 
         // 获取修改数据的记录
         val changes = (virtualData[CHANGES_NODE] as? NbtCompound)?.map {
@@ -101,6 +106,15 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         if (material != null && !material.isEmpty()) {
             virtual.data.material = material
         }
+    }
+
+    /**
+     * 读取变化的组件类型名
+     */
+    @JvmStatic
+    fun readChangedTypes(data: ItemData): Set<String> {
+        return (data.tag.read(VIRTUAL_PATH + NbtPath.NameNode(CHANGES_NODE))
+                as? NbtCompound)?.keys ?: return emptySet()
     }
 
 }
