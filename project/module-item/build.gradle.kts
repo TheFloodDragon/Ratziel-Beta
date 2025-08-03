@@ -13,6 +13,6 @@ dependencies {
     compileOnly("com.google.guava:guava:32.1.2-jre")
     compileNMS()
     compileCore(12005, mapped = true)
-    compileCore(12104, mapped = true)
+    compileCore(12105, mapped = true)
     compileOnly(fileTree("libs"))
 }

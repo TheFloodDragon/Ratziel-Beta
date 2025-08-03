@@ -17,30 +17,25 @@ class ComponentOperation(
     /** 组件操作 **/
     val operation: OperationType,
     /** 原始数据 **/
-    val from: NbtTag?,
-    /** 变化后数据 **/
-    val to: NbtTag?,
+    val value: NbtTag?,
 ) {
 
     fun unwarp() = NbtCompound {
         put(OPERATION_NAME, operation.ordinal)
-        if (from != null) put(FROM_NAME, from)
-        if (to != null) put(TO_NAME, to)
+        if (value != null) put(VALUE_NAME, value)
     }
 
     companion object {
 
         private const val OPERATION_NAME = "operation"
-        private const val FROM_NAME = "from"
-        private const val TO_NAME = "to"
+        private const val VALUE_NAME = "value"
 
         @JvmStatic
         fun parse(type: String, wrapped: NbtTag): ComponentOperation? {
             if (wrapped !is NbtCompound) return null
             val state = wrapped.readInt(OPERATION_NAME) ?: return null
-            val from = wrapped[FROM_NAME]
-            val to = wrapped[TO_NAME]
-            return ComponentOperation(type, OperationType.entries[state], from, to)
+            val value = wrapped[VALUE_NAME] ?: return null
+            return ComponentOperation(type, OperationType.entries[state], value)
         }
 
         @JvmStatic
@@ -52,12 +47,12 @@ class ComponentOperation(
                 val origin = before[changed.key]
                 val operation = if (origin == null) OperationType.ADD else OperationType.SET
                 if (origin != changed.value) {
-                    changes.add(ComponentOperation(changed.key, operation, origin, changed.value))
+                    changes.add(ComponentOperation(changed.key, operation, origin))
                 }
             }
             // 删
             for (removed in before.filter { !now.containsKey(it.key) }) {
-                changes.add(ComponentOperation(removed.key, OperationType.REMOVE, removed.value, null))
+                changes.add(ComponentOperation(removed.key, OperationType.REMOVE, removed.value))
             }
             return changes
         }

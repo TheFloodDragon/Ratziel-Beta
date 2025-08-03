@@ -18,7 +18,7 @@ import java.util.function.BiConsumer
 import java.util.function.Consumer
 
 /**
- * VirtualPacketHandler
+ * NativeVirtualPacketHandler
  *
  * @author TheFloodDragon
  * @since 2025/8/3 11:41
@@ -29,7 +29,7 @@ object NativeVirtualPacketHandler {
     private fun onReceive(event: PacketReceiveEvent) {
         when (event.packet.name) {
             "PacketPlayInSetCreativeSlot", "ServerboundSetCreativeModeSlotPacket" -> handleSetCreativeSlot(event)
-            "PacketPlayInWindowClick", "ServerboundContainerClickPacket" -> Unit // TODO
+            "PacketPlayInWindowClick", "ServerboundContainerClickPacket" -> Unit//handleContainerClick(event)
         }
     }
 
@@ -46,9 +46,6 @@ object NativeVirtualPacketHandler {
         when (event.packet.name) {
             "PacketPlayOutSetSlot", "ClientboundContainerSetSlotPacket" -> handleSetSlotPacket(event)
             "PacketPlayOutWindowItems", "ClientboundContainerSetContentPacket" -> handleWindowItemsPacket(event)
-            // 1.21.2 +
-            "ClientboundSetCursorItemPacket" -> if (MinecraftVersion.versionId >= 12102) handleSetCursorItemPacket(event)
-            "ClientboundSetPlayerInventoryPacket" -> if (MinecraftVersion.versionId >= 12102) handleSetPlayerInventoryPacket(event)
         }
     }
 
@@ -78,16 +75,6 @@ object NativeVirtualPacketHandler {
             // 等待所有任务完成
             itemTasks.joinAll()
         }
-    }
-
-    fun handleSetCursorItemPacket(event: PacketSendEvent) {
-        val nmsItem = event.packet.readOrThrow<Any>("contents")
-        handleItem(nmsItem) { NativeVirtualItemRenderer.recover(it) }
-    }
-
-    fun handleSetPlayerInventoryPacket(event: PacketSendEvent) {
-        val nmsItem = event.packet.readOrThrow<Any>("contents")
-        renderItem(nmsItem, event.player)
     }
 
     /**

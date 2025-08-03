@@ -28,6 +28,6 @@ data class SimpleData(
     /**
      * 克隆数据
      */
-    override fun clone() = this.copy()
+    override fun clone() = SimpleData(this.material, this.tag.clone(), this.amount)
 
 }

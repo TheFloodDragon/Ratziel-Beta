@@ -20,13 +20,6 @@ interface VirtualItemRenderer {
     fun render(actual: NeoItem, context: ArgumentContext)
 
     /**
-     * 尝试从实际物品的数据中直接渲染虚拟物品
-     *
-     * @param actual 实际物品实例
-     */
-    fun renderBySelf(actual: NeoItem)
-
-    /**
      * 尝试从虚拟物品中恢复实际物品
      *
      * @param virtual 虚拟物品实例

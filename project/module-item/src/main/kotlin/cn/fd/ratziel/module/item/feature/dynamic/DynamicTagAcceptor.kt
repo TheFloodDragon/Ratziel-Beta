@@ -2,13 +2,16 @@ package cn.fd.ratziel.module.item.feature.dynamic
 
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ComponentHolder
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.feature.virtual.VirtualItemRenderer
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
+import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.descriptors.elementDescriptors
 import net.kyori.adventure.text.TextReplacementConfig
 
 /**
@@ -20,18 +23,10 @@ import net.kyori.adventure.text.TextReplacementConfig
 object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
 
     override fun accept(actual: NeoItem, context: ArgumentContext) {
-        // 处理显示组件
-        handleDisplay(actual, context)
-    }
-
-    /**
-     * 处理显示组件
-     */
-    fun handleDisplay(item: NeoItem, context: ArgumentContext) {
-        if (item !is ComponentHolder) return
+        if (actual !is ComponentHolder) return
 
         // 读取显示组件
-        val display = item.getComponent(ItemDisplay::class.java)
+        val display = actual.getComponent(ItemDisplay::class.java)
 
         // 创建文本替换配置
         val replacementConfig = createReplacementConfig(context)
@@ -52,7 +47,7 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
             )
 
             // 将新的组件写入物品
-            item.setComponent(newDisplay)
+            actual.setComponent(newDisplay)
         }
     }
 
