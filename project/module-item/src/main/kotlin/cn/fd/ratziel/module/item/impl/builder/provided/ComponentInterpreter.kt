@@ -6,7 +6,7 @@ import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
-import cn.fd.ratziel.module.item.util.ComponentConverter
+import cn.fd.ratziel.module.item.util.component.ComponentConverter
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch

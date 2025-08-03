@@ -2,8 +2,9 @@ package cn.fd.ratziel.module.item.impl
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.ItemRegistry
+import cn.fd.ratziel.module.item.api.ComponentHolder
 import cn.fd.ratziel.module.item.api.IdentifiedItem
-import cn.fd.ratziel.module.item.util.ComponentConverter
+import cn.fd.ratziel.module.item.util.component.ComponentConverter
 
 /**
  * AbstractNeoItem
@@ -11,14 +12,14 @@ import cn.fd.ratziel.module.item.util.ComponentConverter
  * @author TheFloodDragon
  * @since 2025/5/3 17:57
  */
-abstract class AbstractNeoItem : IdentifiedItem {
+abstract class AbstractNeoItem : IdentifiedItem, ComponentHolder {
 
     /**
      * 获取组件
      *
      * @param type 组件类型
      */
-    fun <T> getComponent(type: Class<T>): T {
+    override fun <T> getComponent(type: Class<T>): T {
         val integrated = ItemRegistry.getComponent(type)
         return ComponentConverter.deserializeFromNbtTag(integrated, this.data.tag)
     }
@@ -28,13 +29,13 @@ abstract class AbstractNeoItem : IdentifiedItem {
      *
      * @param component 组件
      */
-    fun setComponent(component: Any) {
+    override fun setComponent(component: Any) {
         val integrated = ItemRegistry.getComponent(component::class.java) as ItemRegistry.ComponentIntegrated<Any>
         // 将组件序列化成标签
         val tag = ComponentConverter.serializeToNbtTag(integrated, component)
         if (tag is NbtCompound) {
             // 合并标签
-            this.data.tag.merge(tag, true)
+            this.data.tag.mergeShallow(tag, true)
         }
     }
 

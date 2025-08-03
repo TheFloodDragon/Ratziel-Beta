@@ -16,8 +16,8 @@ interface IdentifiedItem : NeoItem {
     val identifier: Identifier
 
     /**
-     * 克隆 [NeoItem] 实例
+     * 克隆 [IdentifiedItem] 实例
      */
-    fun clone(): IdentifiedItem
+    override fun clone(): IdentifiedItem
 
 }

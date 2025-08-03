@@ -9,8 +9,8 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
-import cn.fd.ratziel.module.item.impl.action.ActionManager.trigger
-import cn.fd.ratziel.module.item.impl.action.registerTrigger
+import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
+import cn.fd.ratziel.module.item.feature.action.registerTrigger
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.script.block.BlockBuilder

@@ -20,4 +20,9 @@ interface NeoItem {
      */
     val service: ItemService
 
+    /**
+     * 复制物品实例
+     */
+    fun clone(): NeoItem
+
 }

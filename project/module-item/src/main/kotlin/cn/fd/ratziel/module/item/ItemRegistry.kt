@@ -4,9 +4,9 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import cn.fd.ratziel.module.item.exception.ComponentNotFoundException
+import cn.fd.ratziel.module.item.api.exception.ComponentNotFoundException
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
-import cn.fd.ratziel.module.item.impl.feature.dynamic.DynamicTagService
+import cn.fd.ratziel.module.item.feature.dynamic.DynamicTagService
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Supplier
