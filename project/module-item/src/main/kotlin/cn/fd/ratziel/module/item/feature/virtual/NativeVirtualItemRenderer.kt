@@ -56,6 +56,8 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         // 标记变化
         val changes = ComponentOperation.compareChanges(now.tag, before.tag)
         now.tag.handle(VIRTUAL_PATH) {
+            // 清除之前的数据
+            clear()
             // 记录修改的数据
             put(CHANGES_NODE, NbtCompound {
                 changes.forEach {
@@ -74,7 +76,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
 
     override fun recover(virtual: NeoItem) = applyChanges(virtual, false)
 
-    private fun applyChanges(item: NeoItem, positive: Boolean) {
+    private fun applyChanges(item: NeoItem, forward: Boolean) {
         val virtualData = item.data.tag.read(VIRTUAL_PATH) as? NbtCompound ?: return
 
         // 获取修改数据的记录
@@ -86,7 +88,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
 
         for (change in changes) {
             // 改变化的 正/逆 向是删除还是设置
-            val goingToSet = if (positive) {
+            val goingToSet = if (forward) {
                 when (change.operation) {
                     ADD, SET -> true
                     REMOVE -> false
@@ -99,7 +101,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
             }
             // 处理变化
             if (goingToSet) {
-                val target = requireNotNull(if (positive) change.to else change.from) {
+                val target = requireNotNull(if (forward) change.to else change.from) {
                     "Operation ${change.operation} with type '${change.type}' must have 'value' data!"
                 }
                 item.data.tag.put(change.type, target)
@@ -110,7 +112,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
 
         // 材质恢复
         val material = virtualData.readString(
-            if (positive) CLIENT_MATERIAL_NAME else SERVER_MATERIAL_NAME
+            if (forward) CLIENT_MATERIAL_NAME else SERVER_MATERIAL_NAME
         )?.let { SimpleMaterial(it) }
 
         if (material != null && !material.isEmpty()) {

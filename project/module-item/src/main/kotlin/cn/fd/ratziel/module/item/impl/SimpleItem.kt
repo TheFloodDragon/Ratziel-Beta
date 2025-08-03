@@ -17,4 +17,6 @@ open class SimpleItem(
     override val service: ItemService
         get() = throw UnsupportedOperationException("Service is not supported for SimpleItem!")
 
+    override fun clone() = SimpleItem(this.data.clone())
+
 }

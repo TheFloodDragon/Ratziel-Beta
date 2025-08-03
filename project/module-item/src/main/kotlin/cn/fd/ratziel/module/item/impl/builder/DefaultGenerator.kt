@@ -1,17 +1,17 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.functional.*
+import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.functional.ArgumentContextProvider
+import cn.fd.ratziel.core.functional.CacheContext
+import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
-import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.coroutines.runBlocking
 
 /**
  * DefaultGenerator
@@ -51,31 +51,12 @@ open class DefaultGenerator(
     /**
      * 静态物品策略
      */
-    open val staticStrategy: StaticStrategy = runBlocking {
-        StaticStrategy(baseStream.fetchElement()).also { strategy ->
-            // 纯静态物品模式处理
-            if (strategy.fullStaticMode) {
-                // 直接将静态属性应用到基流
-                applyStaticProperty(strategy, baseStream)
-            }
-        }
-    }
+    open val staticStrategy = StaticStrategy.fromStream(baseStream)
 
     /**
-     * 物品流生成
-     *
-     * @param replenish 每获取一次补充一次
+     * 静态物品流生成器
      */
-    open val streamGenerating: Deferred<NativeItemStream> by replenish {
-        ItemElement.scope.async {
-            val stream = baseStream.copy()
-            // 静态物品模式启用, 并且不是全静态模式
-            if (staticStrategy.enabled && !staticStrategy.fullStaticMode) {
-                applyStaticProperty(staticStrategy, stream) // 应用静态属性
-            }
-            return@async stream
-        }
-    }
+    open val staticGenerator = staticStrategy.StreamGenerator(baseStream) { compositor.dispatch(it) }
 
     override fun build() = build(SimpleContext())
 
@@ -89,7 +70,7 @@ open class DefaultGenerator(
      */
     open fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
         // 获取物品流
-        val stream = streamGenerating.await()
+        val stream = staticGenerator.stream().await()
         context.putAll(contextProvider.newContext().args())
         // 更新上下文
         stream.context = context
@@ -107,20 +88,6 @@ open class DefaultGenerator(
         event.call()
         event.item // 返回最终结果
     }.asCompletableFuture()
-
-    /**
-     * 应用静态属性 (使用静态的配置处理流)
-     */
-    open suspend fun applyStaticProperty(strategy: StaticStrategy, stream: ItemStream) {
-        // 原始元素
-        val origin = stream.fetchElement()
-        // 生成静态物品
-        stream.updateElement(strategy.staticContent ?: return)
-        // 好戏开场: 使用静态配置处理流数据
-        compositor.dispatch(stream)
-        // 换回去
-        stream.updateElement(origin)
-    }
 
     /**
      * 创建原生物品流

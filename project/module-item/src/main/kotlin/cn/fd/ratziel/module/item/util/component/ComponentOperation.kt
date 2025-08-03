@@ -24,8 +24,8 @@ class ComponentOperation(
 
     fun unwarp() = NbtCompound {
         put(OPERATION_NAME, operation.ordinal)
-        put(FROM_NAME, from)
-        put(TO_NAME, to)
+        if (from != null) put(FROM_NAME, from)
+        if (to != null) put(TO_NAME, to)
     }
 
     companion object {
