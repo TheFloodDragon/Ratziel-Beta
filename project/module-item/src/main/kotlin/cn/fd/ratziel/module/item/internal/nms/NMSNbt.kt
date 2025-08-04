@@ -42,7 +42,7 @@ interface NMSNbt {
 /**
  * 1.20.5+
  */
-@Suppress("unused")
+@Suppress("unused", "DuplicatedCode")
 class NMSNbtImpl2 : NMSNbt {
 
     override fun toNms(data: NbtTag): NbtBase = when (data) {

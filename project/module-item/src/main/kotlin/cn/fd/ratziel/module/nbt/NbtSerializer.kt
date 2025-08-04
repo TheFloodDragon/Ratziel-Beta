@@ -1,9 +1,7 @@
 package cn.fd.ratziel.module.nbt
 
 import cn.altawk.nbt.NbtPath
-import cn.altawk.nbt.tag.NbtCompound
-import cn.altawk.nbt.tag.NbtList
-import cn.altawk.nbt.tag.NbtTag
+import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.module.item.ItemElement
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.decodeFromString
@@ -31,16 +29,17 @@ object NbtSerializer : KSerializer<NbtTag> {
 
     override fun serialize(encoder: Encoder, value: NbtTag) {
         if (encoder is JsonEncoder) {
-            encoder.encodeJsonElement(serializeToJson(value))
+            encoder.encodeJsonElement(serializeToJson(value, true))
         } else NbtTag.serializer().serialize(encoder, value)
     }
 
     /**
      * 将 [JsonElement] 反序列化成 [NbtTag]
      */
+    @JvmStatic
     fun deserializeFromJson(json: JsonElement, source: NbtCompound = NbtCompound()): NbtTag =
         when (json) {
-            is JsonPrimitive -> deserializeFromString(json.content)
+            is JsonPrimitive -> if (json.isString) NbtString(json.content) else deserializeFromString(json.content)
             is JsonArray -> NbtList.of(json.map { deserializeFromJson(it, NbtCompound()) })
             is JsonObject -> source.apply {
                 json.forEach {
@@ -54,22 +53,34 @@ object NbtSerializer : KSerializer<NbtTag> {
     /**
      * 将 [NbtTag] 序列化成 [JsonElement]
      */
-    fun serializeToJson(target: NbtTag): JsonElement = when (target) {
+    @JvmStatic
+    @JvmOverloads
+    fun serializeToJson(target: NbtTag, strict: Boolean = false): JsonElement = when (target) {
         // 特殊类型序列化
-        is NbtCompound -> buildJsonObject { target.forEach { put(it.key, serializeToJson(it.value)) } }
-        is NbtList -> buildJsonArray { target.forEach { add(serializeToJson(it)) } }
+        is NbtCompound -> buildJsonObject { target.forEach { put(it.key, serializeToJson(it.value, strict)) } }
+        is NbtList -> buildJsonArray { target.forEach { add(serializeToJson(it, strict)) } }
+        is NbtIntArray -> buildJsonArray { target.content.forEach { add(JsonPrimitive(it)) } }
+        is NbtLongArray -> buildJsonArray { target.content.forEach { add(JsonPrimitive(it)) } }
+        is NbtByteArray -> buildJsonArray { target.content.forEach { add(JsonPrimitive(it)) } }
         // 基础类型序列化
-        else -> JsonPrimitive(serializeToString(target))
+        is NbtString -> JsonPrimitive(target.content)
+        else -> if (strict) {
+            JsonPrimitive(target.toString())
+        } else {
+            JsonPrimitive(target.content as Number)
+        }
     }
 
     /**
      * 将字符串反序列化成 [NbtTag]
      */
+    @JvmStatic
     fun deserializeFromString(str: String): NbtTag = ItemElement.nbt.decodeFromString(str)
 
     /**
      * 将 [NbtTag] 序列化成字符串
      */
+    @JvmStatic
     fun serializeToString(tag: NbtTag): String = ItemElement.nbt.encodeToString(tag)
 
 }

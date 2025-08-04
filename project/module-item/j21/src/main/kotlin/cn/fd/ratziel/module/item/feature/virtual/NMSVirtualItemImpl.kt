@@ -17,6 +17,7 @@ import net.minecraft.network.HashedPatchMap
 import net.minecraft.network.HashedStack
 import net.minecraft.resources.MinecraftKey
 import net.minecraft.server.level.EntityPlayer
+import net.minecraft.world.item.ItemStack
 import org.bukkit.craftbukkit.v1_21_R4.entity.CraftPlayer
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.ReflexClass
@@ -61,21 +62,25 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
         val cache = containerSynchronizerField.get(serverPlayer)
             ?.getProperty<LoadingCache<TypedDataComponent<*>, Int>>("cache") ?: return
 
+        // 处理服务端物品 (不影响实际物品)
+        val serverSideItems = items.mapNotNull {
+            val actual = if (it.key == -10086) container.carried else container.getSlot(it.key).item
+            prepareServerSide(actual)
+        }
         // 尝试同步 Hash
-        for (entry in items) {
-            val actual = if (entry.key == -10086) container.carried else container.getSlot(entry.key).item
-            val synced = syncIfMatchesMajority(entry.value, actual, cache)
-            if (synced != null) items[entry.key] = synced
+        for (serverSide in serverSideItems) {
+            // 逐个匹配
+            for (clientItem in items) {
+                val synced = syncIfMatchesMajority(clientItem.value, serverSide.first, serverSide.second, cache)
+                if (synced != null) items[clientItem.key] = synced
+            }
         }
 
         // 重新写入 items
         rewriteItems(event.packet, items)
     }
 
-    private fun syncIfMatchesMajority(stack: Any?, actual: Any, cache: LoadingCache<TypedDataComponent<*>, Int>): HashedStack? {
-        // HashedStack 就两种, 一种 Empty 一种 ActualStack, 空的就不处理了
-        if (stack !is HashedStack.a) return null
-
+    private fun prepareServerSide(actual: Any): Pair<ItemStack, List<DataComponentType<*>>>? {
         // 判断是不是本插件的物品
         val customItem = ofCustomItem(actual) ?: return null
 
@@ -86,23 +91,45 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
         val excludes = NativeVirtualItemRenderer.readChangedTypes(customItem.data)
             .map { BuiltInRegistries.DATA_COMPONENT_TYPE.get(MinecraftKey.parse(it)).get().value() }
 
+        // 渲染过的物品
+        val rendered = RefItemStack.of(customItem.data).nmsStack as? ItemStack ?: return null
+        return rendered to excludes
+    }
+
+    private fun syncIfMatchesMajority(
+        stack: Any,
+        serverItem: ItemStack,
+        excludes: List<DataComponentType<*>>,
+        cache: LoadingCache<TypedDataComponent<*>, Int>,
+    ): HashedStack? {
+        // HashedStack 就两种, 一种 Empty 一种 ActualStack, 空的就不处理了
+        if (stack !is HashedStack.a) return null
+
         // 匹配物品
-        val newMap = HashMap<DataComponentType<*>, Int>()
-        var matches = true
-        for (entry in stack.components.addedComponents) {
-            @Suppress("UNCHECKED_CAST")
-            val typed = TypedDataComponent(entry.key as DataComponentType<in Any>, entry.value)
-            val cachedHash = cache.get(typed)
-            newMap[entry.key] = cachedHash
-            if ((entry.value != cachedHash) && entry.key !in excludes) {
-                matches = false
-                break
+        val split = serverItem.componentsPatch.split()
+        if (split.removed != stack.components.removedComponents) {
+            return null
+        } else if (stack.components.addedComponents.size != split.added.size()) {
+            return null
+        } else {
+            // 要更新的 组件类型 - 哈希 表
+            val newMap = HashMap<DataComponentType<*>, Int>()
+            for (typed in split.added) {
+                // 服务端存的哈希
+                val serverHash = cache.get(typed)
+                // 客户端发过来的哈希
+                val clientHash = stack.components.addedComponents[typed.type]
+                // 先设置为正确的哈希 (不匹配的话是整个方法返回空, 就不修改此 HashedStack)
+                newMap[typed.type] = serverHash
+                // 判断双端哈希 (同时排除动态修饰的)
+                if (clientHash != serverHash && typed.type !in excludes) {
+                    return null
+                }
             }
-        }
-        return if (matches) {
+            // 创建纠过的 HashedStack
             val syncedHashedMap = HashedPatchMap(newMap, stack.components.removedComponents)
-            HashedStack.a(stack.item, stack.count, syncedHashedMap)
-        } else null
+            return HashedStack.a(stack.item, stack.count, syncedHashedMap)
+        }
     }
 
 
