@@ -15,6 +15,10 @@ dependencies {
     compileCore(12105, mapped = true)
 }
 
+tasks.build {
+    dependsOn(tasks.shadowJar)
+}
+
 tasks.shadowJar {
     from(zipTree(project(":project:module-item:j21").tasks.jar.get().archiveFile))
 }

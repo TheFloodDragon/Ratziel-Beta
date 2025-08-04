@@ -6,6 +6,10 @@ dependencies {
     compileOnly(fileTree("libs"))
 }
 
+tasks.build {
+    dependsOn(tasks.shadowJar)
+}
+
 tasks.shadowJar {
     from(zipTree(project(":project:module-compat-bukkit:j21").tasks.jar.get().archiveFile))
 }

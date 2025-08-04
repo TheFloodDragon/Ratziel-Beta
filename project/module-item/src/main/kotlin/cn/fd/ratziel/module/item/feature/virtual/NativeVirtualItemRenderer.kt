@@ -40,11 +40,13 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
      */
     val acceptors: MutableList<VirtualItemRenderer.Acceptor> = CopyOnWriteArrayList()
 
-    override fun render(actual: NeoItem, context: ArgumentContext) {
+    override fun render(actual: NeoItem, context: ArgumentContext) = this.render(actual, context, false)
+
+    fun render(actual: NeoItem, context: ArgumentContext, onlyMark: Boolean) {
         val before = actual.data.clone()
 
         // 接收器工作
-        acceptors.forEach { it.accept(actual, context) }
+        acceptors.forEach { if (onlyMark) it.onlyMark(actual, context) else it.accept(actual, context) }
 
         val now = actual.data
         // 自定义数据禁止修改

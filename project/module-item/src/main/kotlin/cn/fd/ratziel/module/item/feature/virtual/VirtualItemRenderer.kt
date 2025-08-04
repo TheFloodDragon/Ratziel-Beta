@@ -40,6 +40,11 @@ interface VirtualItemRenderer {
          */
         fun accept(actual: NeoItem, context: ArgumentContext)
 
+        /**
+         * 仅标记处理生成虚拟物品
+         */
+        fun onlyMark(actual: NeoItem, context: ArgumentContext)
+
     }
 
 }

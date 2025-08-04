@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.feature.virtual
 
-import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.module.item.feature.virtual.NativeVirtualPacketHandler.handleItem
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
@@ -66,7 +66,7 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
         for (entry in items) {
             val actual = if (entry.key == -10086) container.carried else container.getSlot(entry.key).item
             val synced = syncIfMatchesMajority(entry.value, actual, cache)
-            if (synced != null) items[-entry.key] = synced
+            if (synced != null) items[entry.key] = synced
         }
 
         // 重新写入 items
@@ -78,11 +78,13 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
         if (stack !is HashedStack.a) return null
 
         // 判断是不是本插件的物品
-        val data = extractData(actual)
-        if (!isCustomItem(data)) return null
+        val customItem = ofCustomItem(actual) ?: return null
+
+        // 仅标记渲染遍, 以便虚拟数据生成 (虚拟数据不包含客户端侧, 所以校验能过), 不渲染这个 custom_data 校验过不了
+        NativeVirtualItemRenderer.render(customItem, SimpleContext(), true)
 
         // 获取排除的组件类型
-        val excludes = NativeVirtualItemRenderer.readChangedTypes(data)
+        val excludes = NativeVirtualItemRenderer.readChangedTypes(customItem.data)
             .map { BuiltInRegistries.DATA_COMPONENT_TYPE.get(MinecraftKey.read(it).getOrThrow { m -> error(m) }) }
 
         // 匹配物品
@@ -129,12 +131,8 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
         }
     }
 
-    private fun isCustomItem(data: ItemData): Boolean {
-        return RatzielItem.isRatzielItem(data)
-    }
-
-    private fun extractData(nmsItem: Any): ItemData {
-        return RefItemStack.ofNms(nmsItem).extractData()
+    private fun ofCustomItem(nmsItem: Any): RatzielItem? {
+        return RatzielItem.of(RefItemStack.ofNms(nmsItem).extractData())
     }
 
 }

@@ -9,8 +9,8 @@ dependencies {
     // Compat
     implementation(projects.project.moduleCompatCore)
     implementation(projects.project.moduleCompatInject)
-    shadow(projects.project.moduleCompatBukkit)
-    // Extension - Item
+    implementation(projects.project.moduleCompatBukkit)
+    // Module - Item
     implementation(projects.project.moduleItem)
 }
 

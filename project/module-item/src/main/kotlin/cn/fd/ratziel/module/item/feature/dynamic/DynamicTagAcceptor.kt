@@ -2,16 +2,14 @@ package cn.fd.ratziel.module.item.feature.dynamic
 
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.core.functional.ArgumentContext
-import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ComponentHolder
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.feature.virtual.VirtualItemRenderer
 import cn.fd.ratziel.module.item.impl.component.ItemDisplay
-import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.descriptors.elementDescriptors
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
 
 /**
@@ -22,14 +20,30 @@ import net.kyori.adventure.text.TextReplacementConfig
  */
 object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
 
-    override fun accept(actual: NeoItem, context: ArgumentContext) {
+    /**
+     * 文本替换配置 (仅标记)
+     */
+    val onMarkReplacementConfig by lazy {
+        TextReplacementConfig.builder().apply {
+            match(DynamicTagResolver.regex)
+            replacement { text ->
+                Component.text(text.content() + "w")
+            }
+        }.build()
+    }
+
+    override fun accept(actual: NeoItem, context: ArgumentContext) = this.handleDisplay(actual, context, false)
+
+    override fun onlyMark(actual: NeoItem, context: ArgumentContext) = this.handleDisplay(actual, context, true)
+
+    fun handleDisplay(actual: NeoItem, context: ArgumentContext, onlyMark: Boolean) {
         if (actual !is ComponentHolder) return
 
         // 读取显示组件
         val display = actual.getComponent(ItemDisplay::class.java)
 
         // 创建文本替换配置
-        val replacementConfig = createReplacementConfig(context)
+        val replacementConfig = if (onlyMark) createReplacementConfig(context) else onMarkReplacementConfig
 
         runBlocking {
             // 显示名称处理
