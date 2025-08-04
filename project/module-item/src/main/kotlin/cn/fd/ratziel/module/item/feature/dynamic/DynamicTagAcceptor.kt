@@ -43,7 +43,7 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
         val display = actual.getComponent(ItemDisplay::class.java)
 
         // 创建文本替换配置
-        val replacementConfig = if (onlyMark) createReplacementConfig(context) else onMarkReplacementConfig
+        val replacementConfig = if (onlyMark) onMarkReplacementConfig else createReplacementConfig(context)
 
         runBlocking {
             // 显示名称处理

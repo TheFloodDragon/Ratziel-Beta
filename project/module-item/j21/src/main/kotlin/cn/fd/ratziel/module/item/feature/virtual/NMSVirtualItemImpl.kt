@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.feature.virtual
 
 import cn.fd.ratziel.core.functional.SimpleContext
-import cn.fd.ratziel.module.item.feature.virtual.NativeVirtualPacketHandler.handleItem
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.platform.bukkit.util.readOrThrow
@@ -108,12 +107,12 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
 
 
     /**
-     * 1.20.5-
+     * 1.21.5-
      */
     fun handleLegacy(items: Map<Int, Any>) = runBlocking {
         items.map {
             // 直接恢复物品
-            launch { handleItem(it) { v -> NativeVirtualItemRenderer.recover(v) } }
+            launch { NativeVirtualPacketHandler.handleItem(it.value) { v -> NativeVirtualItemRenderer.recover(v) } }
         }.joinAll()
     }
 

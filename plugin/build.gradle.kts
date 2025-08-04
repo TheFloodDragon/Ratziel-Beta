@@ -69,6 +69,8 @@ subprojects {
                 "lang/zh_CN.yml",
                 "lang/en_US.yml"
             ).forEach { append(it) }
+            // 删除模块元数据
+            exclude("META-INF/*.kotlin_module")
         }
         build { dependsOn(shadowJar) }
     }

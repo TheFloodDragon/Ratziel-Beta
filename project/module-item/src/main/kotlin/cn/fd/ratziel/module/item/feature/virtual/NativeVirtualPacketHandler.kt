@@ -38,7 +38,7 @@ object NativeVirtualPacketHandler {
     fun handleSetCreativeSlot(event: PacketReceiveEvent) {
         val nmsItem = event.packet.readOrThrow<Any>(itemStackFiledInSetCreativeSlotPacket)
         // 恢复物品
-        handleItem(nmsItem) { NativeVirtualItemRenderer.recover(it, true) }
+        handleItem(nmsItem) { NativeVirtualItemRenderer.recover(it) }
     }
 
     @SubscribeEvent
@@ -46,7 +46,20 @@ object NativeVirtualPacketHandler {
         when (event.packet.name) {
             "PacketPlayOutSetSlot", "ClientboundContainerSetSlotPacket" -> handleSetSlotPacket(event)
             "PacketPlayOutWindowItems", "ClientboundContainerSetContentPacket" -> handleWindowItemsPacket(event)
+            // 1.21.2 +
+            "ClientboundSetCursorItemPacket" -> handleSetCursorItemPacket(event)
+            "ClientboundSetPlayerInventoryPacket" -> handleSetPlayerInventoryPacket(event)
         }
+    }
+
+    fun handleSetCursorItemPacket(event: PacketSendEvent) {
+        val nmsItem = event.packet.readOrThrow<Any>("contents")
+        renderItem(nmsItem, event.player)
+    }
+
+    fun handleSetPlayerInventoryPacket(event: PacketSendEvent) {
+        val nmsItem = event.packet.readOrThrow<Any>("contents")
+        renderItem(nmsItem, event.player)
     }
 
     private val itemStackFiledInSetSlotPacket = if (MinecraftVersion.isUniversal) "itemStack" else "c"

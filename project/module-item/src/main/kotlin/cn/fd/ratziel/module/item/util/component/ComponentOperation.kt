@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.util.component
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtTag
 import cn.altawk.nbt.tag.put
+import cn.altawk.nbt.tag.putCompound
 import cn.fd.ratziel.module.nbt.readInt
 
 /**
@@ -13,7 +14,7 @@ import cn.fd.ratziel.module.nbt.readInt
  */
 class ComponentOperation(
     /** 组件类型 **/
-    val type: String,
+    val typeId: String,
     /** 组件操作 **/
     val operation: OperationType,
     /** 原始数据 **/
@@ -21,8 +22,10 @@ class ComponentOperation(
 ) {
 
     fun unwarp() = NbtCompound {
-        put(OPERATION_NAME, operation.ordinal)
-        if (value != null) put(VALUE_NAME, value)
+        putCompound(typeId) {
+            put(OPERATION_NAME, operation.ordinal)
+            if (value != null) put(VALUE_NAME, value)
+        }
     }
 
     companion object {
@@ -31,11 +34,11 @@ class ComponentOperation(
         private const val VALUE_NAME = "value"
 
         @JvmStatic
-        fun parse(type: String, wrapped: NbtTag): ComponentOperation? {
+        fun parse(typeId: String, wrapped: NbtTag): ComponentOperation? {
             if (wrapped !is NbtCompound) return null
             val state = wrapped.readInt(OPERATION_NAME) ?: return null
             val value = wrapped[VALUE_NAME] ?: return null
-            return ComponentOperation(type, OperationType.entries[state], value)
+            return ComponentOperation(typeId, OperationType.entries[state], value)
         }
 
         @JvmStatic

@@ -1,17 +1,17 @@
 dependencies {
     // Core / Common
-    implementation(projects.project.moduleCore)
-    implementation(projects.project.moduleCommon)
+    runtimeOnly(projects.project.moduleCore)
+    runtimeOnly(projects.project.moduleCommon)
     // Platform - Bukkit
-    implementation(projects.project.runtimeBukkit)
+    runtimeOnly(projects.project.runtimeBukkit)
     // Script
-    implementation(projects.project.moduleScript)
+    runtimeOnly(projects.project.moduleScript)
     // Compat
-    implementation(projects.project.moduleCompatCore)
-    implementation(projects.project.moduleCompatInject)
-    implementation(projects.project.moduleCompatBukkit)
+    runtimeOnly(projects.project.moduleCompatCore)
+    runtimeOnly(projects.project.moduleCompatInject)
+    runtimeOnly(projects.project.moduleCompatBukkit)
     // Module - Item
-    implementation(projects.project.moduleItem)
+    runtimeOnly(projects.project.moduleItem)
 }
 
 taboolib {

@@ -74,14 +74,10 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         }
     }
 
-    override fun recover(virtual: NeoItem) = this.recover(virtual, false)
-
-    /**
-     * @param delete 处理的时候是否删除虚拟物品数据 (设置创造库存适用)
-     */
-    fun recover(virtual: NeoItem, delete: Boolean) {
+    override fun recover(virtual: NeoItem) {
         val virtualData = virtual.data.tag.read(VIRTUAL_PATH) as? NbtCompound ?: return
-        if (delete) virtual.data.tag.delete(VIRTUAL_PATH)
+        // 删除虚拟数据, 因为服务端物品没有这个
+        virtual.data.tag.delete(VIRTUAL_PATH)
 
         // 获取修改数据的记录
         val changes = (virtualData[CHANGES_NODE] as? NbtCompound)?.map {
@@ -92,12 +88,12 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
 
         for (change in changes) {
             when (change.operation) {
-                ADD -> virtual.data.tag.remove(change.type)
+                ADD -> virtual.data.tag.remove(change.typeId)
                 SET, REMOVE -> {
                     val from = requireNotNull(change.value) {
-                        "Operation ${change.operation} with type '${change.type}' must have 'value' data!"
+                        "Operation ${change.operation} with typeId '${change.typeId}' must have 'value' data!"
                     }
-                    virtual.data.tag.put(change.type, from)
+                    virtual.data.tag.put(change.typeId, from)
                 }
             }
         }
