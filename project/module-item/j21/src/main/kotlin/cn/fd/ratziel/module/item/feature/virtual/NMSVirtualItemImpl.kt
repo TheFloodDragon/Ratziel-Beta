@@ -17,7 +17,7 @@ import net.minecraft.network.HashedPatchMap
 import net.minecraft.network.HashedStack
 import net.minecraft.resources.MinecraftKey
 import net.minecraft.server.level.EntityPlayer
-import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_21_R4.entity.CraftPlayer
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
@@ -84,7 +84,7 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
 
         // 获取排除的组件类型
         val excludes = NativeVirtualItemRenderer.readChangedTypes(customItem.data)
-            .map { BuiltInRegistries.DATA_COMPONENT_TYPE.get(MinecraftKey.read(it).getOrThrow { m -> error(m) }) }
+            .map { BuiltInRegistries.DATA_COMPONENT_TYPE.get(MinecraftKey.parse(it)).get().value() }
 
         // 匹配物品
         val newMap = HashMap<DataComponentType<*>, Int>()
@@ -94,7 +94,7 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
             val typed = TypedDataComponent(entry.key as DataComponentType<in Any>, entry.value)
             val cachedHash = cache.get(typed)
             newMap[entry.key] = cachedHash
-            if (entry.value != cachedHash && entry.key !in excludes) {
+            if ((entry.value != cachedHash) && entry.key !in excludes) {
                 matches = false
                 break
             }

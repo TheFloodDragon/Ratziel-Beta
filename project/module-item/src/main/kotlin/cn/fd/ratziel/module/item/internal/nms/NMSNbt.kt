@@ -28,9 +28,11 @@ interface NMSNbt {
     companion object {
 
         val INSTANCE by lazy {
-            if (MinecraftVersion.versionId >= 12005)
+            if (MinecraftVersion.versionId >= 12105) {
+                nmsProxy<NMSNbt>("{name}Impl3")
+            } else if (MinecraftVersion.versionId >= 12005) {
                 nmsProxy<NMSNbt>("{name}Impl2")
-            else nmsProxy<NMSNbt>("{name}Impl1")
+            } else nmsProxy<NMSNbt>("{name}Impl1")
         }
 
     }
