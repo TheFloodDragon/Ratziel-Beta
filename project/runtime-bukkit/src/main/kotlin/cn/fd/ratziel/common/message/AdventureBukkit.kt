@@ -4,10 +4,10 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 val CommandSender.audienceSender
-    get() = BukkitMessage.audienceProvider.sender(this)
+    get() = BukkitMessage.audiences.sender(this)
 
 val Player.audiencePlayer
-    get() = BukkitMessage.audienceProvider.player(this)
+    get() = BukkitMessage.audiences.player(this)
 
 
 /**

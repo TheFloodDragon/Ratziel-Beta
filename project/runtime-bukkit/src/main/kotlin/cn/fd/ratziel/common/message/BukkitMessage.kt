@@ -1,13 +1,11 @@
 package cn.fd.ratziel.common.message
 
-import cn.fd.ratziel.common.message.builder.GsonMessageBuilder
-import cn.fd.ratziel.common.message.builder.LegacyMessageBuilder
-import cn.fd.ratziel.common.message.builder.MiniMessageBuilder
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
+import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer
+import net.kyori.adventure.text.minimessage.MiniMessage
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.module.nms.MinecraftVersion
 import taboolib.platform.BukkitPlugin
 
 /**
@@ -20,16 +18,12 @@ import taboolib.platform.BukkitPlugin
 @PlatformSide(Platform.BUKKIT)
 object BukkitMessage : MessageWrapper {
 
-    override val audienceProvider by lazy {
-        BukkitAudiences.create(BukkitPlugin.getInstance())
-    }
+    override val audiences by lazy { BukkitAudiences.create(BukkitPlugin.getInstance()) }
 
-    fun isLegacy() = MinecraftVersion.isLower(MinecraftVersion.V1_16)
+    override val gsonBuilder = BukkitComponentSerializer.gson()
 
-    override val gsonBuilder = GsonMessageBuilder(colorDown = isLegacy())
+    override val legacyBuilder = BukkitComponentSerializer.legacy()
 
-    override val legacyBuilder = LegacyMessageBuilder(hexColors = !isLegacy(), useUnusualXRepeatedCharacterHexFormat = !isLegacy())
-
-    override val miniBuilder = MiniMessageBuilder
+    override val miniBuilder = MiniMessage.miniMessage()
 
 }

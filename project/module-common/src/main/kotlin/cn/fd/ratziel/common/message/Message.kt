@@ -1,19 +1,15 @@
+@file:Suppress("UnstableApiUsage")
+
 package cn.fd.ratziel.common.message
 
-import cn.fd.ratziel.common.message.builder.MessageComponentSerializer
-import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_END
-import cn.fd.ratziel.common.message.builder.MiniMessageBuilder.TAG_START
 import cn.fd.ratziel.core.util.replaceNonEscaped
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.internal.parser.TokenParser
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.AMPERSAND_CHAR
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.SECTION_CHAR
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import taboolib.common.platform.PlatformFactory
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
-
-typealias MessageComponent = @Serializable(MessageComponentSerializer::class) Component
 
 /**
  * Message
@@ -56,13 +52,13 @@ object Message {
         source?.let { Components.parseSimple(it).build() } ?: ComponentText.empty()
 
     /**
-     * 将 Json字符串 转换成 [MessageComponent]
+     * 将 Json字符串 转换成 [Component]
      */
     @JvmStatic
     fun transformToJson(component: Component): String = wrapper.gsonBuilder.serialize(component)
 
     /**
-     * 将 [MessageComponent] 转换成 Json字符串
+     * 将 [Component] 转换成 Json字符串
      */
     @JvmStatic
     fun transformFromJson(json: String): Component = wrapper.gsonBuilder.deserialize(json)
@@ -84,6 +80,12 @@ object Message {
 
     private fun deMark(source: String) =
         source.replaceNonEscaped(MARKED_TAG_START, TAG_START).replaceNonEscaped(MARKED_TAG_END, TAG_END)
+
+    const val AMPERSAND_CHAR = LegacyComponentSerializer.AMPERSAND_CHAR
+    const val SECTION_CHAR = LegacyComponentSerializer.SECTION_CHAR
+
+    const val TAG_START = TokenParser.TAG_START.toString()
+    const val TAG_END = TokenParser.TAG_END.toString()
 
     const val MARKED_TAG_START = "{marked:start}"
     const val MARKED_TAG_END = "{marked:end}"

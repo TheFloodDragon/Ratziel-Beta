@@ -1,9 +1,9 @@
 package cn.fd.ratziel.common.message
 
-import cn.fd.ratziel.common.message.builder.GsonMessageBuilder
-import cn.fd.ratziel.common.message.builder.LegacyMessageBuilder
-import cn.fd.ratziel.common.message.builder.MiniMessageBuilder
 import net.kyori.adventure.platform.AudienceProvider
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import taboolib.common.platform.PlatformService
 
 /**
@@ -18,21 +18,23 @@ interface MessageWrapper {
     /**
      * 观众提供者
      */
-    val audienceProvider: AudienceProvider
+    val audiences: AudienceProvider
 
     /**
-     * 消息构建器 - [LegacyMessageBuilder]
+     * 消息构建器 - [LegacyComponentSerializer]
      */
-    val legacyBuilder: LegacyMessageBuilder
+    val legacyBuilder: LegacyComponentSerializer
 
     /**
-     * 消息构建器 - [GsonMessageBuilder]
+     * 消息构建器 - [GsonComponentSerializer]
+     * [GsonMessage](https://docs.advntr.dev/serializer/gson.html)
      */
-    val gsonBuilder: GsonMessageBuilder
+    val gsonBuilder: GsonComponentSerializer
 
     /**
-     * 消息构建器 - [MiniMessageBuilder]
+     * 消息构建器 - [MiniMessage]
+     * [MiniMessage](https://docs.advntr.dev/minimessage/index.html)
      */
-    val miniBuilder: MiniMessageBuilder
+    val miniBuilder: MiniMessage
 
 }

@@ -3,10 +3,13 @@
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.common.message.Message
-import cn.fd.ratziel.common.message.MessageComponent
+import cn.fd.ratziel.module.item.internal.serializers.MessageComponentSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
+import net.kyori.adventure.text.Component
+
+typealias MessageComponent = @Serializable(MessageComponentSerializer::class) Component
 
 /**
  * ItemDisplay - 物品显示
