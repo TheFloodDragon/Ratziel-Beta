@@ -4,6 +4,9 @@ import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.put
 import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.functional.SimpleContext
+import cn.fd.ratziel.module.item.ItemManager
+import cn.fd.ratziel.module.item.api.IdentifiedItem
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.feature.virtual.ComponentChange.OperationType.*
 import cn.fd.ratziel.module.item.impl.RatzielItem
@@ -13,6 +16,7 @@ import cn.fd.ratziel.module.nbt.delete
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
 import cn.fd.ratziel.module.nbt.readString
+import org.bukkit.entity.Player
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -37,6 +41,8 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
      * 接收器表
      */
     val acceptors: MutableList<VirtualItemRenderer.Acceptor> = CopyOnWriteArrayList()
+
+    fun render(actual: IdentifiedItem, player: Player) = this.render(actual, createContext(actual, player))
 
     override fun render(actual: NeoItem, context: ArgumentContext) {
         val before = actual.data.clone()
@@ -100,6 +106,19 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         if (material != null && !material.isEmpty()) {
             virtual.data.material = material
         }
+    }
+
+    /**
+     * 创建上下文
+     */
+    fun createContext(item: IdentifiedItem, player: Player): SimpleContext {
+        // 生成上下文
+        val context = SimpleContext(item, player)
+        // 导入生成器的上下文
+        val generator = ItemManager.registry[item.identifier.content]
+        val args = generator?.contextProvider?.newContext()?.args()
+        if (args != null) context.putAll(args)
+        return context
     }
 
 }

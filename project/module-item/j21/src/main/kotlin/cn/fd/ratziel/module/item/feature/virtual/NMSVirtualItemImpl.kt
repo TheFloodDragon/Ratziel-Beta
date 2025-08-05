@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.feature.virtual
 
-import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.platform.bukkit.util.readOrThrow
@@ -9,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps
 import net.minecraft.network.HashedPatchMap
 import net.minecraft.network.HashedStack
 import net.minecraft.world.item.ItemStack
+import org.bukkit.entity.Player
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
 
@@ -51,10 +51,10 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
         val changedItems = Int2ObjectArrayMap<HashedStack>(items.size)
         for ((slot, value) in items) {
             if (slot == -10086) {
-                val carried = ProxyHashedStack(value as HashedStack)
+                val carried = ProxyHashedStack(value as HashedStack, event.player)
                 event.packet.write(carriedItemFieldInContainerClick, carried)
             } else {
-                changedItems.put(slot, ProxyHashedStack(value as HashedStack))
+                changedItems.put(slot, ProxyHashedStack(value as HashedStack, event.player))
             }
         }
         event.packet.write(changedSlotsField, Int2ObjectMaps.unmodifiable(changedItems))
@@ -63,7 +63,7 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
     /**
      * 修改匹配逻辑的 [HashedStack] (不兼容其他任何用此方法的插件)
      */
-    class ProxyHashedStack(val hashedStack: HashedStack) : HashedStack {
+    class ProxyHashedStack(val hashedStack: HashedStack, val player: Player) : HashedStack {
 
         override fun matches(serverItem: ItemStack, hashGenerator: HashedPatchMap.a): Boolean {
             // 数量不一样必须同步 (材料不要求)
@@ -74,7 +74,7 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
             val customItem = asCustomItem(serverItem)
             if (customItem != null) {
                 // 重新渲染遍, 以便虚拟数据生成 (虚拟数据不包含客户端侧, 所以校验能过), 不渲染这个校验过不了
-                NativeVirtualItemRenderer.render(customItem, SimpleContext())
+                NativeVirtualItemRenderer.render(customItem, player)
                 // 设置要匹配的物品为渲染后的物品
                 itemToMatch = RefItemStack.of(customItem.data).nmsStack as? ItemStack ?: return false
             }

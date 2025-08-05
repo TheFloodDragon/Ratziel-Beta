@@ -41,14 +41,15 @@ object GraalJsScriptExecutor : EnginedScriptExecutor(), NonStrictCompilation {
     }
 
     override fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
-        val globalBindings = engine.context.getBindings(ScriptContext.GLOBAL_SCOPE) ?: emptyMap()
-        val engineBindings = engine.context.getBindings(ScriptContext.ENGINE_SCOPE)
-        // 清除原有的环境导入
-        for ((key, _) in globalBindings) engineBindings?.remove(key)
+        // 上一次的环境绑定
+        val lastBindings = engine.context.getBindings(ScriptContext.GLOBAL_SCOPE) ?: emptyMap()
         // 创建上下文 (导入环境到全局域)
         val context = super.createContext(engine, environment)
+        val engineBindings = context.getBindings(ScriptContext.ENGINE_SCOPE)
+        // 清除原有的环境导入
+        for ((key, _) in lastBindings) engineBindings.remove(key)
         // GraalJS 导入全局类是从 全局域 导入到 引擎域, 所以此处需要重新导入下环境 (手动导入)
-        engineBindings.putAll(globalBindings)
+        engineBindings.putAll(context.getBindings(ScriptContext.GLOBAL_SCOPE))
         return context
     }
 

@@ -1,7 +1,5 @@
 package cn.fd.ratziel.module.item.feature.virtual
 
-import cn.fd.ratziel.core.functional.SimpleContext
-import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.writeTo
@@ -14,7 +12,6 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.PacketSendEvent
-import java.util.function.BiConsumer
 import java.util.function.Consumer
 
 /**
@@ -93,28 +90,9 @@ object NativeVirtualPacketHandler {
     /**
      * 渲染物品
      */
-    fun renderItem(nmsItem: Any, player: Player) {
-        this.handleItem(nmsItem, player) { item, context ->
-            NativeVirtualItemRenderer.render(item, context)
-        }
-    }
-
-    /**
-     * 处理物品
-     *
-     * @param nmsItem NMS 物品实例
-     */
-    fun handleItem(nmsItem: Any, player: Player, consumer: BiConsumer<RatzielItem, SimpleContext>) {
+    private fun renderItem(nmsItem: Any, player: Player) {
         this.handleItem(nmsItem) { item ->
-            // 生成上下文
-            val context = SimpleContext(item, player)
-            // 导入生成器的上下文
-            val generator = ItemManager.registry[item.identifier.content]
-            val args = generator?.contextProvider?.newContext()?.args()
-            if (args != null) context.putAll(args)
-
-            // 消费物品
-            consumer.accept(item, context)
+            NativeVirtualItemRenderer.render(item, player)
         }
     }
 

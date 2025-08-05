@@ -7,7 +7,7 @@ import cn.altawk.nbt.tag.putCompound
 import cn.fd.ratziel.module.nbt.readInt
 
 /**
- * ComponentOperation
+ * ComponentChange
  *
  * @author TheFloodDragon
  * @since 2025/8/3 11:54
