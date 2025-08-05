@@ -37,7 +37,7 @@ object NativeVirtualPacketHandler {
 
     fun handleSetCreativeSlot(event: PacketReceiveEvent) {
         val nmsItem = event.packet.readOrThrow<Any>(itemStackFiledInSetCreativeSlotPacket)
-        // 恢复物品
+        // 恢复物品 (妈妈再也不用担心我的物品被摸坏了)
         handleItem(nmsItem) { NativeVirtualItemRenderer.recover(it) }
     }
 

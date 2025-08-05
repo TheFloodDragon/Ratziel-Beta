@@ -9,7 +9,6 @@ import cn.fd.ratziel.module.item.impl.component.ItemDisplay
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
 
 /**
@@ -20,30 +19,14 @@ import net.kyori.adventure.text.TextReplacementConfig
  */
 object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
 
-    /**
-     * 文本替换配置 (仅标记)
-     */
-    val onMarkReplacementConfig by lazy {
-        TextReplacementConfig.builder().apply {
-            match(DynamicTagResolver.regex)
-            replacement { text ->
-                Component.text(text.content() + "w")
-            }
-        }.build()
-    }
-
-    override fun accept(actual: NeoItem, context: ArgumentContext) = this.handleDisplay(actual, context, false)
-
-    override fun onlyMark(actual: NeoItem, context: ArgumentContext) = this.handleDisplay(actual, context, true)
-
-    fun handleDisplay(actual: NeoItem, context: ArgumentContext, onlyMark: Boolean) {
+    override fun accept(actual: NeoItem, context: ArgumentContext) {
         if (actual !is ComponentHolder) return
 
         // 读取显示组件
         val display = actual.getComponent(ItemDisplay::class.java)
 
         // 创建文本替换配置
-        val replacementConfig = if (onlyMark) onMarkReplacementConfig else createReplacementConfig(context)
+        val replacementConfig = createReplacementConfig(context)
 
         runBlocking {
             // 显示名称处理

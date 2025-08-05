@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.util.component
+package cn.fd.ratziel.module.item.feature.virtual
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtTag
@@ -12,7 +12,7 @@ import cn.fd.ratziel.module.nbt.readInt
  * @author TheFloodDragon
  * @since 2025/8/3 11:54
  */
-class ComponentOperation(
+class ComponentChange(
     /** 组件类型 **/
     val typeId: String,
     /** 组件操作 **/
@@ -34,28 +34,28 @@ class ComponentOperation(
         private const val VALUE_NAME = "value"
 
         @JvmStatic
-        fun parse(typeId: String, wrapped: NbtTag): ComponentOperation? {
+        fun parse(typeId: String, wrapped: NbtTag): ComponentChange? {
             if (wrapped !is NbtCompound) return null
             val state = wrapped.readInt(OPERATION_NAME) ?: return null
             val value = wrapped[VALUE_NAME] ?: return null
-            return ComponentOperation(typeId, OperationType.entries[state], value)
+            return ComponentChange(typeId, OperationType.entries[state], value)
         }
 
         @JvmStatic
-        fun compareChanges(now: NbtCompound, before: NbtCompound): List<ComponentOperation> {
+        fun compareChanges(now: NbtCompound, before: NbtCompound): List<ComponentChange> {
             // 标记变化
-            val changes = ArrayList<ComponentOperation>()
+            val changes = ArrayList<ComponentChange>()
             // 增改
             for (changed in now) {
                 val origin = before[changed.key]
                 val operation = if (origin == null) OperationType.ADD else OperationType.SET
                 if (origin != changed.value) {
-                    changes.add(ComponentOperation(changed.key, operation, origin))
+                    changes.add(ComponentChange(changed.key, operation, origin))
                 }
             }
             // 删
             for (removed in before.filter { !now.containsKey(it.key) }) {
-                changes.add(ComponentOperation(removed.key, OperationType.REMOVE, removed.value))
+                changes.add(ComponentChange(removed.key, OperationType.REMOVE, removed.value))
             }
             return changes
         }

@@ -4,13 +4,11 @@ import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.put
 import cn.fd.ratziel.core.functional.ArgumentContext
-import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
+import cn.fd.ratziel.module.item.feature.virtual.ComponentChange.OperationType.*
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.internal.ItemSheet
-import cn.fd.ratziel.module.item.util.component.ComponentOperation
-import cn.fd.ratziel.module.item.util.component.ComponentOperation.OperationType.*
 import cn.fd.ratziel.module.nbt.delete
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
@@ -40,13 +38,11 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
      */
     val acceptors: MutableList<VirtualItemRenderer.Acceptor> = CopyOnWriteArrayList()
 
-    override fun render(actual: NeoItem, context: ArgumentContext) = this.render(actual, context, false)
-
-    fun render(actual: NeoItem, context: ArgumentContext, onlyMark: Boolean) {
+    override fun render(actual: NeoItem, context: ArgumentContext) {
         val before = actual.data.clone()
 
         // 接收器工作
-        acceptors.forEach { if (onlyMark) it.onlyMark(actual, context) else it.accept(actual, context) }
+        acceptors.forEach { it.accept(actual, context) }
 
         val now = actual.data
         // 自定义数据禁止修改
@@ -57,7 +53,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         if (now.material.isEmpty()) now.material = before.material
 
         // 标记变化
-        val changes = ComponentOperation.compareChanges(now.tag, before.tag)
+        val changes = ComponentChange.compareChanges(now.tag, before.tag)
         now.tag.handle(VIRTUAL_PATH) {
             // 清除之前的数据
             clear()
@@ -81,7 +77,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
 
         // 获取修改数据的记录
         val changes = (virtualData[CHANGES_NODE] as? NbtCompound)?.map {
-            requireNotNull(ComponentOperation.parse(it.key, it.value)) {
+            requireNotNull(ComponentChange.parse(it.key, it.value)) {
                 "Invalid component operation: ${it.key} = ${it.value}"
             }
         } ?: emptyList()
@@ -104,15 +100,6 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         if (material != null && !material.isEmpty()) {
             virtual.data.material = material
         }
-    }
-
-    /**
-     * 读取变化的组件类型名
-     */
-    @JvmStatic
-    fun readChangedTypes(data: ItemData): Set<String> {
-        return (data.tag.read(VIRTUAL_PATH + NbtPath.NameNode(CHANGES_NODE))
-                as? NbtCompound)?.keys ?: return emptySet()
     }
 
 }

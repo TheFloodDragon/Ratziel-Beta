@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.util.component
+package cn.fd.ratziel.module.item.util
 
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.module.item.ItemElement

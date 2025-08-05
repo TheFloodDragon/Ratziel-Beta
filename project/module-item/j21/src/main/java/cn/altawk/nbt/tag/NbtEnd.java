@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * @author TheFloodDragon
  * @since 2025/8/5 10:23
  */
-public class NbtEnd implements NbtTag {
+public final class NbtEnd implements NbtTag {
 
     public static final NbtEnd INSTANCE = new NbtEnd();
 
