@@ -128,7 +128,7 @@ class DataInterpreter : ItemInterpreter {
                 }
 
                 // 触发触发器
-                PROCESS_TRIGGER.trigger(stream.identifier) {
+                POST_TRIGGER.trigger(stream.identifier) {
                     // 导入变量表
                     bindings.putAll(vars)
                     // 尝试获取 RatzielItem 物品
@@ -186,10 +186,10 @@ class DataInterpreter : ItemInterpreter {
     companion object {
 
         /**
-         * 数据处理触发器 (在 [DataInterpreter] 数据处理完后触发)
+         * 数据处理完成触发器 (在 [DataInterpreter] 数据处理完后触发)
          */
         @JvmField
-        val PROCESS_TRIGGER = registerTrigger("onProcess", "process")
+        val POST_TRIGGER = registerTrigger("onPost", "post")
 
         /**
          * 常量层属性定义域别名

@@ -22,12 +22,12 @@ class ItemDisplay(
     /**
      * 物品名称
      */
-    @JsonNames("name", "display-name", "displayName")
+    @JsonNames("display-name", "displayName")
     var name: MessageComponent? = null,
     /**
      * 物品本地化名称
      */
-    @JsonNames("loc-name", "locName", "local-name", "localName")
+    @JsonNames("localized-name", "itemName", "item-name")
     var localizedName: MessageComponent? = null,
     /**
      * 物品描述

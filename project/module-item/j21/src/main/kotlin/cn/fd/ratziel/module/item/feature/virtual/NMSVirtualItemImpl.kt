@@ -61,7 +61,7 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
     }
 
     /**
-     * 修改匹配逻辑的 [HashedStack] (不兼容其他任何用此方法的插件)
+     * 修改匹配逻辑的 [HashedStack]
      */
     class ProxyHashedStack(val hashedStack: HashedStack, val player: Player) : HashedStack {
 
