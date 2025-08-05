@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
+import cn.altawk.nbt.tag.NbtTag
+import com.mojang.serialization.DataResult
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.PatchedDataComponentMap
@@ -9,8 +11,8 @@ import net.minecraft.nbt.NBTBase
 import net.minecraft.resources.RegistryOps
 import net.minecraft.world.item.component.CustomData
 import org.bukkit.craftbukkit.v1_21_R4.CraftRegistry
+import taboolib.common.platform.function.severe
 import taboolib.library.reflex.ReflexClass
-import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
 /**
@@ -30,22 +32,57 @@ class NMSItemImpl2 : NMSItem() {
         ReflexClass.of(NMSItemStack::class.java).getField("components", remap = true)
     }
 
-    val ops: RegistryOps<NBTBase> get() = CraftRegistry.getMinecraftRegistry().createSerializationContext(DynamicOpsNBT.INSTANCE)
+    val nmsOps: RegistryOps<NBTBase> by lazy {
+        CraftRegistry.getMinecraftRegistry().createSerializationContext(DynamicOpsNBT.INSTANCE)
+    }
+
+    val modernOps: RegistryOps<NbtTag> by lazy {
+        CraftRegistry.getMinecraftRegistry().createSerializationContext(ModernNbtOps)
+    }
+
+    fun parse(tag: NbtTag): DataComponentPatch {
+        val result: DataResult<DataComponentPatch> = if (isModern) {
+            DataComponentPatch.CODEC.parse(modernOps, tag)
+        } else {
+            val nmsTag = NMSNbt.INSTANCE.toNms(tag) as NBTBase
+            DataComponentPatch.CODEC.parse(nmsOps, nmsTag)
+        }
+        return result.getPartialOrThrow { error("Failed to parse: $it") }
+    }
+
+    fun save(patch: DataComponentPatch): NbtTag {
+        val result: DataResult<NbtTag> = if (isModern) {
+            DataComponentPatch.CODEC.encodeStart(modernOps, patch)
+        } else {
+            DataComponentPatch.CODEC.encodeStart(nmsOps, patch).map {
+                NMSNbt.INSTANCE.fromNms(it)
+            }
+        }
+        return result.getPartialOrThrow { error("Failed to save: $it") }
+    }
 
     override fun getTag(nmsItem: Any): NbtCompound? {
         val patch = (nmsItem as NMSItemStack).componentsPatch
-        val nmsTag = DataComponentPatch.CODEC.encodeStart(ops, patch).resultOrPartial {
-            error("Failed to save: $it")
-        }.getOrNull() ?: return null
-        return NMSNbt.INSTANCE.fromNms(nmsTag) as? NbtCompound
+        try {
+            val result = save(patch)
+            if (result is NbtCompound) {
+                return result
+            } else {
+                severe("Invalid type ${result.type.name} of tag: $result")
+            }
+        } catch (ex: Throwable) {
+            severe(ex.stackTraceToString())
+        }
+        return null
     }
 
     override fun setTag(nmsItem: Any, tag: NbtCompound) {
-        val nmsTag = NMSNbt.INSTANCE.toNms(tag) as NBTBase
-        // 解析成 DataComponentPatch
-        val patch = DataComponentPatch.CODEC.parse(ops, nmsTag).resultOrPartial {
-            error("Failed to parse: $it")
-        }.getOrNull() ?: return
+        val patch = try {
+            parse(tag)
+        } catch (ex: Throwable) {
+            severe(ex.stackTraceToString())
+            return
+        }
         // 源物品组件
         val components = (nmsItem as NMSItemStack).components
         // 源物品的组件不为空

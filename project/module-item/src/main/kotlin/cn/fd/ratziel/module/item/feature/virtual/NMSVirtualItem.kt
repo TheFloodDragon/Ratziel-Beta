@@ -15,6 +15,7 @@ abstract class NMSVirtualItem {
 
     companion object {
 
+        @JvmStatic
         val INSTANCE by lazy { nmsProxy<NMSVirtualItem>() }
 
     }

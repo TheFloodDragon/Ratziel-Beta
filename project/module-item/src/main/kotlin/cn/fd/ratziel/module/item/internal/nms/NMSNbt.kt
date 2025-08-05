@@ -27,6 +27,7 @@ interface NMSNbt {
 
     companion object {
 
+        @JvmStatic
         val INSTANCE by lazy {
             if (MinecraftVersion.versionId >= 12105) {
                 nmsProxy<NMSNbt>("{name}Impl3")
