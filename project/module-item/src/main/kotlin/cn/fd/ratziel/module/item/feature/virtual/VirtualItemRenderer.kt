@@ -40,6 +40,14 @@ interface VirtualItemRenderer {
          */
         fun accept(actual: NeoItem, context: ArgumentContext)
 
+        /**
+         * 可预知性的是否产生了变化 (提升发包处理效率的方法)
+         *
+         * 如果你可以提前知道此 [Acceptor] 是否会被真实物品产生变化, 请重写此方法。
+         * 当且仅当方法返回 true 的时候, [accept] 才会被执行
+         */
+        fun wouldChange(context: ArgumentContext): Boolean = true
+
     }
 
 }

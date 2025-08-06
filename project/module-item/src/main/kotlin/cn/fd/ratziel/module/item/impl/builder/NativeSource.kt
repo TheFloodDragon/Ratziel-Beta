@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.SimpleIdentifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.getBy
@@ -25,16 +24,11 @@ import taboolib.common.io.digest
 object NativeSource {
 
     /**
-     * 获取标识符
-     */
-    fun identifier(element: Element) = SimpleIdentifier(element.name)
-
-    /**
      * 生成物品
      */
     fun generateItem(element: Element, sourceData: ItemData): RatzielItem? {
         // 生成物品唯一标识符
-        val identifier = identifier(element)
+        val identifier = element.identifier.destrict()
         // 确定版本
         val property = (element.property as? JsonObject) ?: return null
         val version = property.toString().digest("SHA-256")

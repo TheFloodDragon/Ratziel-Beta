@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.functional.ArgumentContext
-import cn.fd.ratziel.core.functional.CacheContext
+import cn.fd.ratziel.core.functional.AttachedContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object InlineScriptResolver : ItemSectionResolver {
 
-    internal val scripsCatcher = CacheContext.Catcher<MutableMap<String, ScriptBlock>>(this) { ConcurrentHashMap() }
+    internal val scriptsCatcher = AttachedContext.Catcher<MutableMap<String, ScriptBlock>>(this) { ConcurrentHashMap() }
 
     override fun prepare(node: JsonTree.Node, context: ArgumentContext) {
         val section = node.stringSection() ?: return
@@ -33,7 +33,7 @@ object InlineScriptResolver : ItemSectionResolver {
             } else null
         }
         // 扔到缓存里
-        scripsCatcher.catch(context).putAll(scripts.associateBy { it.source })
+        scriptsCatcher[context].putAll(scripts.associateBy { it.source })
     }
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
@@ -41,7 +41,7 @@ object InlineScriptResolver : ItemSectionResolver {
         val resolved = analyzeParts(section.value.content).joinToString("") { part ->
             if (part.language != null) {
                 // 获取脚本
-                val script = scripsCatcher.catch(context).getOrPut(part.content) {
+                val script = scriptsCatcher[context].getOrPut(part.content) {
                     ScriptBlock(part.content, part.language.executor)
                 }
                 // 评估脚本并返回结果
@@ -83,7 +83,7 @@ object InlineScriptResolver : ItemSectionResolver {
             }
 
             // 解析内联脚本
-            val script: ScriptBlock = scripsCatcher.catch(context).getOrPut(content) {
+            val script: ScriptBlock = scriptsCatcher[context].getOrPut(content) {
                 ScriptBlock(content, (language ?: ScriptManager.defaultLanguage).executor)
             }
 

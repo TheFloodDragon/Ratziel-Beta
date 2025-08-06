@@ -19,6 +19,13 @@ import net.kyori.adventure.text.TextReplacementConfig
  */
 object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
 
+    /**
+     * 只有动态物品才会应用
+     */
+    override fun wouldChange(context: ArgumentContext): Boolean {
+        return DynamicTagResolver.isDynamic[context]
+    }
+
     override fun accept(actual: NeoItem, context: ArgumentContext) {
         if (actual !is ComponentHolder) return
 

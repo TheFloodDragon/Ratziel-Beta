@@ -2,8 +2,7 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.ArgumentContext
-import cn.fd.ratziel.core.functional.ArgumentContextProvider
-import cn.fd.ratziel.core.functional.CacheContext
+import cn.fd.ratziel.core.functional.AttachedContext
 import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemData
@@ -27,14 +26,9 @@ open class DefaultGenerator(
 ) : ItemGenerator {
 
     /**
-     * 针对同元素物品的缓存上下文
+     * 上下文提供者 (目前就是为了提供 [AttachedContext])
      */
-    protected open val cacheContext = CacheContext()
-
-    /**
-     * 上下文提供者 (目前就是为了提供 [cacheContext])
-     */
-    override val contextProvider = ArgumentContextProvider { SimpleContext(cacheContext) }
+    override val contextProvider = AttachedContext().asContextProvider()
 
     /**
      * 基础物品流 (经过预处理生成的流)
