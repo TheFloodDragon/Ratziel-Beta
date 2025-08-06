@@ -3,12 +3,12 @@ package cn.fd.ratziel.module.item.feature.action
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.SimpleContext
-import cn.fd.ratziel.module.item.api.action.ActionMap
-import cn.fd.ratziel.module.item.api.action.ItemTrigger
+import cn.fd.ratziel.core.reactive.ContextualResponse
+import cn.fd.ratziel.core.reactive.SimpleTrigger
+import cn.fd.ratziel.core.reactive.Trigger
 import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
-import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.severe
 import java.util.concurrent.ConcurrentHashMap
 
@@ -21,9 +21,14 @@ import java.util.concurrent.ConcurrentHashMap
 object ActionManager {
 
     /**
-     * [ItemTrigger] 注册表
+     * 触发器注册表: 触发器名称 -> 触发器
      */
-    val registry: MutableMap<String, ItemTrigger> = ConcurrentHashMap()
+    private val registry: MutableMap<String, Trigger> = ConcurrentHashMap()
+
+    /**
+     * 注册的物品触发器列表
+     */
+    val triggers: Collection<Trigger> get() = registry.values
 
     /**
      * 物品动作服务
@@ -40,10 +45,26 @@ object ActionManager {
     }
 
     /**
+     * 注册触发器
+     */
+    @JvmStatic
+    fun register(trigger: Trigger) {
+        // 绑定回应者
+        trigger.bind(ItemResponder)
+        // 注册到注册表中
+        for (name in trigger.names) this.registry[name] = trigger
+    }
+
+    /**
+     * 注册简易的 [SimpleTrigger]
+     */
+    fun registerSimple(vararg names: String) = SimpleTrigger(names).also { this.register(it) }
+
+    /**
      * 匹配触发器
      */
     @JvmStatic
-    fun matchTrigger(name: String): ItemTrigger? {
+    fun matchTrigger(name: String): Trigger? {
         val trigger = registry[name]
         if (trigger == null) {
             severe("Unknown trigger: \"$name\" !")
@@ -55,20 +76,18 @@ object ActionManager {
      * 触发指定物品的动作
      */
     @JvmStatic
-    fun ItemTrigger.trigger(identifier: Identifier, context: ArgumentContext) {
-        // 获取物品动作 (无动作时返回)
-        val action = service[identifier]?.get(this) ?: return
+    fun Trigger.trigger(identifier: Identifier, context: ArgumentContext) {
+        // 获取此触发器绑定的物品响应器
+        val responder = this.responder(ItemResponder::class.java) ?: return
         // 执行物品动作
-        action.execute(context)
-        // Debug
-        debug("[ActionManager] '$this' trigger action '$action'.")
+        responder.accept(ContextualResponse(identifier, context), this)
     }
 
     /**
      * 触发指定物品的动作
      */
     @JvmStatic
-    fun ItemTrigger.trigger(identifier: Identifier, vararg values: Any?, action: (ScriptEnvironment).() -> Unit) {
+    fun Trigger.trigger(identifier: Identifier, vararg values: Any?, action: (ScriptEnvironment).() -> Unit) {
         val environment = SimpleScriptEnvironment()
         action(environment)
         val context = SimpleContext(environment, *values.mapNotNull { it }.toTypedArray())

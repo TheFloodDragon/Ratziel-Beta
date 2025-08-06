@@ -24,8 +24,6 @@ subprojects {
         maven("https://papermc.io/repo/repository/maven-public/")
         // JitPack
         maven("https://jitpack.io")
-        // OSS
-        maven("https://s01.oss.sonatype.org/content/groups/public/")
     }
 
     dependencies {

@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.item.feature.action.provided
 
-import cn.fd.ratziel.module.item.impl.RatzielItem
+import cn.fd.ratziel.module.item.feature.action.ActionManager.registerSimple
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
-import cn.fd.ratziel.module.item.feature.action.registerTrigger
+import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.util.writeTo
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDeathEvent
@@ -20,7 +20,7 @@ import taboolib.platform.util.killer
 object EntityDeathListener {
 
     /** 击杀生物时 **/
-    val KILL_ENTITY = registerTrigger("onKill", "kill")
+    val KILL_ENTITY = registerSimple("onKill", "kill")
 
     @SubscribeEvent
     fun onEntityDeath(event: EntityDeathEvent) {

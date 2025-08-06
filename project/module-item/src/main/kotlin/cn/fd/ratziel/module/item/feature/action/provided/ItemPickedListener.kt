@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.item.feature.action.provided
 
-import cn.fd.ratziel.module.item.impl.RatzielItem
+import cn.fd.ratziel.module.item.feature.action.ActionManager.registerSimple
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
-import cn.fd.ratziel.module.item.feature.action.registerTrigger
+import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.util.toItemStack
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityPickupItemEvent
@@ -19,7 +19,7 @@ import taboolib.common.platform.event.SubscribeEvent
 object ItemPickedListener {
 
     /** 当物品被拾取时 **/
-    val ON_PICK = registerTrigger("onPickedUp", "onPick", "pick")
+    val ON_PICK = registerSimple("onPickedUp", "onPick", "pick")
 
     @SubscribeEvent // EntityPickupItemEvent 好像在 1.8 的时候没有
     fun onItemPicked(event: EntityPickupItemEvent) {

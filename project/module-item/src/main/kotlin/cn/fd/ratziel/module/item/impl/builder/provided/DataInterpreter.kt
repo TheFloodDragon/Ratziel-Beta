@@ -9,8 +9,8 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
+import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
-import cn.fd.ratziel.module.item.feature.action.registerTrigger
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.script.block.BlockBuilder
@@ -189,7 +189,7 @@ class DataInterpreter : ItemInterpreter {
          * 数据处理完成触发器 (在 [DataInterpreter] 数据处理完后触发)
          */
         @JvmField
-        val POST_TRIGGER = registerTrigger("onPost", "post")
+        val POST_TRIGGER = ActionManager.registerSimple("onPost", "post")
 
         /**
          * 常量层属性定义域别名

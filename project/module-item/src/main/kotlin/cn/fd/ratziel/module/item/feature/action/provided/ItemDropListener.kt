@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.item.feature.action.provided
 
-import cn.fd.ratziel.module.item.impl.RatzielItem
+import cn.fd.ratziel.module.item.feature.action.ActionManager.registerSimple
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
-import cn.fd.ratziel.module.item.feature.action.registerTrigger
+import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.util.toItemStack
 import org.bukkit.event.player.PlayerDropItemEvent
 import taboolib.common.platform.Awake
@@ -18,7 +18,7 @@ import taboolib.common.platform.event.SubscribeEvent
 object ItemDropListener {
 
     /** 当物品被丢弃时 **/
-    val ON_DROP = registerTrigger("onDrop", "drop")
+    val ON_DROP = registerSimple("onDrop", "drop")
 
     @SubscribeEvent
     fun onItemDropped(event: PlayerDropItemEvent) {

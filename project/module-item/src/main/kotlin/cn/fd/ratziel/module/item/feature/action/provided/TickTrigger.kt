@@ -3,9 +3,10 @@ package cn.fd.ratziel.module.item.feature.action.provided
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.serialization.json.getBy
-import cn.fd.ratziel.module.item.impl.RatzielItem
+import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
-import cn.fd.ratziel.module.item.feature.action.SimpleTrigger
+import cn.fd.ratziel.module.item.feature.action.ItemTrigger
+import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.internal.command.PlayerInventorySlot
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonElement
@@ -13,12 +14,12 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
 import org.bukkit.entity.Player
+import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.platform.util.onlinePlayers
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.iterator
 
 /**
  * TickTrigger
@@ -26,7 +27,7 @@ import kotlin.collections.iterator
  * @author TheFloodDragon
  * @since 2025/6/8 10:15
  */
-object TickTrigger : SimpleTrigger("onTick", "tick") {
+object TickTrigger : ItemTrigger("onTick", "tick") {
 
     private val tasks = ConcurrentHashMap<Identifier, PlatformExecutor.PlatformTask>()
 
@@ -74,6 +75,11 @@ object TickTrigger : SimpleTrigger("onTick", "tick") {
             task.value.cancel()
         }
         tasks.clear()
+    }
+
+    @Awake
+    private fun registerMySelf() {
+        ActionManager.register(this)
     }
 
 }

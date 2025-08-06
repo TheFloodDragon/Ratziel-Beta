@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.item.feature.action.provided
 
-import cn.fd.ratziel.module.item.api.action.ItemTrigger
-import cn.fd.ratziel.module.item.impl.RatzielItem
+import cn.fd.ratziel.core.reactive.Trigger
+import cn.fd.ratziel.module.item.feature.action.ActionManager.registerSimple
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
-import cn.fd.ratziel.module.item.feature.action.registerTrigger
+import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.util.writeTo
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import taboolib.common.platform.Awake
@@ -21,24 +21,24 @@ import taboolib.platform.util.attacker
 object WorldContactListener {
 
     /** 任意交互 **/
-    val INTERACT_ANY = registerTrigger("onInteract", "Interact", "interact")
+    val INTERACT_ANY = registerSimple("onInteract", "Interact", "interact")
 
     /** 左右键交互 **/
-    val INTERACT_LEFT = registerTrigger("onLeft", "left")
-    val INTERACT_RIGHT = registerTrigger("onRight", "right")
+    val INTERACT_LEFT = registerSimple("onLeft", "left")
+    val INTERACT_RIGHT = registerSimple("onRight", "right")
 
     /** 左右键交互具体事物 **/
-    val INTERACT_LEFT_CLICK_AIR = registerTrigger("onLeftClickAir", "onLeftAir", "left-air")
-    val INTERACT_RIGHT_CLICK_AIR = registerTrigger("onRightClickAir", "onRightAir", "right-air")
+    val INTERACT_LEFT_CLICK_AIR = registerSimple("onLeftClickAir", "onLeftAir", "left-air")
+    val INTERACT_RIGHT_CLICK_AIR = registerSimple("onRightClickAir", "onRightAir", "right-air")
 
-    val INTERACT_LEFT_CLICK_BLOCK = registerTrigger("onLeftClickBlock", "onLeftBlock", "left-block")
-    val INTERACT_RIGHT_CLICK_BLOCK = registerTrigger("onRightClickBlock", "onRightBlock", "right-block")
+    val INTERACT_LEFT_CLICK_BLOCK = registerSimple("onLeftClickBlock", "onLeftBlock", "left-block")
+    val INTERACT_RIGHT_CLICK_BLOCK = registerSimple("onRightClickBlock", "onRightBlock", "right-block")
 
     /** 同样也是攻击触发器 (EntityDamageByEntityEvent) **/
-    val INTERACT_LEFT_CLICK_ENTITY = registerTrigger("onLeftClickEntity", "onLeftEntity", "left-entity", "onAttack", "onAtk", "attack", "atk")
+    val INTERACT_LEFT_CLICK_ENTITY = registerSimple("onLeftClickEntity", "onLeftEntity", "left-entity", "onAttack", "onAtk", "attack", "atk")
 
     /** PlayerInteractAtEntityEvent **/
-    val INTERACT_RIGHT_CLICK_ENTITY = registerTrigger("onRightClickEntity", "onRightEntity", "right-entity")
+    val INTERACT_RIGHT_CLICK_ENTITY = registerSimple("onRightClickEntity", "onRightEntity", "right-entity")
 
     @Awake
     private fun init() {
@@ -54,7 +54,7 @@ object WorldContactListener {
         val ratzielItem = RatzielItem.of(itemStack ?: return) ?: return
 
         fun trigger(
-            trigger: ItemTrigger,
+            trigger: Trigger,
             action: ScriptEnvironment.() -> Unit = {},
         ) {
             trigger.trigger(ratzielItem.identifier, event.player, ratzielItem) {
