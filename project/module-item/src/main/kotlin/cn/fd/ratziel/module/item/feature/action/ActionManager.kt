@@ -77,10 +77,11 @@ object ActionManager {
      */
     @JvmStatic
     fun Trigger.trigger(identifier: Identifier, context: ArgumentContext) {
-        // 获取此触发器绑定的物品响应器
-        val responder = this.responder(ItemResponder::class.java) ?: return
-        // 执行物品动作
-        responder.accept(ContextualResponse(identifier, context), this)
+        // 遍历响应器
+        for (responder in this.responders) {
+            // 执行物品动作
+            responder.accept(ContextualResponse(identifier, context), this)
+        }
     }
 
     /**

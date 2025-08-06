@@ -23,7 +23,7 @@ interface Trigger {
     /**
      * 绑定回应者
      */
-    fun bind(responder: Responder)
+    fun bind(responder: Responder, priority: Byte = 0)
 
     /**
      * 该触发器绑定的所有回应者

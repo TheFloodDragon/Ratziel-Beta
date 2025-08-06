@@ -18,7 +18,7 @@ interface ContextualResponder : Responder {
      * 无重写情况下只通过  [ContextualResponse]
      */
     override fun accept(body: ResponseBody, trigger: Trigger) {
-        if (body is ContextualResponse) this.accept(body)
+        if (body is ContextualResponse) this.accept(body, trigger)
     }
 
 }
