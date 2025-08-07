@@ -22,7 +22,7 @@ annotation class ElementConfig(
      */
     val requires: Array<KClass<out ElementHandler>> = [],
     /**
-     * 异步处理
+     * 并行处理
      */
-    val async: Boolean = true,
+    val parallel: Boolean = true,
 )

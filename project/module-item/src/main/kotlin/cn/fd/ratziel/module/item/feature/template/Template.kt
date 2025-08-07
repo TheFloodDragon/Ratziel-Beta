@@ -23,9 +23,9 @@ data class Template(
     /**
      * 分析模板继承关系
      *
-     * @param reverse 不翻转时从底部开始, 反则相反
+     * @return 不翻转时从底部开始
      */
-    fun asChain(reverse: Boolean = false): List<Template> {
+    fun asChain(): List<Template> {
         val stack = ArrayList<Template>()
         var last: Template = this
         stack.add(last) // 先加我自己
@@ -41,7 +41,7 @@ data class Template(
                 break
             }
         }
-        return if (reverse) stack.reversed() else stack
+        return stack
     }
 
     override fun toString() = "Template(name=${element.name}, parent=${parent?.element?.name})"

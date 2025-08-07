@@ -193,7 +193,7 @@ object ElementEvaluator {
             // 提交任务
             for (element in elements) {
                 // 异步 & 同步 任务提交
-                if (config.async) {
+                if (config.parallel) {
                     asyncTasks.add(CompletableFuture.supplyAsync({ handle(element) }, executor))
                 } else {
                     syncTasks.add(Supplier { handle(element) })

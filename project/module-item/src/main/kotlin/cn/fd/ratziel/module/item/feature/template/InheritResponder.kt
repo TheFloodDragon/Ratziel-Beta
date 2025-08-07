@@ -19,10 +19,8 @@ object InheritResponder : ContextualResponder {
         // 空的就爬去
         if (chain.isEmpty()) return
         // 执行动作
-        for ((_, actionMap) in chain) {
-            if (actionMap != null) {
-                ItemResponder.run(actionMap, body.context, trigger)
-            }
+        for (actionMap in chain) {
+            ItemResponder.run(actionMap, body.context, trigger)
         }
     }
 

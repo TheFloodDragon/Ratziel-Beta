@@ -22,7 +22,7 @@ import kotlinx.coroutines.coroutineScope
  */
 object InheritInterpreter : ItemInterpreter {
 
-    val actionsChain = AttachedContext.Catcher(this) { emptyList<Pair<Template, ActionMap?>>() }
+    val actionsChain = AttachedContext.Catcher(this) { emptyList<ActionMap>() }
 
     override suspend fun preFlow(stream: ItemStream) {
         stream.tree.withValue { tree ->
@@ -32,16 +32,18 @@ object InheritInterpreter : ItemInterpreter {
             resolveTag(tree)
             // 处理动作链
             coroutineScope {
-                val actionMaps = chain.map {
+                // 动作是要从父开始执行的, 所以要反转动作链, 变成自上而下的
+                val topToButtomChain = chain.reversed()
+                val actionMaps = topToButtomChain.map {
                     async {
                         // 解析动作表
-                        it to ActionInterpreter.parseRoot(stream.identifier, it.element.property)
+                        ActionInterpreter.parseRoot(stream.identifier, it.element.property)
                     }
-                }.awaitAll()
+                }.awaitAll().filterNotNull()
                 // 设置动作链
                 actionsChain[stream.context] = actionMaps
                 // 将 InheritResponder 绑定到其触发器上
-                for (actionMap in actionMaps.mapNotNull { it.second }) {
+                for (actionMap in actionMaps) {
                     // 优先级必须高于 ItemResponder
                     actionMap.map.keys.forEach { it.bind(InheritResponder, -1) }
                 }
@@ -67,7 +69,7 @@ object InheritInterpreter : ItemInterpreter {
             val element = TemplateParser.findElement(t) ?: break // 出错了就直接退出吧, 不应用上面的了
             availableChain.add(t)
             // 过滤动作信息 (不合并这些)
-            val filtered = element.filter { ActionInterpreter.nodeNames.contains(it.key) }
+            val filtered = element.filter { !ActionInterpreter.nodeNames.contains(it.key) }
             // 不替换原有的合并
             TemplateParser.merge(node, filtered)
         }
