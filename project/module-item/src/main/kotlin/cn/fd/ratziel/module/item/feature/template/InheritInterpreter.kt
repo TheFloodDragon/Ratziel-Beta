@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.feature.action.ActionInterpreter
 import cn.fd.ratziel.module.item.feature.action.ActionMap
-import cn.fd.ratziel.module.item.feature.template.TemplateParser.INHERIT_ALIAS
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -60,7 +59,7 @@ object InheritInterpreter : ItemInterpreter {
         // 处理对象节点
         if (node !is JsonTree.ObjectNode) return emptyList()
         // 寻找继承字段
-        val field = node.value.getBy(*INHERIT_ALIAS) as? JsonTree.PrimitiveNode ?: return emptyList()
+        val field = node.value.getBy(*TemplateParser.INHERIT_ALIAS) as? JsonTree.PrimitiveNode ?: return emptyList()
         // 获取模板
         val template = TemplateParser.findTemplate(field.value.content) ?: return emptyList()
         // 合并对象 (从底部开始)

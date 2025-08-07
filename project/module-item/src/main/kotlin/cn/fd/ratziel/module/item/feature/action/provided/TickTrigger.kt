@@ -48,7 +48,7 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
                 }
             }
             // 构建脚本块并返回
-            return BlockBuilder.build(element.getBy("run", "code") ?: throw IllegalArgumentException("Code in onTrigger must not be null!"))
+            return BlockBuilder.build(element.getBy("run", "code") ?: throw IllegalArgumentException("Code block in onTick Trigger must not be null!"))
         }
         return BlockBuilder.build(element)
     }

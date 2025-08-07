@@ -35,17 +35,18 @@ class DefaultCompositor(override val baseStream: ItemStream) : ItemCompositor.St
 
     /**
      * 静态物品流生成器
+     * replenish 在对象初始化时会生成一遍, 导致 prepare 没执行就有了补充流, 故在此先用 [lazy]
      */
-    val staticGenerator = staticStrategy.StreamGenerator(this)
+    val staticGenerator by lazy { staticStrategy.StreamGenerator(this) }
 
     /**
      * 预处理流
      */
     override fun prepare() = runBlocking {
-        // 应用静态属性 (如果完全静态开启的话)
-        staticGenerator.applyIfFullStatic()
         // 预解释 (预处理基流)
         interpreters.forEach { it.preFlow(baseStream) }
+        // 应用静态属性 (如果完全静态开启的话)
+        staticGenerator.applyIfFullStatic()
     }
 
     override fun produce(): Deferred<ItemStream> {
