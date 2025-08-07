@@ -27,22 +27,6 @@ val baseJson by lazy {
     }
 }
 
-fun JsonObject.getBy(names: Iterable<String>): JsonElement? {
-    for (name in names) {
-        val find = this[name]
-        if (find != null) return find
-    }
-    return null
-}
-
-fun JsonObject.getBy(vararg names: String): JsonElement? {
-    for (name in names) {
-        val find = this[name]
-        if (find != null) return find
-    }
-    return null
-}
-
 /**
  * 将 [JsonElement] 转为为纯原生对象形式
  * @see [JsonHelper.toBasic]

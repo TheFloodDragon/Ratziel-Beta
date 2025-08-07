@@ -1,5 +1,7 @@
 package cn.fd.ratziel.module.item
 
+import cn.fd.ratziel.core.Identifier
+import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import java.util.concurrent.ConcurrentHashMap
 
@@ -15,5 +17,13 @@ object ItemManager {
      * 物品注册表
      */
     val registry: MutableMap<String, ItemGenerator> = ConcurrentHashMap()
+
+    /**
+     * 获取生成器的上下文
+     */
+    fun generatorContext(identifier: Identifier): ArgumentContext? {
+        val generator = registry[identifier.content]
+        return generator?.contextProvider?.newContext()
+    }
 
 }

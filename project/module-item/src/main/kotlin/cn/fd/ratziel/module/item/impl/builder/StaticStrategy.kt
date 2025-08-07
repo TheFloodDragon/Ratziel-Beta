@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.functional.replenish
-import cn.fd.ratziel.core.serialization.json.getBy
+import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import kotlinx.coroutines.Deferred

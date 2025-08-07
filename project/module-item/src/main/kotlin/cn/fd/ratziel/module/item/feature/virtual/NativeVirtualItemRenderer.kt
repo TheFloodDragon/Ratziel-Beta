@@ -122,11 +122,8 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
      * 创建上下文
      */
     fun createContext(item: IdentifiedItem, player: Player): ArgumentContext {
-        var context: ArgumentContext
         // 尝试导入物品生成器的上下文
-        val generator = ItemManager.registry[item.identifier.content]
-        val generatedContext = generator?.contextProvider?.newContext()
-        context = generatedContext ?: SimpleContext()
+        val context = ItemManager.generatorContext(item.identifier) ?: SimpleContext()
         // 导入环境信息
         context.put(item); context.put(player)
         return context

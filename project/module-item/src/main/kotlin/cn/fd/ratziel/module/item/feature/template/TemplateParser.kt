@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.feature.template
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.serialization.json.JsonTree
-import cn.fd.ratziel.core.serialization.json.getBy
+import cn.fd.ratziel.core.util.getBy
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive

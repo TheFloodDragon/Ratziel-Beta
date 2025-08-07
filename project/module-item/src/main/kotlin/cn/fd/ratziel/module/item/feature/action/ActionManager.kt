@@ -5,6 +5,7 @@ import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.core.reactive.ContextualResponse
 import cn.fd.ratziel.core.reactive.SimpleTrigger
 import cn.fd.ratziel.core.reactive.Trigger
+import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
@@ -78,7 +79,8 @@ object ActionManager {
     fun Trigger.trigger(identifier: Identifier, vararg values: Any?, action: (ScriptEnvironment).() -> Unit) {
         val environment = SimpleScriptEnvironment()
         action(environment)
-        val context = SimpleContext(environment, *values.mapNotNull { it }.toTypedArray())
+        val context = ItemManager.generatorContext(identifier) ?: SimpleContext()
+        context.put(environment); context.putAll(values.mapNotNull { it })
         this.trigger(ContextualResponse(identifier, context))
     }
 

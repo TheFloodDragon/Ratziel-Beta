@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.compat.impl
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.ArgumentContext
-import cn.fd.ratziel.core.serialization.json.getBy
+import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack

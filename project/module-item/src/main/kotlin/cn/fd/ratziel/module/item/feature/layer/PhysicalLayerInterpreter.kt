@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.feature.layer
 
 import cn.fd.ratziel.core.functional.SynchronizedValue
-import cn.fd.ratziel.core.serialization.json.getBy
+import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.SimpleData

@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.item.feature.action.provided
 
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.serialization.json.getBy
+import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.feature.action.ItemTrigger
