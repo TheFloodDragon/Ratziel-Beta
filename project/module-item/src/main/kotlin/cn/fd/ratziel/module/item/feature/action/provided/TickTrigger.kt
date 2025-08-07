@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.feature.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.internal.command.PlayerInventorySlot
+import cn.fd.ratziel.module.script.block.BlockBuilder
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -47,9 +48,9 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
                 }
             }
             // 构建脚本块并返回
-            return super.build(identifier, element.getBy("run", "code") ?: throw IllegalArgumentException("Code in onTrigger must not be null!"))
+            return BlockBuilder.build(element.getBy("run", "code") ?: throw IllegalArgumentException("Code in onTrigger must not be null!"))
         }
-        return super.build(identifier, element)
+        return BlockBuilder.build(element)
     }
 
     private fun tick(player: Player, identifier: Identifier, slot: PlayerInventorySlot) {

@@ -107,7 +107,7 @@ class DataInterpreter : ItemInterpreter {
 
         // 处理物品数据
         if (stream is NativeItemStream) {
-            stream.data.withValue { data ->
+            stream.data.withValue { _ -> // 这里只有占用锁的用处
 
                 // 数据层处理
                 if (stream.item is DataHolder) {
