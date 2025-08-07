@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.feature.action
 
+import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.reactive.ContextualResponder
 import cn.fd.ratziel.core.reactive.ContextualResponse
 import cn.fd.ratziel.core.reactive.Trigger
@@ -15,11 +16,16 @@ object ItemResponder : ContextualResponder {
 
     override fun accept(body: ContextualResponse, trigger: Trigger) {
         // 获取动作表
-        val actionsMap = ActionManager.service[body.identifier] ?: return
-        // 获取动作
-        val action = actionsMap[trigger] ?: return
+        val actionMap = ActionManager.service[body.identifier] ?: return
         // 执行动作
-        action.execute(body.context)
+        return run(actionMap, body.context, trigger)
+    }
+
+    fun run(actionMap: ActionMap, context: ArgumentContext, trigger: Trigger) {
+        // 获取动作
+        val action = actionMap[trigger] ?: return
+        // 执行动作
+        action.execute(context)
         // Debug
         debug("[ItemResponder] '$trigger' trigger action '$this'.")
     }

@@ -18,7 +18,7 @@ import taboolib.common.platform.function.warning
  */
 object InheritResolver : ItemTagResolver {
 
-    override val alias = arrayOf("extend", "inherit")
+    override val alias get() = TemplateParser.INHERIT_ALIAS
 
     override fun resolve(args: List<String>, context: ArgumentContext): String? {
         // 元素名称
@@ -53,8 +53,13 @@ object InheritResolver : ItemTagResolver {
         }
 
         // 根据路径寻找
-        val target = InheritInterpreter.findElement(name) ?: return null
-        val find = read(target, path)
+        val template = TemplateParser.findTemplate(name) ?: return null
+        var find: JsonElement? = null
+        // 链式查找 (从底部开始)
+        for (t in template.asChain()) {
+            val element = t.element.property as? JsonObject ?: continue
+            find = read(element, path) ?: continue
+        }
         if (find == null) {
             warning("Cannot find element by path '$path'.")
             return null

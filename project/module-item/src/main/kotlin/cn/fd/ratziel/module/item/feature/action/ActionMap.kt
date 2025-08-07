@@ -10,7 +10,7 @@ import cn.fd.ratziel.module.script.block.ExecutableBlock
  * @since 2025/5/2 12:22
  */
 class ActionMap(
-    val map: Map<Trigger, ExecutableBlock>,
+    val map: Map<Trigger, ExecutableBlock> = emptyMap(),
 ) {
     operator fun get(trigger: Trigger) = this.map[trigger]
 }

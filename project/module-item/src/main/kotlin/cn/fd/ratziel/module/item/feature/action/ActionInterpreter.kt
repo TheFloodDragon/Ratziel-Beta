@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.script.block.BlockBuilder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 /**
@@ -23,10 +24,31 @@ object ActionInterpreter : ItemInterpreter {
      */
     val nodeNames = arrayOf("action", "actions", "event", "events")
 
+    override suspend fun preFlow(stream: ItemStream) {
+        // 解析动作表
+        val actionMap = parseRoot(stream.identifier, stream.fetchElement()) ?: return
+        // 加入到服务里
+        ActionManager.service[stream.identifier] = actionMap
+    }
+
     /**
      * 从配置中解析成动作表
      */
-    suspend fun parse(identifier: Identifier, element: JsonObject): ActionMap = coroutineScope {
+    suspend fun parseRoot(identifier: Identifier, property: JsonElement): ActionMap? {
+        // 仅处理 JsonObject 类型
+        if (property !is JsonObject) return null
+        // 获取原始动作
+        val raw = property.getBy(*nodeNames) ?: return null
+        if (raw is JsonObject) {
+            // 解析动作表
+            return parseNode(identifier, raw)
+        } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
+    }
+
+    /**
+     * 解析动作节点
+     */
+    suspend fun parseNode(identifier: Identifier, element: JsonObject): ActionMap = coroutineScope {
         element.mapNotNull { (name, code) ->
             // 匹配触发器
             val trigger = ActionManager.matchTrigger(name) ?: return@mapNotNull null
@@ -43,20 +65,6 @@ object ActionInterpreter : ItemInterpreter {
                 trigger to block
             }
         }.awaitAll().toMap().let { ActionMap(it) }
-    }
-
-    override suspend fun preFlow(stream: ItemStream) {
-        val property = stream.fetchElement()
-        // 仅处理 JsonObject 类型
-        if (property !is JsonObject) return
-        // 获取原始动作
-        val raw = property.getBy(*nodeNames) ?: return
-        if (raw is JsonObject) {
-            // 解析动作表
-            val actionMap = parse(stream.identifier, raw)
-            // 加入到服务中
-            ActionManager.service[stream.identifier] = actionMap
-        } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
     }
 
 }

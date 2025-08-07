@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.feature.action
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.core.reactive.ContextualResponse
 import cn.fd.ratziel.core.reactive.SimpleTrigger
@@ -76,23 +75,11 @@ object ActionManager {
      * 触发指定物品的动作
      */
     @JvmStatic
-    fun Trigger.trigger(identifier: Identifier, context: ArgumentContext) {
-        // 遍历响应器
-        for (responder in this.responders) {
-            // 执行物品动作
-            responder.accept(ContextualResponse(identifier, context), this)
-        }
-    }
-
-    /**
-     * 触发指定物品的动作
-     */
-    @JvmStatic
     fun Trigger.trigger(identifier: Identifier, vararg values: Any?, action: (ScriptEnvironment).() -> Unit) {
         val environment = SimpleScriptEnvironment()
         action(environment)
         val context = SimpleContext(environment, *values.mapNotNull { it }.toTypedArray())
-        this.trigger(identifier, context)
+        this.trigger(ContextualResponse(identifier, context))
     }
 
 }

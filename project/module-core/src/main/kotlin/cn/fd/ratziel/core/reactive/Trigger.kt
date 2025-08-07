@@ -16,6 +16,11 @@ interface Trigger {
     val names: Array<out String>
 
     /**
+     * 该触发器绑定的所有回应者
+     */
+    val responders: Iterable<Responder>
+
+    /**
      * 获取指定类型的回应者
      */
     fun <T : Responder> responder(type: Class<T>): T?
@@ -26,8 +31,14 @@ interface Trigger {
     fun bind(responder: Responder, priority: Byte = 0)
 
     /**
-     * 该触发器绑定的所有回应者
+     * 触发此触发器
+     *
+     * @param body 响应体
      */
-    val responders: Iterable<Responder>
+    fun trigger(body: ResponseBody) {
+        for (responder in this.responders) {
+            responder.accept(body, this)
+        }
+    }
 
 }

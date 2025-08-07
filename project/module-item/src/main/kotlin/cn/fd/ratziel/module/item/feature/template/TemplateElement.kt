@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.feature.template
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
-import kotlinx.serialization.json.JsonElement
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -16,18 +15,29 @@ import java.util.concurrent.ConcurrentHashMap
 object TemplateElement : ElementHandler {
 
     /**
-     * 模板表
+     * 解析过的模板表
      */
-    val templateMap: MutableMap<String, JsonElement> = ConcurrentHashMap()
+    val templates: MutableMap<String, Template> = ConcurrentHashMap()
+
+    /**
+     * 原始模板表
+     */
+    val rawTemplates: MutableMap<String, Element> = ConcurrentHashMap()
 
     override fun handle(element: Element) {
-        // 加入到模板表里
-        templateMap[element.name] = element.property
+        // 跳过被提前解析的
+        if (templates.containsKey(element.name)) return
+        // 添加解析过的
+        val template = Template(element, TemplateParser.findParent(element))
+        // findParent 解析了模板的父模板, 也一并注册了
+        template.asChain().forEach { templates[it.element.name] }
     }
 
     override fun onStart(elements: Collection<Element>) {
-        // 清空表
-        templateMap.clear()
+        // 清理
+        rawTemplates.clear(); templates.clear()
+        // 加入到原始模板表
+        elements.forEach { rawTemplates[it.name] = it }
     }
 
 }

@@ -47,15 +47,29 @@ class AttachedContext(val map: MutableMap<Any, Any> = ConcurrentHashMap()) {
         /**
          * 获取缓存
          */
+        operator fun get(attached: AttachedContext): T {
+            return attached.fetch(key, initializer)
+        }
+
+        /**
+         * 设置缓存
+         */
+        operator fun set(attached: AttachedContext, value: T) {
+            attached.put(key, value)
+        }
+
+        /**
+         * 获取缓存
+         */
         operator fun get(context: ArgumentContext): T {
-            return getAttached(context).fetch(key, initializer)
+            return this[getAttached(context)]
         }
 
         /**
          * 设置缓存
          */
         operator fun set(context: ArgumentContext, value: T) {
-            getAttached(context).put(key, value)
+            this[getAttached(context)] = value
         }
 
         /**
