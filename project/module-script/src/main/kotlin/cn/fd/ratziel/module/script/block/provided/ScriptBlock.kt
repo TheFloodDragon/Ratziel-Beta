@@ -61,6 +61,8 @@ class ScriptBlock(
         return LiteralScriptContent(script, executor)
     }
 
+    override fun toString() = "ScriptBlock(executor=$executor, source=$source)"
+
     class Parser : BlockParser {
 
         /** 创建的语句块列表 **/

@@ -3,10 +3,10 @@ package cn.fd.ratziel.module.item.impl.builder
 import cn.fd.ratziel.core.functional.replenish
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.ItemElement
+import cn.fd.ratziel.module.item.api.builder.ItemCompositor
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -65,38 +65,34 @@ class StaticStrategy(val element: JsonElement) {
     }
 
     inner class StreamGenerator(
-        val baseStream: NativeItemStream,
-        val streamHandler: suspend (ItemStream) -> Unit,
+        val compositor: ItemCompositor.StreamCompositor,
     ) {
-
-        init {
-            runBlocking {
-                // 纯静态物品模式处理
-                if (fullStaticMode) {
-                    // 直接将静态属性应用到基流
-                    applyStaticProperty(baseStream)
-                }
-            }
-        }
-
-        /**
-         * 获取静态物品流处理任务
-         */
-        fun stream(): Deferred<NativeItemStream> = streamGenerating
 
         /**
          * 物品流生成
          *
          * @param replenish 每获取一次补充一次
          */
-        private val streamGenerating: Deferred<NativeItemStream> by replenish {
+        val streamGenerating: Deferred<ItemStream> by replenish {
             ItemElement.scope.async {
-                val stream = baseStream.copy()
+                val stream = compositor.baseStream.copy()
                 // 静态物品模式启用, 并且不是全静态模式
                 if (enabled && !fullStaticMode) {
                     applyStaticProperty(stream) // 应用静态属性
                 }
                 return@async stream
+            }
+        }
+
+
+        /**
+         * 应用静态属性 (如果纯静态模式已开启)
+         */
+        suspend fun applyIfFullStatic() {
+            // 纯静态物品模式处理
+            if (fullStaticMode) {
+                // 直接将静态属性应用到基流
+                applyStaticProperty(compositor.baseStream)
             }
         }
 
@@ -109,17 +105,10 @@ class StaticStrategy(val element: JsonElement) {
             // 生成静态物品
             stream.updateElement(staticContent ?: return)
             // 好戏开场: 使用静态配置处理流数据
-            streamHandler(stream)
+            compositor.dispatch(stream)
             // 换回去
             stream.updateElement(origin)
         }
-
-    }
-
-    companion object {
-
-        @JvmStatic
-        fun fromStream(baseStream: ItemStream): StaticStrategy = runBlocking { StaticStrategy(baseStream.fetchElement()) }
 
     }
 

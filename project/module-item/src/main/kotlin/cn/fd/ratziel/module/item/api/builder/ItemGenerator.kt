@@ -16,7 +16,7 @@ interface ItemGenerator {
     /**
      * 解释器编排器
      */
-    val compositor: InterpreterCompositor
+    val compositor: ItemCompositor
 
     /**
      * 生成器上下文提供者

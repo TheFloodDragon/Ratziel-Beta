@@ -40,7 +40,12 @@ interface ItemStream {
     /**
      * 上下文
      */
-    val context: ArgumentContext
+    var context: ArgumentContext
+
+    /**
+     * 复制流
+     */
+    suspend fun copy(): ItemStream
 
     /**
      * 返回 [tree] 当前的元素内容

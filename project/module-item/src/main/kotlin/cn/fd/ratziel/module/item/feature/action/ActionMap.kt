@@ -13,4 +13,6 @@ class ActionMap(
     val map: Map<Trigger, ExecutableBlock> = emptyMap(),
 ) {
     operator fun get(trigger: Trigger) = this.map[trigger]
+
+    override fun toString() = "ActionMap$map"
 }

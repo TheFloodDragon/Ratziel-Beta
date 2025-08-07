@@ -22,8 +22,7 @@ object ItemManager {
      * 获取生成器的上下文
      */
     fun generatorContext(identifier: Identifier): ArgumentContext? {
-        val generator = registry[identifier.content]
-        return generator?.contextProvider?.newContext()
+        return registry[identifier.content]?.contextProvider?.newContext()
     }
 
 }

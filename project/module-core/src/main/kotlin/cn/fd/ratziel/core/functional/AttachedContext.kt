@@ -39,6 +39,8 @@ class AttachedContext(val map: MutableMap<Any, Any> = ConcurrentHashMap()) {
      */
     fun asContextProvider() = ArgumentContextProvider { SimpleContext(this) }
 
+    override fun toString() = "AttachedContext$map"
+
     /**
      * 缓存捕获器 - 用于确定缓存类型
      */
@@ -75,10 +77,11 @@ class AttachedContext(val map: MutableMap<Any, Any> = ConcurrentHashMap()) {
         /**
          * 获取 [AttachedContext] (没有的话就创建)
          */
-        private fun getAttached(context: ArgumentContext) =
-            context.popOr(AttachedContext::class.java) {
-                AttachedContext().also { context.put(it) }
+        private fun getAttached(context: ArgumentContext): AttachedContext {
+            return context.popOr(AttachedContext::class.java) {
+                error("Cannot catch AttachedContext from context $context")
             }
+        }
 
     }
 

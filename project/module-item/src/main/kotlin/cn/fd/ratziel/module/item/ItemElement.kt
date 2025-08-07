@@ -117,8 +117,14 @@ object ItemElement : ElementHandler {
     }
 
     override fun handle(element: Element) {
+        // 创建原生物品生成器
         val generator = DefaultGenerator(element)
+        // 加到注册表里
+        ItemManager.registry[element.name] = generator
+        // 准备物品
+        generator.compositor.prepare()
 
+        // Debug
         if (isDebugMode) {
 
             val item = generator.build().get()
@@ -130,9 +136,6 @@ object ItemElement : ElementHandler {
             println(bi)
 
         }
-
-        // 注册
-        ItemManager.registry[element.name] = generator
     }
 
     override fun onStart(elements: Collection<Element>) {

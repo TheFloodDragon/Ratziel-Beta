@@ -16,7 +16,7 @@ import kotlin.system.measureTimeMillis
  * @author TheFloodDragon
  * @since 2025/6/15 09:37
  */
-class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
+class DefaultCompositor(override val baseStream: ItemStream) : ItemCompositor.StreamCompositor {
 
     /**
      * 物品解释器列表
@@ -28,11 +28,28 @@ class DefaultCompositor(baseStream: NativeItemStream) : InterpreterCompositor {
      */
     val sources: List<ItemSource> = ItemRegistry.sources.toList()
 
-    init {
-        runBlocking {
-            // 预解释 (预处理基流)
-            interpreters.forEach { it.preFlow(baseStream) }
-        }
+    /**
+     * 静态物品策略
+     */
+    val staticStrategy = runBlocking { StaticStrategy(baseStream.fetchElement()) }
+
+    /**
+     * 静态物品流生成器
+     */
+    val staticGenerator = staticStrategy.StreamGenerator(this)
+
+    /**
+     * 预处理流
+     */
+    override fun prepare() = runBlocking {
+        // 应用静态属性 (如果完全静态开启的话)
+        staticGenerator.applyIfFullStatic()
+        // 预解释 (预处理基流)
+        interpreters.forEach { it.preFlow(baseStream) }
+    }
+
+    override fun produce(): Deferred<ItemStream> {
+        return staticGenerator.streamGenerating
     }
 
     /**

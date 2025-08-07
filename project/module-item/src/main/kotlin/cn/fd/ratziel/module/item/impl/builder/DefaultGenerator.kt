@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.impl.builder
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.AttachedContext
-import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
@@ -18,7 +17,7 @@ import kotlinx.coroutines.future.asCompletableFuture
  * @author TheFloodDragon
  * @since 2025/3/22 15:32
  */
-open class DefaultGenerator(
+class DefaultGenerator(
     /**
      * 原始物品配置 (元素)
      */
@@ -31,28 +30,11 @@ open class DefaultGenerator(
     override val contextProvider = AttachedContext().asContextProvider()
 
     /**
-     * 基础物品流 (经过预处理生成的流)
-     */
-    open val baseStream: NativeItemStream by lazy {
-        createNativeStream(SimpleData(), contextProvider.newContext())
-    }
-
-    /**
      * 解释器编排器
      */
-    override val compositor = DefaultCompositor(baseStream)
+    override val compositor = DefaultCompositor(createNativeStream(SimpleData(), contextProvider.newContext()))
 
-    /**
-     * 静态物品策略
-     */
-    open val staticStrategy = StaticStrategy.fromStream(baseStream)
-
-    /**
-     * 静态物品流生成器
-     */
-    open val staticGenerator = staticStrategy.StreamGenerator(baseStream) { compositor.dispatch(it) }
-
-    override fun build() = build(SimpleContext())
+    override fun build() = build(contextProvider.newContext())
 
     /**
      * 构建物品
@@ -62,18 +44,18 @@ open class DefaultGenerator(
     /**
      * 异步生成物品
      */
-    open fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
+    fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
         // 获取物品流
-        val stream = staticGenerator.stream().await()
-        context.putAll(contextProvider.newContext().args())
+        val stream = compositor.produce().await() as NativeItemStream
         // 更新上下文
-        stream.context = context
+        stream.context = contextProvider.newContext()
+        stream.context.putAll(context.args())
 
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
 
         // 非纯静态物品处理物品流
-        if (!staticStrategy.fullStaticMode) {
+        if (!compositor.staticStrategy.fullStaticMode) {
             compositor.dispatch(stream)
         }
 
@@ -86,7 +68,7 @@ open class DefaultGenerator(
     /**
      * 创建原生物品流
      */
-    open fun createNativeStream(sourceData: ItemData, context: ArgumentContext): NativeItemStream {
+    fun createNativeStream(sourceData: ItemData, context: ArgumentContext): NativeItemStream {
         // 生成基本物品 (本地源物品)
         val item = NativeSource.generateItem(origin, sourceData)
             ?: throw IllegalStateException("Failed to generate item source!")
