@@ -66,12 +66,6 @@ interface AttachedContext {
         @JvmStatic
         fun <T : Any> catcher(key: Any, initializer: Supplier<T>): Catcher<T> = SimpleAttachedContext.SimpleCatcher(key, initializer)
 
-        /**
-         * 将 [AttachedContext] 作为 [ArgumentContextProvider]
-         */
-        @JvmStatic
-        fun asContextProvider(attached: AttachedContext) = ArgumentContextProvider { SimpleContext(attached) }
-
     }
 
 }

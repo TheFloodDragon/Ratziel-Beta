@@ -2,7 +2,9 @@ package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.functional.ArgumentContextProvider
 import cn.fd.ratziel.core.functional.AttachedContext
+import cn.fd.ratziel.core.functional.SimpleContext
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
@@ -25,9 +27,14 @@ class DefaultGenerator(
 ) : ItemGenerator {
 
     /**
+     * 附加的上下文
+     */
+    val attached = AttachedContext.newContext()
+
+    /**
      * 上下文提供者 (目前就是为了提供 [AttachedContext])
      */
-    override val contextProvider = AttachedContext.asContextProvider(AttachedContext.newContext())
+    override val contextProvider = ArgumentContextProvider { SimpleContext(attached) }
 
     /**
      * 解释器编排器

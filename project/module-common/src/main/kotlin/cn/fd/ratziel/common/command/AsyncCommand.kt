@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 
-val commandLocks = ConcurrentHashMap<Int, ReentrantLock>()
+private val commandLocks = ConcurrentHashMap<Int, ReentrantLock>()
 
 /**
  * 异步执行 (带锁以防止出问题)

@@ -152,7 +152,6 @@ object WorkspaceLoader {
         load(sender).join()
     }
 
-
     @Awake(LifeCycle.LOAD)
     private fun load() {
         init(console()).join()

@@ -1,9 +1,12 @@
 package cn.fd.ratziel.platform.bukkit.command
 
-import cn.fd.ratziel.common.command.executeAsync
 import cn.fd.ratziel.common.message.audienceSender
 import cn.fd.ratziel.common.message.sendMessage
+import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.impl.VariablesMap
+import cn.fd.ratziel.module.script.util.eval
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.mainCommand
@@ -29,24 +32,30 @@ object CommandDev {
     @CommandBody
     val packet = CommandPacket
 
-//    /**
-//     * 运行Kether
-//     */
-//    @CommandBody
-//    val runKether = subCommand {
-//        dynamic {
-//            executeAsync<CommandSender> { sender, _, context ->
-//                KetherHandler.invoke(context, sender, mapOf()).thenApply {
-//                    sender.sendMessage("§7Result: $it")
-//                }
-//            }
-//        }
-//    }
+    /**
+     * 运行默认脚本
+     */
+    @CommandBody
+    val runScript = subCommand {
+        dynamic {
+            execute<CommandSender> { sender, _, content ->
+                val executor = ScriptManager.defaultLanguage.executor
+                executor.eval(content, VariablesMap {
+                    put("sender", sender)
+                    if (sender is Player) {
+                        put("player", sender)
+                    }
+                }).also { result ->
+                    sender.sendMessage("§7Result: $result")
+                }
+            }
+        }
+    }
 
     @CommandBody
     val testMessage = subCommand {
         dynamic {
-            executeAsync<CommandSender> { sender, _, context ->
+            execute<CommandSender> { sender, _, context ->
                 sender.audienceSender.sendMessage(context)
             }
         }

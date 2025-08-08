@@ -67,7 +67,7 @@ class DataInterpreter : ItemInterpreter {
             // 执行所有语句块
             val results = executeBlocks(blocks, stream.context)
             // 将结果存入常量层属性数据
-            properties.putAll(results)
+            properties.putValues(results)
         }
 
         // 数据层
@@ -96,9 +96,9 @@ class DataInterpreter : ItemInterpreter {
         vars.putAll(properties)
         // 执行数据层语句块, 导入数据层数据
         val dataResults = executeBlocks(dataBlocks, stream.context)
-        vars.putAll(dataResults)
+        vars.putValues(dataResults)
         // 执行计算层语句块, 导入计算层数据
-        vars.putAll(executeBlocks(computationBlocks, stream.context))
+        vars.putValues(executeBlocks(computationBlocks, stream.context))
 
         // 计算层标签处理 (实际上此标签处理的过程中可以获取到三个层的数据)
         stream.tree.withValue { tree ->
@@ -164,11 +164,12 @@ class DataInterpreter : ItemInterpreter {
         override val alias = COMPUTATION_ALIAS + PROPERTIES_ALIAS
         override fun resolve(args: List<String>, context: ArgumentContext): String? {
             val key = args.firstOrNull() ?: return null
-            val vars = context.popOrNull(VariablesMap::class.java)
+            val vars = context.varsMap()
 
-            if (vars == null || !vars.containsKey(key)) {
+            if (vars.isEmpty() || !vars.containsKey(key)) {
                 // 如果变量表中没有这个键, 则尝试从物品中获取
                 val item = context.popOrNull(IdentifiedItem::class.java) ?: return null
+                // 从注册表中取
                 val interpreter = ItemManager.registry[item.identifier.content]?.compositor
                     ?.getInterpreter(DataInterpreter::class.java) ?: return null
                 // 可以获取属性的或者计算值

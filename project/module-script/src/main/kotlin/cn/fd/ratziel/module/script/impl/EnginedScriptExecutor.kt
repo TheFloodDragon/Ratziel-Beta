@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.script.impl
 
+import cn.fd.ratziel.core.functional.replenish
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import java.util.concurrent.CompletableFuture
 import javax.script.Compilable
 import javax.script.CompiledScript
 import javax.script.ScriptContext
@@ -15,12 +17,19 @@ import javax.script.ScriptEngine
 abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>() {
 
     /**
+     * [ScriptEngine] 补充器
+     */
+    private val initializingScriptEngine: CompletableFuture<ScriptEngine> by replenish {
+        CompletableFuture.supplyAsync { newEngine() }
+    }
+
+    /**
      * 创建脚本引擎实例
      */
     abstract fun newEngine(): ScriptEngine
 
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        val engine = newEngine()
+        val engine = initializingScriptEngine.get()
         return engine.eval(script, createContext(engine, environment))
     }
 
@@ -30,7 +39,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      * @param script 原始脚本
      */
     override fun compile(script: String): CompiledScript {
-        val engine = newEngine()
+        val engine = initializingScriptEngine.get()
         engine.context = createContext(engine, SimpleScriptEnvironment())
         return (engine as Compilable).compile(script)
     }

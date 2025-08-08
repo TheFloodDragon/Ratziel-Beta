@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.script.util
 
 import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import cn.fd.ratziel.module.script.impl.VariablesMap
 
@@ -20,3 +21,7 @@ fun ArgumentContext.varsMap(): VariablesMap =
         vars.accept(this)
         return@popOr vars
     }
+
+fun ScriptExecutor.eval(content: String, vars: VariablesMap): Any? {
+    return this.evaluate(buildLiteral(content), SimpleScriptEnvironment(vars))
+}

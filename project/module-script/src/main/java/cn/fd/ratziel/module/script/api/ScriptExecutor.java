@@ -22,6 +22,14 @@ public interface ScriptExecutor {
     ScriptContent build(@NotNull String script);
 
     /**
+     * 构建脚本 (纯文本)
+     *
+     * @param script 脚本文本
+     */
+    @NotNull
+    ScriptContent buildLiteral(@NotNull String script);
+
+    /**
      * 评估脚本
      *
      * @param script      原始脚本

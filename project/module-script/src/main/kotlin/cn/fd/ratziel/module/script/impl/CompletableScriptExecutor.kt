@@ -57,8 +57,8 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
         return sc
     }
 
-    override fun build(script: String): ScriptContent {
-        return build(script, compile = true)
-    }
+    override fun buildLiteral(script: String) = LiteralScriptContent(script, this)
+
+    override fun build(script: String) = build(script, compile = true)
 
 }

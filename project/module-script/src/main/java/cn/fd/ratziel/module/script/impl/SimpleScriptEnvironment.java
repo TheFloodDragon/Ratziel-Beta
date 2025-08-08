@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
+import java.util.Map;
 
 /**
  * SimpleScriptEnvironment
@@ -19,8 +20,12 @@ public class SimpleScriptEnvironment implements ScriptEnvironment {
         this(new SimpleBindings());
     }
 
-    public SimpleScriptEnvironment(@NotNull final Bindings scriptBindings) {
-        this.scriptBindings = scriptBindings;
+    public SimpleScriptEnvironment(@NotNull final Map<String, Object> bindings) {
+        this(new SimpleBindings(bindings));
+    }
+
+    public SimpleScriptEnvironment(@NotNull final Bindings bindings) {
+        this.scriptBindings = bindings;
     }
 
     private Bindings scriptBindings;

@@ -5,8 +5,8 @@ import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.api.exception.ComponentNotFoundException
-import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.feature.dynamic.DynamicTagService
+import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Supplier
@@ -79,16 +79,15 @@ object ItemRegistry {
     @JvmStatic
     @JvmOverloads
     inline fun <reified T : ItemInterpreter> registerInterpreter(priority: Int = 0, interpreter: Supplier<T>) {
-        interpreters.add(InterpreterIntegrated(T::class.java, interpreter, priority))
+        registerInterpreter(priority, T::class.java, interpreter)
     }
 
     /**
      * 注册物品解释器
      */
     @JvmStatic
-    @JvmOverloads
-    fun registerInterpreter(interpreter: ItemInterpreter, priority: Int = 0) {
-        interpreters.add(InterpreterIntegrated(interpreter::class.java, { interpreter }, priority))
+    fun <T : ItemInterpreter> registerInterpreter(priority: Int, clazz: Class<T>, interpreter: Supplier<T>) {
+        interpreters.add(InterpreterIntegrated(clazz, interpreter, priority))
     }
 
     /**

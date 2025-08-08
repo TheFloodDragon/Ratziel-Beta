@@ -89,11 +89,11 @@ object ItemElement : ElementHandler {
 
     init {
         // 物品解释器注册
-        ItemRegistry.registerInterpreter(ActionInterpreter)
-        ItemRegistry.registerInterpreter(InheritInterpreter)
-        ItemRegistry.registerInterpreter(DefaultResolver)
-        ItemRegistry.registerInterpreter { DataInterpreter() }
-        ItemRegistry.registerInterpreter(PhysicalLayerInterpreter)
+        ItemRegistry.registerInterpreter(0) { ActionInterpreter }
+        ItemRegistry.registerInterpreter(1) { InheritInterpreter }
+        ItemRegistry.registerInterpreter(2) { DefaultResolver }
+        ItemRegistry.registerInterpreter(3) { DataInterpreter() }
+        ItemRegistry.registerInterpreter(4) { PhysicalLayerInterpreter }
     }
 
     init {
