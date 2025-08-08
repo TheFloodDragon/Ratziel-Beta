@@ -9,7 +9,6 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.LiteralScriptContent
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
@@ -53,7 +52,7 @@ class ScriptBlock(
         if (executor is NonStrictCompilation) {
             // 预编译脚本
             try {
-                return executor.build(script, SimpleScriptEnvironment())
+                return executor.build(script)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

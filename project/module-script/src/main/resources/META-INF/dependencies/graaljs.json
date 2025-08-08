@@ -54,19 +54,5 @@
       "runtime"
     ],
     "external": true
-  },
-  {
-    "value": "org.graalvm.js:js-scriptengine:$graaljsVersion",
-    "test": [
-      "com.oracle.truffle.js.scriptengine.GraalJSScriptEngine"
-    ],
-    "transitive": false,
-    "ignoreOptional": false,
-    "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
-    "external": true
   }
 ]

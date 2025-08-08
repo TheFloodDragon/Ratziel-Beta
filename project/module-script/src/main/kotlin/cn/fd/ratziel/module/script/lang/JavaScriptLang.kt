@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.lang
 
+import cn.fd.ratziel.core.functional.AttachedContext
 import cn.fd.ratziel.core.util.JarUtil
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
@@ -27,7 +28,7 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
     /**
      * 全局脚本列表
      */
-    val globalScripts: MutableList<String> = CopyOnWriteArrayList()
+    val globalScripts: MutableList<Pair<String, AttachedContext>> = CopyOnWriteArrayList()
 
     /**
      * 选择的脚本执行器 (Nashorn 或 GraalJS)
@@ -56,7 +57,7 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
         // 读取全局脚本
         globalScripts.addAll(JarUtil.getEntries {
             it.name.startsWith("script-default/") && it.name.endsWith("extensions.js")
-        }.map { it.reader().readText() })
+        }.map { it.reader().readText() to AttachedContext() })
     }
 
 }

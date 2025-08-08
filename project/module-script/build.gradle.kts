@@ -11,7 +11,6 @@ dependencies {
     compileOnly(libs.nashorn)
     // JavaScript: GraalJs
     compileOnly(libs.graalvm.polyglot)
-    compileOnly(libs.graalvm.js) // GraalJs ScriptEngine
     // Jexl3: Apache
     compileOnly(libs.jexl)
 }

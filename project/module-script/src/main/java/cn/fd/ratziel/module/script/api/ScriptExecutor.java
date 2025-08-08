@@ -16,11 +16,10 @@ public interface ScriptExecutor {
     /**
      * 构建脚本
      *
-     * @param script      脚本文本
-     * @param environment 脚本编译环境
+     * @param script 脚本文本
      */
     @NotNull
-    ScriptContent build(@NotNull String script, @NotNull ScriptEnvironment environment);
+    ScriptContent build(@NotNull String script);
 
     /**
      * 评估脚本

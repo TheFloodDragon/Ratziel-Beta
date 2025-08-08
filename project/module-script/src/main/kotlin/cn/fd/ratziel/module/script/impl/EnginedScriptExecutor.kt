@@ -1,7 +1,10 @@
 package cn.fd.ratziel.module.script.impl
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import javax.script.*
+import javax.script.Compilable
+import javax.script.CompiledScript
+import javax.script.ScriptContext
+import javax.script.ScriptEngine
 
 /**
  * EnginedScriptExecutor
@@ -25,17 +28,17 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      * 编译原始脚本
      *
      * @param script 原始脚本
-     * @param environment 脚本环境 (默认情况下不被使用, 若需要导入环境, 请重写此方法)
      */
-    override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
+    override fun compile(script: String): CompiledScript {
         val engine = newEngine()
-        engine.context = createContext(engine, environment)
+        engine.context = createContext(engine, SimpleScriptEnvironment())
         return (engine as Compilable).compile(script)
     }
 
-    @Synchronized
     override fun evalCompiled(script: CompiledScript, environment: ScriptEnvironment): Any? {
-        return script.eval(createContext(script.engine, environment))
+        return synchronized(script.engine) { // 避免并发错误
+            script.eval(createContext(script.engine, environment))
+        }
     }
 
     /**
@@ -47,9 +50,9 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
         val context = engine.context
         // 获取执行器上下文
-        val contextualBindings = environment.getExecutorContext(this) as? Bindings
-            ?: (context.getBindings(ScriptContext.ENGINE_SCOPE) ?: engine.createBindings())
-                .also { environment.setExecutorContext(this, it) }
+        val contextualBindings = environment.attachedContext.fetch(this) {
+            context.getBindings(ScriptContext.ENGINE_SCOPE) ?: engine.createBindings()
+        }
 
         // 执行器上下文的绑定键
         context.setBindings(contextualBindings, ScriptContext.ENGINE_SCOPE)

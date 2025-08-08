@@ -27,7 +27,6 @@ adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bu
 # Script Engine
 nashorn = { group = "org.openjdk.nashorn", name = "nashorn-core", version.ref = "nashorn" }
 graalvm-polyglot = { group = "org.graalvm.polyglot", name = "polyglot", version.ref = "graaljs" }
-graalvm-js = { group = "org.graalvm.js", name = "js-scriptengine", version.ref = "graaljs" }
 jexl = { group = "org.apache.commons", name = "commons-jexl3", version.ref = "jexl" }
 # Taboolib
 taboolib-common = { group = "io.izzel.taboolib", name = "common", version.ref = "taboolib" }

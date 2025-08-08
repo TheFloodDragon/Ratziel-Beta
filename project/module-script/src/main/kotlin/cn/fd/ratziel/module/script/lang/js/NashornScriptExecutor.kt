@@ -27,7 +27,7 @@ object NashornScriptExecutor : EnginedScriptExecutor(), NonStrictCompilation {
             arrayOf("-Dnashorn.args=--language=es6"), this::class.java.classLoader
         ) ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript(Nashorn) Language")
         // 加载全局扩展脚本
-        for (script in JavaScriptLang.globalScripts) {
+        for ((script,_) in JavaScriptLang.globalScripts) {
             engine.eval(script)
         }
         return engine

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.api;
 
+import cn.fd.ratziel.core.functional.AttachedContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,14 +36,8 @@ public interface ScriptEnvironment {
     }
 
     /**
-     * 获取执行器上下文
+     * 获取附加的上下文
      */
-    @Nullable
-    Object getExecutorContext(@NotNull ScriptExecutor executor);
-
-    /**
-     * 设置执行器上下文
-     */
-    void setExecutorContext(@NotNull ScriptExecutor executor, @Nullable Object context);
+    @NotNull AttachedContext getAttachedContext();
 
 }

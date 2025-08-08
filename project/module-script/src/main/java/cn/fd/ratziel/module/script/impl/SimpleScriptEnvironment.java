@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.script.impl;
 
+import cn.fd.ratziel.core.functional.AttachedContext;
 import cn.fd.ratziel.module.script.api.ScriptEnvironment;
 import cn.fd.ratziel.module.script.api.ScriptExecutor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
@@ -28,6 +28,7 @@ public class SimpleScriptEnvironment implements ScriptEnvironment {
 
     private Bindings scriptBindings;
     private final Map<ScriptExecutor, Object> executorContexts = new HashMap<>();
+    private final AttachedContext attachedContext = new AttachedContext();
 
     @Override
     public @NotNull Bindings getBindings() {
@@ -40,13 +41,8 @@ public class SimpleScriptEnvironment implements ScriptEnvironment {
     }
 
     @Override
-    public @Nullable Object getExecutorContext(@NotNull ScriptExecutor executor) {
-        return executorContexts.get(executor);
-    }
-
-    @Override
-    public void setExecutorContext(@NotNull ScriptExecutor executor, @Nullable Object context) {
-        executorContexts.put(executor, context);
+    public @NotNull AttachedContext getAttachedContext() {
+        return this.attachedContext;
     }
 
 }
