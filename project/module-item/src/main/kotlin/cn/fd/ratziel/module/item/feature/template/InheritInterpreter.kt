@@ -21,7 +21,7 @@ import kotlinx.coroutines.coroutineScope
  */
 object InheritInterpreter : ItemInterpreter {
 
-    val actionsChain = AttachedContext.Catcher(this) { emptyList<ActionMap>() }
+    val actionsChain = AttachedContext.catcher(this) { emptyList<ActionMap>() }
 
     override suspend fun preFlow(stream: ItemStream) {
         stream.tree.withValue { tree ->

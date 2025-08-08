@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object InlineScriptResolver : ItemSectionResolver {
 
-    internal val scriptsCatcher = AttachedContext.Catcher<MutableMap<String, ScriptBlock>>(this) { ConcurrentHashMap() }
+    internal val scriptsCatcher = AttachedContext.catcher<MutableMap<String, ScriptBlock>>(this) { ConcurrentHashMap() }
 
     override fun prepare(node: JsonTree.Node, context: ArgumentContext) {
         val section = node.stringSection() ?: return

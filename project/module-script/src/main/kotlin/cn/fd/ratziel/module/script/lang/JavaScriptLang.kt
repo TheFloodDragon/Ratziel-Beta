@@ -57,7 +57,7 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
         // 读取全局脚本
         globalScripts.addAll(JarUtil.getEntries {
             it.name.startsWith("script-default/") && it.name.endsWith("extensions.js")
-        }.map { it.reader().readText() to AttachedContext() })
+        }.map { it.reader().readText() to AttachedContext.newContext() })
     }
 
 }

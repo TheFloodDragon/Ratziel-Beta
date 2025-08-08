@@ -27,7 +27,7 @@ class DefaultGenerator(
     /**
      * 上下文提供者 (目前就是为了提供 [AttachedContext])
      */
-    override val contextProvider = AttachedContext().asContextProvider()
+    override val contextProvider = AttachedContext.asContextProvider(AttachedContext.newContext())
 
     /**
      * 解释器编排器
