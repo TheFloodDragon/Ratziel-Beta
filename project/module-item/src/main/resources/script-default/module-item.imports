@@ -1,6 +1,10 @@
 # Item Module Imports
 cn.fd.ratziel.module.nbt.tag.*
 cn.fd.ratziel.module.item.impl.RatzielItem
+cn.fd.ratziel.module.item.impl.component.ItemDisplay
+cn.fd.ratziel.module.item.impl.component.ItemDurability
+cn.fd.ratziel.module.item.impl.component.ItemEnchant
+cn.fd.ratziel.module.item.impl.component.ItemHideFlag
 cn.fd.ratziel.module.item.impl.component.*
 cn.fd.ratziel.module.item.feature.cooldown.Cooldown
 cn.fd.ratziel.module.item.feature.layer.LayerUtil

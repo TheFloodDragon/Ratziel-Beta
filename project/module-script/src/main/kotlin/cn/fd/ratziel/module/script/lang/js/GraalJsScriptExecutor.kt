@@ -19,7 +19,7 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-object GraalJsScriptExecutor : CompletableScriptExecutor<Source>(), NonStrictCompilation {
+object GraalJsScriptExecutor : CompletableScriptExecutor<GraalJsScriptExecutor.CachedSource>(), NonStrictCompilation {
 
     private const val LANGUAGE_ID = "js"
 
@@ -56,25 +56,25 @@ object GraalJsScriptExecutor : CompletableScriptExecutor<Source>(), NonStrictCom
     }
 
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        return createContext(environment).eval(createSource(script)).`as`(Any::class.java)
+        val context = createContext(environment) { this.initializingContext.get() }
+        return context.eval(createSource(script)).`as`(Any::class.java)
     }
 
-    override fun compile(script: String): Source {
-        return createSource(script)
+    override fun compile(script: String): CachedSource {
+        return CachedSource(createSource(script))
     }
 
-    override fun evalCompiled(script: Source, environment: ScriptEnvironment): Any? {
-        return createContext(environment).eval(script).`as`(Any::class.java)
+    override fun evalCompiled(script: CachedSource, environment: ScriptEnvironment): Any? {
+        val context = createContext(environment) { script.initializingContext.get() }
+        return context.eval(script.source).`as`(Any::class.java)
     }
 
     /**
      * 创建供脚本运行的上下文
      */
-    fun createContext(environment: ScriptEnvironment): Context {
+    fun createContext(environment: ScriptEnvironment, contextGetter: () -> Context): Context {
         // 获取执行器上下文 (上下文继承)
-        val context = environment.attachedContext.fetch(this) {
-            initializingContext.get()
-        }
+        val context = environment.attachedContext.fetch(this) { contextGetter() }
         val bindings = environment.bindings // 环境绑定
         val contextBindings = context.getBindings(LANGUAGE_ID)
         // 导入环境上下文
@@ -83,6 +83,7 @@ object GraalJsScriptExecutor : CompletableScriptExecutor<Source>(), NonStrictCom
                 contextBindings.putMember(key, value)
             }
         }
+        contextBindings.putMember("bindings", bindings)
         return context
     }
 
@@ -97,7 +98,16 @@ object GraalJsScriptExecutor : CompletableScriptExecutor<Source>(), NonStrictCom
 
     /** 编译内部脚本源 **/
     private fun internalSource(script: String): Source {
-        return Source.newBuilder(LANGUAGE_ID, script, "internal-script").internal(true).buildLiteral()
+        return Source.newBuilder(LANGUAGE_ID, script, "<internal-script>").internal(true).buildLiteral()
+    }
+
+    /**
+     * 内部维护 [initializingContext] 以提高并行执行多编译脚本的性能
+     */
+    class CachedSource(val source: Source) {
+        internal val initializingContext: CompletableFuture<Context> by replenish {
+            CompletableFuture.supplyAsync { initialContext() }
+        }
     }
 
 }

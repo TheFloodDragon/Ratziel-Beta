@@ -7,9 +7,7 @@ import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import cn.fd.ratziel.module.script.impl.VariablesMap
 
 fun ArgumentContext.scriptEnv(): ScriptEnvironment {
-    val environment = this.popOr(ScriptEnvironment::class.java) { SimpleScriptEnvironment() }
-    environment.set("argumentContext", this)
-    return environment
+    return this.popOr(ScriptEnvironment::class.java) { SimpleScriptEnvironment() }
 }
 
 fun ArgumentContext.varsMap(): VariablesMap =
@@ -23,5 +21,5 @@ fun ArgumentContext.varsMap(): VariablesMap =
     }
 
 fun ScriptExecutor.eval(content: String, vars: VariablesMap): Any? {
-    return this.evaluate(buildLiteral(content), SimpleScriptEnvironment(vars))
+    return this.evaluate(content, SimpleScriptEnvironment(vars))
 }

@@ -22,12 +22,14 @@ public interface ScriptExecutor {
     ScriptContent build(@NotNull String script);
 
     /**
-     * 构建脚本 (纯文本)
+     * 评估脚本
      *
-     * @param script 脚本文本
+     * @param script      原始脚本
+     * @param environment 脚本运行环境
+     * @throws ScriptException 当脚本评估中产生错误时抛出
      */
-    @NotNull
-    ScriptContent buildLiteral(@NotNull String script);
+    @Nullable
+    Object evaluate(@NotNull ScriptContent script, @NotNull ScriptEnvironment environment) throws ScriptException;
 
     /**
      * 评估脚本
@@ -37,6 +39,6 @@ public interface ScriptExecutor {
      * @throws ScriptException 当脚本评估中产生错误时抛出
      */
     @Nullable
-    Object evaluate(@NotNull ScriptContent script, @NotNull ScriptEnvironment environment) throws ScriptException;
+    Object evaluate(@NotNull String script, @NotNull ScriptEnvironment environment) throws ScriptException;
 
 }

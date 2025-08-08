@@ -40,6 +40,10 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
         return evalDirectly(script.content, environment)
     }
 
+    override fun evaluate(script: String, environment: ScriptEnvironment): Any? {
+        return evalDirectly(script, environment)
+    }
+
     /**
      * 构建脚本
      * @param compile 是否启用编译
@@ -56,8 +60,6 @@ abstract class CompletableScriptExecutor<T : Any> : ScriptExecutor {
         }
         return sc
     }
-
-    override fun buildLiteral(script: String) = LiteralScriptContent(script, this)
 
     override fun build(script: String) = build(script, compile = true)
 
