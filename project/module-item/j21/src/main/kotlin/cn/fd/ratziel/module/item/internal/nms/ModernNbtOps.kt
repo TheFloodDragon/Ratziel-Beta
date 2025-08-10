@@ -28,9 +28,6 @@ import java.util.stream.Stream
  */
 object ModernNbtOps : DynamicOps<NbtTag> {
 
-    // TODO remove this after updated altawk nbt
-    fun NbtCompound.cloneShallow() = NbtCompound { putAll(this@cloneShallow.content) }
-
     override fun empty(): NbtEnd = NbtEnd.INSTANCE
 
     override fun <U> convertTo(ops: DynamicOps<U>, tag: NbtTag): U = when (tag) {

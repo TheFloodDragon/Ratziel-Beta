@@ -13,9 +13,8 @@ internal object NbtNameDeterminer : SerialNameDeterminer {
 
     private const val EOF = "\u0000"
 
-    override fun determineName(index: Int, descriptor: SerialDescriptor): String {
+    override fun determineName(elementName: String, descriptor: SerialDescriptor): String {
         val parent = descriptor.serialName.substringAfterLast('.')
-        val elementName = descriptor.getElementName(index)
         val mappedName = ItemSheet.mappings[parent to elementName]
         // 空字符串代表不支持, 返回 EOF 让他不编码
         return mappedName?.ifEmpty { EOF } ?: elementName // 映射表里没有就用原来的
