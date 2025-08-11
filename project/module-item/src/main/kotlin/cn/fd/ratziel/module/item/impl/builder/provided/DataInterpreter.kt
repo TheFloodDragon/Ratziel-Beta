@@ -15,7 +15,7 @@ import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import cn.fd.ratziel.module.script.block.ExecutableBlock
-import cn.fd.ratziel.module.script.impl.VariablesMap
+import cn.fd.ratziel.module.script.util.VariablesMap
 import cn.fd.ratziel.module.script.util.varsMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

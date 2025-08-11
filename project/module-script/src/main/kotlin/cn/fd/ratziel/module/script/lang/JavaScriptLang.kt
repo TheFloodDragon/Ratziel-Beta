@@ -23,6 +23,8 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
 
     override val alias = arrayOf("Js")
 
+    override val extensions = arrayOf("js", "javascript")
+
     override val executor get() = if (::selectedExecutor.isInitialized) selectedExecutor else super.executor
 
     /**

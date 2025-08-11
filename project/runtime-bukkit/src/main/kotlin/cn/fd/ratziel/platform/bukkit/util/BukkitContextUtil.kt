@@ -1,7 +1,7 @@
 package cn.fd.ratziel.platform.bukkit.util
 
 import cn.fd.ratziel.core.functional.ArgumentContext
-import cn.fd.ratziel.module.script.impl.VariablesMap
+import cn.fd.ratziel.module.script.util.VariablesMap
 import cn.fd.ratziel.module.script.util.varsMap
 import org.bukkit.OfflinePlayer
 import taboolib.common.platform.Awake

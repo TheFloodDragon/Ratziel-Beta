@@ -1,14 +1,16 @@
 package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.common.config.Settings
+import cn.fd.ratziel.common.element.ElementLoader
 import cn.fd.ratziel.core.util.JarUtil
 import cn.fd.ratziel.module.script.ScriptType.Companion.activeLanguages
+import cn.fd.ratziel.module.script.element.ScriptElementLoader
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
+import cn.fd.ratziel.module.script.imports.ImportGroup
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.severe
-import java.util.concurrent.ConcurrentHashMap
 import javax.script.ScriptEngineManager
 
 
@@ -36,6 +38,8 @@ object ScriptManager {
      */
     @Awake(LifeCycle.INIT)
     private fun initialize() {
+        // 注册下 脚本元素加载器
+        ElementLoader.loaders.add(ScriptElementLoader)
         // 初始化全局环境
         Imports.initialize()
 
@@ -80,16 +84,9 @@ object ScriptManager {
     object Imports {
 
         /**
-         * 导入包
+         * 全局导入组
          */
-        var packages: List<PackageImport> = emptyList()
-            private set
-
-        /**
-         * 导入类
-         */
-        var classes: List<ClassImport> = emptyList()
-            private set
+        lateinit var globalGroup: ImportGroup private set
 
         /**
          * 通过简单类名称获取已经导入的类
@@ -99,57 +96,14 @@ object ScriptManager {
         @JvmStatic
         fun getImportedClass(name: String): Class<*>? {
             // 在导入的类中查找
-            val find = classes.find { it.simpleName == name }
+            val find = globalGroup.classes.find { it.simpleName == name }
             if (find != null) return find.clazz
             // 在导入的包中查找
-            for (import in packages) {
+            for (import in globalGroup.packages) {
                 val searched = import.search(name)
                 if (searched != null) return searched
             }
             return null
-        }
-
-        /**
-         * 导入的类
-         */
-        class ClassImport(
-            val simpleName: String,
-            val fullName: String,
-        ) {
-            constructor(name: String) : this(name.substringAfterLast('.'), name)
-
-            val clazz by lazy {
-                try {
-                    Class.forName(fullName, false, this::class.java.classLoader)
-                } catch (_: ClassNotFoundException) {
-                    null
-                }
-            }
-        }
-
-        /**
-         * 导入的包
-         */
-        class PackageImport(
-            val pkgName: String,
-        ) {
-
-            private val classesCache = ConcurrentHashMap<String, Class<*>>()
-
-            fun search(name: String): Class<*>? {
-                val cached = classesCache[name]
-                if (cached != null) return cached
-                val find = try {
-                    Class.forName("$pkgName.$name", false, this::class.java.classLoader)
-                } catch (_: ClassNotFoundException) {
-                    null
-                }
-                if (find != null) {
-                    classesCache[name] = find
-                    return find
-                }
-                return null
-            }
         }
 
         internal fun initialize() {
@@ -160,17 +114,7 @@ object ScriptManager {
                     stream.reader().readLines().filter { it.isNotBlank() && !it.startsWith('#') }
                 }
             // 初始化
-            val packages = ArrayList<PackageImport>()
-            val classes = ArrayList<ClassImport>()
-            for (import in imports) {
-                if (import.endsWith('*') || import.endsWith('.')) {
-                    packages.add(PackageImport(import.substringBeforeLast('.')))
-                } else {
-                    classes.add(ClassImport(import))
-                }
-            }
-            this.packages = packages
-            this.classes = classes
+            this.globalGroup = ImportGroup.parse(imports)
         }
 
     }

@@ -9,15 +9,15 @@ import java.io.File
  * @author TheFloodDragon
  * @since 2025/4/12 23:11
  */
-data class Workspace(
+class Workspace(
     /**
      * 工作空间路径
      */
-    val path: File,
+    val folder: File,
     /**
-     * 工作空间文件列表
+     * 元素文件过滤器
      */
-    val files: Sequence<File>,
+    val filter: Regex,
     /**
      * 是否监听此工作空间内的文件变更
      */
@@ -30,4 +30,11 @@ data class Workspace(
      * 统一的元素类型, 空代表不统一类型
      */
     val unifiedElementType: ElementType?,
-)
+) {
+
+    /**
+     * 工作空间文件列表 (未过滤)
+     */
+    val files: Sequence<File> = folder.walk().filter { it.isFile }
+
+}

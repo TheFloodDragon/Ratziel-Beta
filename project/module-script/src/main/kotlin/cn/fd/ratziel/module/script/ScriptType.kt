@@ -24,6 +24,11 @@ interface ScriptType {
     val alias: Array<out String>
 
     /**
+     * 文件扩展名
+     */
+    val extensions: Array<out String> get() = emptyArray()
+
+    /**
      * 获取脚本执行器
      */
     val executor: ScriptExecutor

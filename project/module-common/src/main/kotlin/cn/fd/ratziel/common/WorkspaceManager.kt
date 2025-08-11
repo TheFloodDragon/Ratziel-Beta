@@ -61,9 +61,8 @@ object WorkspaceManager {
         if (copyDefaults && !folder.exists()) {
             releaseDefaultWorkspace(folder)
         } else folder.mkdirs()
-        // 过滤
+        // 过滤器
         val filter = settings.getString("filter")?.toRegex() ?: defaultFilter
-        val files = folder.walk().filter { it.isFile && it.name.matches(filter) }
         // 是否监听
         val listen = settings.getBoolean("listen", true)
         // 使用文件名称
@@ -73,7 +72,7 @@ object WorkspaceManager {
             ?.takeUnless { it.equals("None", true) }
             ?.let { ElementMatcher.matchTypeOrNull(it) }
         // 创建工作空间
-        return Workspace(folder, files, listen, useFileName, unifiedType)
+        return Workspace(folder, filter, listen, useFileName, unifiedType)
     }
 
     /**

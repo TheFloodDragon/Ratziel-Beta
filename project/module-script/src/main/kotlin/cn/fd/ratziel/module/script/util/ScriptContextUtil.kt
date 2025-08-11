@@ -4,7 +4,7 @@ import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
-import cn.fd.ratziel.module.script.impl.VariablesMap
+import cn.fd.ratziel.module.script.util.VariablesMap
 
 fun ArgumentContext.scriptEnv(): ScriptEnvironment {
     return this.popOr(ScriptEnvironment::class.java) { SimpleScriptEnvironment() }

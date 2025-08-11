@@ -1,5 +1,6 @@
 package cn.fd.ratziel.common
 
+import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.element.ElementEvaluator
 import cn.fd.ratziel.common.element.ElementLoader
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
@@ -61,10 +62,12 @@ object WorkspaceLoader {
         for (workspace in WorkspaceManager.workspaces) {
             // 加载工作空间内的文件
             for (file in workspace.files) {
+                // 获取元素文件加载器
+                val loader = ElementLoader.select(workspace, file) ?: continue
                 // 提交加载任务
                 tasks.add(CompletableFuture.supplyAsync({
                     // 加载文件
-                    val result = ElementLoader.load(workspace, file)
+                    val result = loader.load(workspace, file)
                     if (result.isSuccess) {
                         for (loadedElement in result.getOrThrow()) {
                             // 检查重复元素
@@ -118,7 +121,7 @@ object WorkspaceLoader {
             if (!file.exists()) return@listen
             measureTimeMillis {
                 // 加载文件
-                val result = ElementLoader.load(workspace, file)
+                val result = DefaultElementLoader.load(workspace, file)
                 if (result.isSuccess) {
                     for (loadedElement in result.getOrThrow()) {
                         // 加入到 livingElements
