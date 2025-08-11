@@ -1,6 +1,5 @@
 package cn.fd.ratziel.common
 
-import cn.fd.ratziel.common.element.DefaultElementLoader
 import cn.fd.ratziel.common.element.ElementEvaluator
 import cn.fd.ratziel.common.element.ElementLoader
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
@@ -85,7 +84,7 @@ object WorkspaceLoader {
                     } else sender.sendLang("Element-File-Load-Failed", file.name)
                 }, executor))
                 // 监听自动重载的文件
-                if (workspace.listen) listenFile(workspace, file, sender)
+                if (workspace.listen) listenFile(workspace, file, loader, sender)
             }
         }
 
@@ -116,12 +115,12 @@ object WorkspaceLoader {
         return result
     }
 
-    private fun listenFile(workspace: Workspace, file: File, sender: ProxyCommandSender) {
+    private fun listenFile(workspace: Workspace, file: File, loader: ElementLoader, sender: ProxyCommandSender) {
         FileListener.listen(file) { file ->
             if (!file.exists()) return@listen
             measureTimeMillis {
                 // 加载文件
-                val result = DefaultElementLoader.load(workspace, file)
+                val result = loader.load(workspace, file)
                 if (result.isSuccess) {
                     for (loadedElement in result.getOrThrow()) {
                         // 加入到 livingElements

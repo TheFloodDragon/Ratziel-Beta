@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
-subprojects {
+allprojects {
 
     // 应用插件
     apply(plugin = "java-library")
