@@ -71,23 +71,6 @@ allprojects {
         }
     }
 
-    // ShadowJar 基础配置
-    tasks.shadowJar {
-        // Options
-        archiveAppendix.set("")
-        archiveClassifier.set("")
-        archiveVersion.set(version.toString())
-        destinationDirectory.set(file("$rootDir/outs"))
-        // Taboolib
-        relocate("taboolib", "${rootProject.group}.taboolib")
-        // NBT
-        relocate("cn.altawk.nbt.", "${rootProject.group}.module.nbt.")
-        // Kotlin
-//        relocate("kotlin.", "kotlin${kotlinVersion.escapedVersion}.") { exclude(skipRelocateKotlinClasses) }
-//        relocate("kotlinx.coroutines.", "kotlinx${kotlinVersion.escapedVersion}.coroutines${coroutineVersion.escapedVersion}.")
-//        relocate("kotlinx.serialization.", "kotlinx${kotlinVersion.escapedVersion}.serialization${serializationVersion.escapedVersion}.")
-    }
-
     buildDirClean()
 
 }

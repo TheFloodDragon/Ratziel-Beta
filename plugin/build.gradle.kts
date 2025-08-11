@@ -57,6 +57,7 @@ subprojects {
     }
 
     tasks {
+        // ShadowJar 基础配置
         shadowJar {
             dependsOn(taboolibMainTask)
             dependencies {
@@ -69,6 +70,16 @@ subprojects {
                 "lang/zh_CN.yml",
                 "lang/en_US.yml"
             ).forEach { append(it) }
+
+            // Options
+            archiveAppendix.set("")
+            archiveClassifier.set("")
+            archiveVersion.set(version.toString())
+            destinationDirectory.set(file("$rootDir/outs"))
+            // Taboolib
+            relocate("taboolib", "${rootProject.group}.taboolib")
+            // NBT
+            relocate("cn.altawk.nbt.", "${rootProject.group}.module.nbt.")
             // 删除模块元数据
             exclude("META-INF/*.kotlin_module")
         }
