@@ -88,7 +88,7 @@ class CooldownUnit(
      */
     @Synchronized
     fun increase(interval: Duration) {
-        this.interval = this.interval + interval
+        this.interval += interval
     }
 
     fun increase(interval: String) = increase(Duration.parse(interval))
@@ -98,7 +98,7 @@ class CooldownUnit(
      */
     @Synchronized
     fun decrease(interval: Duration) {
-        this.interval = this.interval - interval
+        this.interval -= interval
     }
 
     fun decrease(interval: String) = decrease(Duration.parse(interval))

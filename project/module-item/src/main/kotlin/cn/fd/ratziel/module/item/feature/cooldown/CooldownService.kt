@@ -3,7 +3,7 @@
 package cn.fd.ratziel.module.item.feature.cooldown
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
+import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
 import taboolib.common.platform.Awake
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.uuid.ExperimentalUuidApi
@@ -20,7 +20,7 @@ object CooldownService {
 
     @Awake
     private fun registerService() {
-        NativeServiceRegistry.register(
+        ItemServiceRegistry.register(
             Cooldown::class.java,
             { id ->
                 serviceMap.computeIfAbsent(id) { Cooldown(it) }

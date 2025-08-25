@@ -1,7 +1,7 @@
 package cn.fd.ratziel.core.element
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.SimpleIdentifier
+import cn.fd.ratziel.core.NamedIdentifier
 import java.io.File
 
 /**
@@ -30,7 +30,7 @@ class ElementIdentifier(
     /**
      * 宽容化 (去严格化) - 适用于同一模块内的元素
      */
-    fun destrict(): Identifier = SimpleIdentifier(content)
+    fun destrict() = NamedIdentifier(content)
 
     override fun toString() = "ElementIdentifier(name=$name, type=$type, path=${file?.path})"
 

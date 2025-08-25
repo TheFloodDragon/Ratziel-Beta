@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api
 
-import cn.fd.ratziel.module.item.api.service.ItemService
+import cn.fd.ratziel.core.service.ServiceHolder
 
 /**
  * NeoItem - 物品
@@ -18,7 +18,7 @@ interface NeoItem {
     /**
      * 物品服务
      */
-    val service: ItemService
+    val service: ServiceHolder
 
     /**
      * 复制物品实例

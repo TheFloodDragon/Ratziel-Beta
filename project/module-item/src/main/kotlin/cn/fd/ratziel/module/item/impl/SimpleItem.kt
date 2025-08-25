@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.impl
 
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
-import cn.fd.ratziel.module.item.api.service.ItemService
 
 /**
  * SimpleItem
@@ -14,8 +13,7 @@ open class SimpleItem(
     override val data: ItemData = SimpleData(),
 ) : NeoItem {
 
-    override val service: ItemService
-        get() = throw UnsupportedOperationException("Service is not supported for SimpleItem!")
+    override val service get() = throw UnsupportedOperationException("Service is not supported for SimpleItem!")
 
     override fun clone() = SimpleItem(this.data.clone())
 

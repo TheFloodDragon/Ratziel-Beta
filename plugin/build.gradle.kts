@@ -70,7 +70,8 @@ subprojects {
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
             setOf(
                 "settings.yml",
-                "lang/*.yml"
+                "lang/zh_CN.yml",
+                "lang/en_US.yml",
             ).forEach { append(it) }
 
             // Options

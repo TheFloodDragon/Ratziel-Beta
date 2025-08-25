@@ -4,10 +4,10 @@ import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtString
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.SimpleIdentifier
+import cn.fd.ratziel.core.NamedIdentifier
 import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.ItemData
-import cn.fd.ratziel.module.item.impl.service.GlobalServiceManager
+import cn.fd.ratziel.module.item.api.service.ItemServiceManager
 import cn.fd.ratziel.module.item.internal.ItemSheet
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.nbt.NbtAdapter
@@ -41,7 +41,7 @@ class RatzielItem private constructor(
     /**
      * 物品服务
      */
-    override val service get() = GlobalServiceManager[identifier]
+    override val service get() = ItemServiceManager[identifier]
 
     /**
      * 克隆 [RatzielItem]
@@ -123,7 +123,7 @@ class RatzielItem private constructor(
          */
         @JvmStatic
         fun isRatzielItem(itemStack: ItemStack): Boolean {
-            return isRatzielItem(RefItemStack.Companion.of(itemStack))
+            return isRatzielItem(RefItemStack.of(itemStack))
         }
 
     }
@@ -164,7 +164,7 @@ class RatzielItem private constructor(
         val hash: String,
     ) {
 
-        constructor(identifier: String, hash: String) : this(SimpleIdentifier(identifier), hash)
+        constructor(identifier: String, hash: String) : this(NamedIdentifier(identifier), hash)
 
         companion object {
 

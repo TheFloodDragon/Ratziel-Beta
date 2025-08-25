@@ -6,7 +6,7 @@ import cn.fd.ratziel.core.reactive.ContextualResponse
 import cn.fd.ratziel.core.reactive.SimpleTrigger
 import cn.fd.ratziel.core.reactive.Trigger
 import cn.fd.ratziel.module.item.ItemManager
-import cn.fd.ratziel.module.item.impl.service.NativeServiceRegistry
+import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import taboolib.common.platform.function.severe
@@ -37,7 +37,7 @@ object ActionManager {
 
     init {
         // 注册服务
-        NativeServiceRegistry.register(
+        ItemServiceRegistry.register(
             ActionMap::class.java,
             { service[it] },
             { k, v -> service[k] = v }
