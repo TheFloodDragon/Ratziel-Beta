@@ -58,13 +58,13 @@ interface AttachedContext {
          * 创建一个新的 [AttachedContext]
          */
         @JvmStatic
-        fun newContext(): AttachedContext = SimpleAttachedContext()
+        fun newContext(): AttachedContext = AttachedContextImpl()
 
         /**
          * 创建一个新的 [AttachedContext.Catcher]
          */
         @JvmStatic
-        fun <T : Any> catcher(key: Any, initializer: Supplier<T>): Catcher<T> = SimpleAttachedContext.SimpleCatcher(key, initializer)
+        fun <T : Any> catcher(key: Any, initializer: Supplier<T>): Catcher<T> = AttachedContextImpl.CatcherImpl(key, initializer)
 
     }
 

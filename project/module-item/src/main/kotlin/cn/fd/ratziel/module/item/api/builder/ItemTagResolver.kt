@@ -13,6 +13,11 @@ interface ItemTagResolver {
     val alias: Array<String>
 
     /**
+     * 准备解析阶段处理
+     */
+    fun prepare(args: List<String>, context: ArgumentContext) = Unit
+
+    /**
      * 解析元素
      *
      * @param args 参数

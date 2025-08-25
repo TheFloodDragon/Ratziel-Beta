@@ -2,7 +2,6 @@ package cn.fd.ratziel.core.functional
 
 import cn.fd.ratziel.core.exception.ArgumentNotFoundException
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.Supplier
 
 /**
  * SimpleContext
@@ -15,7 +14,7 @@ class SimpleContext(
 ) : ArgumentContext {
 
     constructor(vararg values: Any) : this() {
-        for (value in values) this.map.put(value::class.java, value)
+        for (value in values) this.map[value::class.java] = value
     }
 
     constructor(vararg values: Any, action: ArgumentContext.() -> Unit) : this(values) {
@@ -24,10 +23,6 @@ class SimpleContext(
 
     override fun <T> pop(type: Class<T>): T & Any {
         return popOrNull(type) ?: throw ArgumentNotFoundException(type)
-    }
-
-    override fun <T> popOr(type: Class<T>, def: Supplier<T & Any>): T & Any {
-        return popOrNull(type) ?: def.get()
     }
 
     override fun <T> popOrNull(type: Class<T>): T? {
@@ -39,7 +34,7 @@ class SimpleContext(
     }
 
     override fun put(element: Any) {
-        map.put(element::class.java, element)
+        map[element::class.java] = element
     }
 
     override fun remove(type: Class<*>) {

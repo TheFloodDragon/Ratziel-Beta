@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.feature.action.ActionInterpreter
 import cn.fd.ratziel.module.item.feature.action.ActionMap
-import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
+import cn.fd.ratziel.module.item.impl.builder.provided.TaggedSectionResolver
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

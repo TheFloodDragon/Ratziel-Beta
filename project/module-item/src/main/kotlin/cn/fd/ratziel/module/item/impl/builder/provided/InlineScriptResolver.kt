@@ -26,10 +26,10 @@ object InlineScriptResolver : ItemSectionResolver {
 
     override fun prepare(node: JsonTree.Node, context: ArgumentContext) {
         val section = node.stringSection() ?: return
-
-        val scripts = analyzeParts(section.value.content).mapNotNull { part ->
-            if (part.language != null) {
-                ScriptBlock(part.content, part.language.executor)
+        // 创建脚本
+        val scripts = analyzeParts(section.value.content).mapNotNull { (content, language) ->
+            if (language != null) {
+                ScriptBlock(content, language.executor)
             } else null
         }
         // 扔到缓存里
@@ -38,20 +38,20 @@ object InlineScriptResolver : ItemSectionResolver {
 
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         val section = node.stringSection() ?: return
-        val resolved = analyzeParts(section.value.content).joinToString("") { part ->
-            if (part.language != null) {
+        val resolved = analyzeParts(section.value.content).joinToString("") { (content, language) ->
+            if (language != null) {
                 // 获取脚本
-                val script = scriptsCatcher[context].getOrPut(part.content) {
-                    ScriptBlock(part.content, part.language.executor)
+                val script = scriptsCatcher[context].getOrPut(content) {
+                    ScriptBlock(content, language.executor)
                 }
                 // 评估脚本并返回结果
                 script.evaluate(createEnvironment(context)).toString()
-            } else part.content
+            } else content
         }
         section.value(resolved)
     }
 
-    fun analyzeParts(content: String): List<ScriptPart> {
+    fun analyzeParts(content: String): List<Pair<String, ScriptType?>> {
         return reader.readToFlatten(content).map {
             if (it.isVariable) {
                 val index = it.text.indexOf(':')
@@ -60,16 +60,17 @@ object InlineScriptResolver : ItemSectionResolver {
                 if (index != -1) language = ScriptType.match(it.text.substring(0, index))
                 // 读取脚本文本
                 val content = it.text.substring(index + 1)
-                ScriptPart(content, language ?: ScriptManager.defaultLanguage)
-            } else ScriptPart(it.text, null)
+                content to (language ?: ScriptManager.defaultLanguage)
+            } else it.text to null
         }
     }
 
     @AutoRegister
     object InlineScriptTagResolver : ItemTagResolver {
         override val alias = arrayOf("script")
-        override fun resolve(args: List<String>, context: ArgumentContext): String? {
-            if (args.isEmpty()) return null
+
+        override fun prepare(args: List<String>, context: ArgumentContext) {
+            if (args.isEmpty()) return
             // 匹配脚本语言和内容
             var language: ScriptType? = null
             var content = args.joinToString("")
@@ -81,15 +82,20 @@ object InlineScriptResolver : ItemSectionResolver {
                     content = args.drop(1).joinToString("")
                 }
             }
-
             // 解析内联脚本
-            val script: ScriptBlock = scriptsCatcher[context].getOrPut(content) {
-                ScriptBlock(content, (language ?: ScriptManager.defaultLanguage).executor)
-            }
+            val script = ScriptBlock(content, (language ?: ScriptManager.defaultLanguage).executor)
+            // 放入缓存
+            scriptsCatcher[context][content] = script
+        }
 
+        override fun resolve(args: List<String>, context: ArgumentContext): String? {
+            val content = args.joinToString("")
+            // 获取内联脚本 (经过预处理的)
+            val script = scriptsCatcher[context][content] ?: return null
             // 评估脚本并返回结果
             return script.evaluate(createEnvironment(context)).toString()
         }
+
     }
 
     @JvmStatic
@@ -101,25 +107,5 @@ object InlineScriptResolver : ItemSectionResolver {
     /** 标签读取器 **/
     @JvmStatic
     private val reader = VariableReader("{{", "}}")
-
-    /**
-     * ScriptPart
-     *
-     * @author TheFloodDragon
-     * @since 2025/6/14 22:25
-     */
-    data class ScriptPart(
-        /**
-         * 内容 - 可能是正常的字符串, 也有可能是脚本内容
-         */
-        val content: String,
-        /**
-         * 脚本语言 - 为空时代表此片段不是脚本片段
-         */
-        val language: ScriptType?,
-    ) {
-        /** 判断此片段是不是脚本片段 **/
-        val isScript get() = language != null
-    }
 
 }

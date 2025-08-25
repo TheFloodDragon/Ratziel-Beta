@@ -14,7 +14,6 @@ import cn.fd.ratziel.module.item.feature.template.TemplateElement
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeSource
-import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
@@ -89,11 +88,11 @@ object ItemElement : ElementHandler {
 
     init {
         // 物品解释器注册
-        ItemRegistry.registerInterpreter(0) { ActionInterpreter }
-        ItemRegistry.registerInterpreter(1) { InheritInterpreter }
-        ItemRegistry.registerInterpreter(2) { DefaultResolver }
-        ItemRegistry.registerInterpreter(3) { DataInterpreter() }
-        ItemRegistry.registerInterpreter(4) { PhysicalLayerInterpreter }
+        ItemRegistry.registerInterpreter { ActionInterpreter }
+        ItemRegistry.registerInterpreter { InheritInterpreter }
+        ItemRegistry.registerInterpreter { DefaultResolver }
+        ItemRegistry.registerInterpreter { DataInterpreter() }
+        ItemRegistry.registerInterpreter { PhysicalLayerInterpreter }
     }
 
     init {

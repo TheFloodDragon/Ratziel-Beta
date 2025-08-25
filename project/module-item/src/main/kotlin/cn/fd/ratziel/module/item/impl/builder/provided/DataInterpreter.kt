@@ -12,7 +12,6 @@ import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
-import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.util.VariablesMap

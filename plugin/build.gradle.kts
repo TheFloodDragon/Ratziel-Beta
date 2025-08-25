@@ -65,10 +65,12 @@ subprojects {
                     it.moduleGroup == "io.izzel.taboolib"
                 }
             }
+
+            // 合并配置文件
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
             setOf(
                 "settings.yml",
-                "lang/zh_CN.yml",
-                "lang/en_US.yml"
+                "lang/*.yml"
             ).forEach { append(it) }
 
             // Options

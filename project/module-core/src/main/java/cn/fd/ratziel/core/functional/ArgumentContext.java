@@ -20,19 +20,35 @@ public interface ArgumentContext {
      *
      * @throws ArgumentNotFoundException 当无法找到指定类型的参数时抛出
      */
-    <T> @NotNull T pop(@NotNull Class<T> type) throws ArgumentNotFoundException;
-
-    /**
-     * 弹出指定类型的参数
-     * 若无法找到, 则返回默认值
-     */
-    <T> @NotNull T popOr(@NotNull Class<T> type, @NotNull Supplier<T> def);
+    <T> @NotNull T pop(@NotNull Class<@NotNull T> type) throws ArgumentNotFoundException;
 
     /**
      * 弹出指定类型的参数
      * 若无法找到, 则返回空
      */
-    <T> @Nullable T popOrNull(@NotNull Class<T> type);
+    <T> @Nullable T popOrNull(@NotNull Class<@NotNull T> type);
+
+    /**
+     * 弹出指定类型的参数
+     * 若无法找到, 则返回默认值
+     */
+    default <T> @NotNull T popOr(@NotNull Class<T> type, @NotNull Supplier<@NotNull T> def) {
+        final T obj = this.popOrNull(type);
+        return obj == null ? def.get() : obj;
+    }
+
+    /**
+     * 弹出指定类型的参数
+     * 若无法找到, 则添加默认值
+     */
+    default <T> @NotNull T popOrPut(@NotNull Class<T> type, @NotNull Supplier<@NotNull T> def) {
+        T obj = this.popOrNull(type);
+        if (obj == null) {
+            obj = def.get();
+            this.put(obj);
+        }
+        return obj;
+    }
 
     /**
      * 添加一个参数

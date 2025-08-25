@@ -5,7 +5,7 @@ import cn.fd.ratziel.core.functional.ArgumentContext
 import cn.fd.ratziel.core.functional.AttachedContext
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import cn.fd.ratziel.module.item.impl.builder.TaggedSectionResolver
+import cn.fd.ratziel.module.item.impl.builder.provided.TaggedSectionResolver
 import java.util.regex.Pattern
 
 /**
@@ -29,15 +29,16 @@ object DynamicTagResolver : ItemTagResolver {
     @JvmField
     val regex: Pattern = Pattern.compile("\\{\\$\\{([\\s\\S]*?)}\\$}")
 
+    override fun prepare(args: List<String>, context: ArgumentContext) {
+        // 标记此物品存在动态标签 (是动态物品, 用于提升效率)
+        isDynamic[context] = true
+    }
+
     override fun resolve(args: List<String>, context: ArgumentContext): String? {
         // 解析器名称
         val name = args.firstOrNull() ?: return null
         // 获取动态解析器
         DynamicTagService.findResolver(name) ?: return null
-
-        // 标记此物品存在动态标签 (是动态物品, 用于提升效率)
-        isDynamic[context] = true
-
         // 动态解析标识内容
         return IDENTIFIED_START + args.joinToString(IDENTIFIED_SEPARATION) + IDENTIFIED_END
     }
