@@ -63,20 +63,22 @@ object HookManager {
                         // 加载受托管的类(强制自加载)
                         hook.managedClasses.map {
                             hookClassLoader.loadClass(it, resolve = false, forceSelfLoad = true)
-                        }
+                        }.plus(hook::class.java)
                     } else Collections.singletonList(hook::class.java)
 
                     for (clazz in classes) {
                         inject(clazz) { reflexClass, method, anno ->
                             // 生命周期不匹配时返回
-                            if (anno.property<LifeCycle>("lifeCycle") != lifeCycle) return@inject
+                            if (anno.property<LifeCycle>("lifeCycle") ?: LifeCycle.ENABLE != lifeCycle) return@inject
                             // 尝试执行, 错误时输出信息并取消注册
                             try {
                                 if (method.isStatic) {
                                     method.invokeStatic()
                                 } else {
-                                    val instance = reflexClass.getInstance {
-                                        Class.forName(it, false, clazz::class.java.classLoader)
+                                    val instance = if (classes.size == 1) hook else {
+                                        reflexClass.getInstance {
+                                            Class.forName(it, false, clazz::class.java.classLoader)
+                                        }
                                     }
                                     method.invoke(instance!!)
                                 }
