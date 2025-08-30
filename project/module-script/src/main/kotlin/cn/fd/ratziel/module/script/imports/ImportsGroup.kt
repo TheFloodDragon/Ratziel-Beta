@@ -1,12 +1,12 @@
 package cn.fd.ratziel.module.script.imports
 
 /**
- * ImportGroup
+ * ImportsGroup - 导入组
  *
  * @author TheFloodDragon
  * @since 2025/8/11 15:06
  */
-class ImportGroup(
+class ImportsGroup(
     /**
      * 原始导入的内容
      */
@@ -24,7 +24,7 @@ class ImportGroup(
     companion object {
 
         @JvmStatic
-        fun parse(rawContents: List<String>): ImportGroup {
+        fun parse(rawContents: List<String>): ImportsGroup {
             val classes = ArrayList<ClassImport>()
             val packages = ArrayList<PackageImport>()
             for (import in rawContents) {
@@ -34,7 +34,7 @@ class ImportGroup(
                     classes.add(ClassImport(import))
                 }
             }
-            return ImportGroup(rawContents, classes, packages)
+            return ImportsGroup(rawContents, classes, packages)
         }
 
     }

@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.block.provided
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.functional.replenish
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.LiteralScriptContent
@@ -10,6 +11,7 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
@@ -18,6 +20,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
+import java.util.concurrent.CompletableFuture
 
 /**
  * ScriptBlock
@@ -35,7 +38,20 @@ class ScriptBlock(
     /** 编译后的脚本 **/
     val script: ScriptContent = compileOrLiteral(executor, source)
 
-    override fun execute(context: ArgumentContext) = evaluate(context.scriptEnv())
+    private val scriptContextGenerating by replenish {
+        CompletableFuture.supplyAsync {
+            val environment = ScriptEnvironmentImpl()
+            // TODO imports for eval it
+            environment
+        }
+    }
+
+    override fun execute(context: ArgumentContext): Any? {
+        val environment = scriptContextGenerating.get()
+        environment.bindings = context.scriptEnv().bindings
+        // TODO
+        return evaluate(environment)
+    }
 
     fun evaluate(environment: ScriptEnvironment): Any? {
         measureTimeMillisWithResult {
@@ -72,7 +88,7 @@ class ScriptBlock(
         private var currentExecutor: ScriptExecutor = ScriptManager.defaultLanguage.executor
 
         override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
-            if (element is JsonObject && element.size == 1) {
+            if (element is JsonObject) {
                 val entry = element.entries.first()
                 val key = entry.key.trim()
                 // 检查开头 (是否为转换语言的)

@@ -1,24 +1,50 @@
 package cn.fd.ratziel.module.script.imports
 
+import java.lang.ref.WeakReference
+
 /**
- * ClassImport - 导入的类
+ * ClassImport - 类导入
  *
  * @author TheFloodDragon
  * @since 2025/8/11 15:07
  */
 class ClassImport(
-    val simpleName: String,
+    /**
+     * 类全名
+     */
     val fullName: String,
+    /**
+     * 类别名 (部分语言可用)
+     */
+    val alias: String? = null,
 ) {
 
-    constructor(name: String) : this(name.substringAfterLast('.'), name)
+    /**
+     * 类简单名称
+     */
+    val simpleName: String = fullName.substringAfterLast('.')
 
-    val clazz by lazy {
-        try {
-            Class.forName(fullName, false, this::class.java.classLoader)
-        } catch (_: ClassNotFoundException) {
-            null
-        }
+    /**
+     * 实际类对象引用
+     */
+    private var reference: WeakReference<Class<*>>? = null
+
+    /**
+     * 匹配类简单名字或别名
+     */
+    fun matches(name: String) = simpleName == name || alias == name
+
+    /**
+     * 获取类对象
+     */
+    @Synchronized
+    fun get(): Class<*> {
+        val clazz = reference?.get()
+        if (clazz != null) return clazz
+
+        val find = Class.forName(fullName, false, this::class.java.classLoader)
+        reference = WeakReference(find)
+        return find
     }
 
 }
