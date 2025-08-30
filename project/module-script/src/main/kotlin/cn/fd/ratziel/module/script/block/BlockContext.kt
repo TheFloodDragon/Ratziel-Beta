@@ -29,16 +29,19 @@ interface BlockContext {
     companion object {
 
         @JvmStatic
-        fun of(scheduler: BlockParser): BlockContext = BlockContextImpl(scheduler)
+        fun of(scheduler: BlockParser): BlockContext = object : BlockContext {
+            override val scheduler = scheduler
+            override val attached = AttachedContext.newContext()
+            override fun toString() = "BlockContext(attached=$attached, scheduler=$scheduler)"
+        }
+
+        @JvmStatic
+        fun withoutScheduler(): BlockContext = object : BlockContext {
+            override val scheduler get() = throw UnsupportedOperationException("BlockContext hasn't a scheduler.")
+            override val attached = AttachedContext.newContext()
+            override fun toString() = "BlockContext$attached"
+        }
 
     }
-
-    private class BlockContextImpl(
-        override val scheduler: BlockParser,
-        override val attached: AttachedContext = AttachedContext.newContext(),
-    ) : BlockContext {
-        override fun toString() = "BlockContext(attached=$attached, scheduler=$scheduler)"
-    }
-
 
 }

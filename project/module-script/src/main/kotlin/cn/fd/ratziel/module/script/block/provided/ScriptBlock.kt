@@ -32,14 +32,14 @@ class ScriptBlock(
     val source: String,
     /** 脚本执行器 */
     val executor: ScriptExecutor,
-    override val context: BlockContext,
+    override val context: BlockContext = BlockContext.withoutScheduler(),
 ) : ExecutableBlock.ContextualBlock {
 
     /** 编译后的脚本 **/
     val script: ScriptContent = compileOrLiteral(executor, source)
 
     /**
-     * 脚本引擎补充器
+     * 脚本引擎补充器 (提高并行执行多编译脚本的性能)
      */
     private val engineReplenishing: Replenishment<CompletableFuture<ScriptEnvironmentImpl>>? =
         if (executor is Importable) {
@@ -57,7 +57,7 @@ class ScriptBlock(
         val contextEnvironment = context.scriptEnv()
 
         val environment = engineReplenishing?.getValue()?.get()?.apply {
-            bindings = context.scriptEnv().bindings // 导入环境的绑定键
+            bindings = contextEnvironment.bindings // 导入环境的绑定键
         } ?: contextEnvironment // 不支持补充就直接用环境的
 
         return evaluate(environment)

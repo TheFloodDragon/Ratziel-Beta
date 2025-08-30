@@ -1,13 +1,12 @@
 package cn.fd.ratziel.module.script.lang.js
 
-import cn.fd.ratziel.core.functional.replenish
+import cn.fd.ratziel.module.script.api.Importable
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
+import cn.fd.ratziel.module.script.imports.ImportsGroup
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
-import cn.fd.ratziel.module.script.lang.JavaScriptLang
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Source
-import java.util.concurrent.CompletableFuture
 import javax.script.ScriptEngine
 
 
@@ -19,9 +18,10 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-object GraalJsScriptExecutor : CompilableScriptExecutor<GraalJsScriptExecutor.CachedSource>(), NonStrictCompilation {
+object GraalJsScriptExecutor : CompilableScriptExecutor<Source>(), Importable, NonStrictCompilation {
 
     private const val LANGUAGE_ID = "js"
+    private const val IMPORTS_MEMBER = "_imports_"
 
     /**
      * 默认的 [Context.Builder]
@@ -34,56 +34,55 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<GraalJsScriptExecutor.Ca
         .option("js.nashorn-compat", "true") // Nashorn 兼容模式
 
     /**
-     * [Context] 补充器
-     */
-    private val initializingContext: CompletableFuture<Context> by replenish {
-        CompletableFuture.supplyAsync { initialContext() }
-    }
-
-    /**
-     * 创建一个初始的 [Context]
+     * 创建一个新的 [Context]
      */
     @JvmStatic
-    fun initialContext(): Context {
+    fun newContext(): Context {
         val context = builder.build()
         // 导入要导入的包和类
         context.eval(importingScript)
-        // 加载全局扩展脚本
-        for ((script, attached) in JavaScriptLang.globalScripts) {
-            context.eval(attached.fetch(this) { internalSource(script) })
-        }
+//        // 加载全局扩展脚本
+//        for ((script, attached) in JavaScriptLang.globalScripts) {
+//            context.eval(attached.fetch(this) { internalSource(script) })
+//        }
         return context
     }
 
     override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        val context = createContext(environment) { this.initializingContext.get() }
-        return context.eval(createSource(script)).`as`(Any::class.java)
+        return getContext(environment).eval(createSource(script)).`as`(Any::class.java)
     }
 
-    override fun compile(script: String): CachedSource {
-        return CachedSource(createSource(script))
+    override fun compile(script: String): Source {
+        return createSource(script)
     }
 
-    override fun evalCompiled(script: CachedSource, environment: ScriptEnvironment): Any? {
-        val context = createContext(environment) { script.initializingContext.get() }
-        return context.eval(script.source).`as`(Any::class.java)
+    override fun evalCompiled(script: Source, environment: ScriptEnvironment): Any? {
+        return getContext(environment).eval(script).`as`(Any::class.java)
+    }
+
+    override fun importTo(environment: ScriptEnvironment, imports: Set<ImportsGroup>) {
+        val context = environment.context.fetch(this) { newContext() }
+        // TODO eval script imports
+        val contextBindings = context.getBindings(LANGUAGE_ID)
+        // TODO may this need to combine imports?
+        contextBindings.putMember(IMPORTS_MEMBER, imports)
     }
 
     /**
      * 创建供脚本运行的上下文
      */
-    fun createContext(environment: ScriptEnvironment, contextGetter: () -> Context): Context {
+    fun getContext(environment: ScriptEnvironment): Context {
         // 获取执行器上下文 (上下文继承)
-        val context = environment.context.fetch(this) { contextGetter() }
-        val bindings = environment.bindings // 环境绑定
+        val context = environment.context.fetch(this) { newContext() }
+        val environmentBindings = environment.bindings // 环境绑定
         val contextBindings = context.getBindings(LANGUAGE_ID)
         // 导入环境上下文
-        if (bindings.isNotEmpty()) {
-            for ((key, value) in bindings) {
+        if (environmentBindings.isNotEmpty()) {
+            for ((key, value) in environmentBindings) {
                 contextBindings.putMember(key, value)
             }
         }
-        contextBindings.putMember("bindings", bindings)
+        contextBindings.putMember("bindings", environmentBindings)
         return context
     }
 
@@ -99,15 +98,6 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<GraalJsScriptExecutor.Ca
     /** 编译内部脚本源 **/
     private fun internalSource(script: String): Source {
         return Source.newBuilder(LANGUAGE_ID, script, "<internal-script>").internal(true).buildLiteral()
-    }
-
-    /**
-     * 内部维护 [initializingContext] 以提高并行执行多编译脚本的性能
-     */
-    class CachedSource(val source: Source) {
-        internal val initializingContext: CompletableFuture<Context> by replenish {
-            CompletableFuture.supplyAsync { initialContext() }
-        }
     }
 
 }

@@ -1,5 +1,6 @@
 // avoid unnecessary chaining of __noSuchProperty__ again
 // in case user loads this script more than once.
+// TODO refactor this
 if (typeof getImportedClass == 'undefined' || !(getImportedClass instanceof Function)) {
 
     Object.defineProperty(this, "getImportedClass", {

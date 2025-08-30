@@ -9,8 +9,6 @@ import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.block.provided.ScriptBlock
-import cn.fd.ratziel.module.script.util.scriptEnv
-import cn.fd.ratziel.module.script.util.varsMap
 import taboolib.common.util.VariableReader
 import java.util.concurrent.ConcurrentHashMap
 
@@ -45,7 +43,7 @@ object InlineScriptResolver : ItemSectionResolver {
                     ScriptBlock(content, language.executor)
                 }
                 // 评估脚本并返回结果
-                script.evaluate(createEnvironment(context)).toString()
+                script.execute(context).toString()
             } else content
         }
         section.value(resolved)
@@ -93,15 +91,9 @@ object InlineScriptResolver : ItemSectionResolver {
             // 获取内联脚本 (经过预处理的)
             val script = scriptsCatcher[context][content] ?: return null
             // 评估脚本并返回结果
-            return script.evaluate(createEnvironment(context)).toString()
+            return script.execute(context).toString()
         }
 
-    }
-
-    @JvmStatic
-    private fun createEnvironment(context: ArgumentContext) = context.scriptEnv().apply {
-        // 导入变量表
-        bindings.putAll(context.varsMap())
     }
 
     /** 标签读取器 **/

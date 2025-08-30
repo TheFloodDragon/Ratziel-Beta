@@ -34,6 +34,7 @@ object BlockBuilder {
      * @param element 语句块元素
      * @return 解析后的语句块
      */
+    @JvmStatic
     fun build(element: JsonElement): ExecutableBlock {
         // 创建调度器
         val scheduler = BlockScheduler(registry.map { it.get() })
