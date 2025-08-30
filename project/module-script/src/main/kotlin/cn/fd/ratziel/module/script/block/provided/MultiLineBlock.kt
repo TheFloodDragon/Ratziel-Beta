@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.block.provided
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonArray
@@ -23,11 +24,11 @@ class MultiLineBlock(val blocks: List<ExecutableBlock>) : ExecutableBlock {
     }
 
     object Parser : BlockParser {
-        override fun parse(element: JsonElement, scheduler: BlockParser): ExecutableBlock? {
+        override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
             if (element is JsonArray) {
                 // 解析多行脚本块
                 val blocks = element.mapNotNull {
-                    scheduler.parse(it, scheduler)
+                    context.parse(it)
                 }
                 // 返回有效的 MultiLineBlock
                 if (blocks.isNotEmpty()) {

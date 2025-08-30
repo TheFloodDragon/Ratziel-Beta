@@ -14,7 +14,6 @@ import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import cn.fd.ratziel.module.script.block.ExecutableBlock
-import cn.fd.ratziel.module.script.util.VariablesMap
 import cn.fd.ratziel.module.script.util.varsMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -43,7 +42,7 @@ class DataInterpreter : ItemInterpreter {
     /**
      * 常量层属性数据
      */
-    val properties: VariablesMap = VariablesMap(ConcurrentHashMap())
+    val properties: MutableMap<String, Any> = ConcurrentHashMap()
 
     /**
      * 数据层脚本缓存
@@ -66,7 +65,7 @@ class DataInterpreter : ItemInterpreter {
             // 执行所有语句块
             val results = executeBlocks(blocks, stream.context)
             // 将结果存入常量层属性数据
-            properties.putValues(results)
+            results.forEach { (k, v) -> if (v != null) properties[k] = v }
         }
 
         // 数据层
@@ -129,7 +128,7 @@ class DataInterpreter : ItemInterpreter {
                 // 触发触发器
                 POST_TRIGGER.trigger(stream.identifier) {
                     // 导入变量表
-                    bindings.putAll(vars)
+                    putAll(vars)
                     // 尝试获取 RatzielItem 物品
                     set("item", stream.item)
                 }

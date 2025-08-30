@@ -7,6 +7,7 @@ import cn.fd.ratziel.module.script.api.LiteralScriptContent
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
@@ -70,7 +71,7 @@ class ScriptBlock(
         /** 当前执行器 **/
         private var currentExecutor: ScriptExecutor = ScriptManager.defaultLanguage.executor
 
-        override fun parse(element: JsonElement, scheduler: BlockParser): ExecutableBlock? {
+        override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
             if (element is JsonObject && element.size == 1) {
                 val entry = element.entries.first()
                 val key = entry.key.trim()
@@ -82,7 +83,7 @@ class ScriptBlock(
                     // 设置当前执行器
                     currentExecutor = type.executor // 获取或创建执行器
                     // 使用调度器解析结果
-                    val result = scheduler.parse(entry.value, scheduler)
+                    val result = context.parse(entry.value)
                     // 恢复上一个执行器
                     currentExecutor = lastExecutor
                     // 返回结果

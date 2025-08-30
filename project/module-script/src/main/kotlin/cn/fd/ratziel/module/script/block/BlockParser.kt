@@ -13,9 +13,9 @@ interface BlockParser {
     /**
      * 解析语句块
      * @param element 要解析的元素
-     * @param scheduler 被传递的解析器
+     * @param context 构建时的上下文
      * @return 解析后的语句块, 若元素不符合要求, 则应返回为空
      */
-    fun parse(element: JsonElement, scheduler: BlockParser): ExecutableBlock?
+    fun parse(element: JsonElement, context: BlockContext): ExecutableBlock?
 
 }

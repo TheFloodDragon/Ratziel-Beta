@@ -34,13 +34,14 @@ object BlockBuilder {
      * @param element 语句块元素
      * @return 解析后的语句块
      */
-    fun build(element: JsonElement): ExecutableBlock {
+    fun build(element: JsonElement): ContextualBlock {
         // 创建调度器
         val scheduler = BlockScheduler(registry.map { it.get() })
+        val context = BlockContext.of(scheduler)
         // 调用调度器解析
-        val result = scheduler.parse(element, scheduler)
+        val result = scheduler.parse(element, context) ?: throw Exception("Cannot parse the element to block. Source: $element")
         // 返回解析结果
-        return result ?: throw Exception("Cannot parse the element to block. Source: $element")
+        return ContextualBlock(result, context)
     }
 
     class BlockScheduler(
@@ -50,13 +51,13 @@ object BlockBuilder {
         val parsers: List<BlockParser>,
     ) : BlockParser {
 
-        override fun parse(element: JsonElement, scheduler: BlockParser): ExecutableBlock? {
+        override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
             // 开始解析
             var result: ExecutableBlock? = null
             // 挨个尝试解析
             for (parser in parsers) {
                 // 默认调度器使用自身
-                result = parser.parse(element, this) ?: continue
+                result = parser.parse(element, context) ?: continue
                 break // 解析到有效语句块就返回
             }
             // 返回存在的结果

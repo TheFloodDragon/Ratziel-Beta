@@ -5,7 +5,7 @@ import cn.fd.ratziel.module.item.feature.action.ActionManager.registerSimple
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.util.writeTo
-import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.util.VariablesMap
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.event.PlayerWorldContactEvent
@@ -55,7 +55,7 @@ object WorldContactListener {
 
         fun trigger(
             trigger: Trigger,
-            action: ScriptEnvironment.() -> Unit = {},
+            action: VariablesMap.() -> Unit = {},
         ) {
             trigger.trigger(ratzielItem.identifier, event.player, ratzielItem) {
                 set("event", event)

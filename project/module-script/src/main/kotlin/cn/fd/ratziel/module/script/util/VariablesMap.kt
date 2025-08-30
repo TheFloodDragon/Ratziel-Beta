@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.script.util
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.module.script.util.VariablesMap.Companion.transformers
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Consumer
 
@@ -13,8 +12,8 @@ import java.util.function.Consumer
  * @since 2025/6/9 17:15
  */
 class VariablesMap(
-    private val vars: MutableMap<String, Any> = ConcurrentHashMap(),
-) : MutableMap<String, Any> by vars {
+    private val vars: MutableMap<String, Any?> = HashMap(),
+) : MutableMap<String, Any?> by vars {
 
     constructor(action: VariablesMap.() -> Unit) : this() {
         action(this)

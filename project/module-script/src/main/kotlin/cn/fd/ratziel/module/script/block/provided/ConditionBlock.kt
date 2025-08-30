@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.block.provided
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonElement
@@ -26,15 +27,15 @@ class ConditionBlock(
     }
 
     object Parser : BlockParser {
-        override fun parse(element: JsonElement, scheduler: BlockParser): ConditionBlock? {
+        override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
             if (element !is JsonObject) return null
             val valueIf = element["if"] ?: element["condition"] ?: return null
             val valueThen = element["then"]
             val valueElse = element["else"]
             return ConditionBlock(
-                scheduler.parse(valueIf, scheduler) ?: return null,
-                valueThen?.let { scheduler.parse(it, scheduler) },
-                valueElse?.let { scheduler.parse(it, scheduler) }
+                context.parse(valueIf) ?: return null,
+                valueThen?.let { context.parse(it) },
+                valueElse?.let { context.parse(it) }
             )
         }
     }
