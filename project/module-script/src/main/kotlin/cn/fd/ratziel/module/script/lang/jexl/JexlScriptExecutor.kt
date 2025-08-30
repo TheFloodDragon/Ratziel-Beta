@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.lang.jexl
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.impl.CompletableScriptExecutor
+import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import org.apache.commons.jexl3.JexlBuilder
 import org.apache.commons.jexl3.JexlContext
@@ -15,7 +15,7 @@ import javax.script.ScriptContext
  * @author TheFloodDragon
  * @since 2025/4/25 17:37
  */
-object JexlScriptExecutor : CompletableScriptExecutor<JexlScript>() {
+object JexlScriptExecutor : CompilableScriptExecutor<JexlScript>() {
 
     /**
      * Jexl引擎实例

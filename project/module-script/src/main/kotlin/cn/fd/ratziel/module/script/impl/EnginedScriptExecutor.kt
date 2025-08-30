@@ -14,7 +14,7 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/25 16:40
  */
-abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>() {
+abstract class EnginedScriptExecutor : CompilableScriptExecutor<CompiledScript>() {
 
     /**
      * [ScriptEngine] 补充器
@@ -40,7 +40,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
      */
     override fun compile(script: String): CompiledScript {
         val engine = initializingScriptEngine.get()
-        engine.context = createContext(engine, SimpleScriptEnvironment())
+        engine.context = createContext(engine, ScriptEnvironmentImpl())
         return (engine as Compilable).compile(script)
     }
 
@@ -59,7 +59,7 @@ abstract class EnginedScriptExecutor : CompletableScriptExecutor<CompiledScript>
     open fun createContext(engine: ScriptEngine, environment: ScriptEnvironment): ScriptContext {
         val context = engine.context
         // 获取执行器上下文
-        val contextualBindings = environment.attachedContext.fetch(this) {
+        val contextualBindings = environment.context.fetch(this) {
             context.getBindings(ScriptContext.ENGINE_SCOPE) ?: engine.createBindings()
         }
 

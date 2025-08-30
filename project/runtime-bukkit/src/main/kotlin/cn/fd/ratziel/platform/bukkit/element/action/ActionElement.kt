@@ -2,11 +2,10 @@ package cn.fd.ratziel.platform.bukkit.element.action
 
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
+import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
-import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.module.script.block.BlockBuilder
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
 import taboolib.common.LifeCycle
 
 /**
@@ -26,7 +25,7 @@ object ActionElement : ElementHandler {
         element.property.let { json ->
             val block = BlockBuilder.build(json)
             println(block)
-            val result = block.execute(SimpleContext(SimpleScriptEnvironment()))
+            val result = block.execute(SimpleContext())
             println(result)
         }
     }

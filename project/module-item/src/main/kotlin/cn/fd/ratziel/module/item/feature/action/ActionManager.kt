@@ -7,8 +7,7 @@ import cn.fd.ratziel.core.reactive.SimpleTrigger
 import cn.fd.ratziel.core.reactive.Trigger
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
-import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.impl.SimpleScriptEnvironment
+import cn.fd.ratziel.module.script.util.VariablesMap
 import taboolib.common.platform.function.severe
 import java.util.concurrent.ConcurrentHashMap
 
@@ -76,12 +75,23 @@ object ActionManager {
      * 触发指定物品的动作
      */
     @JvmStatic
-    fun Trigger.trigger(identifier: Identifier, vararg values: Any?, action: (ScriptEnvironment).() -> Unit) {
-        val environment = SimpleScriptEnvironment()
-        action(environment)
+    fun Trigger.trigger(identifier: Identifier, vararg values: Any?, action: (VariablesMap).() -> Unit) {
+        // 参数上下文
         val context = ItemManager.generatorContext(identifier) ?: SimpleContext()
-        context.put(environment); context.putAll(values.mapNotNull { it })
+        context.putAll(values.mapNotNull { it })
+        // 获取变量表
+        val varsMap = VariablesMap()
+        context.put(varsMap)
+        varsMap.accept(context) // 添加部分变量
+        // 设置变量
+        action(varsMap)
+        // 触发事件
         this.trigger(ContextualResponse(identifier, context))
+    }
+
+    @JvmStatic
+    fun Trigger.trigger(identifier: Identifier, vararg values: Any?, bindings: Map<String, Any>) {
+        return this.trigger(identifier, *values) { putAll(bindings) }
     }
 
 }

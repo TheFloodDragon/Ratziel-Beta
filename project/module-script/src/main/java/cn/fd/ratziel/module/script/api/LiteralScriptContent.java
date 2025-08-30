@@ -1,7 +1,5 @@
-package cn.fd.ratziel.module.script.impl;
+package cn.fd.ratziel.module.script.api;
 
-import cn.fd.ratziel.module.script.api.ScriptContent;
-import cn.fd.ratziel.module.script.api.ScriptExecutor;
 import org.jetbrains.annotations.NotNull;
 
 /**

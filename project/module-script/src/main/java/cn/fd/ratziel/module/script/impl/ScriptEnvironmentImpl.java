@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.script.impl;
 
-import cn.fd.ratziel.core.contextual.AttachedContext;
 import cn.fd.ratziel.module.script.api.ScriptEnvironment;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,27 +8,27 @@ import javax.script.SimpleBindings;
 import java.util.Map;
 
 /**
- * SimpleScriptEnvironment
+ * ScriptEnvironmentImpl
  *
  * @author TheFloodDragon
  * @since 2025/6/6 15:14
  */
-public class SimpleScriptEnvironment implements ScriptEnvironment {
+public class ScriptEnvironmentImpl implements ScriptEnvironment {
 
-    public SimpleScriptEnvironment() {
+    public ScriptEnvironmentImpl() {
         this(new SimpleBindings());
     }
 
-    public SimpleScriptEnvironment(@NotNull final Map<String, Object> bindings) {
+    public ScriptEnvironmentImpl(@NotNull final Map<String, Object> bindings) {
         this(new SimpleBindings(bindings));
     }
 
-    public SimpleScriptEnvironment(@NotNull final Bindings bindings) {
+    public ScriptEnvironmentImpl(@NotNull final Bindings bindings) {
         this.scriptBindings = bindings;
     }
 
     private Bindings scriptBindings;
-    private final AttachedContext attachedContext = AttachedContext.newContext();
+    private final ExecutorContext context = new ExecutorContext();
 
     @Override
     public @NotNull Bindings getBindings() {
@@ -42,8 +41,8 @@ public class SimpleScriptEnvironment implements ScriptEnvironment {
     }
 
     @Override
-    public @NotNull AttachedContext getAttachedContext() {
-        return this.attachedContext;
+    public @NotNull ExecutorContext getContext() {
+        return this.context;
     }
 
 }

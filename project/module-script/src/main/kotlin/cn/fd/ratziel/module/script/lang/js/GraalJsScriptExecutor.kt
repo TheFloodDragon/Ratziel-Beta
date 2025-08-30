@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.core.functional.replenish
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.impl.CompletableScriptExecutor
+import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.lang.JavaScriptLang
 import org.graalvm.polyglot.Context
@@ -19,7 +19,7 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-object GraalJsScriptExecutor : CompletableScriptExecutor<GraalJsScriptExecutor.CachedSource>(), NonStrictCompilation {
+object GraalJsScriptExecutor : CompilableScriptExecutor<GraalJsScriptExecutor.CachedSource>(), NonStrictCompilation {
 
     private const val LANGUAGE_ID = "js"
 
@@ -74,7 +74,7 @@ object GraalJsScriptExecutor : CompletableScriptExecutor<GraalJsScriptExecutor.C
      */
     fun createContext(environment: ScriptEnvironment, contextGetter: () -> Context): Context {
         // 获取执行器上下文 (上下文继承)
-        val context = environment.attachedContext.fetch(this) { contextGetter() }
+        val context = environment.context.fetch(this) { contextGetter() }
         val bindings = environment.bindings // 环境绑定
         val contextBindings = context.getBindings(LANGUAGE_ID)
         // 导入环境上下文

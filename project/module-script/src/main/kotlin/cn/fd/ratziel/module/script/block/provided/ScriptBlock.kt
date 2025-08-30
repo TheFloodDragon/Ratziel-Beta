@@ -3,12 +3,12 @@ package cn.fd.ratziel.module.script.block.provided
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.LiteralScriptContent
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
-import cn.fd.ratziel.module.script.impl.LiteralScriptContent
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray

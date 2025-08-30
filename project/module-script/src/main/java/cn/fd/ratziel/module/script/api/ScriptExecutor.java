@@ -39,6 +39,8 @@ public interface ScriptExecutor {
      * @throws ScriptException 当脚本评估中产生错误时抛出
      */
     @Nullable
-    Object evaluate(@NotNull String script, @NotNull ScriptEnvironment environment) throws ScriptException;
+    default Object evaluate(@NotNull String script, @NotNull ScriptEnvironment environment) throws ScriptException {
+        return evaluate(new LiteralScriptContent(script, this), environment);
+    }
 
 }

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.script.Bindings;
+import java.util.function.Supplier;
 
 /**
  * ScriptEnvironment - 脚本环境
@@ -36,8 +37,48 @@ public interface ScriptEnvironment {
     }
 
     /**
-     * 获取附加的上下文
+     * 获取执行器的上下文
      */
-    @NotNull AttachedContext getAttachedContext();
+    @NotNull ExecutorContext getContext();
+
+    /**
+     * ExecutorContext - 执行器上下文
+     *
+     * @author TheFloodDragon
+     * @since 2025/8/30 18:57
+     */
+    class ExecutorContext implements AttachedContext {
+
+        public ExecutorContext() {
+            this(AttachedContext.newContext());
+        }
+
+        public ExecutorContext(AttachedContext ctx) {
+            this.ctx = ctx;
+        }
+
+        private final AttachedContext ctx;
+
+        @Override
+        public <T> @NotNull T fetch(@NotNull Object key, @NotNull Supplier<@NotNull T> ifAbsent) {
+            return ctx.fetch(key, ifAbsent);
+        }
+
+        @Override
+        public <T> @Nullable T fetchOrNull(@NotNull Object key) {
+            return ctx.fetchOrNull(key);
+        }
+
+        @Override
+        public void put(@NotNull Object key, @NotNull Object value) {
+            ctx.put(key, value);
+        }
+
+        @Override
+        public String toString() {
+            return ctx.toString();
+        }
+
+    }
 
 }
