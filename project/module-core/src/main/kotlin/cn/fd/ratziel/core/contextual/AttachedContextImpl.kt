@@ -34,6 +34,8 @@ class AttachedContextImpl(val map: MutableMap<Any, Any> = ConcurrentHashMap()) :
         map[key] = value
     }
 
+    override val contents: Map<Any, Any> get() = this.map
+
     override fun toString() = "AttachedContext$map"
 
     /**

@@ -26,6 +26,11 @@ interface AttachedContext {
     fun put(key: Any, value: Any)
 
     /**
+     * 获取所有的上下文内容
+     */
+    val contents: Map<Any, Any>
+
+    /**
      * [AttachedContext] 捕获器
      */
     interface Catcher<T : Any> {

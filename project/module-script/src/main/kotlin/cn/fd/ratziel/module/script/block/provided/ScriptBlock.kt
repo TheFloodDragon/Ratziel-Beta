@@ -5,7 +5,10 @@ import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.functional.Replenishment
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.module.script.api.*
+import cn.fd.ratziel.module.script.api.Importable
+import cn.fd.ratziel.module.script.api.LiteralScriptContent
+import cn.fd.ratziel.module.script.api.ScriptContent
+import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
@@ -42,7 +45,7 @@ class ScriptBlock(
      * 脚本引擎补充器 (提高并行执行多编译脚本的性能)
      */
     private val engineReplenishing: Replenishment<CompletableFuture<ScriptEnvironmentImpl>>? =
-        if (executor is Importable) {
+        if (executor is Importable && context.attached.contents.isNotEmpty()) {
             Replenishment {
                 CompletableFuture.supplyAsync {
                     val environment = ScriptEnvironmentImpl()
@@ -54,16 +57,12 @@ class ScriptBlock(
         } else null
 
     override fun execute(context: ArgumentContext): Any? {
+        // 环境处理
         val contextEnvironment = context.scriptEnv()
-
         val environment = engineReplenishing?.getValue()?.get()?.apply {
             bindings = contextEnvironment.bindings // 导入环境的绑定键
         } ?: contextEnvironment // 不支持补充就直接用环境的
-
-        return evaluate(environment)
-    }
-
-    private fun evaluate(environment: ScriptEnvironment): Any? {
+        // 执行脚本
         measureTimeMillisWithResult {
             executor.evaluate(script, environment)
         }.also { (time, result) ->
