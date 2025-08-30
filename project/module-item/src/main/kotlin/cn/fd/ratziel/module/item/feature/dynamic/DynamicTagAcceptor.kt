@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.feature.dynamic
 
 import cn.fd.ratziel.common.message.Message
-import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.module.item.api.ComponentHolder
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.feature.virtual.VirtualItemRenderer

@@ -1,8 +1,8 @@
 package cn.fd.ratziel.module.item.feature.dynamic
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
-import cn.fd.ratziel.core.functional.ArgumentContext
-import cn.fd.ratziel.core.functional.AttachedContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.TaggedSectionResolver

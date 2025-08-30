@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem

@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.compat.impl
 import cc.trixey.invero.common.Invero
 import cc.trixey.invero.common.ItemSourceProvider
 import cc.trixey.invero.core.Context
-import cn.fd.ratziel.core.functional.SimpleContext
+import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.module.compat.hook.HookInject
 import cn.fd.ratziel.module.compat.hook.PluginHook
 import cn.fd.ratziel.module.item.ItemManager

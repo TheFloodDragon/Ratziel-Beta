@@ -3,8 +3,8 @@ package cn.fd.ratziel.module.item.feature.virtual
 import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.put
-import cn.fd.ratziel.core.functional.ArgumentContext
-import cn.fd.ratziel.core.functional.SimpleContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.IdentifiedItem
 import cn.fd.ratziel.module.item.api.NeoItem

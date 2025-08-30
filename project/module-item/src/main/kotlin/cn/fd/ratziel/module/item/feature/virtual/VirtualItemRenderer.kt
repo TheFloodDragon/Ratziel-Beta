@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.feature.virtual
 
-import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.module.item.api.NeoItem
 
 /**

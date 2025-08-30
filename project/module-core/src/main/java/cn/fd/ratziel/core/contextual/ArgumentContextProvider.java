@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.functional;
+package cn.fd.ratziel.core.contextual;
 
 import org.jetbrains.annotations.NotNull;
 

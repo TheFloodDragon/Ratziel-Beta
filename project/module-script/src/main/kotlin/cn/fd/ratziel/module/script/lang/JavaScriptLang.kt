@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.script.lang
 
-import cn.fd.ratziel.core.functional.AttachedContext
+import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.util.JarUtil
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType

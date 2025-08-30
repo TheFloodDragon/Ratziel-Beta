@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.api.builder
 
-import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull

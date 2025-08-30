@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.feature.template
 
 import cn.altawk.nbt.NbtPath
-import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import kotlinx.serialization.json.JsonArray

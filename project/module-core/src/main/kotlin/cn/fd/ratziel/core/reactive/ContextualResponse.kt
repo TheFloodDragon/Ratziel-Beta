@@ -1,7 +1,7 @@
 package cn.fd.ratziel.core.reactive
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
 
 /**
  * ContextualResponse

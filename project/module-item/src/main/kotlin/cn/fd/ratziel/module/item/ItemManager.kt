@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import java.util.concurrent.ConcurrentHashMap
 

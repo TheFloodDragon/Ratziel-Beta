@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.common.element.registry.AutoRegister
-import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver

@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.feature.template
 
-import cn.fd.ratziel.core.functional.AttachedContext
-import cn.fd.ratziel.core.functional.SimpleContext
+import cn.fd.ratziel.core.contextual.AttachedContext
+import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter

@@ -1,4 +1,4 @@
-package cn.fd.ratziel.core.exception;
+package cn.fd.ratziel.core.contextual;
 
 /**
  * ArgumentNotFoundException

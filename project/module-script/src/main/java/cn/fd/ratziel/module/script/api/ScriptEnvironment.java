@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.script.api;
 
-import cn.fd.ratziel.core.functional.AttachedContext;
+import cn.fd.ratziel.core.contextual.AttachedContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

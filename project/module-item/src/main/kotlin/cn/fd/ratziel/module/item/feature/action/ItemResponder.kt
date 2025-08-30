@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.feature.action
 
-import cn.fd.ratziel.core.functional.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.reactive.ContextualResponder
 import cn.fd.ratziel.core.reactive.ContextualResponse
 import cn.fd.ratziel.core.reactive.Trigger
