@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.block
 
+import cn.fd.ratziel.core.contextual.AttachedContext
 import kotlinx.serialization.json.JsonElement
 
 /**
@@ -16,9 +17,9 @@ interface BlockContext {
     val scheduler: BlockParser
 
     /**
-     * 选项 TODO
+     * 附加的上下文
      */
-    val options: Map<String, String>
+    val attached: AttachedContext
 
     /**
      * 使用此上下文解析 [JsonElement]
@@ -34,9 +35,9 @@ interface BlockContext {
 
     private class BlockContextImpl(
         override val scheduler: BlockParser,
-        override val options: Map<String, String> = emptyMap(),
+        override val attached: AttachedContext = AttachedContext.newContext(),
     ) : BlockContext {
-        override fun toString() = "BlockContext(options=$options, scheduler=$scheduler)"
+        override fun toString() = "BlockContext(attached=$attached, scheduler=$scheduler)"
     }
 
 

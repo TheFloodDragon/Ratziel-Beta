@@ -15,8 +15,13 @@ class Replenishment<T>(
 
     private var value: T = getter()
 
+    override fun getValue(thisRef: Any?, property: KProperty<*>) = this.getValue()
+
+    /**
+     * 获取并更新值
+     */
     @Synchronized
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+    fun getValue(): T {
         // 获取当前的值
         val nowValue = value
         // 重新初始化

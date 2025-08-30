@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.impl
 
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.imports.ImportsGroup
 import javax.script.ScriptContext
 import javax.script.SimpleScriptContext
 
@@ -12,15 +13,6 @@ import javax.script.SimpleScriptContext
  */
 open class ImportedScriptContext() : SimpleScriptContext() {
 
-    companion object {
-
-        /**
-         * 导入的类的作用域
-         */
-        const val IMPORT_SCOPE = 300
-
-    }
-
     constructor(scriptContext: ScriptContext) : this() {
         this.setBindings(scriptContext.getBindings(ENGINE_SCOPE), ENGINE_SCOPE)
         this.setBindings(scriptContext.getBindings(GLOBAL_SCOPE), GLOBAL_SCOPE)
@@ -28,6 +20,10 @@ open class ImportedScriptContext() : SimpleScriptContext() {
         this.errorWriter = scriptContext.errorWriter
         this.reader = scriptContext.reader
     }
+
+    var imports: Set<ImportsGroup> = emptySet()
+        @Synchronized get
+        @Synchronized set
 
     open fun getImport(name: String): Any? {
         return ScriptManager.Imports.getImportedClass(name)
@@ -62,6 +58,15 @@ open class ImportedScriptContext() : SimpleScriptContext() {
     override fun removeAttribute(name: String, scope: Int): Any? {
         if (scope == IMPORT_SCOPE) throw IllegalArgumentException("Cannot remove attribute in IMPORT_SCOPE")
         return super.removeAttribute(name, scope)
+    }
+
+    companion object {
+
+        /**
+         * 导入的类的作用域
+         */
+        const val IMPORT_SCOPE = 300
+
     }
 
 }

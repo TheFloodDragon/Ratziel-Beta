@@ -1,17 +1,16 @@
 package cn.fd.ratziel.module.script.block.provided
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.core.functional.replenish
+import cn.fd.ratziel.core.contextual.AttachedContext
+import cn.fd.ratziel.core.functional.Replenishment
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.module.script.api.LiteralScriptContent
-import cn.fd.ratziel.module.script.api.ScriptContent
-import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
+import cn.fd.ratziel.module.script.imports.ImportsGroup
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
@@ -33,27 +32,38 @@ class ScriptBlock(
     val source: String,
     /** 脚本执行器 */
     val executor: ScriptExecutor,
-) : ExecutableBlock {
+    override val context: BlockContext,
+) : ExecutableBlock.ContextualBlock {
 
     /** 编译后的脚本 **/
     val script: ScriptContent = compileOrLiteral(executor, source)
 
-    private val scriptContextGenerating by replenish {
-        CompletableFuture.supplyAsync {
-            val environment = ScriptEnvironmentImpl()
-            // TODO imports for eval it
-            environment
-        }
-    }
+    /**
+     * 脚本引擎补充器
+     */
+    private val engineReplenishing: Replenishment<CompletableFuture<ScriptEnvironmentImpl>>? =
+        if (executor is Importable) {
+            Replenishment {
+                CompletableFuture.supplyAsync {
+                    val environment = ScriptEnvironmentImpl()
+                    // 导入导入件
+                    executor.importTo(environment, importsCatcher[context.attached])
+                    environment
+                }
+            }
+        } else null
 
     override fun execute(context: ArgumentContext): Any? {
-        val environment = scriptContextGenerating.get()
-        environment.bindings = context.scriptEnv().bindings
-        // TODO
+        val contextEnvironment = context.scriptEnv()
+
+        val environment = engineReplenishing?.getValue()?.get()?.apply {
+            bindings = context.scriptEnv().bindings // 导入环境的绑定键
+        } ?: contextEnvironment // 不支持补充就直接用环境的
+
         return evaluate(environment)
     }
 
-    fun evaluate(environment: ScriptEnvironment): Any? {
+    private fun evaluate(environment: ScriptEnvironment): Any? {
         measureTimeMillisWithResult {
             executor.evaluate(script, environment)
         }.also { (time, result) ->
@@ -78,6 +88,12 @@ class ScriptBlock(
     }
 
     override fun toString() = "ScriptBlock(executor=$executor, source=$source)"
+
+    companion object {
+
+        internal val importsCatcher = AttachedContext.catcher(this) { LinkedHashSet<ImportsGroup>() }
+
+    }
 
     class Parser : BlockParser {
 
@@ -115,8 +131,10 @@ class ScriptBlock(
                     content = element.joinToString("\n")
                 }
                 if (content != null) {
-                    val block = ScriptBlock(content, currentExecutor)
+                    val block = ScriptBlock(content, currentExecutor, context)
                     blocks.add(block) // 记录一下
+                    // TODO removed this since it's for test
+                    importsCatcher[context.attached].add(ScriptManager.Imports.globalGroup)
                     return block
                 }
             }

@@ -21,6 +21,23 @@ class ImportsGroup(
     val packages: List<PackageImport>,
 ) {
 
+    /**
+     * 通过简单类名称获取已经导入的类
+     * @param name 类的简单名称
+     * @return [Class], 找不到则返回空
+     */
+    fun getImportedClass(name: String): Class<*>? {
+        // 在导入的类中查找
+        val find = classes.find { it.matches(name) }
+        if (find != null) return find.get()
+        // 在导入的包中查找
+        for (import in packages) {
+            val searched = import.search(name)
+            if (searched != null) return searched
+        }
+        return null
+    }
+
     companion object {
 
         @JvmStatic
