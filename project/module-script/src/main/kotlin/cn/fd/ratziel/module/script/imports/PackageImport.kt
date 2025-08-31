@@ -27,10 +27,13 @@ data class PackageImport(
     fun search(name: String): Class<*>? {
         val cached = classesCache[name]?.get()
         if (cached != null) return cached
-
-        val find = Class.forName("$packageName.$name", false, this::class.java.classLoader)
-        classesCache[name] = WeakReference(find)
-        return find
+        try {
+            val find = Class.forName("$packageName.$name", false, this::class.java.classLoader)
+            classesCache[name] = WeakReference(find)
+            return find
+        } catch (_: ClassNotFoundException) {
+            return null
+        }
     }
 
 }

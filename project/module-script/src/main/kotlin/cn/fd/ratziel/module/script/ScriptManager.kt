@@ -6,7 +6,7 @@ import cn.fd.ratziel.core.util.JarUtil
 import cn.fd.ratziel.module.script.ScriptType.Companion.activeLanguages
 import cn.fd.ratziel.module.script.element.ScriptElementLoader
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
-import cn.fd.ratziel.module.script.imports.ImportsGroup
+import cn.fd.ratziel.module.script.imports.GroupImports
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
@@ -86,25 +86,7 @@ object ScriptManager {
         /**
          * 全局导入组
          */
-        lateinit var globalGroup: ImportsGroup private set
-
-        /**
-         * 通过简单类名称获取已经导入的类
-         * @param name 类的简单名称
-         * @return [Class], 找不到则返回空
-         */
-        @JvmStatic
-        fun getImportedClass(name: String): Class<*>? {
-            // 在导入的类中查找
-            val find = globalGroup.classes.find { it.matches(name) }
-            if (find != null) return find.get()
-            // 在导入的包中查找
-            for (import in globalGroup.packages) {
-                val searched = import.search(name)
-                if (searched != null) return searched
-            }
-            return null
-        }
+        lateinit var globalGroup: GroupImports private set
 
         internal fun initialize() {
             // 读取文件
@@ -114,7 +96,7 @@ object ScriptManager {
                     stream.reader().readLines().filter { it.isNotBlank() && !it.startsWith('#') }
                 }
             // 初始化
-            this.globalGroup = ImportsGroup.parse(imports)
+            this.globalGroup = GroupImports.parse(imports)
         }
 
     }

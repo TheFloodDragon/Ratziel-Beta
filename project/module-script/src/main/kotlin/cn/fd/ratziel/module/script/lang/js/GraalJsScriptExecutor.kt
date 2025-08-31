@@ -4,7 +4,7 @@ import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.Importable
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
-import cn.fd.ratziel.module.script.imports.ImportsGroup
+import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Source
@@ -40,7 +40,7 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<Source>(), Importable, N
     @JvmStatic
     fun newContext(): Context {
         val context = builder.build()
-        // 导入要导入的包和类
+        // 包、类导入脚本
         context.eval(importingScript)
         return context
     }
@@ -57,7 +57,7 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<Source>(), Importable, N
         return getContext(environment).eval(script).`as`(Any::class.java)
     }
 
-    override fun importTo(environment: ScriptEnvironment, imports: ImportsGroup) {
+    override fun importTo(environment: ScriptEnvironment, imports: GroupImports) {
         val context = getContext(environment)
         // 设置导入的类成员
         val contextBindings = context.getBindings(LANGUAGE_ID)

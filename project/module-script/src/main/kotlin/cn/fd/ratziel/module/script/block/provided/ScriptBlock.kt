@@ -13,7 +13,7 @@ import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
-import cn.fd.ratziel.module.script.imports.ImportsGroup
+import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
@@ -45,7 +45,7 @@ class ScriptBlock(
      * 脚本引擎补充器 (提高并行执行多编译脚本的性能)
      */
     private val engineReplenishing: Replenishment<CompletableFuture<ScriptEnvironmentImpl>>? =
-        if (executor is Importable && context.attached.contents.isNotEmpty()) {
+        if (executor is Importable && this.context.attached.contents.isNotEmpty()) {
             Replenishment {
                 CompletableFuture.supplyAsync {
                     val environment = ScriptEnvironmentImpl()
@@ -90,7 +90,7 @@ class ScriptBlock(
 
     companion object {
 
-        internal val importsCatcher = AttachedContext.catcher(this) { ImportsGroup() }
+        internal val importsCatcher = AttachedContext.catcher(this) { GroupImports() }
 
     }
 
@@ -130,11 +130,11 @@ class ScriptBlock(
                     content = element.joinToString("\n")
                 }
                 if (content != null) {
-                    val block = ScriptBlock(content, currentExecutor, context)
-                    blocks.add(block) // 记录一下
                     // TODO removed this since it's for test
                     // TODO parse imports
                     importsCatcher[context.attached] = importsCatcher[context.attached].combine(ScriptManager.Imports.globalGroup)
+                    val block = ScriptBlock(content, currentExecutor, context)
+                    blocks.add(block) // 记录一下
                     return block
                 }
             }

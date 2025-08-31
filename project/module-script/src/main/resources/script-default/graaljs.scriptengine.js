@@ -3,15 +3,13 @@
 if (typeof getImportedClass == 'undefined' || !(getImportedClass instanceof Function)) {
 
     Object.defineProperty(this, "getImportedClass", {
-        configurable: true, enumerable: false, writable: true,
-        value: (function () {
+        configurable: true, enumerable: false, writable: true, value: (function () {
             var global = this;
             var oldNoSuchProperty = global.__noSuchProperty__;
-            var importsGroup = _imports_;
             var __noSuchProperty__ = function (name) {
                 'use strict';
-                if (importsGroup) {
-                    var clazz = importsGroup.getImportedClass(name);
+                if ("_imports_" in global) {
+                    var clazz = _imports_.lookupClass(name);
                     if (clazz) {
                         var jsClass = Java.type(clazz.getName());
                         global[clazz.getSimpleName()] = jsClass;
@@ -30,15 +28,17 @@ if (typeof getImportedClass == 'undefined' || !(getImportedClass instanceof Func
             }
 
             Object.defineProperty(global, "__noSuchProperty__", {
-                writable: true, configurable: true, enumerable: false,
-                value: __noSuchProperty__
+                writable: true, configurable: true, enumerable: false, value: __noSuchProperty__
             });
 
             return function () {
-                var clazz = importsGroup.getImportedClass(arguments[0]);
-                if (clazz) {
-                    return Java.type(clazz.name);
+                if ("_imports_" in global) {
+                    var clazz = _imports_.lookupClass(arguments[0]);
+                    if (clazz) {
+                        return Java.type(clazz.name);
+                    }
                 }
+                return undefined
             }
         })()
     });

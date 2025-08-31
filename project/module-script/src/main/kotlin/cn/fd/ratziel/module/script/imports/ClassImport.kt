@@ -13,10 +13,6 @@ data class ClassImport(
      * 类全名
      */
     val fullName: String,
-    /**
-     * 类别名 (部分语言可用)
-     */
-    val alias: String? = null,
 ) {
 
     /**
@@ -30,21 +26,19 @@ data class ClassImport(
     private var reference: WeakReference<Class<*>>? = null
 
     /**
-     * 匹配类简单名字或别名
-     */
-    fun matches(name: String) = simpleName == name || alias == name
-
-    /**
      * 获取类对象
      */
     @Synchronized
-    fun get(): Class<*> {
+    fun get(): Class<*>? {
         val clazz = reference?.get()
         if (clazz != null) return clazz
-
-        val find = Class.forName(fullName, false, this::class.java.classLoader)
-        reference = WeakReference(find)
-        return find
+        try {
+            val find = Class.forName(fullName, false, this::class.java.classLoader)
+            reference = WeakReference(find)
+            return find
+        } catch (_: ClassNotFoundException) {
+            return null
+        }
     }
 
 }

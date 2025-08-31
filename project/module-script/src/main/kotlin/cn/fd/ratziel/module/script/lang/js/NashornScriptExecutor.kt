@@ -6,7 +6,7 @@ import cn.fd.ratziel.module.script.api.Importable
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
-import cn.fd.ratziel.module.script.imports.ImportsGroup
+import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
 import javax.script.Compilable
@@ -45,7 +45,7 @@ object NashornScriptExecutor : CompilableScriptExecutor<CompiledScript>(), Impor
         return script.eval(getEngine(environment).context)
     }
 
-    override fun importTo(environment: ScriptEnvironment, imports: ImportsGroup) {
+    override fun importTo(environment: ScriptEnvironment, imports: GroupImports) {
         // 更新 ImportedScriptContext 的导入 (类, 包)
         val context = getEngine(environment).context as ImportedScriptContext
         context.imports = imports

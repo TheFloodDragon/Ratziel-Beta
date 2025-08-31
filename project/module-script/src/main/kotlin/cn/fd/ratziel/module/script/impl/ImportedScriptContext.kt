@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.script.impl
 
-import cn.fd.ratziel.module.script.imports.ImportsGroup
+import cn.fd.ratziel.module.script.imports.GroupImports
 import javax.script.ScriptContext
 import javax.script.SimpleScriptContext
 
@@ -20,12 +20,12 @@ open class ImportedScriptContext() : SimpleScriptContext() {
         this.reader = scriptContext.reader
     }
 
-    var imports: ImportsGroup = ImportsGroup()
+    var imports: GroupImports = GroupImports()
         @Synchronized get
         @Synchronized set
 
     open fun getImport(name: String): Any? {
-        return imports.getImportedClass(name)
+        return imports.lookupClass(name)
     }
 
     override fun getAttribute(name: String): Any? {

@@ -45,7 +45,7 @@ data class Workspace(
     /**
      * 是否使用文件名称作为元素名称
      */
-    val useFileNameAsElementName = options["listen"].cbool
+    val useFileNameAsElementName = options["use-filename"].cbool
 
     /**
      * 统一的元素类型, 空代表不统一类型

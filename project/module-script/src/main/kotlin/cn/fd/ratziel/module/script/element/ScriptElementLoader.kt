@@ -27,23 +27,21 @@ object ScriptElementLoader : ElementLoader {
     override fun allocate(workspace: Workspace, files: Collection<File>): Collection<File> {
         val timeMark = TimeSource.Monotonic.markNow()
         // 脚本文件分组
-        val filesGroup = files.groupBy { matchType(it) }
+        val typedGroup = files.groupBy { matchType(it) }
+        val scriptsGroup = typedGroup.filterKeys { it != null }
+        val allScriptFiles = scriptsGroup.flatMap { it.value }
         // 寻找脚本文件配置
-        val descriptions = filesGroup[null]?.mapNotNull { loadDescription(it) }.orEmpty()
-        val descriptionsIndexed = descriptions.associateBy { it.scriptFile }
+        val descriptions = typedGroup[null]?.mapNotNull { loadDescription(it, allScriptFiles) }.orEmpty().toMap()
 
         // 脚本文件和描述的对应
-        val scriptsGroup = filesGroup.filterKeys { it != null }
-
-        // 开启协程任务编译脚本
         runBlocking {
             val scriptsTasks = ArrayList<Deferred<Pair<File, ScriptFile>>>()
             for ((type, files) in scriptsGroup) {
                 for (scriptFile in files) {
-                    val desc = descriptionsIndexed[scriptFile]
-                        ?: ScriptFile.Description(scriptFile, null, type!!)
-                    // ScriptFile 的创建会编译脚本
+                    // 开启协程任务编译脚本
                     scriptsTasks += async {
+                        val desc = descriptions[scriptFile]
+                            ?: ScriptFile.Description(scriptFile, null, type!!)
                         scriptFile to ScriptFile(desc)
                     }
                 }
@@ -58,12 +56,13 @@ object ScriptElementLoader : ElementLoader {
         }
 
         // 返回占据的文件
-        return scriptsGroup.flatMap { it.value }.plus(descriptions.mapNotNull { it.descFile })
+        return allScriptFiles.plus(descriptions.keys)
     }
 
     override fun load(workspace: Workspace, file: File) = Result.success(emptyList<Element>())
 
-    fun loadDescription(descFile: File): ScriptFile.Description? {
+    @JvmStatic
+    fun loadDescription(descFile: File, allScriptFiles: List<File>): Pair<File, ScriptFile.Description?>? {
         // 获取配置文件类型
         val confType = Configuration.getTypeFromExtensionOrNull(descFile.extension) ?: return null
         // 读取配置文件
@@ -71,23 +70,24 @@ object ScriptElementLoader : ElementLoader {
 
         // 读取基本属性
         val scriptFile = conf.getString("file")
-            ?.let { descFile.resolveOrAbsolute(it) } ?: return null
-        if (!scriptFile.exists()) {
-            warning("ScriptFile $scriptFile does not exist!")
-            return null
+            ?.let { descFile.parentFile.resolveOrAbsolute(it) } ?: return null
+        if (scriptFile !in allScriptFiles) {
+            warning("Script $scriptFile is not found!")
+            return descFile to null
         }
         val language = matchType(scriptFile)
         if (language == null) {
             warning("No matching script type found for $scriptFile!")
-            return null
+            return descFile to null
         }
 
-        return ScriptFile.Description(scriptFile, descFile, language)
+        return descFile to ScriptFile.Description(scriptFile, descFile, language)
     }
 
     /**
      * 匹配脚本文件类型
      */
+    @JvmStatic
     fun matchType(file: File) = ScriptType.registry.find { lang ->
         lang.extensions.any { it.equals(file.extension, true) }
     }
