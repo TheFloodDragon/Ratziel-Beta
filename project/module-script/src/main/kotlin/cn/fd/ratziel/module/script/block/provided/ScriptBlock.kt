@@ -13,7 +13,6 @@ import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
-import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
@@ -90,14 +89,14 @@ class ScriptBlock(
 
     companion object {
 
-        internal val importsCatcher = AttachedContext.catcher(this) { GroupImports() }
+        /**
+         * 导入组获取器 (默认使用全局导入组)
+         */
+        internal val importsCatcher = AttachedContext.catcher(this) { ScriptManager.globalGroup }
 
     }
 
     class Parser : BlockParser {
-
-        /** 创建的语句块列表 **/
-        val blocks: MutableList<ScriptBlock> = ArrayList()
 
         /** 当前执行器 **/
         private var currentExecutor: ScriptExecutor = ScriptManager.defaultLanguage.executor
@@ -130,12 +129,7 @@ class ScriptBlock(
                     content = element.joinToString("\n")
                 }
                 if (content != null) {
-                    // TODO removed this since it's for test
-                    // TODO parse imports
-                    importsCatcher[context.attached] = importsCatcher[context.attached].combine(ScriptManager.Imports.globalGroup)
-                    val block = ScriptBlock(content, currentExecutor, context)
-                    blocks.add(block) // 记录一下
-                    return block
+                    return ScriptBlock(content, currentExecutor, context)
                 }
             }
             return null

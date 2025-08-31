@@ -34,14 +34,23 @@ object ScriptManager {
     val engineManager by lazy { ScriptEngineManager(this::class.java.classLoader) }
 
     /**
+     * 全局导入组
+     */
+    val globalGroup: GroupImports by lazy {
+        // 读取文件
+        val imports = JarUtil.getEntries { it.name.startsWith("script-default/") && it.name.endsWith(".imports") }.flatMap { it.reader().readLines() }
+        val parsed = GroupImports.parse(imports)
+        // 初始化
+        GroupImports(parsed.first, parsed.second)
+    }
+
+    /**
      * 初始化脚本系统
      */
     @Awake(LifeCycle.INIT)
     private fun initialize() {
         // 注册下 脚本元素加载器
         ElementLoader.loaders.addFirst(ScriptElementLoader)
-        // 初始化全局环境
-        Imports.initialize()
 
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!
@@ -75,30 +84,6 @@ object ScriptManager {
         RuntimeEnv.ENV_DEPENDENCY.loadFromLocalFile(
             this::class.java.classLoader.getResource("META-INF/dependencies/$name.json")
         )
-    }
-
-    /**
-     * Imports
-     *   - 默认导入的类和包 (有些脚本语言可能不支持或部分支持)
-     */
-    object Imports {
-
-        /**
-         * 全局导入组
-         */
-        lateinit var globalGroup: GroupImports private set
-
-        internal fun initialize() {
-            // 读取文件
-            val imports = JarUtil.getEntries { it.name.startsWith("script-default/") && it.name.endsWith(".imports") }
-                .flatMap { stream ->
-                    // 读取导入的类
-                    stream.reader().readLines().filter { it.isNotBlank() && !it.startsWith('#') }
-                }
-            // 初始化
-            this.globalGroup = GroupImports.parse(imports)
-        }
-
     }
 
 }

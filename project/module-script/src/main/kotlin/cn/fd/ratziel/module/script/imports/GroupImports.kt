@@ -54,19 +54,25 @@ class GroupImports(
 
     companion object {
 
-        // TODO
+        /**
+         * 从输出流中读取导入的包和类
+         */
         @JvmStatic
-        fun parse(rawContents: List<String>): GroupImports {
+        fun parse(rawContents: Iterable<String>): Pair<Set<ClassImport>, Set<PackageImport>> {
+            // 过滤内容
+            val contents = rawContents.map { it.trim() }
+                .filterNot { it.isBlank() || it.startsWith('#') }.toSet()
             val classes = LinkedHashSet<ClassImport>()
             val packages = LinkedHashSet<PackageImport>()
-            for (import in rawContents) {
+            // 读取类和包
+            for (import in contents) {
                 if (import.endsWith('*') || import.endsWith('.')) {
                     packages.add(PackageImport(import.substringBeforeLast('.')))
                 } else {
                     classes.add(ClassImport(import))
                 }
             }
-            return GroupImports(classes, packages, emptyMap())
+            return classes to packages
         }
 
     }

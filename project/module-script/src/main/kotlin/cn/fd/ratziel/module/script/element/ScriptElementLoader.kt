@@ -24,6 +24,7 @@ import kotlin.time.TimeSource
  */
 object ScriptElementLoader : ElementLoader {
 
+    // TODO ScriptElement and impl ElementHandler
     override fun allocate(workspace: Workspace, files: Collection<File>): Collection<File> {
         val timeMark = TimeSource.Monotonic.markNow()
         // 脚本文件分组

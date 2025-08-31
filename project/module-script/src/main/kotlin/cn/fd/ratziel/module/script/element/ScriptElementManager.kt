@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object ScriptElementManager {
 
+    @JvmField
     val scriptFiles: MutableMap<File, ScriptFile> = ConcurrentHashMap()
 
 }

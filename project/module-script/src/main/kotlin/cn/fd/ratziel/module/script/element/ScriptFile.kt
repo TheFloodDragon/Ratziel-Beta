@@ -10,7 +10,7 @@ import java.io.File
  * @author TheFloodDragon
  * @since 2025/8/31 10:20
  */
-data class ScriptFile(
+class ScriptFile(
     val desc: Description,
 ) {
 
@@ -24,13 +24,15 @@ data class ScriptFile(
      */
     val compiled: ScriptContent = desc.language.executor.build(content)
 
+    override fun toString() = "ScriptFile$desc"
+
     /**
      * Description - 脚本文件的配置描述
      *
      * @author TheFloodDragon
      * @since 2025/8/31 09:55
      */
-    data class Description(
+    class Description(
         /**
          * 脚本文件
          */
@@ -43,6 +45,8 @@ data class ScriptFile(
          * 脚本语言
          */
         val language: ScriptType,
-    )
+    ) {
+        override fun toString() = "{scriptFile=$scriptFile, descFile=$descFile, language=$language}"
+    }
 
 }
