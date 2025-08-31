@@ -13,6 +13,6 @@ interface Importable {
     /**
      * 向环境内导入导入件
      */
-    fun importTo(environment: ScriptEnvironment, imports: Set<ImportsGroup>)
+    fun importTo(environment: ScriptEnvironment, imports: ImportsGroup)
 
 }

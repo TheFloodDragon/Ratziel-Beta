@@ -1,5 +1,7 @@
 package cn.fd.ratziel.module.script.imports
 
+import cn.fd.ratziel.module.script.ScriptType
+
 /**
  * ImportsGroup - 导入组
  *
@@ -8,17 +10,17 @@ package cn.fd.ratziel.module.script.imports
  */
 class ImportsGroup(
     /**
-     * 原始导入的内容
-     */
-    val rawContents: List<String>,
-    /**
      * 导入的类
      */
-    val classes: List<ClassImport>,
+    val classes: Set<ClassImport> = emptySet(),
     /**
      * 导入的包
      */
-    val packages: List<PackageImport>,
+    val packages: Set<PackageImport> = emptySet(),
+    /**
+     * 导入的脚本
+     */
+    val scripts: Map<ScriptType, Set<ScriptImport>> = emptyMap(),
 ) {
 
     /**
@@ -38,12 +40,23 @@ class ImportsGroup(
         return null
     }
 
+    /**
+     * 合并另一个导入组
+     * @return 新的合并后的导入组
+     */
+    fun combine(other: ImportsGroup) = ImportsGroup(
+        this.classes + other.classes,
+        this.packages + other.packages,
+        this.scripts + other.scripts
+    )
+
     companion object {
 
+        // TODO
         @JvmStatic
         fun parse(rawContents: List<String>): ImportsGroup {
-            val classes = ArrayList<ClassImport>()
-            val packages = ArrayList<PackageImport>()
+            val classes = LinkedHashSet<ClassImport>()
+            val packages = LinkedHashSet<PackageImport>()
             for (import in rawContents) {
                 if (import.endsWith('*') || import.endsWith('.')) {
                     packages.add(PackageImport(import.substringBeforeLast('.')))
@@ -51,7 +64,7 @@ class ImportsGroup(
                     classes.add(ClassImport(import))
                 }
             }
-            return ImportsGroup(rawContents, classes, packages)
+            return ImportsGroup(classes, packages, emptyMap())
         }
 
     }

@@ -90,7 +90,7 @@ class ScriptBlock(
 
     companion object {
 
-        internal val importsCatcher = AttachedContext.catcher(this) { LinkedHashSet<ImportsGroup>() }
+        internal val importsCatcher = AttachedContext.catcher(this) { ImportsGroup() }
 
     }
 
@@ -133,7 +133,8 @@ class ScriptBlock(
                     val block = ScriptBlock(content, currentExecutor, context)
                     blocks.add(block) // 记录一下
                     // TODO removed this since it's for test
-                    importsCatcher[context.attached].add(ScriptManager.Imports.globalGroup)
+                    // TODO parse imports
+                    importsCatcher[context.attached] = importsCatcher[context.attached].combine(ScriptManager.Imports.globalGroup)
                     return block
                 }
             }

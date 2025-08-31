@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.Importable
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
@@ -44,10 +45,15 @@ object NashornScriptExecutor : CompilableScriptExecutor<CompiledScript>(), Impor
         return script.eval(getEngine(environment).context)
     }
 
-    override fun importTo(environment: ScriptEnvironment, imports: Set<ImportsGroup>) {
+    override fun importTo(environment: ScriptEnvironment, imports: ImportsGroup) {
+        // 更新 ImportedScriptContext 的导入 (类, 包)
         val context = getEngine(environment).context as ImportedScriptContext
-        // TODO eval script imports
-        context.imports = context.imports.plus(imports)
+        context.imports = imports
+        // 导入脚本
+        val scriptImports = imports.scripts[ScriptType.JAVASCRIPT].orEmpty()
+        for (import in scriptImports) {
+            this.evaluate(import.script.compiled, environment)
+        }
     }
 
     /**
@@ -70,11 +76,6 @@ object NashornScriptExecutor : CompilableScriptExecutor<CompiledScript>(), Impor
         val engine = scriptEngineFactory?.getScriptEngine(
             arrayOf("-Dnashorn.args=--language=es6"), this::class.java.classLoader
         ) ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript(Nashorn) Language")
-        // TODO readd this in other way
-//        // 加载全局扩展脚本
-//        for ((script, _) in JavaScriptLang.globalScripts) {
-//            engine.eval(script)
-//        }
         engine.context = object : ImportedScriptContext(engine.context) {
             override fun getImport(name: String): Any? {
                 val clazz = super.getImport(name)

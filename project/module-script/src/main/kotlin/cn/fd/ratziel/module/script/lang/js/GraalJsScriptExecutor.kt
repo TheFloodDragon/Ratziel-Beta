@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.lang.js
 
+import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.Importable
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
@@ -41,10 +42,6 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<Source>(), Importable, N
         val context = builder.build()
         // 导入要导入的包和类
         context.eval(importingScript)
-//        // 加载全局扩展脚本
-//        for ((script, attached) in JavaScriptLang.globalScripts) {
-//            context.eval(attached.fetch(this) { internalSource(script) })
-//        }
         return context
     }
 
@@ -60,12 +57,16 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<Source>(), Importable, N
         return getContext(environment).eval(script).`as`(Any::class.java)
     }
 
-    override fun importTo(environment: ScriptEnvironment, imports: Set<ImportsGroup>) {
-        val context = environment.context.fetch(this) { newContext() }
-        // TODO eval script imports
+    override fun importTo(environment: ScriptEnvironment, imports: ImportsGroup) {
+        val context = getContext(environment)
+        // 设置导入的类成员
         val contextBindings = context.getBindings(LANGUAGE_ID)
-        // TODO may this need to combine imports?
         contextBindings.putMember(IMPORTS_MEMBER, imports)
+        // 导入脚本
+        val scriptImports = imports.scripts[ScriptType.JAVASCRIPT].orEmpty()
+        for (import in scriptImports) {
+            this.evaluate(import.script.compiled, environment)
+        }
     }
 
     /**

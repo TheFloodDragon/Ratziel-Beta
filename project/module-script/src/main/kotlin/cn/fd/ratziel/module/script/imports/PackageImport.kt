@@ -8,7 +8,7 @@ import java.lang.ref.WeakReference
  * @author TheFloodDragon
  * @since 2025/8/11 15:07
  */
-class PackageImport(
+data class PackageImport(
     /**
      * 包名称
      */

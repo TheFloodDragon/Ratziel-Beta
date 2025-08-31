@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.impl;
 
+import cn.fd.ratziel.core.contextual.AttachedContext;
 import cn.fd.ratziel.module.script.api.ScriptEnvironment;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +29,7 @@ public class ScriptEnvironmentImpl implements ScriptEnvironment {
     }
 
     private Bindings scriptBindings;
-    private final ExecutorContext context = new ExecutorContext();
+    private final AttachedContext context = AttachedContext.newContext();
 
     @Override
     public @NotNull Bindings getBindings() {
@@ -41,7 +42,7 @@ public class ScriptEnvironmentImpl implements ScriptEnvironment {
     }
 
     @Override
-    public @NotNull ExecutorContext getContext() {
+    public @NotNull AttachedContext getContext() {
         return this.context;
     }
 
