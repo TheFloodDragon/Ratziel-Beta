@@ -1,10 +1,12 @@
 Workspaces:
   # 默认工作空间
   default:
+    # 工作空间路径
+    path: 'plugins/Ratziel/workspace'
+    # 文件过滤器
+    filter: '^[^#!].*'
     # 若开启则会监听工作空间内的文件变化,并自动重新加载变化文件
     listen: true
-    filter: '^(?![#!]).*\.(?i)(yaml|yml|toml|tml|json|conf)$'
-    path: 'plugins/Ratziel/workspace'
     # 是否使用文件名称当做元素名称
     use-filename: false
     # 统一元素类型 (None 代表不统一)

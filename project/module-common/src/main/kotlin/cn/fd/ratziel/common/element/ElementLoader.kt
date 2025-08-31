@@ -13,9 +13,10 @@ import java.io.File
 interface ElementLoader {
 
     /**
-     * 判断文件是否应该交给此 [ElementLoader] 加载
+     * 分配工作空间中的文件
+     * @return 被分走的文件
      */
-    fun accepts(workspace: Workspace, file: File): Boolean
+    fun allocate(workspace: Workspace, files: Collection<File>): Collection<File>
 
     /**
      * 加载工作空间中的文件元素
@@ -28,19 +29,21 @@ interface ElementLoader {
          * 加载器列表
          */
         @JvmField
-        val loaders: MutableList<ElementLoader> = mutableListOf(DefaultElementLoader)
+        val loaders: ArrayDeque<ElementLoader> = ArrayDeque(listOf(DefaultElementLoader))
 
         /**
-         * 选择加载器
+         * 分配元素文件
          */
         @JvmStatic
-        fun select(workspace: Workspace, file: File): ElementLoader? {
+        fun allocate(workspace: Workspace): Map<ElementLoader, Set<File>> {
+            val files = workspace.filteredFiles.toMutableSet()
+            val map = LinkedHashMap<ElementLoader, Set<File>>(loaders.size)
             for (loader in loaders) {
-                if (loader.accepts(workspace, file)) {
-                    return loader
-                }
+                val allocated = loader.allocate(workspace, files).toSet()
+                map[loader] = allocated
+                files.removeAll(allocated)
             }
-            return null
+            return map
         }
 
     }

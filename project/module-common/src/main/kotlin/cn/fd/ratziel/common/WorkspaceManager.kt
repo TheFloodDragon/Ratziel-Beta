@@ -1,7 +1,6 @@
 package cn.fd.ratziel.common
 
 import cn.fd.ratziel.common.config.Settings
-import cn.fd.ratziel.common.element.ElementMatcher
 import cn.fd.ratziel.core.util.JarUtil
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
@@ -27,11 +26,6 @@ object WorkspaceManager {
      * 默认工作空间路径
      */
     private val defaultPath by lazy { "${getDataFolder()}/workspace" }
-
-    /**
-     * 默认文件过滤
-     */
-    private val defaultFilter = "^(?![#!]).*\\.(?i)(yaml|yml|toml|tml|json|conf)$".toRegex()
 
     /**
      * 初始化所有工作空间
@@ -61,18 +55,8 @@ object WorkspaceManager {
         if (copyDefaults && !folder.exists()) {
             releaseDefaultWorkspace(folder)
         } else folder.mkdirs()
-        // 过滤器
-        val filter = settings.getString("filter")?.toRegex() ?: defaultFilter
-        // 是否监听
-        val listen = settings.getBoolean("listen", true)
-        // 使用文件名称
-        val useFileName = settings.getBoolean("use-filename", false)
-        // 统一元素类型
-        val unifiedType = settings.getString("unified-type")
-            ?.takeUnless { it.equals("None", true) }
-            ?.let { ElementMatcher.matchTypeOrNull(it) }
         // 创建工作空间
-        return Workspace(folder, filter, listen, useFileName, unifiedType)
+        return Workspace(folder, settings.toMap())
     }
 
     /**

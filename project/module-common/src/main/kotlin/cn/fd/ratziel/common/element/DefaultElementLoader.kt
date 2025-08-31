@@ -21,8 +21,8 @@ import java.util.*
  */
 object DefaultElementLoader : ElementLoader {
 
-    override fun accepts(workspace: Workspace, file: File): Boolean {
-        return workspace.filter.matches(file.name)
+    override fun allocate(workspace: Workspace, files: Collection<File>): List<File> {
+        return files.filter { Configuration.getTypeFromExtensionOrNull(it.extension) != null }
     }
 
     override fun load(workspace: Workspace, file: File): Result<List<Element>> {

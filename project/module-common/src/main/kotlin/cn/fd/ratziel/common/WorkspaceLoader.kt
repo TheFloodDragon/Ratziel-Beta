@@ -59,32 +59,34 @@ object WorkspaceLoader {
         val tasks = ArrayList<CompletableFuture<Unit>>()
         // 加载所有工作空间
         for (workspace in WorkspaceManager.workspaces) {
+            // 分配元素文件
+            val allocated = ElementLoader.allocate(workspace)
             // 加载工作空间内的文件
-            for (file in workspace.files) {
-                // 获取元素文件加载器
-                val loader = ElementLoader.select(workspace, file) ?: continue
-                // 提交加载任务
-                tasks.add(CompletableFuture.supplyAsync({
-                    // 加载文件
-                    val result = loader.load(workspace, file)
-                    if (result.isSuccess) {
-                        for (loadedElement in result.getOrThrow()) {
-                            // 检查重复元素
-                            if (livingElements[loadedElement.name] != null) {
-                                sender.sendLang("Element-File-Duplicated", loadedElement.name, file)
-                                continue // 跳过加载
+            for ((loader, allocatedFiles) in allocated) {
+                for (file in allocatedFiles) {
+                    // 提交加载任务
+                    tasks.add(CompletableFuture.supplyAsync({
+                        // 加载文件
+                        val result = loader.load(workspace, file)
+                        if (result.isSuccess) {
+                            for (loadedElement in result.getOrThrow()) {
+                                // 检查重复元素
+                                if (livingElements[loadedElement.name] != null) {
+                                    sender.sendLang("Element-File-Duplicated", loadedElement.name, file)
+                                    continue // 跳过加载
+                                }
+                                livingElements[loadedElement.name] = loadedElement
+                                // 提交到周期评估任务表里
+                                ElementEvaluator.submit(loadedElement) { element, throwable ->
+                                    // 失败时发送失败消息
+                                    if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file!!.name)
+                                }
                             }
-                            livingElements[loadedElement.name] = loadedElement
-                            // 提交到周期评估任务表里
-                            ElementEvaluator.submit(loadedElement) { element, throwable ->
-                                // 失败时发送失败消息
-                                if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file!!.name)
-                            }
-                        }
-                    } else sender.sendLang("Element-File-Load-Failed", file.name)
-                }, executor))
-                // 监听自动重载的文件
-                if (workspace.listen) listenFile(workspace, file, loader, sender)
+                        } else sender.sendLang("Element-File-Load-Failed", file.name)
+                    }, executor))
+                    // 监听自动重载的文件
+                    if (workspace.listen) listenFile(workspace, file, loader, sender)
+                }
             }
         }
 

@@ -39,7 +39,7 @@ object ScriptManager {
     @Awake(LifeCycle.INIT)
     private fun initialize() {
         // 注册下 脚本元素加载器
-        ElementLoader.loaders.add(ScriptElementLoader)
+        ElementLoader.loaders.addFirst(ScriptElementLoader)
         // 初始化全局环境
         Imports.initialize()
 
