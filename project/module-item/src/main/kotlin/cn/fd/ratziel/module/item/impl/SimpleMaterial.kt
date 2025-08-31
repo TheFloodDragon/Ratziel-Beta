@@ -47,7 +47,7 @@ value class SimpleMaterial(private val ref: Material) : ItemMaterial {
     /**
      * 材料是否为空气材料
      */
-    override fun isEmpty() = ref.isAir || super.isEmpty()
+    override fun isEmpty() = this.name == Material.AIR.name || super.isEmpty()
 
     /**
      * 获取 [Material] 形式

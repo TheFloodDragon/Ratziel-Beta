@@ -44,7 +44,7 @@ class ScriptBlock(
      * 脚本引擎补充器 (提高并行执行多编译脚本的性能)
      */
     private val engineReplenishing: Replenishment<CompletableFuture<ScriptEnvironmentImpl>>? =
-        if (executor is Importable && this.context.attached.contents.isNotEmpty()) {
+        if (executor is Importable) {
             Replenishment {
                 CompletableFuture.supplyAsync {
                     val environment = ScriptEnvironmentImpl()

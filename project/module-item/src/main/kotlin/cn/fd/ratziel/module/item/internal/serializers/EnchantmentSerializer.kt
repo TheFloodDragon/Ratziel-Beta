@@ -22,7 +22,7 @@ object EnchantmentSerializer : KSerializer<XEnchantment> {
         val enchant = value.get()!!
         val key = try {
             enchant.key.toString()
-        } catch (_: NoSuchMethodException) {
+        } catch (_: NoSuchMethodError) {
             @Suppress("DEPRECATION")
             enchant.name
         }

@@ -14,7 +14,6 @@ import taboolib.library.reflex.Reflex.Companion.invokeConstructor
 import taboolib.library.reflex.Reflex.Companion.unsafeInstance
 import taboolib.library.reflex.ReflexClass
 import taboolib.library.xseries.XMaterial
-import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.obcClass
 import org.bukkit.inventory.ItemStack as BukkitItemStack
@@ -52,16 +51,9 @@ class RefItemStack private constructor(
      * 物品材料
      */
     override var material: ItemMaterial
-        get() {
-            return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) SimpleMaterial(handle.type)
-            else SimpleMaterial.findBy(InternalUtil.obcGetMaterialMethodLegacy.invoke(handle)!! as Int)!!
-        }
+        get() = SimpleMaterial(handle.type)
         set(value) {
-            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
-                handle.type = value.toBukkit()
-            } else {
-                InternalUtil.obcSetMaterialMethodLegacy.invoke(handle, material.id)
-            }
+            handle.type = value.toBukkit()
         }
 
     /**
@@ -207,7 +199,7 @@ class RefItemStack private constructor(
          * private CraftItemStack(ItemStack item)
          */
         @JvmStatic
-        fun newObc(nmsItem: Any) = obcClass.invokeConstructor(nmsItem)
+        fun newObc(nmsItem: Any): Any = obcClass.invokeConstructor(nmsItem)
 
         /**
          * 创建一个空的 [net.minecraft.world.item.ItemStack]
@@ -280,18 +272,6 @@ class RefItemStack private constructor(
         @JvmStatic
         val obcCloneMethod by lazy {
             ReflexClass.of(obcClass).structure.getMethod("clone")
-        }
-
-        // public int getTypeId()
-        @JvmStatic
-        val obcGetMaterialMethodLegacy by lazy {
-            ReflexClass.of(obcClass).structure.getMethod("getTypeId")
-        }
-
-        // public void setTypeId(int var1)
-        @JvmStatic
-        val obcSetMaterialMethodLegacy by lazy {
-            ReflexClass.of(obcClass).structure.getMethodByType("setTypeId", Int::class.java)
         }
 
     }

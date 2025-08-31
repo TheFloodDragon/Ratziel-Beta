@@ -17,6 +17,7 @@ import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
 import cn.fd.ratziel.module.nbt.readString
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.warning
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -50,9 +51,14 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         // 接收器工作
         var count = 0
         acceptors.forEach {
-            if (it.wouldChange(context)) {
-                it.accept(actual, context)
-                count++
+            try {
+                if (it.wouldChange(context)) {
+                    it.accept(actual, context)
+                    count++
+                }
+            } catch (e: Exception) {
+                warning("Acceptor $it for virtual item rendering occurred a exception.")
+                e.printStackTrace()
             }
         }
 
@@ -64,7 +70,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         // 自定义数据禁止修改
         val beforeCustomTag = before.tag[ItemSheet.CUSTOM_DATA_COMPONENT]
         if (beforeCustomTag == null) now.tag.remove(ItemSheet.CUSTOM_DATA_COMPONENT)
-        else now.tag.put(ItemSheet.CUSTOM_DATA_COMPONENT, beforeCustomTag)
+        else now.tag[ItemSheet.CUSTOM_DATA_COMPONENT] = beforeCustomTag
         // 材质不能为空
         if (now.material.isEmpty()) now.material = before.material
 
@@ -105,7 +111,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
                     val from = requireNotNull(change.value) {
                         "Operation ${change.operation} with typeId '${change.typeId}' must have 'value' data!"
                     }
-                    virtual.data.tag.put(change.typeId, from)
+                    virtual.data.tag[change.typeId] = from
                 }
             }
         }

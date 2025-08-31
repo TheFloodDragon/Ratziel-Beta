@@ -40,7 +40,7 @@
     "test": [
       "net.kyori.adventure.key.Key"
     ],
-    "transitive": false,
+    "transitive": true,
     "ignoreOptional": true,
     "ignoreException": true,
     "scopes": [
@@ -54,7 +54,7 @@
     "test": [
       "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer"
     ],
-    "transitive": false,
+    "transitive": true,
     "ignoreOptional": true,
     "ignoreException": true,
     "scopes": [

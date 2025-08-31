@@ -41,7 +41,7 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
             // 1.21.4-
             items.forEach { (_, item) ->
                 // 直接恢复物品 (ItemStack在handleItem会被重写)
-                NativeVirtualPacketHandler.handleItem(item) { NativeVirtualItemRenderer.recover(it) }
+                VirtualItemPacketHandler.handleItem(item) { NativeVirtualItemRenderer.recover(it) }
             }
         }
     }

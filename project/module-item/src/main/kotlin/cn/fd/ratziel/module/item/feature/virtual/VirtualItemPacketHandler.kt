@@ -9,24 +9,30 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.severe
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.PacketSendEvent
 import java.util.function.Consumer
 
 /**
- * NativeVirtualPacketHandler
+ * VirtualItemPacketHandler
  *
  * @author TheFloodDragon
  * @since 2025/8/3 11:41
  */
-object NativeVirtualPacketHandler {
+object VirtualItemPacketHandler {
 
     @SubscribeEvent
     private fun onReceive(event: PacketReceiveEvent) {
-        when (event.packet.name) {
-            "PacketPlayInSetCreativeSlot", "ServerboundSetCreativeModeSlotPacket" -> handleSetCreativeSlot(event)
-            "PacketPlayInWindowClick", "ServerboundContainerClickPacket" -> NMSVirtualItem.INSTANCE.handleContainerClick(event)
+        try {
+            when (event.packet.name) {
+                "PacketPlayInSetCreativeSlot", "ServerboundSetCreativeModeSlotPacket" -> handleSetCreativeSlot(event)
+                "PacketPlayInWindowClick", "ServerboundContainerClickPacket" -> handleContainerClick(event)
+            }
+        } catch (e: Throwable) {
+            severe("Exception occurred while receiving packet: ${event.packet.name}")
+            e.printStackTrace()
         }
     }
 
@@ -38,14 +44,24 @@ object NativeVirtualPacketHandler {
         handleItem(nmsItem) { NativeVirtualItemRenderer.recover(it) }
     }
 
+    fun handleContainerClick(event: PacketReceiveEvent) {
+        // 记得没错的话校验是 1.21.2 加的, 低版本就不处理了
+        if (MinecraftVersion.versionId >= 12102) NMSVirtualItem.INSTANCE.handleContainerClick(event)
+    }
+
     @SubscribeEvent
     private fun onSend(event: PacketSendEvent) {
-        when (event.packet.name) {
-            "PacketPlayOutSetSlot", "ClientboundContainerSetSlotPacket" -> handleSetSlotPacket(event)
-            "PacketPlayOutWindowItems", "ClientboundContainerSetContentPacket" -> handleWindowItemsPacket(event)
-            // 1.21.2 +
-            "ClientboundSetCursorItemPacket" -> handleSetCursorItemPacket(event)
-            "ClientboundSetPlayerInventoryPacket" -> handleSetPlayerInventoryPacket(event)
+        try {
+            when (event.packet.name) {
+                "PacketPlayOutSetSlot", "ClientboundContainerSetSlotPacket" -> handleSetSlotPacket(event)
+                "PacketPlayOutWindowItems", "ClientboundContainerSetContentPacket" -> handleWindowItemsPacket(event)
+                // 1.21.2 +
+                "ClientboundSetCursorItemPacket" -> handleSetCursorItemPacket(event)
+                "ClientboundSetPlayerInventoryPacket" -> handleSetPlayerInventoryPacket(event)
+            }
+        } catch (e: Throwable) {
+            severe("Exception occurred while sending packet: ${event.packet.name}")
+            e.printStackTrace()
         }
     }
 

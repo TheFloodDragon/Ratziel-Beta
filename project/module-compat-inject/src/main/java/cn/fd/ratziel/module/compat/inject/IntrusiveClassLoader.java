@@ -1,9 +1,6 @@
 package cn.fd.ratziel.module.compat.inject;
 
-import org.jetbrains.annotations.Nullable;
 import taboolib.common.classloader.IsolatedClassLoader;
-
-import java.net.URL;
 
 /**
  * IntrusiveClassLoader
@@ -49,11 +46,6 @@ public final class IntrusiveClassLoader extends ClassLoader {
             // 返回值
             return find;
         }
-    }
-
-    @Override
-    public @Nullable URL findResource(String name) {
-        return IsolatedClassLoader.INSTANCE.getResource(name);
     }
 
     public static Class<?> loadClassOrNull(ClassLoader loader, String name) {
