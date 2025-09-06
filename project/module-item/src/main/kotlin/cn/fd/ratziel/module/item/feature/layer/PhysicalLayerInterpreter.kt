@@ -30,7 +30,7 @@ object PhysicalLayerInterpreter : ItemInterpreter {
 
     override suspend fun interpret(stream: ItemStream) {
         // 获取图层元素
-        val property = stream.fetchProperty().property
+        val property = stream.fetchProperty()
         if (property !is JsonObject) return
         val layerElements = property.getBy(*LAYER_ALIAS) as? JsonObject ?: return
 

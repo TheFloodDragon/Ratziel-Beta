@@ -9,6 +9,7 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.module.script.element.ScriptFile
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.JsonArray
@@ -29,10 +30,14 @@ class ScriptBlock(
     val source: String,
     /** 脚本执行器 */
     val executor: ScriptExecutor,
+    /** 脚本文件 **/
+    val scriptFile: ScriptFile? = null,
 ) : ExecutableBlock {
 
+    constructor(scriptFile: ScriptFile) : this(scriptFile.source, scriptFile.executor)
+
     /** 编译后的脚本 **/
-    val script: ScriptContent = compileOrLiteral(executor, source)
+    val script: ScriptContent = scriptFile?.compiled ?: compileOrLiteral(executor, source)
 
     override fun execute(context: ArgumentContext): Any? {
         // 执行脚本

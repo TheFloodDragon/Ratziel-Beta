@@ -21,11 +21,11 @@ import java.util.*
  */
 object DefaultElementLoader : ElementLoader {
 
-    override fun allocate(workspace: Workspace, files: Collection<File>): List<File> {
-        return files.filter { Configuration.getTypeFromExtensionOrNull(it.extension) != null }
+    override fun accepts(file: File, workspace: Workspace): Boolean {
+        return Configuration.getTypeFromExtensionOrNull(file.extension) != null
     }
 
-    override fun load(workspace: Workspace, file: File): Result<List<Element>> {
+    override fun load(file: File, workspace: Workspace): Result<List<Element>> {
         try {
             // 从文件中加载配置
             val config = Configuration.loadFromFile(file)

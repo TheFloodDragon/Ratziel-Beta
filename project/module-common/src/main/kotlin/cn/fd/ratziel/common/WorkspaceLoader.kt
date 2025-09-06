@@ -59,34 +59,32 @@ object WorkspaceLoader {
         val tasks = ArrayList<CompletableFuture<Unit>>()
         // 加载所有工作空间
         for (workspace in WorkspaceManager.workspaces) {
-            // 分配元素文件
-            val allocated = ElementLoader.allocate(workspace)
             // 加载工作空间内的文件
-            for ((loader, allocatedFiles) in allocated) {
-                for (file in allocatedFiles) {
-                    // 提交加载任务
-                    tasks.add(CompletableFuture.supplyAsync({
-                        // 加载文件
-                        val result = loader.load(workspace, file)
-                        if (result.isSuccess) {
-                            for (loadedElement in result.getOrThrow()) {
-                                // 检查重复元素
-                                if (livingElements[loadedElement.name] != null) {
-                                    sender.sendLang("Element-File-Duplicated", loadedElement.name, file)
-                                    continue // 跳过加载
-                                }
-                                livingElements[loadedElement.name] = loadedElement
-                                // 提交到周期评估任务表里
-                                ElementEvaluator.submit(loadedElement) { element, throwable ->
-                                    // 失败时发送失败消息
-                                    if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file!!.name)
-                                }
+            for (file in workspace.filteredFiles) {
+                // 分配到的加载器
+                val loader = ElementLoader.allocate(file, workspace) ?: continue
+                // 提交加载任务
+                tasks.add(CompletableFuture.supplyAsync({
+                    // 加载文件
+                    val result = loader.load(file, workspace)
+                    if (result.isSuccess) {
+                        for (loadedElement in result.getOrThrow()) {
+                            // 检查重复元素
+                            if (livingElements[loadedElement.name] != null) {
+                                sender.sendLang("Element-File-Duplicated", loadedElement.name, file)
+                                continue // 跳过加载
                             }
-                        } else sender.sendLang("Element-File-Load-Failed", file.name)
-                    }, executor))
-                    // 监听自动重载的文件
-                    if (workspace.listen) listenFile(workspace, file, loader, sender)
-                }
+                            livingElements[loadedElement.name] = loadedElement
+                            // 提交到周期评估任务表里
+                            ElementEvaluator.submit(loadedElement) { element, throwable ->
+                                // 失败时发送失败消息
+                                if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file!!.name)
+                            }
+                        }
+                    } else sender.sendLang("Element-File-Load-Failed", file.name)
+                }, executor))
+                // 监听自动重载的文件
+                if (workspace.listen) listenFile(file, workspace, loader, sender)
             }
         }
 
@@ -117,12 +115,12 @@ object WorkspaceLoader {
         return result
     }
 
-    private fun listenFile(workspace: Workspace, file: File, loader: ElementLoader, sender: ProxyCommandSender) {
+    private fun listenFile(file: File, workspace: Workspace, loader: ElementLoader, sender: ProxyCommandSender) {
         FileListener.listen(file) { file ->
             if (!file.exists()) return@listen
             measureTimeMillis {
                 // 加载文件
-                val result = loader.load(workspace, file)
+                val result = loader.load(file, workspace)
                 if (result.isSuccess) {
                     for (loadedElement in result.getOrThrow()) {
                         // 加入到 livingElements

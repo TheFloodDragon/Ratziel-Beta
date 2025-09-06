@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.script.element
 
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
+import cn.fd.ratziel.module.script.api.ScriptExecutor
 import java.io.File
 
 /**
@@ -11,42 +12,29 @@ import java.io.File
  * @since 2025/8/31 10:20
  */
 class ScriptFile(
-    val desc: Description,
+    /** 脚本文件 **/
+    val file: File,
+    /** 脚本描述 **/
+    val desc: ScriptDescription,
+    /** 脚本语言 **/
+    val language: ScriptType,
 ) {
 
     /**
-     * 脚本内容
+     * 脚本源内容
      */
-    val content = desc.scriptFile.readText()
+    val source = this.file.readText()
+
+    /**
+     * 脚本执行器
+     */
+    val executor: ScriptExecutor = this.language.executor
 
     /**
      * 编译后的脚本
      */
-    val compiled: ScriptContent = desc.language.executor.build(content)
+    val compiled: ScriptContent = this.executor.build(source)
 
     override fun toString() = "ScriptFile$desc"
-
-    /**
-     * Description - 脚本文件的配置描述
-     *
-     * @author TheFloodDragon
-     * @since 2025/8/31 09:55
-     */
-    class Description(
-        /**
-         * 脚本文件
-         */
-        val scriptFile: File,
-        /**
-         * 描述文件
-         */
-        val descFile: File?,
-        /**
-         * 脚本语言
-         */
-        val language: ScriptType,
-    ) {
-        override fun toString() = "{scriptFile=$scriptFile, descFile=$descFile, language=$language}"
-    }
 
 }
