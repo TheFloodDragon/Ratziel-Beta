@@ -30,9 +30,9 @@ object PhysicalLayerInterpreter : ItemInterpreter {
 
     override suspend fun interpret(stream: ItemStream) {
         // 获取图层元素
-        val element = stream.fetchElement()
-        if (element !is JsonObject) return
-        val layerElements = element.getBy(*LAYER_ALIAS) as? JsonObject ?: return
+        val property = stream.fetchProperty().property
+        if (property !is JsonObject) return
+        val layerElements = property.getBy(*LAYER_ALIAS) as? JsonObject ?: return
 
         coroutineScope {
             // 序列化图层

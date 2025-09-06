@@ -22,12 +22,10 @@ import taboolib.common.LifeCycle
 object ActionElement : ElementHandler {
 
     override fun handle(element: Element) {
-        element.property.let { json ->
-            val block = BlockBuilder.build(json)
-            println(block)
-            val result = block.execute(SimpleContext())
-            println(result)
-        }
+        val block = BlockBuilder.build(element)
+        println(block)
+        val result = block.execute(SimpleContext())
+        println(result)
     }
 
 }

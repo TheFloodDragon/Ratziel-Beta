@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.block
 
-import cn.fd.ratziel.core.contextual.AttachedContext
 import kotlinx.serialization.json.JsonElement
+import java.io.File
 
 /**
  * BlockContext
@@ -9,39 +9,26 @@ import kotlinx.serialization.json.JsonElement
  * @author TheFloodDragon
  * @since 2025/8/30 19:46
  */
-interface BlockContext {
-
+open class BlockContext(
     /**
      * 语句块调度器
      */
-    val scheduler: BlockParser
+    val scheduler: BlockParser? = null,
+) {
 
     /**
-     * 附加的上下文
+     * 工作文件
      */
-    val attached: AttachedContext
+    var workFile: File? = null
 
     /**
      * 使用此上下文解析 [JsonElement]
      */
-    fun parse(element: JsonElement): ExecutableBlock? = this.scheduler.parse(element, this)
-
-    companion object {
-
-        @JvmStatic
-        fun of(scheduler: BlockParser): BlockContext = object : BlockContext {
-            override val scheduler = scheduler
-            override val attached = AttachedContext.newContext()
-            override fun toString() = "BlockContext(attached=$attached, scheduler=$scheduler)"
-        }
-
-        @JvmStatic
-        fun withoutScheduler(): BlockContext = object : BlockContext {
-            override val scheduler get() = throw UnsupportedOperationException("BlockContext hasn't a scheduler.")
-            override val attached = AttachedContext.newContext()
-            override fun toString() = "BlockContext$attached"
-        }
-
+    fun parse(element: JsonElement): ExecutableBlock? {
+        val scheduler = this.scheduler ?: throw UnsupportedOperationException("BlockContext hasn't a scheduler.")
+        return scheduler.parse(element, this)
     }
+
+    override fun toString() = "BlockContext(workFile=$workFile, scheduler=$scheduler)"
 
 }

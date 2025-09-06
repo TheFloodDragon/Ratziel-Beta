@@ -48,17 +48,25 @@ interface ItemStream {
     suspend fun copy(): ItemStream
 
     /**
+     * 返回包含 [tree] 当前的元素内容的 [Element]
+     * @return [Element]
+     */
+    suspend fun fetchElement(): Element {
+        return origin.asCopy(fetchProperty())
+    }
+
+    /**
      * 返回 [tree] 当前的元素内容
      * @return [JsonElement]
      */
-    suspend fun fetchElement(): JsonElement {
+    suspend fun fetchProperty(): JsonElement {
         return tree.withValue { it.toElement() }
     }
 
     /**
      * 更新 [tree] 的元素内容
      */
-    suspend fun updateElement(element: JsonElement) {
+    suspend fun updateProperty(element: JsonElement) {
         return tree.update { JsonTree(element) }
     }
 

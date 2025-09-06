@@ -14,6 +14,13 @@ class Element(
     val property: JsonElement,
 ) {
 
+    constructor(
+        id: String,
+        type: ElementType,
+        file: File?,
+        property: JsonElement,
+    ) : this(ElementIdentifier(id, type, file), property)
+
     /**
      * 元素名称
      */
@@ -29,12 +36,13 @@ class Element(
      */
     val file get() = identifier.file
 
-    constructor(
-        id: String,
-        type: ElementType,
-        file: File?,
-        property: JsonElement,
-    ) : this(ElementIdentifier(id, type, file), property)
+    /**
+     * 创建一个元素的副本, 带有新的元素属性
+     * @param property 新的元素属性
+     */
+    fun asCopy(property: JsonElement): Element {
+        return Element(identifier, property)
+    }
 
     override fun toString() = "Element(identifier=$identifier, property=$property)"
 

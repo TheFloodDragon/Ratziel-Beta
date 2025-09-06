@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.feature.action.provided
 
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.Identifier
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
@@ -10,7 +11,6 @@ import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.internal.command.PlayerInventorySlot
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import cn.fd.ratziel.module.script.block.ExecutableBlock
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
@@ -32,25 +32,29 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
 
     private val tasks = ConcurrentHashMap<Identifier, PlatformExecutor.PlatformTask>()
 
-    override fun build(identifier: Identifier, element: JsonElement): ExecutableBlock {
-        if (element is JsonObject) {
-            // 周期 (tick)
-            val period = (element["period"] as? JsonPrimitive)?.intOrNull ?: 1
-            // 栏位
-            val slot = (element.getBy("where", "slot") as? JsonPrimitive)
-                ?.let { PlayerInventorySlot.infer(it.content) }
-                ?: PlayerInventorySlot.MAIN_HAND
-            // 提交任务 (缓存里没有时才提交, 避免每生成一个物品注册了一个Timer的情况)
-            tasks.computeIfAbsent(identifier) {
-                submit(period = period.toLong()) {
-                    // 全部 tick 一遍
-                    for (player in onlinePlayers) tick(player, identifier, slot)
-                }
-            }
-            // 构建脚本块并返回
-            return BlockBuilder.build(element.getBy("run", "code") ?: throw IllegalArgumentException("Code block in onTick Trigger must not be null!"))
+    override fun build(identifier: Identifier, element: Element): ExecutableBlock {
+        val property = element.property
+        if (property !is JsonObject) {
+            return BlockBuilder.build(element)
         }
-        return BlockBuilder.build(element)
+        // 运行内容
+        val code = property.getBy("run", "code") ?: throw IllegalArgumentException("Code block in onTick Trigger must not be null!")
+        // 周期 (tick)
+        val period = (property["period"] as? JsonPrimitive)?.intOrNull ?: 1
+        // 栏位
+        val slot = (property.getBy("where", "slot") as? JsonPrimitive)
+            ?.let { PlayerInventorySlot.infer(it.content) }
+            ?: PlayerInventorySlot.MAIN_HAND
+
+        // 提交任务 (缓存里没有时才提交, 避免每生成一个物品注册了一个Timer的情况)
+        tasks.computeIfAbsent(identifier) {
+            submit(period = period.toLong()) {
+                // 全部 tick 一遍
+                for (player in onlinePlayers) tick(player, identifier, slot)
+            }
+        }
+        // 构建脚本块并返回
+        return BlockBuilder.build(element.asCopy(code))
     }
 
     private fun tick(player: Player, identifier: Identifier, slot: PlayerInventorySlot) {

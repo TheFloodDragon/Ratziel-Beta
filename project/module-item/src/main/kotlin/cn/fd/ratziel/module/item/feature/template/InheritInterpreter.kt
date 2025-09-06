@@ -32,11 +32,11 @@ object InheritInterpreter : ItemInterpreter {
             // 处理动作链
             coroutineScope {
                 // 动作是要从父开始执行的, 所以要反转动作链, 变成自上而下的
-                val topToButtomChain = chain.reversed()
-                val actionMaps = topToButtomChain.map {
+                val topToButtonChain = chain.reversed()
+                val actionMaps = topToButtonChain.map {
                     async {
                         // 解析动作表
-                        ActionInterpreter.parseRoot(stream.identifier, it.element.property)
+                        ActionInterpreter.parseElement(stream.identifier, it.element)
                     }
                 }.awaitAll().filterNotNull()
                 // 设置动作链

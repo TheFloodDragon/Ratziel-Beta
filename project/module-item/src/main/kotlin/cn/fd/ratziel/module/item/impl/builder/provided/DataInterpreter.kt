@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.DataHolder
@@ -54,9 +55,8 @@ class DataInterpreter : ItemInterpreter {
      */
     val computationBlocks: MutableMap<String, ExecutableBlock> = ConcurrentHashMap()
 
-    override suspend fun preFlow(stream: ItemStream) = coroutineScope {
+    override suspend fun preFlow(stream: ItemStream): Unit = coroutineScope {
         val element = stream.fetchElement()
-        if (element !is JsonObject) return@coroutineScope
 
         // 常量层
         launch {
@@ -211,17 +211,14 @@ class DataInterpreter : ItemInterpreter {
         /**
          * 构建语句块表
          */
-        private suspend fun buildBlocks(element: JsonObject, alias: Array<String>): Map<String, ExecutableBlock>? {
-            return buildBlocks(element.getBy(*alias) as? JsonObject ?: return null)
-        }
-
-        /**
-         * 构建语句块
-         */
-        private suspend fun buildBlocks(element: JsonObject): Map<String, ExecutableBlock> = coroutineScope {
-            element.mapValues {
-                async { BlockBuilder.build(it.value) }
-            }.mapValues { it.value.await() }
+        private suspend fun buildBlocks(element: Element, alias: Array<String>): Map<String, ExecutableBlock>? {
+            val property = (element.property as? JsonObject)
+                ?.getBy(*alias) as? JsonObject ?: return null
+            return coroutineScope {
+                property.mapValues {
+                    async { BlockBuilder.build(element.asCopy(it.value)) }
+                }.mapValues { it.value.await() }
+            }
         }
 
         /**

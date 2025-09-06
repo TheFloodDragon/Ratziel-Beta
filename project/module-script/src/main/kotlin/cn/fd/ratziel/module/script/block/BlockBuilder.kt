@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.block
 
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.script.block.provided.ConditionBlock
 import cn.fd.ratziel.module.script.block.provided.MultiLineBlock
 import cn.fd.ratziel.module.script.block.provided.ScriptBlock
@@ -30,15 +31,25 @@ object BlockBuilder {
 
     /**
      * 构建语句块
+     */
+    @JvmStatic
+    fun build(element: Element): ExecutableBlock {
+        return this.build(element.property) { workFile = element.file }
+    }
+
+    /**
+     * 构建语句块
      *
      * @param element 语句块元素
      * @return 解析后的语句块
      */
     @JvmStatic
-    fun build(element: JsonElement): ExecutableBlock {
+    @JvmOverloads
+    private fun build(element: JsonElement, contextApplier: BlockContext.() -> Unit = {}): ExecutableBlock {
         // 创建调度器
         val scheduler = BlockScheduler(registry.map { it.get() })
-        val context = BlockContext.of(scheduler)
+        val context = BlockContext(scheduler)
+        contextApplier(context)
         // 调用调度器解析
         val result = scheduler.parse(element, context)
         // 返回解析结果

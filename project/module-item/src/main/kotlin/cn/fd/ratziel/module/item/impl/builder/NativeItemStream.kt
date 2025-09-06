@@ -4,6 +4,7 @@ import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.MutexedValue
+import cn.fd.ratziel.core.functional.synchronized
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.IdentifiedItem
 import cn.fd.ratziel.module.item.api.builder.ItemStream
@@ -28,24 +29,17 @@ class NativeItemStream(
 
     override val data = MutexedValue.getter { item.data }
 
-    override var context: ArgumentContext = context
-        @Synchronized get
-        @Synchronized set
+    override var context: ArgumentContext by synchronized { context }
 
     /**
      * 复制一份新的 [NativeItemStream]
      */
-    override suspend fun copy() = this.copy(this.context)
-
-    /**
-     * 复制一份新的 [NativeItemStream]
-     */
-    suspend fun copy(newContext: ArgumentContext): NativeItemStream {
+    override suspend fun copy(): NativeItemStream {
         return NativeItemStream(
             this.origin,
             this.item.clone(),
-            newContext,
-            fetchElement()
+            this.context,
+            fetchProperty()
         )
     }
 

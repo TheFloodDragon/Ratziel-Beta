@@ -31,7 +31,7 @@ class DefaultCompositor(override val baseStream: ItemStream) : ItemCompositor.St
     /**
      * 静态物品策略
      */
-    val staticStrategy = runBlocking { StaticStrategy(baseStream.fetchElement()) }
+    val staticStrategy = runBlocking { StaticStrategy(baseStream.fetchProperty()) }
 
     /**
      * 静态物品流生成器

@@ -17,16 +17,4 @@ interface ExecutableBlock {
      */
     fun execute(context: ArgumentContext): Any?
 
-    /**
-     * 带上下文的语句块
-     */
-    interface ContextualBlock : ExecutableBlock {
-
-        /**
-         * 语句块上下文
-         */
-        val context: BlockContext
-
-    }
-
 }

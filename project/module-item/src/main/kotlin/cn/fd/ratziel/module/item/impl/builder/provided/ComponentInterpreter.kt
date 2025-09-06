@@ -22,7 +22,7 @@ object ComponentInterpreter : ItemInterpreter {
 
     override suspend fun interpret(stream: ItemStream) = coroutineScope {
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
-        val element = stream.fetchElement()
+        val element = stream.fetchProperty()
         val serializationTasks = parallelSerialize(element, stream.data)
         // 等待所有序列化任务完成
         serializationTasks.joinAll()

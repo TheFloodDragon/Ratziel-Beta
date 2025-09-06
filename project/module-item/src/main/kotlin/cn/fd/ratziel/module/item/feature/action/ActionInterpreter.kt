@@ -1,14 +1,14 @@
 package cn.fd.ratziel.module.item.feature.action
 
 import cn.fd.ratziel.core.Identifier
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.script.block.BlockBuilder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.json.JsonElement
+import kotlinx.coroutines.supervisorScope
 import kotlinx.serialization.json.JsonObject
 
 /**
@@ -26,7 +26,7 @@ object ActionInterpreter : ItemInterpreter {
 
     override suspend fun preFlow(stream: ItemStream) {
         // 解析动作表
-        val actionMap = parseRoot(stream.identifier, stream.fetchElement()) ?: return
+        val actionMap = parseElement(stream.identifier, stream.fetchElement()) ?: return
         // 加入到服务里
         ActionManager.service[stream.identifier] = actionMap
     }
@@ -34,37 +34,34 @@ object ActionInterpreter : ItemInterpreter {
     /**
      * 从配置中解析成动作表
      */
-    suspend fun parseRoot(identifier: Identifier, property: JsonElement): ActionMap? {
+    suspend fun parseElement(identifier: Identifier, element: Element): ActionMap? {
+        val property = element.property
         // 仅处理 JsonObject 类型
         if (property !is JsonObject) return null
         // 获取原始动作
         val raw = property.getBy(*nodeNames) ?: return null
         if (raw is JsonObject) {
             // 解析动作表
-            return parseNode(identifier, raw)
-        } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
-    }
-
-    /**
-     * 解析动作节点
-     */
-    suspend fun parseNode(identifier: Identifier, element: JsonObject): ActionMap = coroutineScope {
-        element.mapNotNull { (name, code) ->
-            // 匹配触发器
-            val trigger = ActionManager.matchTrigger(name) ?: return@mapNotNull null
-            async {
-                // 构建脚本块
-                val block = if (trigger is ItemTrigger) {
-                    // 使用自定义构建函数
-                    trigger.build(identifier, code)
-                } else {
-                    // 使用默认构建器
-                    BlockBuilder.build(code)
-                }
-                // 返回结果
-                trigger to block
+            val blocks = supervisorScope {
+                raw.mapNotNull { (name, code) ->
+                    // 匹配触发器
+                    val trigger = ActionManager.matchTrigger(name) ?: return@mapNotNull null
+                    async {
+                        // 构建脚本块
+                        val block = if (trigger is ItemTrigger) {
+                            // 使用自定义构建函数
+                            trigger.build(identifier, element.asCopy(code))
+                        } else {
+                            // 使用默认构建器
+                            BlockBuilder.build(element.asCopy(code))
+                        }
+                        // 返回结果
+                        trigger to block
+                    }
+                }.awaitAll()
             }
-        }.awaitAll().toMap().let { ActionMap(it) }
+            return ActionMap(blocks.toMap())
+        } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
     }
 
 }

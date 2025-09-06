@@ -15,7 +15,7 @@ import kotlinx.coroutines.*
 class SourceInterpreter(val source: ItemSource) {
 
     suspend fun interpret(stream: ItemStream): NeoItem? {
-        val element = Element(stream.origin.identifier, stream.fetchElement())
+        val element = Element(stream.origin.identifier, stream.fetchProperty())
         // 生成物品
         val item = source.generateItem(element, stream.context) ?: return null
         // 写入数据

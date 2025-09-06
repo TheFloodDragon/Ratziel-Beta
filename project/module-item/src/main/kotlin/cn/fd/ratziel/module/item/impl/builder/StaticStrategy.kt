@@ -101,13 +101,13 @@ class StaticStrategy(val element: JsonElement) {
          */
         private suspend fun applyStaticProperty(stream: ItemStream) {
             // 原始元素
-            val origin = stream.fetchElement()
+            val origin = stream.fetchProperty()
             // 生成静态物品
-            stream.updateElement(staticContent ?: return)
+            stream.updateProperty(staticContent ?: return)
             // 好戏开场: 使用静态配置处理流数据
             compositor.dispatch(stream)
             // 换回去
-            stream.updateElement(origin)
+            stream.updateProperty(origin)
         }
 
     }

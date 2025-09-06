@@ -30,7 +30,7 @@ object JexlScriptExecutor : CompilableScriptExecutor<JexlScript>() {
         return engine.createScript(script).execute(WrappedJexlContext(environment))
     }
 
-    override fun compile(script: String): JexlScript {
+    override fun compile(script: String, environment: ScriptEnvironment): JexlScript {
         return engine.createScript(script)
     }
 

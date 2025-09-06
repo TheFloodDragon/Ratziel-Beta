@@ -29,8 +29,7 @@ class ScriptBlock(
     val source: String,
     /** 脚本执行器 */
     val executor: ScriptExecutor,
-    override val context: BlockContext = BlockContext.withoutScheduler(),
-) : ExecutableBlock.ContextualBlock {
+) : ExecutableBlock {
 
     /** 编译后的脚本 **/
     val script: ScriptContent = compileOrLiteral(executor, source)
@@ -95,7 +94,7 @@ class ScriptBlock(
                     content = element.joinToString("\n")
                 }
                 if (content != null) {
-                    return ScriptBlock(content, currentExecutor, context)
+                    return ScriptBlock(content, currentExecutor)
                 }
             }
             return null
