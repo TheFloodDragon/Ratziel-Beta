@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.imports
 
+import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.module.script.ScriptType
 
 /**
@@ -50,9 +51,26 @@ class GroupImports(
         this.scripts + other.scripts
     )
 
+    /**
+     * 判断导入组是否为空
+     */
+    fun isEmpty() = this === EMPTY || (classes.isEmpty() && packages.isEmpty() && scripts.isEmpty())
+
     override fun toString() = "GroupImports(classes=$classes, packages=$packages, scripts=$scripts)"
 
     companion object {
+
+        /**
+         * 空导入组
+         */
+        @JvmStatic
+        val EMPTY = GroupImports()
+
+        /**
+         * 从环境中获取 [GroupImports]
+         */
+        @JvmField
+        val catcher = AttachedContext.catcher(this) { EMPTY }
 
         /**
          * 从输出流中读取导入的包和类

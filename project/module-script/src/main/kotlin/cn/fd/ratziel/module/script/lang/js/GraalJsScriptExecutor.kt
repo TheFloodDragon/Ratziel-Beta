@@ -1,9 +1,8 @@
 package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.module.script.api.Importable
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
+import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import org.graalvm.polyglot.Context
@@ -19,7 +18,7 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-object GraalJsScriptExecutor : CompilableScriptExecutor<Source>(), Importable, NonStrictCompilation {
+object GraalJsScriptExecutor : EnginedScriptExecutor<Source>(), NonStrictCompilation {
 
     private const val LANGUAGE_ID = "js"
     private const val IMPORTS_MEMBER = "_imports_"
@@ -49,7 +48,7 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<Source>(), Importable, N
         return getContext(environment).eval(createSource(script)).`as`(Any::class.java)
     }
 
-    override fun compile(script: String): Source {
+    override fun compile(script: String, environment: ScriptEnvironment): Source {
         return createSource(script)
     }
 
@@ -57,7 +56,10 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<Source>(), Importable, N
         return getContext(environment).eval(script).`as`(Any::class.java)
     }
 
-    override fun importTo(environment: ScriptEnvironment, imports: GroupImports) {
+    override fun preheat(environment: ScriptEnvironment) {
+        val imports = GroupImports.catcher[environment.context]
+        if (imports.isEmpty()) return
+        // 获取脚本执行要的上下文
         val context = getContext(environment)
         // 设置导入的类成员
         val contextBindings = context.getBindings(LANGUAGE_ID)

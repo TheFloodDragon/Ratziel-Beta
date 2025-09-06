@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.feature.layer
 
-import cn.fd.ratziel.core.functional.SynchronizedValue
+import cn.fd.ratziel.core.functional.MutexedValue
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
@@ -38,7 +38,7 @@ object PhysicalLayerInterpreter : ItemInterpreter {
             // 序列化图层
             val layers = layerElements.mapValues { entry ->
                 async {
-                    SynchronizedValue.initial(SimpleData()).also { data ->
+                    MutexedValue.initial(SimpleData()).also { data ->
                         ComponentInterpreter.parallelSerialize(entry.value, data).joinAll()
                     }.withValue { it.tag }
                 }

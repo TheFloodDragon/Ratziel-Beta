@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.core.functional.SynchronizedValue
+import cn.fd.ratziel.core.functional.MutexedValue
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
@@ -32,7 +32,7 @@ object ComponentInterpreter : ItemInterpreter {
      * 并行序列化
      */
     @JvmStatic
-    suspend fun parallelSerialize(element: JsonElement, data: SynchronizedValue<out ItemData>) = coroutineScope {
+    suspend fun parallelSerialize(element: JsonElement, data: MutexedValue<out ItemData>) = coroutineScope {
         ItemRegistry.registry.map { integrated ->
             launch {
                 val generated = ComponentConverter.transformToNbtTag(integrated, element).getOrNull()

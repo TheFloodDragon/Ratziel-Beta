@@ -22,7 +22,7 @@ abstract class CompilableScriptExecutor<T : Any> : ScriptExecutor {
     /**
      * 编译脚本
      */
-    abstract fun compile(script: String): T
+    abstract fun compile(script: String, environment: ScriptEnvironment): T
 
     /**
      * 评估编译后的脚本
@@ -33,26 +33,21 @@ abstract class CompilableScriptExecutor<T : Any> : ScriptExecutor {
      * 执行脚本
      */
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
-        if (script is CompiledScript<*>) {
+        if (script is CompiledScript<*> && script.executor == this) {
             @Suppress("UNCHECKED_CAST")
-            val compiled = script.compiled as? T
-            if (compiled != null) return evalCompiled(compiled, environment)
-        }
-        return evalDirectly(script.content, environment)
-    }
-
-    override fun evaluate(script: String, environment: ScriptEnvironment): Any? {
-        return evalDirectly(script, environment)
+            val compiled = script.compiled as T
+            return evalCompiled(compiled, environment)
+        } else return evalDirectly(script.content, environment)
     }
 
     /**
      * 构建脚本
      * @param compile 是否启用编译
      */
-    fun build(script: String, compile: Boolean): ScriptContent {
+    fun build(script: String, environment: ScriptEnvironment, compile: Boolean): ScriptContent {
         if (compile) {
             try {
-                val compiled = this.compile(script)
+                val compiled = this.compile(script, environment)
                 return CompiledScript(script, this, compiled)
             } catch (e: Exception) {
                 warning("Cannot compile script by '$this' ! Script content: $script")
@@ -62,6 +57,8 @@ abstract class CompilableScriptExecutor<T : Any> : ScriptExecutor {
         return LiteralScriptContent(script, this)
     }
 
-    override fun build(script: String) = build(script, compile = true)
+    override fun build(script: String, environment: ScriptEnvironment): ScriptContent = build(script, environment, compile = true)
+
+    override fun build(script: String) = build(script, ScriptEnvironmentImpl())
 
 }

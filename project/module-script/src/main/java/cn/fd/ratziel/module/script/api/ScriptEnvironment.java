@@ -40,4 +40,9 @@ public interface ScriptEnvironment {
      */
     @NotNull AttachedContext getContext();
 
+    /**
+     * 设置执行器的上下文
+     */
+    void setContext(@NotNull AttachedContext context);
+
 }

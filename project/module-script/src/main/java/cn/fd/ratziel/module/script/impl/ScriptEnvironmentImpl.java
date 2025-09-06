@@ -29,7 +29,7 @@ public class ScriptEnvironmentImpl implements ScriptEnvironment {
     }
 
     private Bindings scriptBindings;
-    private final AttachedContext context = AttachedContext.newContext();
+    private AttachedContext context = AttachedContext.newContext();
 
     @Override
     public @NotNull Bindings getBindings() {
@@ -44,6 +44,11 @@ public class ScriptEnvironmentImpl implements ScriptEnvironment {
     @Override
     public @NotNull AttachedContext getContext() {
         return this.context;
+    }
+
+    @Override
+    public void setContext(@NotNull AttachedContext context) {
+        this.context = context;
     }
 
 }

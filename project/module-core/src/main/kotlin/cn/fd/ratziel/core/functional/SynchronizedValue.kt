@@ -1,93 +1,26 @@
 package cn.fd.ratziel.core.functional
 
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 /**
  * SynchronizedValue
  *
  * @author TheFloodDragon
- * @since 2025/5/14 21:06
+ * @since 2025/9/6 20:38
  */
-abstract class SynchronizedValue<T> {
+class SynchronizedValue<T>(private var value: T) : ReadWriteProperty<Any?, T> {
 
-    /**
-     * Kotlin 协程锁 [Mutex]
-     */
-    protected val mutex: Mutex = Mutex()
-
-    /**
-     * 获取值并处理, 在此期间只有一个线程可以操作
-     */
-    abstract suspend fun <R> withValue(block: suspend (T) -> R): R
-
-    /**
-     * 同时等待多个值, 并处理
-     */
-    suspend inline fun <R1, R2> togetherWith(
-        other: SynchronizedValue<R1>,
-        crossinline block: suspend (T, R1) -> R2,
-    ): R2 {
-        return withValue { v1 ->
-            other.withValue { v2 -> block(v1, v2) }
-        }
+    @Synchronized
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        return this.value
     }
 
-    /**
-     * 直接获取值
-     */
-    open suspend fun getValue(): T {
-        return withValue { it }
-    }
-
-    /**
-     * Mutable
-     */
-    abstract class Mutable<T> : SynchronizedValue<T>() {
-
-        /**
-         * 更新值
-         */
-        abstract suspend fun update(block: suspend (T) -> T)
-
-    }
-
-    companion object {
-
-        /**
-         * 创建一个 [SynchronizedValue] 的实例
-         */
-        fun <T> getter(getter: () -> T): SynchronizedValue<T> = GetterValue(getter)
-
-        /**
-         * 创建一个 [SynchronizedValue.Mutable] 的实例
-         */
-        fun <T> initial(initialValue: T): Mutable<T> = InitialValue(initialValue)
-
-    }
-
-    private class GetterValue<T>(private val getter: () -> T) : SynchronizedValue<T>() {
-        override suspend fun <R> withValue(block: suspend (T) -> R): R {
-            return mutex.withLock {
-                // 在锁的保护下执行处理逻辑
-                block(getter.invoke())
-            }
-        }
-    }
-
-    private class InitialValue<T>(initialValue: T) : Mutable<T>() {
-        private var value = initialValue
-
-        override suspend fun <R> withValue(block: suspend (T) -> R): R {
-            return mutex.withLock {
-                // 在锁的保护下执行处理逻辑
-                block(value)
-            }
-        }
-
-        override suspend fun update(block: suspend (T) -> T) {
-            mutex.withLock { value = block(value) }
-        }
+    @Synchronized
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        this.value = value
     }
 
 }
+
+fun <T> synchronized(initializer: () -> T) = SynchronizedValue(initializer())

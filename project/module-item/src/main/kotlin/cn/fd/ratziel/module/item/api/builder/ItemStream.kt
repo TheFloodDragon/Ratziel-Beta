@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.core.functional.SynchronizedValue
+import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.functional.MutexedValue
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.ItemData
 import kotlinx.serialization.json.JsonElement
@@ -30,12 +30,12 @@ interface ItemStream {
      * [JsonElement] 树
      * 由解释器处理, 供序列化使用
      */
-    val tree: SynchronizedValue.Mutable<JsonTree>
+    val tree: MutexedValue.Mutable<JsonTree>
 
     /**
      * 物品数据 (最终产物)
      */
-    val data: SynchronizedValue<ItemData>
+    val data: MutexedValue<ItemData>
 
     /**
      * 上下文

@@ -9,9 +9,13 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
  * @author TheFloodDragon
  * @since 2025/8/30 19:16
  */
-class CompiledScript<T : Any>(
+open class CompiledScript<T : Any>(
     content: String,
     executor: ScriptExecutor,
     /** 编译后的脚本 **/
-    val compiled: T,
-) : LiteralScriptContent(content, executor)
+    open val compiled: T,
+) : LiteralScriptContent(content, executor) {
+
+    constructor(delegate: CompiledScript<T>) : this(delegate.content, delegate.executor, delegate.compiled)
+
+}

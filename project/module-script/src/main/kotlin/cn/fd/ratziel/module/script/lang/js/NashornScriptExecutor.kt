@@ -2,9 +2,8 @@ package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.module.script.api.Importable
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
+import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
@@ -20,7 +19,7 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:33
  */
-object NashornScriptExecutor : CompilableScriptExecutor<CompiledScript>(), Importable, NonStrictCompilation {
+object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript>(), NonStrictCompilation {
 
     /**
      * 直接运行脚本
@@ -34,7 +33,7 @@ object NashornScriptExecutor : CompilableScriptExecutor<CompiledScript>(), Impor
      *
      * @param script 原始脚本
      */
-    override fun compile(script: String): CompiledScript {
+    override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
         return (newEngine() as Compilable).compile(script)
     }
 
@@ -45,11 +44,14 @@ object NashornScriptExecutor : CompilableScriptExecutor<CompiledScript>(), Impor
         return script.eval(getEngine(environment).context)
     }
 
-    override fun importTo(environment: ScriptEnvironment, imports: GroupImports) {
-        // 更新 ImportedScriptContext 的导入 (类, 包)
-        val context = getEngine(environment).context as ImportedScriptContext
-        context.imports = imports
-        // 导入脚本
+    override fun preheat(environment: ScriptEnvironment) {
+        val imports = GroupImports.catcher[environment.context]
+        if (imports.isEmpty()) return
+        // 获取脚本引擎上下文
+        val context = getEngine(environment).context
+        // 设置脚本上下文里的导入组
+        (context as ImportedScriptContext).imports = imports
+        // 导入导入组里的脚本
         val scriptImports = imports.scripts[ScriptType.JAVASCRIPT].orEmpty()
         for (import in scriptImports) {
             this.evaluate(import.script.compiled, environment)
