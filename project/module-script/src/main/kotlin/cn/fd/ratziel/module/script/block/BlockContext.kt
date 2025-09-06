@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.block
 
+import cn.fd.ratziel.core.contextual.AttachedContext
 import kotlinx.serialization.json.JsonElement
 import java.io.File
 
@@ -20,6 +21,11 @@ open class BlockContext(
      * 工作文件
      */
     var workFile: File? = null
+
+    /**
+     * 附加的上下文
+     */
+    val attached = AttachedContext.newContext()
 
     /**
      * 使用此上下文解析 [JsonElement]

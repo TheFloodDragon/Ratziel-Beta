@@ -20,7 +20,7 @@ object ScriptElementLoader : ElementLoader {
     val elementType by lazy { ElementRegistry.findType(ScriptElementHandler::class.java) }
 
     override fun accepts(file: File, workspace: Workspace): Boolean {
-        return matchType(file) != null || ScriptDescription.isDescriptionFile(file)
+        return matchType(file.extension) != null || ScriptDescription.isDescriptionFile(file)
     }
 
     override fun load(file: File, workspace: Workspace): Result<List<Element>> {
@@ -31,8 +31,8 @@ object ScriptElementLoader : ElementLoader {
      * 匹配脚本文件类型
      */
     @JvmStatic
-    fun matchType(file: File) = ScriptType.registry.find { lang ->
-        lang.extensions.any { it.equals(file.extension, true) }
+    fun matchType(extension: String) = ScriptType.registry.find { lang ->
+        lang.extensions.any { it.equals(extension, true) }
     }
 
 }

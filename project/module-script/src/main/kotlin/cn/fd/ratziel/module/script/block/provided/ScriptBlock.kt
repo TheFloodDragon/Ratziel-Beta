@@ -10,12 +10,11 @@ import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.element.ScriptFile
+import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
+import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
 
@@ -30,11 +29,13 @@ class ScriptBlock(
     val source: String,
     /** 脚本执行器 */
     val executor: ScriptExecutor,
+    /** 导入组 **/
+    val imports: GroupImports = GroupImports.EMPTY,
     /** 脚本文件 **/
     val scriptFile: ScriptFile? = null,
 ) : ExecutableBlock {
 
-    constructor(scriptFile: ScriptFile) : this(scriptFile.source, scriptFile.executor)
+    constructor(scriptFile: ScriptFile, imports: GroupImports = GroupImports.EMPTY) : this(scriptFile.source, scriptFile.executor, imports, scriptFile)
 
     /** 编译后的脚本 **/
     val script: ScriptContent = scriptFile?.compiled ?: compileOrLiteral(executor, source)
@@ -56,7 +57,11 @@ class ScriptBlock(
         if (executor is NonStrictCompilation) {
             // 预编译脚本
             try {
-                return executor.build(script)
+                // 处理导入组
+                val environment = ScriptEnvironmentImpl()
+                GroupImports.catcher[environment.context] = imports
+                // 带环境的编译脚本
+                return executor.build(script, environment)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -73,11 +78,21 @@ class ScriptBlock(
 
         override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
             if (element is JsonObject) {
-                val entry = element.entries.first()
-                val key = entry.key.trim()
+                // 寻找脚本导入并处理
+                val importsSection = element["imports"] ?: element["import"]
+                if (importsSection != null && importsSection is JsonArray) {
+                    val lines = importsSection.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
+                    val imports = GroupImports.parse(lines, context.workFile)
+                    // 添加进上下文中
+                    val originalImports = GroupImports.catcher[context.attached]
+                    GroupImports.catcher[context.attached] = originalImports.combine(imports)
+                }
+
+                // 寻找切换脚本语言的
+                val entry = element.entries.find { it.key.startsWith('\$') }
                 // 检查开头 (是否为转换语言的)
-                if (key.startsWith('\$')) {
-                    val type = ScriptType.matchOrThrow(key.drop(1))
+                if (entry != null) {
+                    val type = ScriptType.matchOrThrow(entry.key.drop(1))
                     // 记录当前执行器
                     val lastExecutor = currentExecutor
                     // 设置当前执行器

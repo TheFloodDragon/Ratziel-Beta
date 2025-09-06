@@ -1,7 +1,10 @@
 package cn.fd.ratziel.module.script.imports
 
 import cn.fd.ratziel.core.contextual.AttachedContext
+import cn.fd.ratziel.core.util.resolveOrAbsolute
 import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.element.ScriptElementLoader
+import java.io.File
 
 /**
  * GroupImports - 导入组
@@ -73,24 +76,36 @@ class GroupImports(
         val catcher = AttachedContext.catcher(this) { EMPTY }
 
         /**
-         * 从输出流中读取导入的包和类
+         * 从文本中解析导入
          */
         @JvmStatic
-        fun parse(rawContents: Iterable<String>): Pair<Set<ClassImport>, Set<PackageImport>> {
+        @JvmOverloads
+        fun parse(lines: Iterable<String>, baseFile: File? = null): GroupImports {
             // 过滤内容
-            val contents = rawContents.map { it.trim() }
+            val contents = lines.map { it.trim() }
                 .filterNot { it.isBlank() || it.startsWith('#') }.toSet()
             val classes = LinkedHashSet<ClassImport>()
             val packages = LinkedHashSet<PackageImport>()
+            val scripts = LinkedHashSet<ScriptImport>()
             // 读取类和包
-            for (import in contents) {
-                if (import.endsWith('*') || import.endsWith('.')) {
-                    packages.add(PackageImport(import.substringBeforeLast('.')))
+            for (content in contents) {
+                // ~.* 格式表示包
+                if (content.endsWith(".*")) {
+                    packages.add(PackageImport(content.substringBeforeLast('.')))
                 } else {
-                    classes.add(ClassImport(import))
+                    // ~.~ 表示脚本文件
+                    val type = ScriptElementLoader.matchType(content.substringBeforeLast('.'))
+                    if (type != null) {
+                        val file = baseFile?.resolveOrAbsolute(content)
+                            ?: File(content)
+                        scripts.add(ScriptImport(file, type))
+                    } else {
+                        // 不然就是类了 (全名)
+                        classes.add(ClassImport(content))
+                    }
                 }
             }
-            return classes to packages
+            return GroupImports(classes, packages, scripts.groupBy { it.type }.mapValues { it.value.toSet() })
         }
 
     }

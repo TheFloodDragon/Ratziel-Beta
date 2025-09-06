@@ -30,18 +30,26 @@ abstract class EnginedScriptExecutor<T : Any> : CompilableScriptExecutor<T>() {
         val script = super.build(script, environment)
         if (script is CompiledScript<*> && script.executor == this) {
             @Suppress("UNCHECKED_CAST")
-            return EnginedScriptContent(script as CompiledScript<T>, this)
+            return EnginedScriptContent(script as CompiledScript<T>, environment, this)
         } else return script
     }
 
-    protected class EnginedScriptContent<T : Any>(delegate: CompiledScript<T>, executor: EnginedScriptExecutor<T>) : CompiledScript<T>(delegate) {
+    protected class EnginedScriptContent<T : Any>(
+        delegate: CompiledScript<T>,
+        /** 原始脚本环境 **/
+        originalEnvironment: ScriptEnvironment,
+        /** 引擎执行器 **/
+        executor: EnginedScriptExecutor<T>,
+    ) : CompiledScript<T>(delegate) {
 
         /**
          * 脚本引擎补充器 (提高并行执行多编译脚本的性能)
          */
         private val engineReplenishing: CompletableFuture<ScriptEnvironment> by replenish {
             CompletableFuture.supplyAsync {
-                ScriptEnvironmentImpl().also {
+                ScriptEnvironmentImpl(originalEnvironment.bindings).also {
+                    // 导入原始脚本环境里的东西
+                    it.context.putAll(originalEnvironment.context)
                     // 预热环境
                     executor.preheat(it)
                 }
@@ -55,11 +63,11 @@ abstract class EnginedScriptExecutor<T : Any> : CompilableScriptExecutor<T>() {
          */
         fun importTo(environment: ScriptEnvironment) {
             // 没有初始化的环境
-            if (environment.context.contents.isEmpty() || environment.context.fetchOrNull<Any>(this.executor) == null) {
+            if (environment.context.fetchOrNull<Any>(this.executor) == null) {
                 // 导入补充的预热过的环境
                 val enginedEnvironment = engineReplenishing.get()
-                // 设置上下文
-                environment.context = enginedEnvironment.context
+                // 导入上下文
+                environment.context.putAll(enginedEnvironment.context)
                 // 导入绑定键
                 if (enginedEnvironment.bindings.isNotEmpty()) {
                     environment.bindings.putAll(enginedEnvironment.bindings)

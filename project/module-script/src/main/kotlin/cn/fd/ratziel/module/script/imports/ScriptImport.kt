@@ -1,8 +1,9 @@
 package cn.fd.ratziel.module.script.imports
 
 import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.module.script.element.ScriptElementManager
+import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
+import taboolib.common.platform.function.warning
 import java.io.File
 
 /**
@@ -16,20 +17,25 @@ data class ScriptImport(
      * 脚本文件路径
      */
     val file: File,
-) {
-
-    /**
-     * 脚本
-     */
-    val script: ScriptFile
-        get() {
-            return ScriptElementManager.scriptFiles[file]
-                ?: throw NoSuchElementException("Cannot find script by $file!")
-        }
-
     /**
      * 脚本语言类型
      */
-    val type: ScriptType get() = script.desc.language
+    val type: ScriptType,
+) {
+
+    /**
+     * 脚本文件
+     */
+    val scriptFile: ScriptFile?
+        get() {
+            return ScriptElementHandler.scriptFiles[file].also {
+                if (it == null) warning("No defined script file $file!")
+            }
+        }
+
+    /**
+     * 编译后的脚本
+     */
+    val compiled get() = scriptFile?.compiled
 
 }

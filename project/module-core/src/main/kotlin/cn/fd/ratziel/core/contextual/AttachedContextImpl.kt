@@ -9,7 +9,7 @@ import java.util.function.Supplier
  * @author TheFloodDragon
  * @since 2025/8/8 16:17
  */
-class AttachedContextImpl(val map: MutableMap<Any, Any> = ConcurrentHashMap()) : AttachedContext {
+class AttachedContextImpl(val map: MutableMap<Any, Any> = ConcurrentHashMap()) : AttachedContext, MutableMap<Any, Any> by map {
 
     /**
      * 获取附加值
@@ -26,15 +26,6 @@ class AttachedContextImpl(val map: MutableMap<Any, Any> = ConcurrentHashMap()) :
         @Suppress("UNCHECKED_CAST")
         return map[key] as? T
     }
-
-    /**
-     * 设置附加值
-     */
-    override fun put(key: Any, value: Any) {
-        map[key] = value
-    }
-
-    override val contents: Map<Any, Any> get() = this.map
 
     override fun toString() = "AttachedContext$map"
 

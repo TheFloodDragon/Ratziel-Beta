@@ -8,7 +8,7 @@ import java.util.function.Supplier
  * @author TheFloodDragon
  * @since 2025/7/7 18:36
  */
-interface AttachedContext {
+interface AttachedContext : MutableMap<Any, Any> {
 
     /**
      * 获取附加值
@@ -19,16 +19,6 @@ interface AttachedContext {
      * 获取附加值
      */
     fun <T : Any> fetchOrNull(key: Any): T?
-
-    /**
-     * 设置附加值
-     */
-    fun put(key: Any, value: Any)
-
-    /**
-     * 获取所有的上下文内容
-     */
-    val contents: Map<Any, Any>
 
     /**
      * [AttachedContext] 捕获器

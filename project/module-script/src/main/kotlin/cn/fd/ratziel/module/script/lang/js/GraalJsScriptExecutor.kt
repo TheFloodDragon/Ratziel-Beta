@@ -67,7 +67,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source>(), NonStrictCompila
         // 导入脚本
         val scriptImports = imports.scripts[ScriptType.JAVASCRIPT].orEmpty()
         for (import in scriptImports) {
-            this.evaluate(import.script.compiled, environment)
+            this.evaluate(import.compiled ?: continue, environment)
         }
     }
 
@@ -91,7 +91,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source>(), NonStrictCompila
 
     /** 用来导入包和类的脚本 **/
     private val importingScript by lazy {
-        internalSource(this::class.java.classLoader.getResourceAsStream("script-default/graaljs.scriptengine.js")!!.reader().readText())
+        internalSource(this::class.java.classLoader.getResourceAsStream("internal/graaljs.importer.js")!!.reader().readText())
     }
 
     private fun createSource(script: String): Source {

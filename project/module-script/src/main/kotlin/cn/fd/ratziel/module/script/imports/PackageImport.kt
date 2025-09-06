@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.imports
 
 import java.lang.ref.WeakReference
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * PackageImport - 包导入
@@ -18,12 +19,11 @@ data class PackageImport(
     /**
      * 包中的类缓存
      */
-    private val classesCache = LinkedHashMap<String, WeakReference<Class<*>>>()
+    private val classesCache = ConcurrentHashMap<String, WeakReference<Class<*>>>()
 
     /**
      * 搜索包中类
      */
-    @Synchronized
     fun search(name: String): Class<*>? {
         val cached = classesCache[name]?.get()
         if (cached != null) return cached

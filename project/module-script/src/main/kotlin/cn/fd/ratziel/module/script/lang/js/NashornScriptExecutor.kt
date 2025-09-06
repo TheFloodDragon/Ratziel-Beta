@@ -54,7 +54,7 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript>(), NonStric
         // 导入导入组里的脚本
         val scriptImports = imports.scripts[ScriptType.JAVASCRIPT].orEmpty()
         for (import in scriptImports) {
-            this.evaluate(import.script.compiled, environment)
+            this.evaluate(import.compiled ?: continue, environment)
         }
     }
 

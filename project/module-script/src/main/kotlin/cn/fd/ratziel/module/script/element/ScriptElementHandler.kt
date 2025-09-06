@@ -41,7 +41,7 @@ object ScriptElementHandler : ElementHandler {
 
         // 脚本文件分组
         val allFiles = elements.mapNotNull { it.file }
-        val typedGroup = allFiles.groupBy { ScriptElementLoader.matchType(it) }
+        val typedGroup = allFiles.groupBy { ScriptElementLoader.matchType(it.extension) }
         // 脚本文件组
         val scriptsGroup = typedGroup.filterKeys { it != null }
         // 脚本描述组
@@ -74,7 +74,7 @@ object ScriptElementHandler : ElementHandler {
 
     override fun handle(element: Element) {
         val file = element.file!!
-        val language = ScriptElementLoader.matchType(file)!!
+        val language = ScriptElementLoader.matchType(file.extension)!!
         val scriptsFile = createScriptFile(file, language) ?: return
         scriptFiles[scriptsFile.first] = scriptsFile.second
     }
