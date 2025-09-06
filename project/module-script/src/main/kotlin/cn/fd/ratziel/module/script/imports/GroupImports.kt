@@ -2,8 +2,10 @@ package cn.fd.ratziel.module.script.imports
 
 import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.util.resolveOrAbsolute
+import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.element.ScriptElementLoader
+import taboolib.common.platform.function.warning
 import java.io.File
 
 /**
@@ -57,23 +59,17 @@ class GroupImports(
     /**
      * 判断导入组是否为空
      */
-    fun isEmpty() = this === EMPTY || (classes.isEmpty() && packages.isEmpty() && scripts.isEmpty())
+    fun isEmpty() = classes.isEmpty() && packages.isEmpty() && scripts.isEmpty()
 
     override fun toString() = "GroupImports(classes=$classes, packages=$packages, scripts=$scripts)"
 
     companion object {
 
         /**
-         * 空导入组
-         */
-        @JvmStatic
-        val EMPTY = GroupImports()
-
-        /**
          * 从环境中获取 [GroupImports]
          */
         @JvmField
-        val catcher = AttachedContext.catcher(this) { EMPTY }
+        val catcher = AttachedContext.catcher(this) { ScriptManager.globalGroup }
 
         /**
          * 从文本中解析导入
@@ -96,9 +92,12 @@ class GroupImports(
                     // ~.~ 表示脚本文件
                     val type = ScriptElementLoader.matchType(content.substringBeforeLast('.'))
                     if (type != null) {
-                        val file = baseFile?.resolveOrAbsolute(content)
-                            ?: File(content)
-                        scripts.add(ScriptImport(file, type))
+                        val file = baseFile.resolveOrAbsolute(content)
+                        if (file.exists()) {
+                            scripts.add(ScriptImport(file, type))
+                        } else {
+                            warning("File does not exist: $file")
+                        }
                     } else {
                         // 不然就是类了 (全名)
                         classes.add(ClassImport(content))

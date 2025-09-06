@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.block.provided
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.util.resolveOrAbsolute
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.LiteralScriptContent
@@ -9,6 +10,7 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
 import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
 import cn.fd.ratziel.module.script.imports.GroupImports
@@ -17,6 +19,7 @@ import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
+import taboolib.common.platform.function.warning
 
 /**
  * ScriptBlock
@@ -30,12 +33,16 @@ class ScriptBlock(
     /** 脚本执行器 */
     val executor: ScriptExecutor,
     /** 导入组 **/
-    val imports: GroupImports = GroupImports.EMPTY,
+    val imports: GroupImports? = null,
     /** 脚本文件 **/
     val scriptFile: ScriptFile? = null,
 ) : ExecutableBlock {
 
-    constructor(scriptFile: ScriptFile, imports: GroupImports = GroupImports.EMPTY) : this(scriptFile.source, scriptFile.executor, imports, scriptFile)
+    constructor(source: String, executor: ScriptExecutor, context: BlockContext) : this(source, executor, GroupImports.catcher[context.attached])
+
+    constructor(scriptFile: ScriptFile, imports: GroupImports) : this(scriptFile.source, scriptFile.executor, imports, scriptFile)
+
+    constructor(scriptFile: ScriptFile, context: BlockContext) : this(scriptFile, GroupImports.catcher[context.attached])
 
     /** 编译后的脚本 **/
     val script: ScriptContent = scriptFile?.compiled ?: compileOrLiteral(executor, source)
@@ -59,7 +66,7 @@ class ScriptBlock(
             try {
                 // 处理导入组
                 val environment = ScriptEnvironmentImpl()
-                GroupImports.catcher[environment.context] = imports
+                if (imports != null) GroupImports.catcher[environment.context] = imports
                 // 带环境的编译脚本
                 return executor.build(script, environment)
             } catch (e: Exception) {
@@ -104,6 +111,19 @@ class ScriptBlock(
                     // 返回结果
                     return result
                 }
+
+                // 寻找脚本文件执行
+                val fileSection = (element["script"] as? JsonPrimitive)?.contentOrNull
+                if (fileSection != null) {
+                    val file = context.workFile.resolveOrAbsolute(fileSection)
+                    // 查找脚本文件
+                    val scriptFile = ScriptElementHandler.scriptFiles[file]
+                    if (scriptFile != null) {
+                        // 返回含脚本文件的脚本块
+                        return ScriptBlock(scriptFile, context)
+                    } else warning("No defined script file $file!")
+                }
+
             }
             // 解析字符串脚本
             else {
@@ -114,7 +134,7 @@ class ScriptBlock(
                     content = element.joinToString("\n")
                 }
                 if (content != null) {
-                    return ScriptBlock(content, currentExecutor)
+                    return ScriptBlock(content, currentExecutor, context)
                 }
             }
             return null
