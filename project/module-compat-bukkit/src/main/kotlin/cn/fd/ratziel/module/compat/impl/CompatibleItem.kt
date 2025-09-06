@@ -9,7 +9,7 @@ import cn.fd.ratziel.module.item.impl.SimpleItem
  * @author TheFloodDragon
  * @since 2025/4/4 15:48
  */
-open class CompatItem(
-    val name: String,
+open class CompatibleItem(
+    val pluginName: String,
     data: ItemData,
 ) : SimpleItem(data)

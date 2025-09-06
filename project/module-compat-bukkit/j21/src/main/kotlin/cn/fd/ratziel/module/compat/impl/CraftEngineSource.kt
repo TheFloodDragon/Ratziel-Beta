@@ -1,19 +1,14 @@
 package cn.fd.ratziel.module.compat.impl
 
-import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.core.util.getBy
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.item.api.NeoItem
-import cn.fd.ratziel.module.item.api.builder.ItemSource
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.platform.bukkit.util.player
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.contentOrNull
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems
 import net.momirealms.craftengine.bukkit.plugin.BukkitCraftEngine
 import net.momirealms.craftengine.core.util.Key
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 /**
  * CraftEngineSource
@@ -21,20 +16,22 @@ import org.bukkit.entity.Player
  * @author TheFloodDragon
  * @since 2025/8/2 20:18
  */
-object CraftEngineSource : ItemSource {
-
-    private val alias = listOf("ce", "CraftEngine")
+object CraftEngineSource : CompatibleItemSource(
+    CraftEngineHook.pluginName,
+    "ce"
+) {
 
     override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
         // 获取名称
-        val property = (element.property as? JsonObject) ?: return null
-        val name = (property.getBy(alias) as? JsonPrimitive)?.contentOrNull ?: return null
+        val name = readName(element.property) ?: return null
         // 生成物品
         val player = (context.player() as? Player)?.let { BukkitCraftEngine.instance().adapt(it) }
-        val itemStack = CraftEngineItems.byId(Key.of(name))?.buildItemStack(player) ?: return null
-        // 提取数据
-        val data = RefItemStack.of(itemStack).extractData()
-        return CompatItem(CraftEngineHook.pluginName, data)
+        val customItem = CraftEngineItems.byId(Key.of(name))
+            .warnOnNull(name) ?: return null
+        val itemStack = customItem.buildItemStack(player)
+        return itemStack.asCompatible()
     }
+
+    override fun isMine(item: ItemStack) = CraftEngineItems.isCustomItem(item)
 
 }
