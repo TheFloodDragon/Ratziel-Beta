@@ -1,5 +1,6 @@
-// avoid unnecessary chaining of __noSuchProperty__ again
-// in case user loads this script more than once.
+// This file is used to get the imported classes or packages runtime.
+// To import these, you should set the member named '_imports_' which is a GroupImports instance.
+// Also you can use getImportedClass function in graaljs to get the class you want.
 if (typeof getImportedClass == 'undefined' || !(getImportedClass instanceof Function)) {
 
     Object.defineProperty(this, "getImportedClass", {

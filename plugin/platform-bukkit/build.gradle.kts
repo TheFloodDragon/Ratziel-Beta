@@ -22,12 +22,12 @@ taboolib {
         install("bukkit-hook", "bukkit-util", "bukkit-fake-op", "bukkit-xseries", "minecraft-metrics")
         // NMS
         install("bukkit-nms", "bukkit-nms-stable")
-        // Script
-        install("minecraft-kether")
     }
     description {
         dependencies {
             name("PlaceholderAPI").with("bukkit").optional(true)
+            name("CraftEngine").with("bukkit").optional(true)
+            name("NeigeItems").with("bukkit").optional(true)
         }
     }
 }

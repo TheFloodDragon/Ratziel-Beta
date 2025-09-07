@@ -7,10 +7,10 @@ Script:
       # 是否启用
       enabled: true
       # 使用的脚本引擎 (Nashorn/GraalJS)
-      engine: nashorn
+      engine: Nashorn
     # Jexl
     Jexl:
       enabled: true
-#    # Kotlin Scripting (暂不支持)
-#    KotlinScripting:
-#      enabled: false
+    # Kotlin Scripting (暂不支持)
+    KotlinScripting:
+      enabled: false
