@@ -19,7 +19,6 @@ import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
-import taboolib.common.platform.function.warning
 
 /**
  * ScriptBlock
@@ -115,13 +114,13 @@ class ScriptBlock(
                 // 寻找脚本文件执行
                 val fileSection = (element["script"] as? JsonPrimitive)?.contentOrNull
                 if (fileSection != null) {
-                    val file = context.workFile.resolveOrAbsolute(fileSection)
+                    val file = context.workFile?.parentFile.resolveOrAbsolute(fileSection)
                     // 查找脚本文件
                     val scriptFile = ScriptElementHandler.scriptFiles[file]
                     if (scriptFile != null) {
                         // 返回含脚本文件的脚本块
                         return ScriptBlock(scriptFile, context)
-                    } else warning("No defined script file $file!")
+                    } else error("No defined script file $file!")
                 }
 
             }

@@ -74,9 +74,16 @@ object ScriptElementHandler : ElementHandler {
 
     override fun handle(element: Element) {
         val file = element.file!!
-        val language = ScriptElementLoader.matchType(file.extension)!!
-        val scriptsFile = createScriptFile(file, language) ?: return
-        scriptFiles[scriptsFile.first] = scriptsFile.second
+        val language = ScriptElementLoader.matchType(file.extension)
+        // 脚本文件
+        if (language != null) {
+            val scriptsFile = createScriptFile(file, language) ?: return
+            scriptFiles[scriptsFile.first] = scriptsFile.second
+        } else {
+            // 描述文件
+            val desc = ScriptDescription.loadFromFile(file)
+            if (desc != null) descriptions[file] = desc
+        }
     }
 
     /**

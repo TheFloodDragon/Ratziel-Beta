@@ -92,7 +92,7 @@ class GroupImports(
                     // ~.~ 表示脚本文件
                     val type = ScriptElementLoader.matchType(content.substringBeforeLast('.'))
                     if (type != null) {
-                        val file = baseFile.resolveOrAbsolute(content)
+                        val file = baseFile?.parentFile.resolveOrAbsolute(content)
                         if (file.exists()) {
                             scripts.add(ScriptImport(file, type))
                         } else {
