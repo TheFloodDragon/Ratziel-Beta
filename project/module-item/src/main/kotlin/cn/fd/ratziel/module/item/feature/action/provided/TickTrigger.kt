@@ -4,6 +4,7 @@ import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
+import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.feature.action.ItemTrigger
@@ -15,12 +16,13 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.platform.util.onlinePlayers
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * TickTrigger
@@ -30,7 +32,9 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object TickTrigger : ItemTrigger("onTick", "tick") {
 
-    private val tasks = ConcurrentHashMap<Identifier, PlatformExecutor.PlatformTask>()
+    private val tasks = HashMap<Int, PlatformExecutor.PlatformTask>()
+
+    private val targets = HashMap<Int, MutableCollection<Identifier>>()
 
     override fun build(identifier: Identifier, element: Element): ExecutableBlock {
         val property = element.property
@@ -43,30 +47,48 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
         val period = (property["period"] as? JsonPrimitive)?.intOrNull ?: 1
         // 栏位
         val slot = (property.getBy("where", "slot") as? JsonPrimitive)
-            ?.let { PlayerInventorySlot.infer(it.content) }
+            ?.let { PlayerInventorySlot.inferOrAny(it.content) }
             ?: PlayerInventorySlot.MAIN_HAND
 
-        // 提交任务 (缓存里没有时才提交, 避免每生成一个物品注册了一个Timer的情况)
-        tasks.computeIfAbsent(identifier) {
+        // 加入到要被 tick 的目标中去
+        targets.computeIfAbsent(period) { CopyOnWriteArraySet() }
+            .add(identifier)
+
+        // 初始化此间隔的任务 (tasks里没有时才提交, 避免每生成一个物品注册了一个Timer的情况)
+        tasks.computeIfAbsent(period) {
             submit(period = period.toLong()) {
-                // 全部 tick 一遍
-                for (player in onlinePlayers) tick(player, identifier, slot)
+                // 获取要 tick 的物品类型
+                val identifiers = targets[period]
+                if (identifiers != null && identifiers.isNotEmpty()) {
+                    // 全部 tick 一遍
+                    for (player in onlinePlayers) tick(player, identifiers, slot)
+                }
             }
         }
         // 构建脚本块并返回
-        return BlockBuilder.build(element.asCopy(code))
+        return BlockBuilder.build(element.copyOf(code))
     }
 
-    private fun tick(player: Player, identifier: Identifier, slot: PlayerInventorySlot) {
-        // 获取指定栏位物品
-        val itemStack = slot.getItemFrom(player) ?: return
+    private fun tick(player: Player, identifiers: Iterable<Identifier>, slot: Any) {
+        if (slot is PlayerInventorySlot) {
+            // 指定栏位物品 tick
+            tick(player, slot.getItemFrom(player) ?: return, identifiers)
+        } else if (slot is PlayerInventorySlot.AnySlotMark) {
+            // 任意栏位物品 tick
+            for (item in player.inventory.contents) {
+                tick(player, item, identifiers)
+            }
+        }
+    }
+
+    private fun tick(player: Player, itemStack: ItemStack, identifiers: Iterable<Identifier>) {
         // 特征物品处理
         val ratzielItem = RatzielItem.of(itemStack) ?: return
         // 判断是不是要用的物品
-        if (ratzielItem.identifier != identifier) return
+        if (ratzielItem.identifier in identifiers) return
 
         // 触发动作
-        TickTrigger.trigger(identifier, player, ratzielItem) {
+        TickTrigger.trigger(ratzielItem.identifier, player, ratzielItem) {
             set("player", player)
             set("item", ratzielItem)
         }
@@ -75,11 +97,9 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
     @Suppress("unused")
     @SubscribeEvent
     private fun onUpdate(event: ElementEvaluateEvent.Start) {
-        for (task in tasks) {
-            // 更新时必须取消上一个任务
-            task.value.cancel()
-        }
-        tasks.clear()
+        if (event.handler !is ItemElement) return
+        // 清空要 tick 的目标
+        targets.clear()
     }
 
     @Awake

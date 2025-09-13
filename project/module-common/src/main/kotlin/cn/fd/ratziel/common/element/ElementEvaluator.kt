@@ -110,7 +110,7 @@ object ElementEvaluator {
         }
         return CompletableFuture.allOf(*cycleTasks.toTypedArray()).thenApply {
             // 合并时间
-            var duration = Duration.Companion.ZERO
+            var duration = Duration.ZERO
             for (t in cycleTasks) {
                 duration = t.join() // 此时已经是所有任务结束后了
             }

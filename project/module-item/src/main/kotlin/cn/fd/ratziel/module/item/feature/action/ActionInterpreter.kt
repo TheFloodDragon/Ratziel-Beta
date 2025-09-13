@@ -50,10 +50,10 @@ object ActionInterpreter : ItemInterpreter {
                         // 构建脚本块
                         val block = if (trigger is ItemTrigger) {
                             // 使用自定义构建函数
-                            trigger.build(identifier, element.asCopy(code))
+                            trigger.build(identifier, element.copyOf(code))
                         } else {
                             // 使用默认构建器
-                            BlockBuilder.build(element.asCopy(code))
+                            BlockBuilder.build(element.copyOf(code))
                         }
                         // 返回结果
                         trigger to block

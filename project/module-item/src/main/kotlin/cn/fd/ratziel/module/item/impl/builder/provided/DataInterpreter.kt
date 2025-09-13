@@ -216,7 +216,7 @@ class DataInterpreter : ItemInterpreter {
                 ?.getBy(*alias) as? JsonObject ?: return null
             return coroutineScope {
                 property.mapValues {
-                    async { BlockBuilder.build(element.asCopy(it.value)) }
+                    async { BlockBuilder.build(element.copyOf(it.value)) }
                 }.mapValues { it.value.await() }
             }
         }

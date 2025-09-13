@@ -17,7 +17,7 @@ class Element(
     constructor(
         id: String,
         type: ElementType,
-        file: File?,
+        file: File,
         property: JsonElement,
     ) : this(ElementIdentifier(id, type, file), property)
 
@@ -40,7 +40,7 @@ class Element(
      * 创建一个元素的副本, 带有新的元素属性
      * @param property 新的元素属性
      */
-    fun asCopy(property: JsonElement): Element {
+    fun copyOf(property: JsonElement): Element {
         return Element(identifier, property)
     }
 

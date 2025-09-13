@@ -46,7 +46,7 @@ object NBTCommand {
     val view = subCommand {
         slot {
             execute<ProxyPlayer> { player, _, arg ->
-                val slot = PlayerInventorySlot.infer(arg)
+                val slot = PlayerInventorySlot.infer(arg) ?: return@execute
                 slot.getItemFrom(player.cast())?.modifyTag { tag ->
                     if (tag.isNotEmpty()) {
                         // 构建消息组件并发送
@@ -70,7 +70,7 @@ object NBTCommand {
                         // 获取基本信息
                         val path = NbtPath(ctx.args()[2])
                         val rawValue = ctx.args()[3]
-                        val slot = PlayerInventorySlot.infer(ctx.args()[1])
+                        val slot = PlayerInventorySlot.infer(ctx.args()[1]) ?: return@execute
                         slot.getItemFrom(player.cast())?.modifyTag { tag ->
                             val value = NbtSerializer.deserializeFromString(rawValue)
                             tag.write(path, value, true)
@@ -96,7 +96,7 @@ object NBTCommand {
                 execute<ProxyPlayer> { player, ctx, _ ->
                     // 获取基本信息
                     val path = NbtPath(ctx.args()[2])
-                    val slot = PlayerInventorySlot.infer(ctx.args()[1])
+                    val slot = PlayerInventorySlot.infer(ctx.args()[1]) ?: return@execute
                     slot.getItemFrom(player.cast())?.modifyTag { tag ->
                         tag.delete(path)
                         player.sendLang("NBTAction-Remove", path.toString())

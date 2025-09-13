@@ -103,7 +103,7 @@ object WorkspaceLoader {
         // 设置失败消息回调
         ElementHandler.failureCallback = { element, throwable ->
             // 失败时发送失败消息
-            if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file!!.name)
+            if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file.name)
         }
 
         WorkspaceLoadEvent.Start().call() // 事件 - 开始加载

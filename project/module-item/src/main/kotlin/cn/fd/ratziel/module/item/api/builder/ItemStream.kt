@@ -52,7 +52,7 @@ interface ItemStream {
      * @return [Element]
      */
     suspend fun fetchElement(): Element {
-        return origin.asCopy(fetchProperty())
+        return origin.copyOf(fetchProperty())
     }
 
     /**

@@ -32,7 +32,7 @@ class ElementIdentifier(
      */
     fun destrict() = NamedIdentifier(content)
 
-    override fun toString() = "ElementIdentifier(name=$name, type=$type, path=${file?.path})"
+    override fun toString() = "ElementIdentifier(name=$name, type=$type, path=${file.path})"
 
     override fun equals(other: Any?) = other is ElementIdentifier && this.name == other.name && this.type == other.type
 

@@ -60,52 +60,62 @@ class PlayerInventorySlot private constructor(
         }
     }
 
+    /**
+     * 任意一个栏位的标记
+     */
+    object AnySlotMark
+
     companion object {
 
         /**
          * 主手栏位
          */
+        @JvmField
         val MAIN_HAND = PlayerInventorySlot(BukkitEquipment.HAND, "main-hand", "main", "hand")
 
         /**
          * 佩戴栏位
          */
-        val equipmentSlots by lazy {
+        @JvmField
+        val equipmentSlots =
             // 特殊栏位
-            val array = arrayOf(
+            arrayOf(
                 MAIN_HAND,
                 PlayerInventorySlot(BukkitEquipment.HEAD, "helmet", "head"),
                 PlayerInventorySlot(BukkitEquipment.CHEST, "chestplate", "chest"),
                 PlayerInventorySlot(BukkitEquipment.LEGS, "leggings", "legs"),
                 PlayerInventorySlot(BukkitEquipment.FEET, "boots", "feet"),
-            )
-            // 副手处理
-            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
-                array + PlayerInventorySlot(BukkitEquipment.OFF_HAND, "off-hand", "off")
-            } else array
-        }
+            ).let {
+                // 副手处理
+                if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
+                    it + PlayerInventorySlot(BukkitEquipment.OFF_HAND, "off-hand", "off")
+                } else it
+            }
 
         /**
          * 所有栏位
          */
-        val allSlots: Map<String, PlayerInventorySlot> by lazy {
-            val slotList = equipmentSlots.toMutableList()
-
-            // 通用栏位 (int)
-            // 0-35 正常的栏位 | 100-103 装备栏*4 | -106 副手
-            for (i in (0..35) + (100..103) + -106) {
-                slotList.add(PlayerInventorySlot(i, i.toString()))
-            }
-
-            slotList.flatMap { it.names.map { name -> name to it } }.toMap()
-        }
+        @JvmField
+        val allSlots: Map<String, PlayerInventorySlot> =
+            equipmentSlots.toMutableList().apply {
+                // 通用栏位 (int)
+                // 0-35 正常的栏位 | 100-103 装备栏*4 | -106 副手
+                for (i in (0..35) + (100..103) + -106) {
+                    add(PlayerInventorySlot(i, i.toString()))
+                }
+            }.flatMap { it.names.map { name -> name to it } }.toMap()
 
         /**
          * 推断 [slot] 为 [PlayerInventorySlot]
          */
-        fun infer(slot: String) =
-            allSlots[slot.trim()]
-                ?: throw IllegalArgumentException("Cannot infer '$slot' to PlayerInventorySlot!")
+        fun infer(slot: String) = allSlots[slot.trim()]
+
+        /**
+         * 推断 [slot] 为 [PlayerInventorySlot] 或者 [AnySlotMark]
+         */
+        fun inferOrAny(slot: String): Any? {
+            return infer(slot) ?: if (slot.trim() == "*") AnySlotMark else null
+        }
 
     }
 
