@@ -44,7 +44,7 @@ class ScriptBlock(
     constructor(scriptFile: ScriptFile, context: BlockContext) : this(scriptFile, GroupImports.catcher[context.attached])
 
     /** 编译后的脚本 **/
-    val script: ScriptContent = scriptFile?.compiled ?: compileOrLiteral(executor, source)
+    val script: ScriptContent = scriptFile?.compile(createEnvironment()) ?: compileOrLiteral(executor, source)
 
     override fun execute(context: ArgumentContext): Any? {
         // 执行脚本
@@ -63,16 +63,18 @@ class ScriptBlock(
         if (executor is NonStrictCompilation) {
             // 预编译脚本
             try {
-                // 处理导入组
-                val environment = ScriptEnvironmentImpl()
-                if (imports != null) GroupImports.catcher[environment.context] = imports
                 // 带环境的编译脚本
-                return executor.build(script, environment)
+                return executor.build(script, createEnvironment())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
         return LiteralScriptContent(script, executor)
+    }
+
+    fun createEnvironment() = ScriptEnvironmentImpl().apply {
+        // 处理导入组
+        if (imports != null) GroupImports.catcher(context) { it.combine(imports) }
     }
 
     override fun toString() = "ScriptBlock(executor=$executor, source=$source)"
@@ -90,8 +92,7 @@ class ScriptBlock(
                     val lines = importsSection.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
                     val imports = GroupImports.parse(lines, context.workFile?.parentFile)
                     // 添加进上下文中
-                    val originalImports = GroupImports.catcher[context.attached]
-                    GroupImports.catcher[context.attached] = originalImports.combine(imports)
+                    GroupImports.catcher(context.attached) { it.combine(imports) }
                 }
 
                 // 寻找切换脚本语言的

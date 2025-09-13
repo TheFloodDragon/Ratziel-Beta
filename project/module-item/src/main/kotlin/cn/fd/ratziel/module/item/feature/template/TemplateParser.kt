@@ -22,15 +22,24 @@ object TemplateParser {
 
     @JvmStatic
     fun parse(element: Element): Template {
-        return Template(element, findParents(element))
+        return Template(element, findParents(element.property))
     }
 
     @JvmStatic
-    private fun findParents(element: Element): Set<String> {
-        val property = element.property as? JsonObject ?: return emptySet()
+    fun findParents(element: JsonElement): Set<String> {
+        val property = element as? JsonObject ?: return emptySet()
         return when (val section = property.getBy(*INHERIT_ALIAS)) {
             is JsonPrimitive -> setOf(section.content)
             is JsonArray -> section.mapNotNull { (it as? JsonPrimitive)?.content }.toSet()
+            else -> emptySet()
+        }
+    }
+
+    @JvmStatic
+    fun findParents(element: JsonTree.ObjectNode): Set<String> {
+        return when (val section = element.value.getBy(*INHERIT_ALIAS)) {
+            is JsonTree.PrimitiveNode -> setOf(section.value.content)
+            is JsonTree.ArrayNode -> section.value.mapNotNull { (it as? JsonTree.PrimitiveNode)?.value?.content }.toSet()
             else -> emptySet()
         }
     }

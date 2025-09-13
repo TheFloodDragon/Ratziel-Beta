@@ -58,6 +58,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source>(), NonStrictCompila
 
     override fun preheat(environment: ScriptEnvironment) {
         val imports = GroupImports.catcher[environment.context]
+        println(imports)
         if (imports.isEmpty()) return
         // 获取脚本执行要的上下文
         val context = getContext(environment)
@@ -65,7 +66,8 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source>(), NonStrictCompila
         val contextBindings = context.getBindings(LANGUAGE_ID)
         contextBindings.putMember(IMPORTS_MEMBER, imports)
         // 导入脚本
-        val scriptImports = imports.scripts[ScriptType.JAVASCRIPT].orEmpty()
+        val scriptImports = imports.scripts(ScriptType.JAVASCRIPT)
+        println(scriptImports)
         for (import in scriptImports) {
             this.evaluate(import.compiled ?: continue, environment)
         }

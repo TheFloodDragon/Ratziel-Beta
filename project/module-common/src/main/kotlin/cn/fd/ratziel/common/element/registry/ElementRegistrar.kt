@@ -24,15 +24,9 @@ class ElementRegistrar : ClassVisitor(0) {
             anno.enumName("name"),
             anno.property<List<String>>("alias", emptyList()).toTypedArray()
         )
-        if (clazz.hasInterface(ElementHandler::class.java)) {
-            try {
-                val handler = findInstance(clazz) as ElementHandler
-                ElementRegistry.register(type, handler)
-            } catch (e: Exception) {
-                severe("Failed to register element '$type'! Its handler: ${clazz.simpleName}")
-                e.printStackTrace()
-            }
-        }
+        // 获取实例并注册处理器
+        val handler = findInstance(clazz) as? ElementHandler ?: return
+        ElementRegistry.register(type, handler)
     }
 
     override fun getLifeCycle(): LifeCycle {

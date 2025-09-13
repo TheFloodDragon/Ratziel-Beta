@@ -100,7 +100,7 @@ object ElementEvaluator {
                 // 开始记录时间
                 val timeMark = TimeSource.Monotonic.markNow()
                 // 评估所有组内的所有任务
-                val tasks = groups.map { it.evaluate().asCompletableFuture() }
+                val tasks = groups.map { it.evaluate() }
                 // 合并任务
                 CompletableFuture.allOf(*tasks.toTypedArray()).thenRun {
                     // 完成并回传处理时间
@@ -171,10 +171,10 @@ object ElementEvaluator {
          * 评估所有任务 (只执行一次)
          */
         @Synchronized
-        fun evaluate(): Deferred<Throwable?> {
+        fun evaluate(): CompletableFuture<Throwable?> {
             // 完成后不再执行
             if (isDone) {
-                return CompletableDeferred(null)
+                return CompletableFuture.completedFuture(null)
             } else {
                 // 标记所有任务完成
                 isDone = true
@@ -183,12 +183,13 @@ object ElementEvaluator {
             return scope.async {
 
                 // 检查前置
-                checkDependencies()
+                handleDependencies()
 
                 // 触发 ElementEvaluateEvent.Start
                 ElementEvaluateEvent.Start(handler, elements).call()
 
                 // 处理元素任务
+                evaluatedElements.putAll(elements.associateBy { it.identifier })
                 try {
                     handler.handle(elements)
                 } catch (ex: Throwable) {
@@ -200,10 +201,10 @@ object ElementEvaluator {
                 ElementEvaluateEvent.End(handler).call()
 
                 return@async null
-            }
+            }.asCompletableFuture()
         }
 
-        private suspend fun checkDependencies() {
+        private fun handleDependencies() {
             for (dependencyClass in config.requires) {
                 // 寻找对应类型
                 val type = ElementRegistry.findType(dependencyClass.java)
@@ -226,16 +227,9 @@ object ElementEvaluator {
         // 分析注解
         val handlerClass = handler::class.java
         val annoClass = ElementConfig::class.java
-        val method = handlerClass.getMethod("handle", Element::class.java)
-        val config = when {
-            // 处理函数注解
-            method.isAnnotationPresent(annoClass) -> method.getAnnotation(annoClass)
-            // 类注解
-            handlerClass.isAnnotationPresent(annoClass) -> handlerClass.getAnnotation(annoClass)
-            // 默认配置
-            else -> ElementConfig()
-        }
-        return config
+        return if (handlerClass.isAnnotationPresent(annoClass)) {
+            handlerClass.getAnnotation(annoClass)
+        } else ElementConfig()
     }
 
 }

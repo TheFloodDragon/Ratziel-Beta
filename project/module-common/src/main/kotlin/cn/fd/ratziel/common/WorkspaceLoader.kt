@@ -102,6 +102,8 @@ object WorkspaceLoader {
 
         // 设置失败消息回调
         ElementHandler.failureCallback = { element, throwable ->
+            // 从评估过的元素中删除
+            ElementEvaluator.evaluatedElements.remove(element.identifier)
             // 失败时发送失败消息
             if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file.name)
         }
