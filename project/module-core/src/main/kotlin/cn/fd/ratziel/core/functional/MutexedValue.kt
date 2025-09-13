@@ -9,18 +9,39 @@ import kotlinx.coroutines.sync.withLock
  * @author TheFloodDragon
  * @since 2025/5/14 21:06
  */
-interface MutexedValue<T> {
+abstract class MutexedValue<T> {
+
+    /**
+     * 值是否被锁住
+     */
+    abstract val isLocked: Boolean
+
+    /**
+     * 获取值并锁住现有值
+     */
+    abstract suspend fun take(): T
+
+    /**
+     * 释放值 (锁住值的锁)
+     */
+    abstract suspend fun release()
 
     /**
      * 获取值并处理, 在此期间只有一个线程可以操作
      */
-    suspend fun <R> withValue(block: suspend (T) -> R): R
+    suspend fun <R> withValue(block: suspend (T) -> R): R {
+        return try {
+            block(take())
+        } finally {
+            release()
+        }
+    }
 
     /**
      * 获取值并处理, 在此期间只有一个线程可以操作
      * @see withValue
      */
-    suspend operator fun <R> invoke(block: suspend (T) -> R): R = this.withValue(block)
+    suspend inline operator fun <R> invoke(noinline block: suspend (T) -> R): R = this.withValue(block)
 
     /**
      * 直接获取值
@@ -32,12 +53,12 @@ interface MutexedValue<T> {
     /**
      * Mutable
      */
-    interface Mutable<T> : MutexedValue<T> {
+    abstract class Mutable<T> : MutexedValue<T>() {
 
         /**
          * 更新值
          */
-        suspend fun update(block: suspend (T) -> T)
+        abstract suspend fun update(block: suspend (T) -> T)
 
     }
 
@@ -55,44 +76,27 @@ interface MutexedValue<T> {
         @JvmStatic
         fun <T> initial(initialValue: T): Mutable<T> = InitialValue(initialValue)
 
-        /**
-         * 同时等待多个值, 并处理
-         */
-        @JvmStatic
-        suspend fun <T1, T2, R> withAll(
-            m1: MutexedValue<T1>,
-            m2: MutexedValue<T2>,
-            block: suspend (T1, T2) -> R,
-        ): R {
-            return m1.withValue { v1 ->
-                m2.withValue { v2 -> block(v1, v2) }
-            }
-        }
-
     }
 
-    private class GetterValue<T>(private val getter: () -> T) : MutexedValue<T> {
+    private class GetterValue<T>(private val getter: () -> T) : MutexedValue<T>() {
         private val mutex: Mutex = Mutex()
-        override suspend fun <R> withValue(block: suspend (T) -> R): R {
-            return mutex.withLock {
-                // 在锁的保护下执行处理逻辑
-                block(getter.invoke())
-            }
+        override val isLocked get() = mutex.isLocked
+        override suspend fun release() = mutex.unlock(this)
+        override suspend fun take(): T {
+            mutex.lock(this)
+            return getter()
         }
     }
 
-    private class InitialValue<T>(initialValue: T) : Mutable<T> {
+    private class InitialValue<T>(initialValue: T) : Mutable<T>() {
         private var value = initialValue
         private val mutex: Mutex = Mutex()
-        override suspend fun <R> withValue(block: suspend (T) -> R): R {
-            return mutex.withLock {
-                // 在锁的保护下执行处理逻辑
-                block(value)
-            }
-        }
-
-        override suspend fun update(block: suspend (T) -> T) {
-            mutex.withLock { value = block(value) }
+        override val isLocked get() = mutex.isLocked
+        override suspend fun release() = mutex.unlock(this)
+        override suspend fun update(block: suspend (T) -> T) = mutex.withLock { this.value = block(value) }
+        override suspend fun take(): T {
+            mutex.lock(this)
+            return value
         }
     }
 

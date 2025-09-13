@@ -2,6 +2,7 @@ package cn.fd.ratziel.platform.bukkit.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
 import cn.fd.ratziel.common.command.CommandElement
+import cn.fd.ratziel.common.command.executeAsync
 import cn.fd.ratziel.common.config.Settings
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
@@ -32,7 +33,7 @@ object Command {
 
     @CommandBody
     val reload = subCommand {
-        execute<ProxyCommandSender> { sender, _, _ ->
+        executeAsync<ProxyCommandSender> { sender, _, _ ->
             measureTimeMillis {
                 // 重载配置
                 Settings.conf.reload()

@@ -24,7 +24,7 @@ object ItemSheet {
 
     @Awake(LifeCycle.LOAD)
     private fun initialize() {
-        mappings = Mapper.initialize("nbt-mappings.json")
+        mappings = Mapper.initialize("internal/nbt-mappings.json")
     }
 
     /**

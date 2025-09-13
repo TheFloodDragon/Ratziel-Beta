@@ -38,7 +38,7 @@ object ScriptManager {
      */
     val globalGroup: GroupImports by lazy {
         // 读取文件
-        val imports = JarUtil.getEntries { it.name.startsWith("script-default/") && it.name.endsWith(".imports") }.flatMap { it.reader().readLines() }
+        val imports = JarUtil.getEntries { it.name.startsWith("internal/script-imports") && it.name.endsWith(".imports") }.flatMap { it.reader().readLines() }
         GroupImports.parse(imports)
     }
 
