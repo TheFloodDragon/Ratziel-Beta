@@ -36,4 +36,6 @@ data class PackageImport(
         }
     }
 
+    override fun toString() = "$packageName.*"
+
 }

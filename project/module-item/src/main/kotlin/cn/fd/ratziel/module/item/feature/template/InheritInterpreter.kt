@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.feature.template
 import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
-import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.feature.action.ActionInterpreter
@@ -59,12 +58,12 @@ object InheritInterpreter : ItemInterpreter {
         // 处理对象节点
         if (node !is JsonTree.ObjectNode) return emptyList()
         // 寻找继承字段
-        val field = node.value.getBy(*TemplateParser.INHERIT_ALIAS) as? JsonTree.PrimitiveNode ?: return emptyList()
+        val parents = TemplateParser.findParents(node)
         // 获取模板
-        val template = TemplateElement.findBy(field.value.content) ?: return emptyList()
+        val chain = parents.mapNotNull { TemplateElement.findBy(it) }.asReversed().flatMap { it.asChain() }
         // 合并对象 (从底部开始)
         val availableChain = ArrayList<Template>()
-        for (t in template.asChain()) {
+        for (t in chain) {
             val element = TemplateParser.findElement(t) ?: break // 出错了就直接退出吧, 不应用上面的了
             availableChain.add(t)
             // 过滤动作信息 (不合并这些)

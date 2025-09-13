@@ -27,6 +27,7 @@ object ScriptElementHandler : ElementHandler {
     /**
      * 脚本描述表
      */
+    @JvmField
     val descriptions: MutableMap<File, ScriptDescription> = ConcurrentHashMap()
 
     /**
@@ -88,8 +89,9 @@ object ScriptElementHandler : ElementHandler {
     /**
      * 创建脚本文件
      */
+    @JvmStatic
     fun createScriptFile(file: File, language: ScriptType) = try {
-        val desc = descriptions[file] ?: ScriptDescription(listOf(file))
+        val desc = descriptions.values.find { it.files.contains(file) } ?: ScriptDescription(listOf(file))
         // 构建脚本文件
         val scriptFile = ScriptFile(file, desc, language)
         file to scriptFile

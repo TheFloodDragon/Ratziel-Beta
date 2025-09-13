@@ -81,7 +81,10 @@ interface ElementHandler {
         /**
          * 标记某个元素为处理失败
          */
-        fun fail(element: Element, cause: Throwable? = null) = failureCallback?.invoke(element, cause)
+        fun fail(element: Element, cause: Throwable? = null) {
+            failureCallback?.invoke(element, cause)
+            cause?.printStackTrace()
+        }
 
     }
 

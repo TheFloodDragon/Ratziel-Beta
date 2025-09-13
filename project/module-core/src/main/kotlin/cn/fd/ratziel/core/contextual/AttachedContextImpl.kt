@@ -45,27 +45,13 @@ class AttachedContextImpl(val map: MutableMap<Any, Any> = ConcurrentHashMap()) :
          * 设置附加值
          */
         override operator fun set(attached: AttachedContext, value: T) {
-            attached.put(key, value)
-        }
-
-        /**
-         * 获取附加值
-         */
-        override operator fun get(context: ArgumentContext): T {
-            return this[getAttached(context)]
-        }
-
-        /**
-         * 设置附加值
-         */
-        override operator fun set(context: ArgumentContext, value: T) {
-            this[getAttached(context)] = value
+            attached[key] = value
         }
 
         /**
          * 获取 [AttachedContext] (没有的话就创建)
          */
-        private fun getAttached(context: ArgumentContext): AttachedContext {
+        override fun attach(context: ArgumentContext): AttachedContext {
             return context.popOrPut(AttachedContext::class.java) { AttachedContextImpl() }
         }
 

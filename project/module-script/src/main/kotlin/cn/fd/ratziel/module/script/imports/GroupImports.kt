@@ -26,7 +26,7 @@ class GroupImports(
     /**
      * 导入的脚本
      */
-    val scripts: Map<ScriptType, Set<ScriptImport>> = emptyMap(),
+    val scripts: Set<ScriptImport> = emptySet(),
 ) {
 
     /**
@@ -45,6 +45,11 @@ class GroupImports(
         }
         return null
     }
+
+    /**
+     * 获取指定类型的脚本导入列表
+     */
+    fun scripts(type: ScriptType): List<ScriptImport> = this.scripts.filter { it.type == type }
 
     /**
      * 合并另一个导入组
@@ -90,7 +95,7 @@ class GroupImports(
                     packages.add(PackageImport(content.substringBeforeLast('.')))
                 } else {
                     // ~.~ 表示脚本文件
-                    val type = ScriptElementLoader.matchType(content.substringBeforeLast('.'))
+                    val type = ScriptElementLoader.matchType(content.substringAfterLast('.'))
                     if (type != null) {
                         val file = baseFile.resolveOrAbsolute(content)
                         if (file.exists()) {
@@ -104,7 +109,7 @@ class GroupImports(
                     }
                 }
             }
-            return GroupImports(classes, packages, scripts.groupBy { it.type }.mapValues { it.value.toSet() })
+            return GroupImports(classes, packages, scripts)
         }
 
     }

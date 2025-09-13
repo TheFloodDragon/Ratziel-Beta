@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.script.element
 
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
+import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
 import cn.fd.ratziel.module.script.imports.GroupImports
@@ -20,6 +21,8 @@ class ScriptFile(
     val desc: ScriptDescription,
     /** 脚本语言 **/
     val language: ScriptType,
+    /** 是否立即编译 **/
+    immediatelyCompile: Boolean = desc.descFile == null,
 ) {
 
     /**
@@ -35,12 +38,25 @@ class ScriptFile(
     /**
      * 编译后的脚本
      */
-    val compiled: ScriptContent = this.executor.build(
-        source, ScriptEnvironmentImpl()
-            .apply {
+    lateinit var compiled: ScriptContent private set
+
+    init {
+        // 开启后立即编译
+        if (immediatelyCompile) compile(ScriptEnvironmentImpl())
+    }
+
+    /**
+     * 编译脚本
+     */
+    fun compile(environment: ScriptEnvironment): ScriptContent {
+        // 保存编译后的脚本
+        this.compiled = this.executor.build(
+            source, environment.apply {
                 // 导入组
-                GroupImports.catcher[context] = desc.imports
+                GroupImports.catcher(context) { it.combine(desc.imports) }
             })
+        return this.compiled
+    }
 
     override fun toString() = "ScriptFile$desc"
 

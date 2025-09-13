@@ -63,7 +63,7 @@ data class Template(
                 iteratorStack.remove(iterator)
             }
         }
-        if (warned) warning("Template chain has been truncated! Final Chain: $stack")
+        if (warned) warning("Template chain has been truncated! Final Chain: ${stack.map { it.name }}")
         return stack
     }
 

@@ -81,9 +81,9 @@ abstract class MutexedValue<T> {
     private class GetterValue<T>(private val getter: () -> T) : MutexedValue<T>() {
         private val mutex: Mutex = Mutex()
         override val isLocked get() = mutex.isLocked
-        override suspend fun release() = mutex.unlock(this)
+        override suspend fun release() = mutex.unlock(null)
         override suspend fun take(): T {
-            mutex.lock(this)
+            mutex.lock(null)
             return getter()
         }
     }
@@ -92,10 +92,10 @@ abstract class MutexedValue<T> {
         private var value = initialValue
         private val mutex: Mutex = Mutex()
         override val isLocked get() = mutex.isLocked
-        override suspend fun release() = mutex.unlock(this)
+        override suspend fun release() = mutex.unlock(null)
         override suspend fun update(block: suspend (T) -> T) = mutex.withLock { this.value = block(value) }
         override suspend fun take(): T {
-            mutex.lock(this)
+            mutex.lock(null)
             return value
         }
     }

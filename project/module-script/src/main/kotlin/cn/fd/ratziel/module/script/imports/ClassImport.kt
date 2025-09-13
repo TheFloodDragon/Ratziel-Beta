@@ -41,4 +41,6 @@ data class ClassImport(
         }
     }
 
+    override fun toString() = this.fullName
+
 }
