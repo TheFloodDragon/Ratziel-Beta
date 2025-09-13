@@ -11,7 +11,6 @@ import taboolib.common.platform.function.warning
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
 import java.io.File
-import java.util.*
 
 /**
  * DefaultElementLoader
@@ -56,7 +55,7 @@ object DefaultElementLoader : ElementLoader {
             val name = file.nameWithoutExtension
             // 匹配元素类型
             val pair = parseType(workspace, json) ?: return emptyList()
-            return Collections.singletonList(Element(name, pair.first, file, pair.second))
+            return listOf(Element(name, pair.first, file, pair.second))
         } else {
             val list = ArrayList<Element>()
             for (entry in json) {

@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.element
 
 import cn.fd.ratziel.core.util.resolveOrAbsolute
+import cn.fd.ratziel.module.script.imports.GroupImports
 import taboolib.common.platform.function.warning
 import taboolib.module.configuration.Configuration
 import java.io.File
@@ -20,9 +21,13 @@ class ScriptDescription(
      * 描述文件
      */
     val descFile: File?,
+    /**
+     * 脚本导入
+     */
+    val imports: GroupImports,
 ) {
 
-    override fun toString() = "{descFile=$descFile, scriptFiles=$files}"
+    override fun toString() = "{descFile=$descFile, scriptFiles=$files, imports=$imports}"
 
     companion object {
 
@@ -53,9 +58,8 @@ class ScriptDescription(
             // 读取配置文件
             val conf = Configuration.loadFromFile(descFile)
 
-            // 读取文件部分
-            val filesSection = conf["file"] ?: conf["files"] ?: return null
             // 解析文件路径
+            val filesSection = conf["file"] ?: conf["files"] ?: return null
             val files = when (filesSection) {
                 is String -> listOf(descFile.parentFile.resolveOrAbsolute(filesSection))
                 is List<*> -> filesSection.mapNotNull { if (it is String) descFile.parentFile.resolveOrAbsolute(it) else null }
@@ -66,8 +70,16 @@ class ScriptDescription(
                 exists // 过滤出存在的
             }
 
+            // 解析导入项
+            val importsSection = conf["imports"] ?: conf["import"]
+            val imports = when (importsSection) {
+                is String -> listOf(importsSection)
+                is List<*> -> importsSection.map { it.toString() }
+                else -> emptyList()
+            }.let { GroupImports.parse(it, descFile.parentFile) }
+
             // 返回脚本描述
-            return ScriptDescription(files, descFile)
+            return ScriptDescription(files, descFile, imports)
         }
 
     }

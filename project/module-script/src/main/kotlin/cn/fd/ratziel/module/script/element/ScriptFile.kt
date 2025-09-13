@@ -3,6 +3,8 @@ package cn.fd.ratziel.module.script.element
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
+import cn.fd.ratziel.module.script.imports.GroupImports
 import java.io.File
 
 /**
@@ -33,7 +35,12 @@ class ScriptFile(
     /**
      * 编译后的脚本
      */
-    val compiled: ScriptContent = this.executor.build(source)
+    val compiled: ScriptContent = this.executor.build(
+        source, ScriptEnvironmentImpl()
+            .apply {
+                // 导入组
+                GroupImports.catcher[context] = desc.imports
+            })
 
     override fun toString() = "ScriptFile$desc"
 

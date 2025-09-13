@@ -88,7 +88,7 @@ class ScriptBlock(
                 val importsSection = element["imports"] ?: element["import"]
                 if (importsSection != null && importsSection is JsonArray) {
                     val lines = importsSection.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
-                    val imports = GroupImports.parse(lines, context.workFile)
+                    val imports = GroupImports.parse(lines, context.workFile?.parentFile)
                     // 添加进上下文中
                     val originalImports = GroupImports.catcher[context.attached]
                     GroupImports.catcher[context.attached] = originalImports.combine(imports)
