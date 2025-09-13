@@ -53,7 +53,7 @@ object InheritResolver : ItemTagResolver {
         }
 
         // 根据路径寻找
-        val template = TemplateParser.findTemplate(name) ?: return null
+        val template = TemplateElement.findBy(name) ?: return null
         var find: JsonElement? = null
         // 链式查找 (从底部开始)
         for (t in template.asChain()) {

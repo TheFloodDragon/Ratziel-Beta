@@ -17,8 +17,13 @@ data class Template(
     /**
      * 父模板
      */
-    val parent: Template? = null,
+    val parents: Collection<String> = emptySet(),
 ) {
+
+    /**
+     * 模板名称
+     */
+    val name get() = element.name
 
     /**
      * 分析模板继承关系
@@ -26,24 +31,42 @@ data class Template(
      * @return 不翻转时从底部开始
      */
     fun asChain(): List<Template> {
+        // 没有父模板直接返回
+        if (parents.isEmpty()) return listOf(this)
+
         val stack = ArrayList<Template>()
+        var warned = false // 是否被警告过
         var last: Template = this
         stack.add(last) // 先加我自己
-        var parent: Template? = last.parent
-        while (parent != null) {
-            if (!stack.contains(parent)) {
-                stack.add(parent) // 加父模板
-                // 更新
-                last = parent
-                parent = last.parent
+
+        val iteratorStack = mutableListOf(last.parents.iterator())
+        while (iteratorStack.isNotEmpty()) {
+            // 取栈顶迭代器
+            val iterator = iteratorStack.last()
+            // 迭代器还没迭代完
+            if (iterator.hasNext()) {
+                // 取下一个父模板 (找不到就跳过)
+                val parent = TemplateElement.findBy(iterator.next()) ?: continue
+                // 链式引用截断机制
+                if (stack.contains(parent)) {
+                    warning("Circular inheritance detected! $last wants to inherit the exist template $parent!")
+                    warned = true
+                } else {
+                    last = parent
+                    stack.add(last)
+                    // 取父模板的迭代器, 入栈
+                    if (parent.parents.isNotEmpty())
+                        iteratorStack.add(parent.parents.iterator())
+                }
             } else {
-                warning("Circular inheritance detected! $last wants to inherit the exist template $parent!")
-                break
+                // 迭代完了, 出栈
+                iteratorStack.remove(iterator)
             }
         }
+        if (warned) warning("Template chain has been truncated! Final Chain: $stack")
         return stack
     }
 
-    override fun toString() = "Template(name=${element.name}, parent=${parent?.element?.name})"
+    override fun toString() = "Template(name=${element.name}, parents=$parents)"
 
 }

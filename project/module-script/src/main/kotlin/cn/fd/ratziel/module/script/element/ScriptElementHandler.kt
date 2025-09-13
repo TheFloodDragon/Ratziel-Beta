@@ -89,8 +89,7 @@ object ScriptElementHandler : ElementHandler {
      * 创建脚本文件
      */
     fun createScriptFile(file: File, language: ScriptType) = try {
-        val desc = descriptions[file]
-            ?: ScriptDescription(listOf(file), null)
+        val desc = descriptions[file] ?: ScriptDescription(listOf(file))
         // 构建脚本文件
         val scriptFile = ScriptFile(file, desc, language)
         file to scriptFile

@@ -20,11 +20,11 @@ class ScriptDescription(
     /**
      * 描述文件
      */
-    val descFile: File?,
+    val descFile: File? = null,
     /**
      * 脚本导入
      */
-    val imports: GroupImports,
+    val imports: GroupImports = GroupImports(),
 ) {
 
     override fun toString() = "{descFile=$descFile, scriptFiles=$files, imports=$imports}"

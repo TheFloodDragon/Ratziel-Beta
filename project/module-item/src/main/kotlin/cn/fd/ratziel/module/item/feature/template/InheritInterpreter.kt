@@ -61,7 +61,7 @@ object InheritInterpreter : ItemInterpreter {
         // 寻找继承字段
         val field = node.value.getBy(*TemplateParser.INHERIT_ALIAS) as? JsonTree.PrimitiveNode ?: return emptyList()
         // 获取模板
-        val template = TemplateParser.findTemplate(field.value.content) ?: return emptyList()
+        val template = TemplateElement.findBy(field.value.content) ?: return emptyList()
         // 合并对象 (从底部开始)
         val availableChain = ArrayList<Template>()
         for (t in template.asChain()) {
