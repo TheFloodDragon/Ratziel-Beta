@@ -9,6 +9,8 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.element.ElementIdentifier
 import cn.fd.ratziel.core.element.ElementType
+import kotlinx.coroutines.*
+import kotlinx.coroutines.future.asCompletableFuture
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.function.debug
@@ -17,8 +19,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
-import java.util.function.BiConsumer
-import java.util.function.Supplier
 import kotlin.time.Duration
 import kotlin.time.TimeSource
 
@@ -36,6 +36,11 @@ object ElementEvaluator {
     val executor: ExecutorService get() = WorkspaceLoader.executor
 
     /**
+     * 协程作用域
+     */
+    val scope = CoroutineScope(CoroutineName("ElementEvaluator") + executor.asCoroutineDispatcher())
+
+    /**
      * 评估任务表
      */
     val evaluations: MutableMap<ElementType, EvaluationGroup> = ConcurrentHashMap()
@@ -48,19 +53,19 @@ object ElementEvaluator {
     /**
      * 直接处理元素
      */
-    fun handleElement(element: Element): Throwable? {
-        return this.handleElement(ElementRegistry[element.type], element)
+    fun handleElement(element: Element): Throwable? = runBlocking {
+        this@ElementEvaluator.handleElement(ElementRegistry[element.type], element)
     }
 
     /**
      * 使用 [handler] 处理元素 [element]
      */
-    fun handleElement(handler: ElementHandler, element: Element): Throwable? {
+    suspend fun handleElement(handler: ElementHandler, element: Element): Throwable? {
         // 触发 ElementEvaluateEvent.Process
         ElementEvaluateEvent.Process(handler, element).call()
         try {
             // 处理元素
-            handler.handle(element)
+            handler.update(element)
             // 缓存加载过的元素
             evaluatedElements[element.identifier] = element
             return null
@@ -95,7 +100,7 @@ object ElementEvaluator {
                 // 开始记录时间
                 val timeMark = TimeSource.Monotonic.markNow()
                 // 评估所有组内的所有任务
-                val tasks = groups.map { it.evaluate() }
+                val tasks = groups.map { it.evaluate().asCompletableFuture() }
                 // 合并任务
                 CompletableFuture.allOf(*tasks.toTypedArray()).thenRun {
                     // 完成并回传处理时间
@@ -116,14 +121,13 @@ object ElementEvaluator {
     /**
      * 提交任务
      */
-    fun submit(element: Element, onCompleted: BiConsumer<Element, Throwable?>? = null) {
+    fun submit(element: Element) {
         // 获取任务组
         val group = evaluations.computeIfAbsent(element.type) {
             val handler = ElementRegistry[element.type]
             EvaluationGroup(
                 handler,
                 findConfig(handler),
-                onCompleted
             )
         }
         // 提交元素
@@ -146,8 +150,6 @@ object ElementEvaluator {
         val handler: ElementHandler,
         /** 元素配置 **/
         val config: ElementConfig,
-        /** 完成时触发回调 **/
-        val onCompleted: BiConsumer<Element, Throwable?>?,
     ) {
 
         /**
@@ -169,49 +171,39 @@ object ElementEvaluator {
          * 评估所有任务 (只执行一次)
          */
         @Synchronized
-        fun evaluate(): CompletableFuture<*> {
+        fun evaluate(): Deferred<Throwable?> {
             // 完成后不再执行
             if (isDone) {
-                return CompletableFuture.completedFuture(Unit)
+                return CompletableDeferred(null)
             } else {
                 // 标记所有任务完成
                 isDone = true
             }
 
-            // 检查前置
-            checkDependencies()
+            return scope.async {
 
-            // 触发 ElementHandler#onStart
-            handler.onStart(elements)
-            // 触发 ElementEvaluateEvent.Start
-            ElementEvaluateEvent.Start(handler, elements).call()
+                // 检查前置
+                checkDependencies()
 
-            // 异步任务列表
-            val asyncTasks = ArrayList<CompletableFuture<Throwable?>>()
-            // 同步任务列表
-            val syncTasks = ArrayList<Supplier<Throwable?>>()
-            // 提交任务
-            for (element in elements) {
-                // 异步 & 同步 任务提交
-                if (config.parallel) {
-                    asyncTasks.add(CompletableFuture.supplyAsync({ handle(element) }, executor))
-                } else {
-                    syncTasks.add(Supplier { handle(element) })
+                // 触发 ElementEvaluateEvent.Start
+                ElementEvaluateEvent.Start(handler, elements).call()
+
+                // 处理元素任务
+                try {
+                    handler.handle(elements)
+                } catch (ex: Throwable) {
+                    severe("Failed to handle elements '$elements' by $handler!", ex.stackTraceToString())
+                    return@async ex
                 }
-            }
-            // 执行同步任务
-            syncTasks.forEach { it.get() }
 
-            // 返回异步任务
-            return CompletableFuture.allOf(*asyncTasks.toTypedArray()).thenRun {
-                // 触发 ElementHandler#onEnd
-                handler.onEnd()
                 // 触发 ElementEvaluateEvent.End
                 ElementEvaluateEvent.End(handler).call()
+
+                return@async null
             }
         }
 
-        private fun checkDependencies() {
+        private suspend fun checkDependencies() {
             for (dependencyClass in config.requires) {
                 // 寻找对应类型
                 val type = ElementRegistry.findType(dependencyClass.java)
@@ -219,18 +211,10 @@ object ElementEvaluator {
                 val group = evaluations[type]
                 // 完成其任务组
                 if (group != null) {
-                    group.evaluate().get()
+                    group.evaluate().join()
                     debug("[EvaluationGroup] Depended handler '${dependencyClass.java}' for '$handler' has been evaluated.")
                 }
             }
-        }
-
-        private fun handle(element: Element): Throwable? {
-            // 开始处理
-            val result = handleElement(handler, element)
-            // 完成回调
-            onCompleted?.accept(element, result)
-            return result
         }
 
     }

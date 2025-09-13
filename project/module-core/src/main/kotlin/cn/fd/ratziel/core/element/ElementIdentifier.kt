@@ -22,7 +22,7 @@ class ElementIdentifier(
     /**
      * 元素文件
      */
-    val file: File?,
+    val file: File,
 ) : Identifier {
 
     override val content get() = this.name

@@ -7,7 +7,7 @@ import cn.fd.ratziel.module.script.ScriptType
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.coroutineScope
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.warning
 import taboolib.module.lang.sendLang
@@ -35,13 +35,12 @@ object ScriptElementHandler : ElementHandler {
     @JvmField
     val scriptFiles: MutableMap<File, ScriptFile> = ConcurrentHashMap()
 
-    override fun onStart(elements: Collection<Element>) = runBlocking {
+    override suspend fun handle(elements: Collection<Element>) = coroutineScope {
         // 时间开始标记
         val timeMark = TimeSource.Monotonic.markNow()
 
         // 脚本文件分组
-        val allFiles = elements.mapNotNull { it.file }
-        val typedGroup = allFiles.groupBy { ScriptElementLoader.matchType(it.extension) }
+        val typedGroup = elements.map { it.file }.groupBy { ScriptElementLoader.matchType(it.extension) }
         // 脚本文件组
         val scriptsGroup = typedGroup.filterKeys { it != null }
         // 脚本描述组
@@ -72,8 +71,8 @@ object ScriptElementHandler : ElementHandler {
         console().sendLang("ScriptFile-Load", scripts.size, timeMark.elapsedNow().inWholeMilliseconds)
     }
 
-    override fun handle(element: Element) {
-        val file = element.file!!
+    override suspend fun update(element: Element) {
+        val file = element.file
         val language = ScriptElementLoader.matchType(file.extension)
         // 脚本文件
         if (language != null) {

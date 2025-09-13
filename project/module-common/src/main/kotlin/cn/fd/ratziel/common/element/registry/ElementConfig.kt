@@ -21,8 +21,4 @@ annotation class ElementConfig(
      * 需要/依赖 的元素处理器
      */
     val requires: Array<KClass<out ElementHandler>> = [],
-    /**
-     * 并行处理
-     */
-    val parallel: Boolean = true,
 )

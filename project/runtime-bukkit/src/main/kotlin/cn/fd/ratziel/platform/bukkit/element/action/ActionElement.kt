@@ -19,7 +19,7 @@ import taboolib.common.LifeCycle
     alias = ["actions"]
 )
 @ElementConfig(LifeCycle.ENABLE)
-object ActionElement : ElementHandler {
+object ActionElement : ElementHandler.ParralHandler {
 
     override fun handle(element: Element) {
         val block = BlockBuilder.build(element)

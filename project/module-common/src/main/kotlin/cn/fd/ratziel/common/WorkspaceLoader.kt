@@ -5,6 +5,7 @@ import cn.fd.ratziel.common.element.ElementLoader
 import cn.fd.ratziel.common.event.WorkspaceLoadEvent
 import cn.fd.ratziel.common.util.FileListener
 import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.element.ElementHandler
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
@@ -76,10 +77,7 @@ object WorkspaceLoader {
                             }
                             livingElements[loadedElement.name] = loadedElement
                             // 提交到周期评估任务表里
-                            ElementEvaluator.submit(loadedElement) { element, throwable ->
-                                // 失败时发送失败消息
-                                if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file!!.name)
-                            }
+                            ElementEvaluator.submit(loadedElement)
                         }
                     } else sender.sendLang("Element-File-Load-Failed", file.name)
                 }, executor))
@@ -101,6 +99,12 @@ object WorkspaceLoader {
      */
     private fun load(sender: ProxyCommandSender): CompletableFuture<Duration> {
         val result = CompletableFuture<Duration>()
+
+        // 设置失败消息回调
+        ElementHandler.failureCallback = { element, throwable ->
+            // 失败时发送失败消息
+            if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file!!.name)
+        }
 
         WorkspaceLoadEvent.Start().call() // 事件 - 开始加载
 

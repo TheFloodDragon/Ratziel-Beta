@@ -43,7 +43,7 @@ import taboolib.module.nms.MinecraftVersion
     lifeCycle = LifeCycle.ENABLE,
     requires = [TemplateElement::class]
 )
-object ItemElement : ElementHandler {
+object ItemElement : ElementHandler.ParralHandler {
 
     /**
      * 协程上下文
