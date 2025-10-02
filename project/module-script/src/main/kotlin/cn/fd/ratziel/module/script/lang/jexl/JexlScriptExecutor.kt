@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.script.lang.jexl
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.api.ScriptSource
 import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import org.apache.commons.jexl3.JexlBuilder
@@ -15,7 +16,7 @@ import javax.script.ScriptContext
  * @author TheFloodDragon
  * @since 2025/4/25 17:37
  */
-object JexlScriptExecutor : CompilableScriptExecutor<JexlScript>() {
+object JexlScriptExecutor : CompilableScriptExecutor<JexlScript> {
 
     /**
      * Jexl引擎实例
@@ -26,19 +27,19 @@ object JexlScriptExecutor : CompilableScriptExecutor<JexlScript>() {
         }.create()
     }
 
-    override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        return engine.createScript(script).execute(WrappedJexlContext(environment))
+    override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
+        return engine.createScript(source.content).execute(WrappedJexlContext(environment))
     }
 
-    override fun compile(script: String, environment: ScriptEnvironment): JexlScript {
-        return engine.createScript(script)
+    override fun compile(source: ScriptSource, environment: ScriptEnvironment): JexlScript {
+        return engine.createScript(source.content)
     }
 
-    override fun evalCompiled(script: JexlScript, environment: ScriptEnvironment): Any? {
+    override fun evalCompiled(compiled: JexlScript, environment: ScriptEnvironment): Any? {
         // 创建上下文
         val context = WrappedJexlContext(environment)
         // 执行脚本
-        return script.execute(context)
+        return compiled.execute(context)
     }
 
     /**

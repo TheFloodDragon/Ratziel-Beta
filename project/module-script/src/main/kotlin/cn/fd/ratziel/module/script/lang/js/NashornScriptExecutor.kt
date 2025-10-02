@@ -3,10 +3,11 @@ package cn.fd.ratziel.module.script.lang.js
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.api.ScriptSource
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
-import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.impl.NonStrictCompilation
+import cn.fd.ratziel.module.script.imports.GroupImports
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
 import javax.script.Compilable
 import javax.script.CompiledScript
@@ -24,24 +25,22 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript>(), NonStric
     /**
      * 直接运行脚本
      */
-    override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        return getEngine(environment).eval(script)
+    override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
+        return getEngine(environment).eval(source.content)
     }
 
     /**
      * 编译原始脚本
-     *
-     * @param script 原始脚本
      */
-    override fun compile(script: String, environment: ScriptEnvironment): CompiledScript {
-        return (newEngine() as Compilable).compile(script)
+    override fun compile(source: ScriptSource, environment: ScriptEnvironment): CompiledScript {
+        return (newEngine() as Compilable).compile(source.content)
     }
 
     /**
      * 运行编译后的脚本
      */
-    override fun evalCompiled(script: CompiledScript, environment: ScriptEnvironment): Any? {
-        return script.eval(getEngine(environment).context)
+    override fun evalCompiled(compiled: CompiledScript, environment: ScriptEnvironment): Any? {
+        return compiled.eval(getEngine(environment).context)
     }
 
     override fun preheat(environment: ScriptEnvironment) {

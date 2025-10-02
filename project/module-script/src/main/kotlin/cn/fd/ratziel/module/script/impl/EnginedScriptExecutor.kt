@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.script.impl
 import cn.fd.ratziel.core.functional.replenish
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.api.ScriptSource
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -11,7 +12,7 @@ import java.util.concurrent.CompletableFuture
  * @author TheFloodDragon
  * @since 2025/9/6 21:11
  */
-abstract class EnginedScriptExecutor<T : Any> : CompilableScriptExecutor<T>() {
+abstract class EnginedScriptExecutor<T : Any> : CompilableScriptExecutor<T> {
 
     /**
      * 预热环境 - 初始化脚本引擎
@@ -26,8 +27,8 @@ abstract class EnginedScriptExecutor<T : Any> : CompilableScriptExecutor<T>() {
         return super.evaluate(script, environment)
     }
 
-    override fun build(script: String, environment: ScriptEnvironment): ScriptContent {
-        val script = super.build(script, environment)
+    override fun build(source: ScriptSource, environment: ScriptEnvironment, compile: Boolean): ScriptContent {
+        val script = super.build(source, environment)
         if (script is CompiledScript<*> && script.executor == this) {
             @Suppress("UNCHECKED_CAST")
             return EnginedScriptContent(script as CompiledScript<T>, environment, this)
@@ -47,7 +48,7 @@ abstract class EnginedScriptExecutor<T : Any> : CompilableScriptExecutor<T>() {
          */
         private val engineReplenishing: CompletableFuture<ScriptEnvironment> by replenish {
             CompletableFuture.supplyAsync {
-                ScriptEnvironmentImpl(originalEnvironment.bindings).also {
+                ScriptEnvironment(originalEnvironment.bindings).also {
                     // 导入原始脚本环境里的东西
                     it.context.putAll(originalEnvironment.context)
                     // 预热环境

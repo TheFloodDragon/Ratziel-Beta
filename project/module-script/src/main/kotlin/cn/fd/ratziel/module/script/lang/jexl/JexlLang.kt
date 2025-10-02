@@ -1,10 +1,9 @@
-package cn.fd.ratziel.module.script.lang
+package cn.fd.ratziel.module.script.lang.jexl
 
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
-import cn.fd.ratziel.module.script.lang.jexl.JexlScriptExecutor
 import taboolib.library.configuration.ConfigurationSection
 
 /**

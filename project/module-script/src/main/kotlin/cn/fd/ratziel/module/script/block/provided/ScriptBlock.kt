@@ -4,16 +4,13 @@ import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.util.resolveOrAbsolute
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.module.script.api.LiteralScriptContent
-import cn.fd.ratziel.module.script.api.ScriptContent
-import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.block.BlockContext
 import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
 import cn.fd.ratziel.module.script.impl.NonStrictCompilation
-import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
 import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
@@ -64,7 +61,7 @@ class ScriptBlock(
             // 预编译脚本
             try {
                 // 带环境的编译脚本
-                return executor.build(script, createEnvironment())
+                return executor.build(LiteralScriptSource(script), createEnvironment())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -72,7 +69,7 @@ class ScriptBlock(
         return LiteralScriptContent(script, executor)
     }
 
-    fun createEnvironment() = ScriptEnvironmentImpl().apply {
+    fun createEnvironment() = ScriptEnvironment().apply {
         // 处理导入组
         if (imports != null) GroupImports.catcher(context) { it.combine(imports) }
     }

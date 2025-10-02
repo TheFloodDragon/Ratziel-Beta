@@ -2,9 +2,10 @@ package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.api.ScriptSource
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
-import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.impl.NonStrictCompilation
+import cn.fd.ratziel.module.script.imports.GroupImports
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Source
 import javax.script.ScriptEngine
@@ -44,16 +45,16 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source>(), NonStrictCompila
         return context
     }
 
-    override fun evalDirectly(script: String, environment: ScriptEnvironment): Any? {
-        return getContext(environment).eval(createSource(script)).`as`(Any::class.java)
+    override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
+        return getContext(environment).eval(createSource(source)).`as`(Any::class.java)
     }
 
-    override fun compile(script: String, environment: ScriptEnvironment): Source {
-        return createSource(script)
+    override fun compile(source: ScriptSource, environment: ScriptEnvironment): Source {
+        return createSource(source)
     }
 
-    override fun evalCompiled(script: Source, environment: ScriptEnvironment): Any? {
-        return getContext(environment).eval(script).`as`(Any::class.java)
+    override fun evalCompiled(compiled: Source, environment: ScriptEnvironment): Any? {
+        return getContext(environment).eval(compiled).`as`(Any::class.java)
     }
 
     override fun preheat(environment: ScriptEnvironment) {
@@ -94,8 +95,8 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source>(), NonStrictCompila
         internalSource(this::class.java.classLoader.getResourceAsStream("internal/graaljs.importer.js")!!.reader().readText())
     }
 
-    private fun createSource(script: String): Source {
-        return Source.newBuilder(LANGUAGE_ID, script, "<eval>").build()
+    private fun createSource(source: ScriptSource): Source {
+        return Source.newBuilder(LANGUAGE_ID, source.content, "<eval>").build()
     }
 
     /** 编译内部脚本源 **/

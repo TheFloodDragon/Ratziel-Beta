@@ -1,9 +1,7 @@
 package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.module.script.api.ScriptExecutor
-import cn.fd.ratziel.module.script.lang.JavaScriptLang
-import cn.fd.ratziel.module.script.lang.JexlLang
-import cn.fd.ratziel.module.script.lang.KotlinScriptingLang
+import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -40,7 +38,6 @@ interface ScriptType {
         /**
          * 脚本类型注册表
          */
-        @JvmStatic
         val registry: MutableSet<ScriptType> = CopyOnWriteArraySet()
 
         /**
@@ -49,17 +46,11 @@ interface ScriptType {
         var activeLanguages: Set<ScriptType> = registry
             internal set
 
-        /** JavaScript **/
-        @JvmStatic
-        val JAVASCRIPT = register(JavaScriptLang)
-
-        /** Jexl **/
-        @JvmStatic
-        val JEXL = register(JexlLang)
-
-        /** Kotlin Scripting **/
-        @JvmStatic
-        val KOTLIN_SCRIPTING = register(KotlinScriptingLang)
+        init {
+            // SPI 注册
+            val languages = ServiceLoader.load(ScriptType::class.java)
+            for (lang in languages) this.registry.add(lang)
+        }
 
         /**
          * 匹配脚本类型
@@ -77,12 +68,6 @@ interface ScriptType {
          */
         @JvmStatic
         fun matchOrThrow(name: String) = match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
-
-
-        private fun <T : ScriptType> register(scriptType: T): T {
-            this.registry.add(scriptType)
-            return scriptType
-        }
 
     }
 

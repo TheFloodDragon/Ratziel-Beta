@@ -11,6 +11,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.severe
+import taboolib.common.platform.function.warning
 import javax.script.ScriptEngineManager
 
 
@@ -25,7 +26,7 @@ object ScriptManager {
     /**
      * 默认使用的的脚本语言
      */
-    var defaultLanguage: ScriptType = ScriptType.JAVASCRIPT
+    lateinit var defaultLanguage: ScriptType
         private set
 
     /**
@@ -52,8 +53,6 @@ object ScriptManager {
 
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!
-        // 设置默认语言
-        conf.getString("default")?.let { ScriptType.match(it) }?.also { defaultLanguage = it }
         // 初始化各个脚本类型
         val languages = conf.getConfigurationSection("languages")!!
         for (key in languages.getKeys(false)) {
@@ -73,6 +72,15 @@ object ScriptManager {
             // 失败后禁用脚本
             activeLanguages = activeLanguages.minus(type)
         }
+
+        // 脚本全禁用了直接爬
+        if (activeLanguages.isEmpty()) return
+
+        // 设置默认语言
+        this.defaultLanguage = conf.getString("default")?.let { ScriptType.match(it) }
+            ?: activeLanguages.first().also {
+                warning("Default script-language isn't set or invalid! Using ${it.name} instead.")
+            }
     }
 
     /**

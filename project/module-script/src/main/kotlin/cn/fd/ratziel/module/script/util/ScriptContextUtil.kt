@@ -1,13 +1,13 @@
 package cn.fd.ratziel.module.script.util
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.module.script.api.LiteralScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
-import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
 
 fun ArgumentContext.scriptEnv(): ScriptEnvironment {
     return this.popOrPut(ScriptEnvironment::class.java) {
-        ScriptEnvironmentImpl(this.varsMap())
+        ScriptEnvironment(this.varsMap())
     }
 }
 
@@ -22,5 +22,5 @@ fun ArgumentContext.varsMap(): VariablesMap =
     }
 
 fun ScriptExecutor.eval(content: String, vars: VariablesMap): Any? {
-    return this.evaluate(content, ScriptEnvironmentImpl(vars))
+    return this.evaluate(LiteralScriptContent(content, this), ScriptEnvironment(vars))
 }

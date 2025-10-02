@@ -1,10 +1,10 @@
 package cn.fd.ratziel.module.script.element
 
 import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.FileScriptSource
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptExecutor
-import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
 import cn.fd.ratziel.module.script.imports.GroupImports
 import java.io.File
 
@@ -42,7 +42,7 @@ class ScriptFile(
 
     init {
         // 开启后立即编译
-        if (immediatelyCompile) compile(ScriptEnvironmentImpl())
+        if (immediatelyCompile) compile(ScriptEnvironment())
     }
 
     /**
@@ -51,7 +51,7 @@ class ScriptFile(
     fun compile(environment: ScriptEnvironment): ScriptContent {
         // 保存编译后的脚本
         this.compiled = this.executor.build(
-            source, environment.apply {
+            FileScriptSource(file), environment.apply {
                 // 导入组
                 GroupImports.catcher(context) { it.combine(desc.imports) }
             })

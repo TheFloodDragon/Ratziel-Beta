@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.script.lang
+package cn.fd.ratziel.module.script.lang.kts
 
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
