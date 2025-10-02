@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.script.lang
 
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
 import cn.fd.ratziel.module.script.lang.jexl.JexlScriptExecutor
 import taboolib.library.configuration.ConfigurationSection
@@ -18,7 +19,7 @@ object JexlLang : ScriptType, ScriptBootstrap {
 
     override val alias = arrayOf("Jexl3")
 
-    override val executor get() = JexlScriptExecutor
+    override val executor: ScriptExecutor get() = JexlScriptExecutor
 
     override fun initialize(settings: ConfigurationSection) {
         ScriptManager.loadDependencies("jexl")

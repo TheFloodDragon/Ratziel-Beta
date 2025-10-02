@@ -22,7 +22,7 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
 
     override val extensions = arrayOf("js", "javascript")
 
-    override val executor get() = if (::selectedExecutor.isInitialized) selectedExecutor else super.executor
+    override val executor: ScriptExecutor get() = if (::selectedExecutor.isInitialized) selectedExecutor else super.executor
 
     /**
      * 选择的脚本执行器 (Nashorn 或 GraalJS)

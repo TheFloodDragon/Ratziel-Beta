@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.script
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.lang.JavaScriptLang
 import cn.fd.ratziel.module.script.lang.JexlLang
+import cn.fd.ratziel.module.script.lang.KotlinScriptingLang
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -56,9 +57,9 @@ interface ScriptType {
         @JvmStatic
         val JEXL = register(JexlLang)
 
-//        /** Kotlin Scripting **/
-//        @JvmStatic
-//        val KOTLIN_SCRIPTING = register("KotlinScripting", "Kotlin", "kts") { null }
+        /** Kotlin Scripting **/
+        @JvmStatic
+        val KOTLIN_SCRIPTING = register(KotlinScriptingLang)
 
         /**
          * 匹配脚本类型

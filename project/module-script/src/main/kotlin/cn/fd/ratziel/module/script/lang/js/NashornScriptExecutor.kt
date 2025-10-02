@@ -6,7 +6,7 @@ import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import cn.fd.ratziel.module.script.imports.GroupImports
-import cn.fd.ratziel.module.script.internal.NonStrictCompilation
+import cn.fd.ratziel.module.script.impl.NonStrictCompilation
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
 import javax.script.Compilable
 import javax.script.CompiledScript

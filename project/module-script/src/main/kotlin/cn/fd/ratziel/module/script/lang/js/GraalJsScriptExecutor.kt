@@ -4,7 +4,7 @@ import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.imports.GroupImports
-import cn.fd.ratziel.module.script.internal.NonStrictCompilation
+import cn.fd.ratziel.module.script.impl.NonStrictCompilation
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Source
 import javax.script.ScriptEngine

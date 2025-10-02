@@ -12,9 +12,9 @@ import cn.fd.ratziel.module.script.block.BlockParser
 import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
+import cn.fd.ratziel.module.script.impl.NonStrictCompilation
 import cn.fd.ratziel.module.script.impl.ScriptEnvironmentImpl
 import cn.fd.ratziel.module.script.imports.GroupImports
-import cn.fd.ratziel.module.script.internal.NonStrictCompilation
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult

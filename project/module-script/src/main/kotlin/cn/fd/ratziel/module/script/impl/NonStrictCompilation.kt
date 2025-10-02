@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.script.internal
+package cn.fd.ratziel.module.script.impl
 
 /**
  * NonStrictCompilation

@@ -1,4 +1,6 @@
-package cn.fd.ratziel.module.script.internal
+@file:Suppress("JavaIoSerializableObjectMustHaveReadResolve")
+
+package cn.fd.ratziel.module.script.lang.kts
 
 import taboolib.common.platform.Ghost
 import kotlin.script.experimental.api.*
@@ -9,16 +11,16 @@ import kotlin.script.experimental.jvmhost.jsr223.importAllBindings
 import kotlin.script.experimental.jvmhost.jsr223.jsr223
 
 /**
- * KotlinScriptConfiguration
+ * KtsConfigurations
  *
  * @author TheFloodDragon
  * @since 2024/7/15 19:11
  */
 @Ghost
-object KotlinScriptConfiguration {
+object KtsConfigurations {
 
     /**
-     * [ScriptCompilationConfiguration]
+     * [kotlin.script.experimental.api.ScriptCompilationConfiguration]
      */
     @Ghost
     object Compilation : ScriptCompilationConfiguration({
@@ -34,20 +36,14 @@ object KotlinScriptConfiguration {
         ide {
             acceptedLocations(ScriptAcceptedLocation.Everywhere)
         }
-    }) {
-        @Suppress("unused")
-        private fun readResolve(): Any = Compilation
-    }
+    })
 
     /**
-     * [ScriptEvaluationConfiguration]
+     * [kotlin.script.experimental.api.ScriptEvaluationConfiguration]
      */
     @Ghost
     object Evaluation : ScriptEvaluationConfiguration({
         refineConfigurationBeforeEvaluate(::configureProvidedPropertiesFromJsr223Context)
-    }) {
-        @Suppress("unused")
-        private fun readResolve(): Any = Evaluation
-    }
+    })
 
 }
