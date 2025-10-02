@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.script
 
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.ElementLoader
+import cn.fd.ratziel.core.util.FileResolver
 import cn.fd.ratziel.core.util.JarUtil
 import cn.fd.ratziel.module.script.ScriptType.Companion.activeLanguages
 import cn.fd.ratziel.module.script.element.ScriptElementLoader
@@ -12,6 +13,7 @@ import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
+import java.io.File
 import javax.script.ScriptEngineManager
 
 
@@ -41,6 +43,17 @@ object ScriptManager {
         // 读取文件
         val imports = JarUtil.getEntries { it.name.startsWith("internal/script-imports") && it.name.endsWith(".imports") }.flatMap { it.reader().readLines() }
         GroupImports.parse(imports)
+    }
+
+    /**
+     * 内置的脚本库文件解析器
+     */
+    val builtinScriptsResolver: FileResolver = object : FileResolver {
+        override fun resolve(path: String, baseFile: File?) =
+            if (path.startsWith("builtin:")) {
+                this::class.java.classLoader.getResource(path.drop("builtin:".length))
+                    ?.let { File(it.toURI()) }
+            } else null
     }
 
     /**

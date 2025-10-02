@@ -8,7 +8,7 @@ import java.io.File
  * @author TheFloodDragon
  * @since 2025/10/2 18:51
  */
-interface ScriptSource {
+sealed interface ScriptSource {
 
     /**
      * 源码内容

@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.script.element
 
-import cn.fd.ratziel.core.util.resolveOrAbsolute
+import cn.fd.ratziel.core.util.resolveBy
 import cn.fd.ratziel.module.script.imports.GroupImports
 import taboolib.common.platform.function.warning
 import taboolib.module.configuration.Configuration
@@ -61,8 +61,8 @@ class ScriptDescription(
             // 解析文件路径
             val filesSection = conf["file"] ?: conf["files"] ?: return null
             val files = when (filesSection) {
-                is String -> listOf(descFile.parentFile.resolveOrAbsolute(filesSection))
-                is List<*> -> filesSection.mapNotNull { if (it is String) descFile.parentFile.resolveOrAbsolute(it) else null }
+                is String -> listOf(descFile.parentFile.resolveBy(filesSection))
+                is List<*> -> filesSection.mapNotNull { if (it is String) descFile.parentFile.resolveBy(it) else null }
                 else -> return null
             }.filter {
                 val exists = it.exists()

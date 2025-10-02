@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.imports
 
 import cn.fd.ratziel.core.contextual.AttachedContext
-import cn.fd.ratziel.core.util.resolveOrAbsolute
+import cn.fd.ratziel.core.util.resolveBy
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.element.ScriptElementLoader
@@ -97,7 +97,7 @@ class GroupImports(
                     // ~.~ 表示脚本文件
                     val type = ScriptElementLoader.matchType(content.substringAfterLast('.'))
                     if (type != null) {
-                        val file = baseFile.resolveOrAbsolute(content)
+                        val file = baseFile.resolveBy(content, ScriptManager.builtinScriptsResolver)
                         if (file.exists()) {
                             scripts.add(ScriptImport(file, type))
                         } else {

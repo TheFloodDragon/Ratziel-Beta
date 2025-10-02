@@ -1,13 +1,13 @@
 package cn.fd.ratziel.block.provided
 
-import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.core.util.resolveOrAbsolute
-import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.common.block.BlockContext
 import cn.fd.ratziel.common.block.BlockParser
 import cn.fd.ratziel.common.block.ExecutableBlock
+import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.util.resolveBy
+import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
 import cn.fd.ratziel.module.script.impl.NonStrictCompilation
@@ -48,7 +48,7 @@ class ScriptBlock(
         measureTimeMillisWithResult {
             executor.evaluate(script, context.scriptEnv())
         }.also { (time, result) ->
-            debug("[TIME MARK] ScriptBlock(${script::class.java != LiteralScriptContent::class.java}) executed in $time ms. Content: $source")
+            debug("[TIME MARK] ScriptBlock(${script !is LiteralScriptContent}) executed in $time ms. Content: $source")
             return result
         }
     }
@@ -112,7 +112,7 @@ class ScriptBlock(
                 // 寻找脚本文件执行
                 val fileSection = (element["script"] as? JsonPrimitive)?.contentOrNull
                 if (fileSection != null) {
-                    val file = context.workFile?.parentFile.resolveOrAbsolute(fileSection)
+                    val file = context.workFile?.parentFile.resolveBy(fileSection)
                     // 查找脚本文件
                     val scriptFile = ScriptElementHandler.scriptFiles[file]
                     if (scriptFile != null) {
