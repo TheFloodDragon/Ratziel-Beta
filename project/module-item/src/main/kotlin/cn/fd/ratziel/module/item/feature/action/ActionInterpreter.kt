@@ -5,7 +5,7 @@ import cn.fd.ratziel.common.block.BlockScope
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
-import cn.fd.ratziel.module.block.scope.ItemScope
+import cn.fd.ratziel.common.scope.ItemScope
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import kotlinx.coroutines.async

@@ -1,8 +1,8 @@
-package cn.fd.ratziel.module.common.block.scope
+package cn.fd.ratziel.block.scope
 
 import cn.fd.ratziel.common.block.BlockScope
 import cn.fd.ratziel.common.block.scope.DefaultScope
-import cn.fd.ratziel.module.common.block.provided.ScriptBlock
+import cn.fd.ratziel.block.provided.ScriptBlock
 
 val BlockScope.Companion.ScriptScope by lazy {
     BlockScope.DefaultScope.plus { ScriptBlock.Parser() }

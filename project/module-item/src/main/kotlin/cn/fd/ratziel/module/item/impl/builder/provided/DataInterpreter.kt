@@ -6,7 +6,7 @@ import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
-import cn.fd.ratziel.module.block.scope.ItemScope
+import cn.fd.ratziel.common.scope.ItemScope
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.IdentifiedItem

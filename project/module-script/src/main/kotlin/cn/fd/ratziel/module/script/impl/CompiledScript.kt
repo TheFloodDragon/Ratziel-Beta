@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.script.impl
 
-import cn.fd.ratziel.module.script.api.LiteralScriptContent
+import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptExecutor
 
 /**
@@ -10,11 +10,11 @@ import cn.fd.ratziel.module.script.api.ScriptExecutor
  * @since 2025/8/30 19:16
  */
 open class CompiledScript<T : Any>(
-    content: String,
-    executor: ScriptExecutor,
+    override val content: String,
+    override val executor: ScriptExecutor,
     /** 编译后的脚本 **/
     open val compiled: T,
-) : LiteralScriptContent(content, executor) {
+) : ScriptContent {
 
     constructor(delegate: CompiledScript<T>) : this(delegate.content, delegate.executor, delegate.compiled)
 

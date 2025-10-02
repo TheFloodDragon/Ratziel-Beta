@@ -79,7 +79,7 @@ object ScriptManager {
         // 设置默认语言
         this.defaultLanguage = conf.getString("default")?.let { ScriptType.match(it) }
             ?: activeLanguages.first().also {
-                warning("Default script-language isn't set or invalid! Using ${it.name} instead.")
+                warning("Default script language is not set or invalid! Using ${it.name} instead.")
             }
     }
 

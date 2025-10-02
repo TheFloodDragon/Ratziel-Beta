@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.common.block.provided
+package cn.fd.ratziel.block.provided
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.util.resolveOrAbsolute

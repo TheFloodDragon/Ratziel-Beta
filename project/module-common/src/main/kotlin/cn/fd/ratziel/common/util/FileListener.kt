@@ -4,7 +4,6 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common5.FileWatcher
 import java.io.File
-import java.util.concurrent.ConcurrentSkipListSet
 import java.util.function.Consumer
 
 /**
@@ -18,7 +17,7 @@ object FileListener {
     /**
      * 监听中的文件列表
      */
-    private val listening = ConcurrentSkipListSet<File>()
+    private val listening = ArrayList<File>()
 
     /**
      * 文件观察者
@@ -28,6 +27,7 @@ object FileListener {
     /**
      * 监听文件
      */
+    @Synchronized
     fun listen(file: File, callback: Consumer<File>) {
         watcher.addSimpleListener(file, callback)
         listening.add(file)
@@ -36,6 +36,7 @@ object FileListener {
     /**
      * 取消监听文件
      */
+    @Synchronized
     fun unlisten(file: File) {
         watcher.removeListener(file)
     }
@@ -43,6 +44,7 @@ object FileListener {
     /**
      * 清空监听列表
      */
+    @Synchronized
     fun clear() {
         for (f in listening) {
             watcher.removeListener(f)

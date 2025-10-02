@@ -6,7 +6,7 @@ import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.reactive.SimpleTrigger
-import cn.fd.ratziel.module.block.scope.ItemScope
+import cn.fd.ratziel.common.scope.ItemScope
 
 /**
  * ItemTrigger
