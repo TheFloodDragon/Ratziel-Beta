@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.feature.action.provided
 
+import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.common.event.ElementEvaluateEvent
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
@@ -10,8 +11,6 @@ import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.feature.action.ItemTrigger
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.internal.command.PlayerInventorySlot
-import cn.fd.ratziel.module.script.block.BlockBuilder
-import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
@@ -39,7 +38,7 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
     override fun build(identifier: Identifier, element: Element): ExecutableBlock {
         val property = element.property
         if (property !is JsonObject) {
-            return BlockBuilder.build(element)
+            return super.build(identifier, element)
         }
         // 运行内容
         val code = property.getBy("run", "code") ?: throw IllegalArgumentException("Code block in onTick Trigger must not be null!")
@@ -66,7 +65,7 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
             }
         }
         // 构建脚本块并返回
-        return BlockBuilder.build(element.copyOf(code))
+        return super.build(identifier, element.copyOf(code))
     }
 
     private fun tick(player: Player, identifiers: Iterable<Identifier>, slot: Any) {

@@ -1,11 +1,13 @@
 package cn.fd.ratziel.module.item.feature.action
 
+import cn.fd.ratziel.common.block.BlockBuilder
+import cn.fd.ratziel.common.block.BlockScope
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
+import cn.fd.ratziel.module.block.scope.ItemScope
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
-import cn.fd.ratziel.module.script.block.BlockBuilder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
@@ -53,7 +55,7 @@ object ActionInterpreter : ItemInterpreter {
                             trigger.build(identifier, element.copyOf(code))
                         } else {
                             // 使用默认构建器
-                            BlockBuilder.build(element.copyOf(code))
+                            BlockBuilder.build(element.copyOf(code), BlockScope.ItemScope)
                         }
                         // 返回结果
                         trigger to block

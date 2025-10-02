@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.feature.action
 
 import cn.fd.ratziel.core.reactive.Trigger
-import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.common.block.ExecutableBlock
 
 /**
  * ActionMap - 物品动作表

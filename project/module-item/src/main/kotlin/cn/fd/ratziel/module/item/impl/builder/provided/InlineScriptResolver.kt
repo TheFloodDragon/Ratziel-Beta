@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.module.script.block.provided.ScriptBlock
+import cn.fd.ratziel.module.common.block.provided.ScriptBlock
 import taboolib.common.util.VariableReader
 import java.util.concurrent.ConcurrentHashMap
 

@@ -1,13 +1,13 @@
-package cn.fd.ratziel.module.script.block.provided
+package cn.fd.ratziel.module.common.block.provided
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.util.resolveOrAbsolute
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.*
-import cn.fd.ratziel.module.script.block.BlockContext
-import cn.fd.ratziel.module.script.block.BlockParser
-import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.common.block.BlockContext
+import cn.fd.ratziel.common.block.BlockParser
+import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
 import cn.fd.ratziel.module.script.impl.NonStrictCompilation

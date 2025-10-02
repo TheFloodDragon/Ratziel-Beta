@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.script.lang.js
 
-import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
@@ -66,7 +65,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source>(), NonStrictCompila
         val contextBindings = context.getBindings(LANGUAGE_ID)
         contextBindings.putMember(IMPORTS_MEMBER, imports)
         // 导入脚本
-        val scriptImports = imports.scripts(ScriptType.JAVASCRIPT)
+        val scriptImports = imports.scripts(JavaScriptLang)
         for (import in scriptImports) {
             this.evaluate(import.compiled ?: continue, environment)
         }

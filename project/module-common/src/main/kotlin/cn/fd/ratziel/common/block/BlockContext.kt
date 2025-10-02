@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.script.block
+package cn.fd.ratziel.common.block
 
 import cn.fd.ratziel.core.contextual.AttachedContext
 import kotlinx.serialization.json.JsonElement

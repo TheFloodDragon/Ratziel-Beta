@@ -5,7 +5,7 @@ import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
-import cn.fd.ratziel.module.script.block.BlockBuilder
+import cn.fd.ratziel.common.block.BlockBuilder
 import taboolib.common.LifeCycle
 
 /**

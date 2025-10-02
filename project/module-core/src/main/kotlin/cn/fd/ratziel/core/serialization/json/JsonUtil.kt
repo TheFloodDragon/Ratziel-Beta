@@ -10,21 +10,19 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import java.util.function.Function
 
-val baseJson by lazy {
-    Json {
-        // 宽松模式
-        isLenient = true
-        // 忽略未知键
-        ignoreUnknownKeys = true
-        // 隐式空值
-        explicitNulls = false
-        // 数据修正
-        coerceInputValues = true
-        // 美观的打印方式
-        prettyPrint = true
-        // 枚举类不区分大小写
-        decodeEnumsCaseInsensitive = true
-    }
+val baseJson = Json {
+    // 宽松模式
+    isLenient = true
+    // 忽略未知键
+    ignoreUnknownKeys = true
+    // 隐式空值
+    explicitNulls = false
+    // 数据修正
+    coerceInputValues = true
+    // 美观的打印方式
+    prettyPrint = true
+    // 枚举类不区分大小写
+    decodeEnumsCaseInsensitive = true
 }
 
 /**

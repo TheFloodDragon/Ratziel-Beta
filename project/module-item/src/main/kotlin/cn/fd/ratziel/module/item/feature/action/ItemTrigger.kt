@@ -1,9 +1,12 @@
 package cn.fd.ratziel.module.item.feature.action
 
+import cn.fd.ratziel.common.block.BlockBuilder
+import cn.fd.ratziel.common.block.BlockScope
+import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.reactive.SimpleTrigger
-import cn.fd.ratziel.module.script.block.ExecutableBlock
+import cn.fd.ratziel.module.block.scope.ItemScope
 
 /**
  * ItemTrigger
@@ -19,6 +22,6 @@ abstract class ItemTrigger(vararg names: String) : SimpleTrigger(names) {
      * @param identifier 物品标识符
      * @param element 带有语句内容的元素
      */
-    abstract fun build(identifier: Identifier, element: Element): ExecutableBlock
+    open fun build(identifier: Identifier, element: Element): ExecutableBlock = BlockBuilder.build(element, BlockScope.ItemScope)
 
 }

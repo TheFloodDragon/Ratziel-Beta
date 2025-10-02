@@ -1,8 +1,12 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
+import cn.fd.ratziel.common.block.BlockBuilder
+import cn.fd.ratziel.common.block.BlockScope
+import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
+import cn.fd.ratziel.module.block.scope.ItemScope
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.IdentifiedItem
@@ -13,8 +17,6 @@ import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
-import cn.fd.ratziel.module.script.block.BlockBuilder
-import cn.fd.ratziel.module.script.block.ExecutableBlock
 import cn.fd.ratziel.module.script.util.varsMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -216,7 +218,7 @@ class DataInterpreter : ItemInterpreter {
                 ?.getBy(*alias) as? JsonObject ?: return null
             return coroutineScope {
                 property.mapValues {
-                    async { BlockBuilder.build(element.copyOf(it.value)) }
+                    async { BlockBuilder.build(element.copyOf(it.value), BlockScope.ItemScope) }
                 }.mapValues { it.value.await() }
             }
         }

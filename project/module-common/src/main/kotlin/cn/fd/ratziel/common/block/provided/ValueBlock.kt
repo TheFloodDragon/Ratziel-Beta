@@ -1,10 +1,10 @@
-package cn.fd.ratziel.module.script.block.provided
+package cn.fd.ratziel.common.block.provided
 
+import cn.fd.ratziel.common.block.BlockContext
+import cn.fd.ratziel.common.block.BlockParser
+import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.util.adapt
-import cn.fd.ratziel.module.script.block.BlockContext
-import cn.fd.ratziel.module.script.block.BlockParser
-import cn.fd.ratziel.module.script.block.ExecutableBlock
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
