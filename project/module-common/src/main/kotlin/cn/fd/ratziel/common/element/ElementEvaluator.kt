@@ -51,27 +51,27 @@ object ElementEvaluator {
     val evaluatedElements: MutableMap<ElementIdentifier, Element> = ConcurrentHashMap()
 
     /**
-     * 直接处理元素
+     * 更新元素
      */
-    fun handleElement(element: Element): Throwable? = runBlocking {
-        this@ElementEvaluator.handleElement(ElementRegistry[element.type], element)
-    }
-
-    /**
-     * 使用 [handler] 处理元素 [element]
-     */
-    suspend fun handleElement(handler: ElementHandler, element: Element): Throwable? {
+    fun updateElement(element: Element): Result<Boolean> {
+        // 获取该元素的处理器
+        val handler = ElementRegistry[element.type]
+        // 不可更新直接跳出
+        if (handler !is ElementHandler.Updatable) return Result.success(false)
         // 触发 ElementEvaluateEvent.Process
         ElementEvaluateEvent.Process(handler, element).call()
+        // 尝试更新元素
         try {
-            // 处理元素
-            handler.update(element)
-            // 缓存加载过的元素
-            evaluatedElements[element.identifier] = element
-            return null
+            runBlocking {
+                // 处理元素
+                handler.update(element)
+                // 缓存加载过的元素
+                evaluatedElements[element.identifier] = element
+            }
+            return Result.success(true)
         } catch (ex: Throwable) {
-            severe("Couldn't handle element '${element.name}' by $handler!", ex.stackTraceToString())
-            return ex
+            severe("Couldn't update element '${element.name}' by $handler!", ex.stackTraceToString())
+            return Result.failure(ex)
         }
     }
 

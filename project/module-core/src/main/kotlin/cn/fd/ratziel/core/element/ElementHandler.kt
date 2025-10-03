@@ -18,9 +18,19 @@ interface ElementHandler {
     suspend fun handle(elements: Collection<Element>)
 
     /**
-     * 处理并更新单个元素
+     * Updatable - 可更新元素的 [ElementHandler]
+     *
+     * @author TheFloodDragon
+     * @since 2024/4/21 9:46
      */
-    suspend fun update(element: Element)
+    interface Updatable : ElementHandler {
+
+        /**
+         * 处理并更新单个元素
+         */
+        suspend fun update(element: Element)
+
+    }
 
     /**
      * ParallelHandler - 并行处理元素的处理器
@@ -28,7 +38,7 @@ interface ElementHandler {
      * @author TheFloodDragon
      * @since 2024/4/21 9:46
      */
-    interface ParralHandler : ElementHandler {
+    interface ParralHandler : Updatable {
 
         /**
          * 处理单个元素

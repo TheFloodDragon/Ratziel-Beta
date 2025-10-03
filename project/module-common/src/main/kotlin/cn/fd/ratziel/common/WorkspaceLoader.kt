@@ -124,19 +124,23 @@ object WorkspaceLoader {
     private fun listenFile(file: File, workspace: Workspace, loader: ElementLoader, sender: ProxyCommandSender) {
         FileListener.listen(file) { file ->
             if (!file.exists()) return@listen
+            // 重新加载元素的数目
+            var updatedElementsCount = 0
             measureTimeMillis {
                 // 加载文件
-                val result = loader.load(file, workspace)
-                if (result.isSuccess) {
-                    for (loadedElement in result.getOrThrow()) {
+                val fileLoad = loader.load(file, workspace)
+                if (fileLoad.isSuccess) {
+                    for (loadedElement in fileLoad.getOrThrow()) {
                         // 加入到 livingElements
                         livingElements[loadedElement.name] = loadedElement
                         // 处理任务
-                        val throwable = ElementEvaluator.handleElement(loadedElement)
-                        // 只要一个元素评估失败就判定整个文件都算失败的
-                        if (throwable != null) {
+                        val result = ElementEvaluator.updateElement(loadedElement)
+                        if (result.isFailure) {
+                            // 只要一个元素评估失败就判定整个文件都算失败的
                             sender.sendLang("Element-File-Reload-Failed", file.name)
                             return@listen
+                        } else if (result.getOrThrow()) {
+                            updatedElementsCount++
                         }
                     }
                 } else {
@@ -145,7 +149,7 @@ object WorkspaceLoader {
                 }
             }.also {
                 // 成功加载和评估的提示
-                sender.sendLang("Element-File-Reload-Succeed", file.name, it)
+                if (updatedElementsCount > 0) sender.sendLang("Element-File-Reload-Succeed", file.name, it)
             }
         }
     }

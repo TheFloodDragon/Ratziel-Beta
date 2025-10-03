@@ -21,13 +21,6 @@ import kotlin.script.experimental.jvmhost.jsr223.jsr223
 import kotlin.script.experimental.util.filterByAnnotationType
 
 /**
- * scriptDef
- *
- * @author TheFloodDragon
- * @since 2025/10/3 14:26
- */
-
-/**
  * KtsScript
  *
  * @author TheFloodDragon
@@ -65,7 +58,7 @@ object KtsCompilationConfiguration : ScriptCompilationConfiguration({
  * Evaluation Configuration
  */
 object KtsEvaluationConfiguration : ScriptEvaluationConfiguration({
-    // 看注释貌似是把脚本当库用
+    // TODO 看注释貌似是把脚本当库用
 //    scriptsInstancesSharing(true)
     refineConfigurationBeforeEvaluate(::configureProvidedPropertiesFromJsr223Context)
 })

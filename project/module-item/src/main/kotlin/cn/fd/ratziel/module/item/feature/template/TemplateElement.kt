@@ -26,11 +26,6 @@ object TemplateElement : ElementHandler {
         templates.clear(); templates.putAll(parsed.associateBy { it.name })
     }
 
-    override suspend fun update(element: Element) {
-        val parsed = TemplateParser.parse(element)
-        templates[parsed.name] = parsed
-    }
-
     /**
      * 根据名称寻找模板, 无法找到时警告
      */
