@@ -1,10 +1,9 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.core.contextual.ArgumentContextProvider
 import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.contextual.SimpleContext
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
@@ -12,6 +11,7 @@ import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
+import java.util.function.Supplier
 
 /**
  * DefaultGenerator
@@ -34,14 +34,14 @@ class DefaultGenerator(
     /**
      * 上下文提供者 (目前就是为了提供 [AttachedContext])
      */
-    override val contextProvider = ArgumentContextProvider { SimpleContext(attached) }
+    override val contextProvider = Supplier { SimpleContext(attached) }
 
     /**
      * 解释器编排器
      */
-    override val compositor = DefaultCompositor(createNativeStream(SimpleData(), contextProvider.newContext()))
+    override val compositor = DefaultCompositor(createNativeStream(SimpleData(), contextProvider.get()))
 
-    override fun build() = build(contextProvider.newContext())
+    override fun build() = build(contextProvider.get())
 
     /**
      * 构建物品
@@ -55,7 +55,7 @@ class DefaultGenerator(
         // 获取物品流
         val stream = compositor.produce().await() as NativeItemStream
         // 更新上下文
-        stream.context = contextProvider.newContext()
+        stream.context = contextProvider.get()
         stream.context.putAll(context.args())
 
         // 呼出开始生成的事件

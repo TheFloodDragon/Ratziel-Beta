@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.feature.template
 
 import cn.fd.ratziel.core.contextual.AttachedContext
+import cn.fd.ratziel.core.contextual.plus
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
@@ -28,9 +29,7 @@ object InheritInterpreter : ItemInterpreter {
 
             // 处理标签
             val self = stream.origin.copyOf(tree.toElement())
-            stream.context.put(self)
-            DefaultResolver.resolveBy(InheritResolver, tree, stream.context)
-            stream.context.remove(self::class.java)
+            DefaultResolver.resolveBy(InheritResolver, tree, stream.context.plus(self))
 
             // 处理动作链
             coroutineScope {

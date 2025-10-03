@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.feature.action
 
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.core.reactive.ContextualResponse
 import cn.fd.ratziel.core.reactive.SimpleTrigger
 import cn.fd.ratziel.core.reactive.Trigger
@@ -77,7 +76,7 @@ object ActionManager {
     @JvmStatic
     fun Trigger.trigger(identifier: Identifier, vararg values: Any?, action: (VariablesMap).() -> Unit) {
         // 参数上下文
-        val context = ItemManager.generatorContext(identifier) ?: SimpleContext()
+        val context = ItemManager.generatorContext(identifier)
         context.putAll(values.mapNotNull { it })
         // 获取变量表
         val varsMap = VariablesMap()

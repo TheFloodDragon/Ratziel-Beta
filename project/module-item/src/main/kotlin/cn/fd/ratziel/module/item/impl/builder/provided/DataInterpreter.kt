@@ -5,6 +5,7 @@ import cn.fd.ratziel.common.block.BlockScope
 import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.common.scope.ItemScope
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.contextual.plus
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.ItemManager
@@ -119,12 +120,11 @@ class DataInterpreter : ItemInterpreter {
                     }
                     // 数据层标签解析
                     stream.tree.withValue { tree ->
-                        // 将物品放入上下文
-                        stream.context.put(holder)
                         // 执行标签解析
-                        DefaultResolver.resolveBy(NativeDataResolver, tree, stream.context)
-                        // 清理物品上下文
-                        stream.context.remove(DataHolder::class.java)
+                        DefaultResolver.resolveBy(
+                            NativeDataResolver, tree,
+                            stream.context.plus(holder) // 加了物品的副本
+                        )
                     }
                 }
 

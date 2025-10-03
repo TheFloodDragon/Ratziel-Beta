@@ -20,11 +20,7 @@ class SimpleContext(
         action(this)
     }
 
-    override fun <T> pop(type: Class<T>): T & Any {
-        return popOrNull(type) ?: throw ArgumentNotFoundException(type)
-    }
-
-    override fun <T> popOrNull(type: Class<T>): T? {
+    override fun <T : Any> popOrNull(type: Class<T>): T? {
         val find = map[type] // 寻找同类型
             ?: map.entries.find { type.isAssignableFrom(it.key) }?.value // 寻找子类
             ?: return null
@@ -39,6 +35,8 @@ class SimpleContext(
     override fun remove(type: Class<*>) {
         map.entries.removeIf { type.isAssignableFrom(it.key) }
     }
+
+    override fun copy() = SimpleContext(this.args())
 
     override fun args(): Collection<Any> = map.values
 

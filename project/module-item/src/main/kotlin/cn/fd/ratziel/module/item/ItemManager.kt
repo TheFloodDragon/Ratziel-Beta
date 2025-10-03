@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item
 
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import java.util.concurrent.ConcurrentHashMap
 
@@ -21,8 +22,8 @@ object ItemManager {
     /**
      * 获取生成器的上下文
      */
-    fun generatorContext(identifier: Identifier): ArgumentContext? {
-        return registry[identifier.content]?.contextProvider?.newContext()
+    fun generatorContext(identifier: Identifier): ArgumentContext {
+        return registry[identifier.content]?.contextProvider?.get() ?: SimpleContext()
     }
 
 }

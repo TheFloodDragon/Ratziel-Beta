@@ -4,7 +4,6 @@ import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.put
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.IdentifiedItem
 import cn.fd.ratziel.module.item.api.NeoItem
@@ -129,7 +128,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
      */
     fun createContext(item: IdentifiedItem, player: Player): ArgumentContext {
         // 尝试导入物品生成器的上下文
-        val context = ItemManager.generatorContext(item.identifier) ?: SimpleContext()
+        val context = ItemManager.generatorContext(item.identifier)
         // 导入环境信息
         context.put(item); context.put(player)
         return context
