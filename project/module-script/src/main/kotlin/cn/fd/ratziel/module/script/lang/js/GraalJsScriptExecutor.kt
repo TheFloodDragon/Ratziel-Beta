@@ -55,8 +55,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>(), Compile
     }
 
     override fun evalCompiled(compiled: CachedScript<Source, Context>, environment: ScriptEnvironment): Any? {
-        // 获取当前线程的运行上下文
-        val runtime = compiled.get().importBindings(environment)
+        val runtime = environment.context.fetch(this) { compiled().importBindings(environment) }
         return runtime.eval(compiled.script).`as`(Any::class.java)
     }
 

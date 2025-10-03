@@ -41,8 +41,7 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngin
      * 运行编译后的脚本
      */
     override fun evalCompiled(compiled: CachedScript<CompiledScript, ScriptEngine>, environment: ScriptEnvironment): Any? {
-        // 获取当前线程的运行脚本引擎
-        val runtime = compiled.get().importBindings(environment)
+        val runtime = environment.context.fetch(this) { compiled().importBindings(environment) }
         return compiled.script.eval(runtime.context)
     }
 

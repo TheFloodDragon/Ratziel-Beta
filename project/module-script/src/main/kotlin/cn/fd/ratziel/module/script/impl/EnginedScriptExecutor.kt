@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.script.impl
 import cn.fd.ratziel.core.functional.replenish
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import java.util.concurrent.CompletableFuture
-import kotlin.concurrent.getOrSet
 
 /**
  * EnginedScriptExecutor
@@ -47,16 +46,10 @@ abstract class EnginedScriptExecutor<T : Any, E : Any> : CompilableScriptExecuto
         }
 
         /**
-         * [ThreadLocal] 存储每个线程的 脚本引擎实例
-         * 同一个线程共享一个 脚本引擎实例
-         */
-        private val local = ThreadLocal<E>()
-
-        /**
          * 获取当前线程的 预热后的 脚本引擎实例
          */
-        fun get(): E {
-            return local.getOrSet { engineReplenishing.get() }
+        operator fun invoke(): E {
+            return engineReplenishing.get()
         }
 
     }
