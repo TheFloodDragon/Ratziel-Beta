@@ -38,7 +38,7 @@ abstract class KtsScript(val vars: Map<String, Any?>)
  * Compilation Configuration
  */
 object KtsCompilationConfiguration : ScriptCompilationConfiguration({
-    defaultImports(Import::class)
+    defaultImports(KtsScript::class, Import::class)
     refineConfiguration {
         beforeCompiling(::configureProvidedPropertiesFromJsr223Context)
         onAnnotations(Import::class, handler = MainKtsConfigurator())

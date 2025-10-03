@@ -1,5 +1,6 @@
 package cn.fd.ratziel.core.functional
 
+import java.lang.ref.WeakReference
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -13,7 +14,7 @@ class Replenishment<T>(
     private val getter: () -> T,
 ) : ReadOnlyProperty<Any?, T> {
 
-    private var value: T = getter()
+    private var value: WeakReference<T> = WeakReference(getter())
 
     override fun getValue(thisRef: Any?, property: KProperty<*>) = this.getValue()
 
@@ -23,11 +24,12 @@ class Replenishment<T>(
     @Synchronized
     fun getValue(): T {
         // 获取当前的值
-        val nowValue = value
+        val nowValue = value.get()
         // 重新初始化
-        value = getter()
+        val newValue = getter()
+        this.value = WeakReference(newValue)
         // 返回保存的值
-        return nowValue
+        return nowValue ?: newValue
     }
 
 }

@@ -2,13 +2,14 @@ package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
 import cn.fd.ratziel.module.script.impl.CompileDefault
+import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.imports.GroupImports
 import org.graalvm.polyglot.Context
+import org.graalvm.polyglot.Engine
 import org.graalvm.polyglot.Source
+import java.util.function.Supplier
 import javax.script.ScriptEngine
-import kotlin.concurrent.getOrSet
 
 
 /**
@@ -19,10 +20,20 @@ import kotlin.concurrent.getOrSet
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-object GraalJsScriptExecutor : CompilableScriptExecutor<GraalJsScriptExecutor.SourceCache>, CompileDefault {
+object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>(), CompileDefault {
 
     private const val LANGUAGE_ID = "js"
     private const val IMPORTS_MEMBER = "_imports_"
+
+    /**
+     * 依照 GraalVM Polyglot 的文档, 代码缓存的数据作为 [Engine] 实例的一部分.
+     * 使用全局的 [Engine] 进行代码缓存或许可以提升效率.
+     */
+    val globalEngine: Engine = Engine.newBuilder(LANGUAGE_ID)
+        .allowExperimentalOptions(true)
+        .option("js.ecmascript-version", "latest")
+        .option("js.nashorn-compat", "true") // Nashorn 兼容模式
+        .build()
 
     /**
      * 创建一个新的默认的 [Context.Builder]
@@ -30,44 +41,29 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<GraalJsScriptExecutor.So
     fun newContext(): Context = Context.newBuilder(LANGUAGE_ID)
         .hostClassLoader(this::class.java.classLoader)
         .allowAllAccess(true) // 全开了算了
-        .allowExperimentalOptions(true)
-        .option("js.ecmascript-version", "latest")
-        .option("js.nashorn-compat", "true") // Nashorn 兼容模式
+        .engine(globalEngine) // 绑定全局的 Engine
         .build()
 
     override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
         // 创建运行上下文
-        val runtime = environment.context.fetch(this) { initContext(environment) }
+        val runtime = preheat(environment)
         // 评估脚本源 (不缓存)
         return runtime.eval(createSource(source, false)).`as`(Any::class.java)
     }
 
-    override fun compile(source: ScriptSource, environment: ScriptEnvironment): SourceCache {
-        return SourceCache(createSource(source))
+    override fun compile(source: ScriptSource, environment: ScriptEnvironment): CachedScript<Source, Context> {
+        return CachedScript(createSource(source), environment, this)
     }
 
-    override fun evalCompiled(compiled: SourceCache, environment: ScriptEnvironment): Any? {
+    override fun evalCompiled(compiled: CachedScript<Source, Context>, environment: ScriptEnvironment): Any? {
         // 获取当前线程的运行上下文
-        val runtime = compiled.local.getOrSet { initContext(environment) }
-        return runtime.eval(compiled.source).`as`(Any::class.java)
+        val runtime = getRuntime(environment) { compiled.get() }
+        return runtime.eval(compiled.script).`as`(Any::class.java)
     }
 
-    /**
-     * 初始化供脚本运行的上下文
-     */
-    @JvmStatic
-    fun initContext(environment: ScriptEnvironment): Context {
-        // 创建基本的上下文
-        val context = newContext()
-
-        // 导入环境的绑定键
-        val environmentBindings = environment.bindings
-        val contextBindings = context.getBindings(LANGUAGE_ID)
-        if (environmentBindings.isNotEmpty()) {
-            for ((key, value) in environmentBindings) {
-                contextBindings.putMember(key, value)
-            }
-        }
+    override fun preheat(environment: ScriptEnvironment): Context {
+        // 初始化预热上下文
+        val context = getRuntime(environment) { newContext() }
 
         // 导入环境的导入组 (类、包、脚本)
         val imports = GroupImports.catcher[environment.context]
@@ -77,6 +73,7 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<GraalJsScriptExecutor.So
             // 导入脚本: 用于在运行时获取类、包
             context.eval(importingScript)
             // 设置成员: 供导入脚本在运行时获取类、包 (外部传入 GroupImports)
+            val contextBindings = context.getBindings(LANGUAGE_ID)
             contextBindings.putMember(IMPORTS_MEMBER, imports)
         }
 
@@ -88,6 +85,24 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<GraalJsScriptExecutor.So
             }
         }
 
+        return context
+    }
+
+    /**
+     * 获取供脚本运行的上下文, 并导入环境的绑定键
+     */
+    @JvmStatic
+    fun getRuntime(environment: ScriptEnvironment, init: Supplier<Context>): Context {
+        // 获取环境中的上下文 (创建)
+        val context = environment.context.fetch(this, init)
+        // 导入环境的绑定键
+        val environmentBindings = environment.bindings
+        val contextBindings = context.getBindings(LANGUAGE_ID)
+        if (environmentBindings.isNotEmpty()) {
+            for ((key, value) in environmentBindings) {
+                contextBindings.putMember(key, value)
+            }
+        }
         return context
     }
 
@@ -106,21 +121,6 @@ object GraalJsScriptExecutor : CompilableScriptExecutor<GraalJsScriptExecutor.So
     @JvmStatic
     private fun internalSource(script: String): Source {
         return Source.newBuilder(LANGUAGE_ID, script, "<internal-script>").internal(true).buildLiteral()
-    }
-
-    /**
-     * GraalJs 代码缓存
-     */
-    class SourceCache(
-        val source: Source,
-    ) {
-
-        /**
-         * [ThreadLocal] 存储每个线程的 [Context]
-         * 同一个线程共享一个 [Context]
-         */
-        val local = ThreadLocal<Context>()
-
     }
 
 }
