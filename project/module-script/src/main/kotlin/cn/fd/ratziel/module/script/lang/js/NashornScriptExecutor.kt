@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import cn.fd.ratziel.module.script.imports.GroupImports
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
-import java.util.function.Supplier
 import javax.script.Compilable
 import javax.script.CompiledScript
 import javax.script.ScriptContext
@@ -26,14 +25,14 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngin
      * 直接运行脚本
      */
     override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
-        return preheat(environment).eval(source.content)
+        return initRuntime(environment).eval(source.content)
     }
 
     /**
      * 编译原始脚本
      */
     override fun compile(source: ScriptSource, environment: ScriptEnvironment): CachedScript<CompiledScript, ScriptEngine> {
-        val compiler = preheat(environment) as Compilable
+        val compiler = initRuntime(environment) as Compilable
         val script = compiler.compile(source.content)
         return CachedScript(script, environment, this)
     }
@@ -43,13 +42,13 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngin
      */
     override fun evalCompiled(compiled: CachedScript<CompiledScript, ScriptEngine>, environment: ScriptEnvironment): Any? {
         // 获取当前线程的运行脚本引擎
-        val runtime = initEngine(environment) { compiled.get() }
+        val runtime = compiled.get().importBindings(environment)
         return compiled.script.eval(runtime.context)
     }
 
-    override fun preheat(environment: ScriptEnvironment): ScriptEngine {
+    override fun initRuntime(environment: ScriptEnvironment): ScriptEngine {
         // 初始化预热脚本引擎
-        val engine = initEngine(environment) { newEngine() }
+        val engine = newEngine().importBindings(environment)
 
         // 导入导入组
         val imports = GroupImports.catcher[environment.context]
@@ -81,17 +80,13 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngin
     }
 
     /**
-     * 初始化环境中的脚本引擎 [ScriptEngine]
+     * 导入环境的绑定键
      */
     @JvmStatic
-    fun initEngine(environment: ScriptEnvironment, runtimeCreator: Supplier<ScriptEngine>): ScriptEngine =
-        environment.context.fetch(this) {
-            // 获取环境中的上下文 (创建)
-            val engine = runtimeCreator.get()
-            // 设置环境的绑定键 (直接导入全局域)
-            engine.setBindings(environment.bindings, ScriptContext.GLOBAL_SCOPE)
-            return@fetch engine
-        }
+    fun ScriptEngine.importBindings(environment: ScriptEnvironment): ScriptEngine = this.also { engine ->
+        // 设置环境的绑定键 (直接导入全局域)
+        engine.setBindings(environment.bindings, ScriptContext.GLOBAL_SCOPE)
+    }
 
     /**
      * 创建脚本引擎实例

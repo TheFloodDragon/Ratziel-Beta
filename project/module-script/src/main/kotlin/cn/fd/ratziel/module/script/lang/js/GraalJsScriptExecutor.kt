@@ -8,7 +8,6 @@ import cn.fd.ratziel.module.script.imports.GroupImports
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Engine
 import org.graalvm.polyglot.Source
-import java.util.function.Supplier
 import javax.script.ScriptEngine
 
 
@@ -46,7 +45,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>(), Compile
 
     override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
         // 创建运行上下文
-        val runtime = preheat(environment)
+        val runtime = initRuntime(environment)
         // 评估脚本源 (不缓存)
         return runtime.eval(createSource(source, false)).`as`(Any::class.java)
     }
@@ -57,13 +56,13 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>(), Compile
 
     override fun evalCompiled(compiled: CachedScript<Source, Context>, environment: ScriptEnvironment): Any? {
         // 获取当前线程的运行上下文
-        val runtime = initRuntime(environment) { compiled.get() }
+        val runtime = compiled.get().importBindings(environment)
         return runtime.eval(compiled.script).`as`(Any::class.java)
     }
 
-    override fun preheat(environment: ScriptEnvironment): Context {
+    override fun initRuntime(environment: ScriptEnvironment): Context {
         // 初始化预热上下文
-        val context = initRuntime(environment) { newContext() }
+        val context = newContext().importBindings(environment)
 
         // 导入环境的导入组 (类、包、脚本)
         val imports = GroupImports.catcher[environment.context]
@@ -89,22 +88,17 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>(), Compile
     }
 
     /**
-     * 初始化供脚本运行的上下文, 并导入环境的绑定键
+     * 导入环境的绑定键
      */
     @JvmStatic
-    fun initRuntime(environment: ScriptEnvironment, runtimeCreator: Supplier<Context>): Context {
-        return environment.context.fetch(this) {
-            // 获取环境中的上下文 (创建)
-            val context = runtimeCreator.get()
-            // 导入环境的绑定键
-            val environmentBindings = environment.bindings
-            val contextBindings = context.getBindings(LANGUAGE_ID)
-            if (environmentBindings.isNotEmpty()) {
-                for ((key, value) in environmentBindings) {
-                    contextBindings.putMember(key, value)
-                }
+    fun Context.importBindings(environment: ScriptEnvironment): Context = this.also { context ->
+        // 导入环境的绑定键
+        val environmentBindings = environment.bindings
+        val contextBindings = context.getBindings(LANGUAGE_ID)
+        if (environmentBindings.isNotEmpty()) {
+            for ((key, value) in environmentBindings) {
+                contextBindings.putMember(key, value)
             }
-            return@fetch context
         }
     }
 

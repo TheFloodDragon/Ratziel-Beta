@@ -16,7 +16,7 @@ abstract class EnginedScriptExecutor<T : Any, E : Any> : CompilableScriptExecuto
     /**
      * 通过编译时的脚本环境, 提前预热出 脚本引擎实例
      */
-    abstract fun preheat(environment: ScriptEnvironment): E
+    abstract fun initRuntime(environment: ScriptEnvironment): E
 
     /**
      * 缓存的脚本
@@ -42,10 +42,7 @@ abstract class EnginedScriptExecutor<T : Any, E : Any> : CompilableScriptExecuto
         private val engineReplenishing by replenish {
             CompletableFuture.supplyAsync {
                 // 继承编译时传入的绑定键, 预热脚本引擎
-                ScriptEnvironment(originEnvironment.bindings).let {
-                    // 预热脚本
-                    executor.preheat(it)
-                }
+                executor.initRuntime(originEnvironment)
             }
         }
 
