@@ -17,6 +17,11 @@ data class PackageImport(
 ) {
 
     /**
+     * 包名称 (带 * 的)
+     */
+    val packageNameWithAsterisk: String = "$packageName.*"
+
+    /**
      * 包中的类缓存
      */
     private val classesCache = ConcurrentHashMap<String, WeakReference<Class<*>>>()
@@ -36,6 +41,6 @@ data class PackageImport(
         }
     }
 
-    override fun toString() = "$packageName.*"
+    override fun toString() = packageNameWithAsterisk
 
 }

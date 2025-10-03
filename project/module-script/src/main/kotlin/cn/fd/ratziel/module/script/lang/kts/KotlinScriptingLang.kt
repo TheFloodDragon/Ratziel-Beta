@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.script.lang.kts
 
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
 import taboolib.library.configuration.ConfigurationSection
 
@@ -17,7 +18,7 @@ object KotlinScriptingLang : ScriptType, ScriptBootstrap {
 
     override val alias = arrayOf("Kotlin", "kts")
 
-//    override val executor: ScriptExecutor get() = KotlinScriptingExecutor
+    override val executor: ScriptExecutor get() = KotlinScriptingExecutor
 
     override fun initialize(settings: ConfigurationSection) {
         ScriptManager.loadDependencies("kotlin-scripting")

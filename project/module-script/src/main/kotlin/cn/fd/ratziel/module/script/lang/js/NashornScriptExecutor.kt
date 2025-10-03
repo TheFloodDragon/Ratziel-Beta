@@ -32,7 +32,7 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript>(), NonStric
      * 编译原始脚本
      */
     override fun compile(source: ScriptSource, environment: ScriptEnvironment): CompiledScript {
-        return (newEngine() as Compilable).compile(source.content)
+        return (getEngine(environment) as Compilable).compile(source.content)
     }
 
     /**
