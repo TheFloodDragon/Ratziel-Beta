@@ -1,8 +1,6 @@
 package cn.fd.ratziel.module.item.feature.action
 
 import cn.fd.ratziel.common.block.BlockBuilder
-import cn.fd.ratziel.common.block.BlockScope
-import cn.fd.ratziel.common.scope.ItemScope
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
@@ -53,7 +51,7 @@ object ActionInterpreter : ItemInterpreter {
                             trigger.build(identifier, element.copyOf(code))
                         } else {
                             // 使用默认构建器
-                            BlockBuilder.build(element.copyOf(code), BlockScope.ItemScope)
+                            BlockBuilder.build(element.copyOf(code))
                         }
                         // 返回结果
                         trigger to block

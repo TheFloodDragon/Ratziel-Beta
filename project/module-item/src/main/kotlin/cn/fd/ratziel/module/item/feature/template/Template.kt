@@ -34,7 +34,9 @@ data class Template(
         // 模板的元素在最开始解析时经过校验, 所以直接转 ObjectNode 就行
         val source = JsonTree(origin.property).root as JsonTree.ObjectNode
         // 从底部开始合并 (不替换底部元素的一个个往上合并)
-        for (template in dependencyChain) {
+        for (name in parents) {
+            // 取父模板 (找不到就跳过)
+            val template = TemplateElement.findBy(name) ?: continue
             // 获取模板的元素
             val target = template.element
             // 不替换原有的合并

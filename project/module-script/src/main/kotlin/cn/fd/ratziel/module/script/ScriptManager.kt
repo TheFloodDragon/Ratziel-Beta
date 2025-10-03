@@ -1,5 +1,7 @@
 package cn.fd.ratziel.module.script
 
+import cn.fd.ratziel.common.block.BlockScope
+import cn.fd.ratziel.common.block.provided.ScriptBlock
 import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.ElementLoader
 import cn.fd.ratziel.core.util.FileResolver
@@ -28,7 +30,7 @@ object ScriptManager {
     /**
      * 默认使用的的脚本语言
      */
-    lateinit var defaultLanguage: ScriptType
+    var defaultLanguage: ScriptType = ScriptType.JAVASCRIPT
         private set
 
     /**
@@ -63,6 +65,8 @@ object ScriptManager {
     private fun initialize() {
         // 注册下 脚本元素加载器
         ElementLoader.loaders.addFirst(ScriptElementLoader)
+        // 你也注册下
+        BlockScope.DefaultScope.register { ScriptBlock.Parser() }
 
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!
@@ -87,7 +91,10 @@ object ScriptManager {
         }
 
         // 脚本全禁用了直接爬
-        if (activeLanguages.isEmpty()) return
+        if (activeLanguages.isEmpty()) {
+            warning("No script language is enabled! All scripts will not work!")
+            return
+        }
 
         // 设置默认语言
         this.defaultLanguage = conf.getString("default")?.let { ScriptType.match(it) }

@@ -1,9 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.common.block.BlockBuilder
-import cn.fd.ratziel.common.block.BlockScope
 import cn.fd.ratziel.common.block.ExecutableBlock
-import cn.fd.ratziel.common.scope.ItemScope
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.contextual.plus
 import cn.fd.ratziel.core.element.Element
@@ -219,7 +217,7 @@ class DataInterpreter : ItemInterpreter {
                 ?.getBy(*alias) as? JsonObject ?: return null
             return coroutineScope {
                 property.mapValues {
-                    async { BlockBuilder.build(element.copyOf(it.value), BlockScope.ItemScope) }
+                    async { BlockBuilder.build(element.copyOf(it.value)) }
                 }.mapValues { it.value.await() }
             }
         }

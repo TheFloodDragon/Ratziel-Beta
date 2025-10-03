@@ -11,6 +11,6 @@ Script:
     # Jexl
     Jexl:
       enabled: true
-    # Kotlin Scripting (暂不支持)
+    # Kotlin Scripting
     KotlinScripting:
       enabled: false

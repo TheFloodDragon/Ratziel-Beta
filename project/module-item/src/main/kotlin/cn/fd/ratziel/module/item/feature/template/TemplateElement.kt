@@ -22,10 +22,10 @@ object TemplateElement : ElementHandler {
 
     override suspend fun handle(elements: Collection<Element>) {
         val parsed = elements.mapNotNull { TemplateParser.parse(it) }
-        // 所有模板解析完成后, 触发下其元素的继承, 提前完成嵌套模板的基础
-        parsed.forEach { it.element }
         // 直接更新模板表
         templates.clear(); templates.putAll(parsed.associateBy { it.name })
+        // 所有模板解析完成后, 触发下其元素的继承, 提前完成嵌套模板的基础
+        parsed.forEach { it.element }
     }
 
     /**

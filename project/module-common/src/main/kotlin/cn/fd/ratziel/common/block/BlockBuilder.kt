@@ -1,6 +1,5 @@
 package cn.fd.ratziel.common.block
 
-import cn.fd.ratziel.common.block.scope.DefaultScope
 import cn.fd.ratziel.core.element.Element
 import kotlinx.serialization.json.JsonElement
 
@@ -29,7 +28,7 @@ object BlockBuilder {
     @JvmStatic
     private fun build(element: JsonElement, scope: BlockScope, contextApplier: BlockContext.() -> Unit = {}): ExecutableBlock {
         // 创建调度器
-        val scheduler = BlockScheduler(scope.parsers)
+        val scheduler = BlockScheduler(scope.parsers.map { it.get() })
         val context = BlockContext(scheduler)
         contextApplier(context)
         // 调用调度器解析

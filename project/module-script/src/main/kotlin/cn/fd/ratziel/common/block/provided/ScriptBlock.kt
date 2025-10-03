@@ -1,4 +1,4 @@
-package cn.fd.ratziel.block.provided
+package cn.fd.ratziel.common.block.provided
 
 import cn.fd.ratziel.common.block.BlockContext
 import cn.fd.ratziel.common.block.BlockParser
