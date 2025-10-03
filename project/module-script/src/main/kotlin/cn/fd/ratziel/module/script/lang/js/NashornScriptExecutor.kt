@@ -33,7 +33,7 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngin
      * 编译原始脚本
      */
     override fun compile(source: ScriptSource, environment: ScriptEnvironment): CachedScript<CompiledScript, ScriptEngine> {
-        val compiler = (getEngine(environment) { newEngine() } as Compilable)
+        val compiler = preheat(environment) as Compilable
         val script = compiler.compile(source.content)
         return CachedScript(script, environment, this)
     }
@@ -43,13 +43,13 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngin
      */
     override fun evalCompiled(compiled: CachedScript<CompiledScript, ScriptEngine>, environment: ScriptEnvironment): Any? {
         // 获取当前线程的运行脚本引擎
-        val runtime = getEngine(environment) { compiled.get() }
+        val runtime = initEngine(environment) { compiled.get() }
         return compiled.script.eval(runtime.context)
     }
 
     override fun preheat(environment: ScriptEnvironment): ScriptEngine {
         // 初始化预热脚本引擎
-        val engine = getEngine(environment) { newEngine() }
+        val engine = initEngine(environment) { newEngine() }
 
         // 导入导入组
         val imports = GroupImports.catcher[environment.context]
@@ -81,15 +81,17 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngin
     }
 
     /**
-     * 从环境中获取脚本引擎 [ScriptEngine]
+     * 初始化环境中的脚本引擎 [ScriptEngine]
      */
-    fun getEngine(environment: ScriptEnvironment, init: Supplier<ScriptEngine>): ScriptEngine {
-        // 获取环境中的上下文 (创建)
-        val engine = environment.context.fetch(this, init)
-        // 设置环境的绑定键 (直接导入全局域)
-        engine.setBindings(environment.bindings, ScriptContext.GLOBAL_SCOPE)
-        return engine
-    }
+    @JvmStatic
+    fun initEngine(environment: ScriptEnvironment, runtimeCreator: Supplier<ScriptEngine>): ScriptEngine =
+        environment.context.fetch(this) {
+            // 获取环境中的上下文 (创建)
+            val engine = runtimeCreator.get()
+            // 设置环境的绑定键 (直接导入全局域)
+            engine.setBindings(environment.bindings, ScriptContext.GLOBAL_SCOPE)
+            return@fetch engine
+        }
 
     /**
      * 创建脚本引擎实例

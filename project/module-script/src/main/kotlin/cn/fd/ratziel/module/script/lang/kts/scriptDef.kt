@@ -11,8 +11,8 @@ import kotlin.script.experimental.api.*
 import kotlin.script.experimental.host.FileBasedScriptSource
 import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.host.ScriptingHostConfiguration
-import kotlin.script.experimental.jvm.JvmDependencyFromClassLoader
 import kotlin.script.experimental.jvm.compilationCache
+import kotlin.script.experimental.jvm.dependenciesFromClassContext
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvmhost.CompiledScriptJarsCache
 import kotlin.script.experimental.jvmhost.jsr223.configureProvidedPropertiesFromJsr223Context
@@ -44,7 +44,7 @@ object KtsCompilationConfiguration : ScriptCompilationConfiguration({
         onAnnotations(Import::class, handler = MainKtsConfigurator())
     }
     jvm {
-        dependencies(JvmDependencyFromClassLoader { this::class.java.classLoader })
+        dependenciesFromClassContext(KtsCompilationConfiguration::class, "kotlin-stdlib", "kotlin-reflect")
     }
     jsr223 {
         importAllBindings(true)
