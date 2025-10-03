@@ -37,7 +37,7 @@ object ActionInterpreter : ItemInterpreter {
      */
     suspend fun parseElement(identifier: Identifier, element: Element): ActionMap? {
         // 获取原始动作
-        val raw = (element.property as? JsonObject)?.getBy(*nodeNames)
+        val raw = (element.property as? JsonObject)?.getBy(*nodeNames) ?: return null
         if (raw is JsonObject) {
             // 解析动作表
             val blocks = supervisorScope {

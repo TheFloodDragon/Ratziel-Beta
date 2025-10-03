@@ -61,11 +61,6 @@ class GroupImports(
         this.scripts + other.scripts
     )
 
-    /**
-     * 判断导入组是否为空
-     */
-    fun isEmpty() = classes.isEmpty() && packages.isEmpty() && scripts.isEmpty()
-
     override fun toString() = "GroupImports(classes=$classes, packages=$packages, scripts=$scripts)"
 
     companion object {

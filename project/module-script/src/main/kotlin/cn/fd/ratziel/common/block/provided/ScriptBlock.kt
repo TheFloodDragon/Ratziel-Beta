@@ -10,7 +10,7 @@ import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
-import cn.fd.ratziel.module.script.impl.NonStrictCompilation
+import cn.fd.ratziel.module.script.impl.CompileDefault
 import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
@@ -57,7 +57,7 @@ class ScriptBlock(
      * 尝试编译脚本, 若编译失败或者语言不支持空脚本环境, 则返回一个脚本文本内容
      */
     fun compileOrLiteral(executor: ScriptExecutor, script: String): ScriptContent {
-        if (executor is NonStrictCompilation) {
+        if (executor is CompileDefault) {
             // 预编译脚本
             try {
                 // 带环境的编译脚本

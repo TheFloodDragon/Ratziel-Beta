@@ -18,6 +18,8 @@ object KotlinScriptingLang : ScriptType, ScriptBootstrap {
 
     override val alias = arrayOf("Kotlin", "kts")
 
+    override val extensions = arrayOf("kts", "kt")
+
     override val executor: ScriptExecutor get() = KotlinScriptingExecutor
 
     override fun initialize(settings: ConfigurationSection) {

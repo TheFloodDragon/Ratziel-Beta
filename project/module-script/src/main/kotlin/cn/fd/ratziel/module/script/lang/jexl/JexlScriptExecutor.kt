@@ -28,7 +28,7 @@ object JexlScriptExecutor : CompilableScriptExecutor<JexlScript> {
     }
 
     override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
-        return engine.createScript(source.content).execute(WrappedJexlContext(environment))
+        return engine.createExpression(source.content).evaluate(WrappedJexlContext(environment))
     }
 
     override fun compile(source: ScriptSource, environment: ScriptEnvironment): JexlScript {
@@ -36,10 +36,7 @@ object JexlScriptExecutor : CompilableScriptExecutor<JexlScript> {
     }
 
     override fun evalCompiled(compiled: JexlScript, environment: ScriptEnvironment): Any? {
-        // 创建上下文
-        val context = WrappedJexlContext(environment)
-        // 执行脚本
-        return compiled.execute(context)
+        return compiled.execute(WrappedJexlContext(environment))
     }
 
     /**
