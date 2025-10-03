@@ -16,6 +16,7 @@ import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
+import kotlin.concurrent.getOrSet
 
 /**
  * ScriptBlock
@@ -46,7 +47,18 @@ class ScriptBlock(
     override fun execute(context: ArgumentContext): Any? {
         // 执行脚本
         measureTimeMillisWithResult {
-            executor.evaluate(script, context.scriptEnv())
+            // 获取当前线程的脚本环境 (没有就创建一个)
+            val threadEnv = threadLocal.getOrSet { context to context.scriptEnv().copy() }
+            // 上下文一致, 那就直接用
+            val environment = if (threadEnv.first === context) threadEnv.second else {
+                // 若上下文改变则重新创建脚本环境
+                context.scriptEnv().copy().also { copied ->
+                    threadLocal.remove()
+                    threadLocal.set(context to copied)
+                }
+            }
+            // 评估脚本
+            executor.evaluate(script, environment)
         }.also { (time, result) ->
             debug("[TIME MARK] ScriptBlock(${script !is LiteralScriptContent}) executed in $time ms. Content: $source")
             return result
@@ -75,6 +87,16 @@ class ScriptBlock(
     }
 
     override fun toString() = "ScriptBlock(executor=$executor, source=$source)"
+
+    companion object {
+
+        /**
+         * 用于在多线程环境下克隆脚本环境, 避免不同线程间的脚本环境使用冲突.
+         */
+        @JvmStatic
+        private val threadLocal = ThreadLocal<Pair<ArgumentContext, ScriptEnvironment>>()
+
+    }
 
     class Parser : BlockParser {
 
