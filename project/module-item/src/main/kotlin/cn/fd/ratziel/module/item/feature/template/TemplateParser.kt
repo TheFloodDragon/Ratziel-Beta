@@ -21,13 +21,17 @@ object TemplateParser {
     val INHERIT_ALIAS = arrayOf("inherit", "extend")
 
     @JvmStatic
-    fun parse(element: Element): Template {
-        return Template(element, findParents(element.property))
+    fun parse(element: Element): Template? {
+        val property = element.property
+        if (property !is JsonObject) {
+            warning("Template element must be a JsonObject!")
+            return null
+        }
+        return Template(element, findParents(property))
     }
 
     @JvmStatic
-    fun findParents(element: JsonElement): Set<String> {
-        val property = element as? JsonObject ?: return emptySet()
+    fun findParents(property: JsonObject): Set<String> {
         return when (val section = property.getBy(*INHERIT_ALIAS)) {
             is JsonPrimitive -> setOf(section.content)
             is JsonArray -> section.mapNotNull { (it as? JsonPrimitive)?.content }.toSet()
@@ -42,18 +46,6 @@ object TemplateParser {
             is JsonTree.ArrayNode -> section.value.mapNotNull { (it as? JsonTree.PrimitiveNode)?.value?.content }.toSet()
             else -> emptySet()
         }
-    }
-
-    /**
-     * 根据模板寻找其元素属性 [JsonObject] 类型, 无法找到时警告
-     */
-    @JvmStatic
-    fun findElement(template: Template): JsonObject? {
-        val element = template.element.property
-        if (element !is JsonObject) {
-            warning("The target to be inherited must be a JsonObject!")
-            return null
-        } else return element
     }
 
     /**

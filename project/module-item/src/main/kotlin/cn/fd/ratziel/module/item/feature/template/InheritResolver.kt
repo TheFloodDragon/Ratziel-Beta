@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.feature.template
 
 import cn.altawk.nbt.NbtPath
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.EnhancedListResolver
 import kotlinx.serialization.json.JsonArray
@@ -34,11 +35,15 @@ object InheritResolver : ItemTagResolver {
         // 看看传过来什么东西
         when (args.size) {
             0 -> return null // 没元素名, 没路径, 解析什么?
-            // Name.Path 形式, 可以的
+            // Name.Path 形式, 解析自己的
             1 -> {
-                val np = NbtPath(args[0])
-                name = (np.first() as NbtPath.NameNode).name
-                path = NbtPath(np.drop(1))
+                val self = context.pop(Element::class.java)
+                path = NbtPath(args[0])
+                val find = read(self.property, path)
+                if (find == null) {
+                    warning("Cannot find element by path '$path' from '${self.name}'.")
+                    return null
+                } else return platten(find)
             }
             // Name:Path 形式
             2 -> {
@@ -54,26 +59,20 @@ object InheritResolver : ItemTagResolver {
 
         // 根据路径寻找
         val template = TemplateElement.findBy(name) ?: return null
-        var find: JsonElement? = null
-        // 链式查找 (从底部开始)
-        for (t in template.asChain()) {
-            val element = t.element.property as? JsonObject ?: continue
-            find = read(element, path) ?: continue
-        }
+        val find = read(template.element, path)
         if (find == null) {
-            warning("Cannot find element by path '$path'.")
+            warning("Cannot find element by path '$path' from '$name'.")
             return null
         }
-        // 开始插入合并
+        return platten(find)
+    }
+
+    @JvmStatic
+    private fun platten(find: JsonElement): String? {
         if (find is JsonPrimitive) {
             return find.content
         } else if (find is JsonArray) {
-            // 仅支持元素全是 JsonPrimitive 的 JsonArray
-            if (find.all { it is JsonPrimitive }) {
-                return find.joinToString(EnhancedListResolver.NEWLINE) { (it as JsonPrimitive).content }
-            } else {
-                warning("Inline inheritance in a array does not support complex JsonArray.")
-            }
+            return find.joinToString(EnhancedListResolver.NEWLINE) { it.toString() }
         }
         return null
     }

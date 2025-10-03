@@ -15,12 +15,14 @@ object InheritResponder : ContextualResponder {
 
     override fun accept(body: ContextualResponse, trigger: Trigger) {
         // 获取动作链表
-        val chain = InheritInterpreter.actionsChain[body.context]
+        val templateActions = InheritInterpreter.templateActions[body.context]
         // 空的就爬去
-        if (chain.isEmpty()) return
+        if (templateActions.isEmpty()) return
         // 执行动作
-        for (actionMap in chain) {
-            ItemResponder.run(actionMap, body.context, trigger)
+        for (actionMaps in templateActions.values) {
+            for (actionMap in actionMaps) {
+                ItemResponder.run(actionMap, body.context, trigger)
+            }
         }
     }
 

@@ -4,10 +4,8 @@ import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.serialization.elementAlias
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.ItemRegistry
-import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
-import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
-import cn.fd.ratziel.module.item.api.builder.ItemStream
-import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
+import cn.fd.ratziel.module.item.api.builder.*
+import cn.fd.ratziel.module.item.impl.builder.provided.TaggedSectionResolver
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -41,6 +39,28 @@ object DefaultResolver : ItemInterpreter {
      */
     val accessibleNodes: MutableSet<String> by lazy {
         CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
+    }
+
+    /**
+     * 解析带有单个标签的 [JsonTree]
+     * @param resolver 标签解析器
+     * @param tree [JsonTree]
+     * @param context 上下文
+     */
+    @JvmStatic
+    fun resolveBy(resolver: ItemSectionResolver, tree: JsonTree, context: ArgumentContext) {
+        resolveTree(tree, context, listOf(resolver))
+    }
+
+    /**
+     * 解析带有单个标签的 [JsonTree]
+     * @param resolver 标签解析器
+     * @param tree [JsonTree]
+     * @param context 上下文
+     */
+    @JvmStatic
+    fun resolveBy(resolver: ItemTagResolver, tree: JsonTree, context: ArgumentContext) {
+        this.resolveBy(TaggedSectionResolver(listOf(resolver)), tree, context)
     }
 
     /**

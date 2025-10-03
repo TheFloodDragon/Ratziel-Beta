@@ -2,16 +2,17 @@ package cn.fd.ratziel.module.item.feature.action
 
 import cn.fd.ratziel.common.block.BlockBuilder
 import cn.fd.ratziel.common.block.BlockScope
+import cn.fd.ratziel.common.scope.ItemScope
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
-import cn.fd.ratziel.common.scope.ItemScope
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import kotlinx.serialization.json.JsonObject
+import taboolib.common.platform.function.warning
 
 /**
  * ActionInterpreter
@@ -37,11 +38,8 @@ object ActionInterpreter : ItemInterpreter {
      * 从配置中解析成动作表
      */
     suspend fun parseElement(identifier: Identifier, element: Element): ActionMap? {
-        val property = element.property
-        // 仅处理 JsonObject 类型
-        if (property !is JsonObject) return null
         // 获取原始动作
-        val raw = property.getBy(*nodeNames) ?: return null
+        val raw = (element.property as? JsonObject)?.getBy(*nodeNames)
         if (raw is JsonObject) {
             // 解析动作表
             val blocks = supervisorScope {
@@ -63,7 +61,10 @@ object ActionInterpreter : ItemInterpreter {
                 }.awaitAll()
             }
             return ActionMap(blocks.toMap())
-        } else throw IllegalArgumentException("Incorrect action format! Unexpected: $raw")
+        } else {
+            warning("Incorrect action format! Unexpected: $raw")
+            return null
+        }
     }
 
 }

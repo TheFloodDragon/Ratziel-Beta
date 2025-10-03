@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.item.feature.template
 
 import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.core.serialization.json.JsonTree
+import kotlinx.serialization.json.JsonObject
 import taboolib.common.platform.function.warning
 
 /**
@@ -13,7 +15,7 @@ data class Template(
     /**
      * 模板的原始元素
      */
-    val element: Element,
+    val origin: Element,
     /**
      * 父模板
      */
@@ -23,16 +25,31 @@ data class Template(
     /**
      * 模板名称
      */
-    val name get() = element.name
+    val name get() = origin.name
 
     /**
-     * 分析模板继承关系
-     *
-     * @return 不翻转时从底部开始
+     * 模板的当前元素内容 (继承了父模板后的)
      */
-    fun asChain(): List<Template> {
+    val element: JsonObject by lazy {
+        // 模板的元素在最开始解析时经过校验, 所以直接转 ObjectNode 就行
+        val source = JsonTree(origin.property).root as JsonTree.ObjectNode
+        // 从底部开始合并 (不替换底部元素的一个个往上合并)
+        for (template in dependencyChain) {
+            // 获取模板的元素
+            val target = template.element
+            // 不替换原有的合并
+            TemplateParser.merge(source, target)
+        }
+        // 换成不可变类型
+        JsonTree.parseToElement(source) as JsonObject
+    }
+
+    /**
+     * 模板依赖链 (不翻转时从底部开始)
+     */
+    val dependencyChain: List<Template> by lazy {
         // 没有父模板直接返回
-        if (parents.isEmpty()) return listOf(this)
+        if (parents.isEmpty()) return@lazy listOf(this)
 
         val stack = ArrayList<Template>()
         var warned = false // 是否被警告过
@@ -63,10 +80,10 @@ data class Template(
                 iteratorStack.remove(iterator)
             }
         }
-        if (warned) warning("Template chain has been truncated! Final Chain: ${stack.map { it.name }}")
-        return stack
+        if (warned) warning("Template chain has been truncated! Final Chain: ${stack.joinToString(" -> ") { it.name }}")
+        return@lazy stack
     }
 
-    override fun toString() = "Template(name=${element.name}, parents=$parents)"
+    override fun toString() = "Template(name=$name, parents=$parents)"
 
 }

@@ -1,16 +1,14 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
-import cn.fd.ratziel.core.contextual.ArgumentNotFoundException
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.contextual.ArgumentNotFoundException
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.core.util.splitNonEscaped
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
-import java.util.*
 
 /**
  * TaggedSectionResolver
@@ -100,20 +98,6 @@ class TaggedSectionResolver(
 
         /** 标签参数分隔符 **/
         const val TAG_ARG_SEPARATION = ":"
-
-        @JvmStatic
-        fun single(resolver: ItemTagResolver) = TaggedSectionResolver(Collections.singletonList(resolver))
-
-        /**
-         * 解析带有单个标签的 [JsonTree]
-         * @param resolver 标签解析器
-         * @param tree [JsonTree]
-         * @param context 上下文
-         */
-        @JvmStatic
-        fun resolveSingle(resolver: ItemTagResolver, tree: JsonTree, context: ArgumentContext) {
-            DefaultResolver.resolveTree(tree, context, Collections.singletonList(single(resolver)))
-        }
 
     }
 

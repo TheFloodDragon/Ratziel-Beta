@@ -22,7 +22,7 @@ import kotlin.time.TimeSource
  * @since 2025/9/6 22:49
  */
 @NewElement("script")
-object ScriptElementHandler : ElementHandler {
+object ScriptElementHandler : ElementHandler.Updatable {
 
     /**
      * 脚本描述表

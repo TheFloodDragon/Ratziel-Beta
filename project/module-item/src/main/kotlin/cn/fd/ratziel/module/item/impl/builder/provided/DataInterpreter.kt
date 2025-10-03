@@ -3,10 +3,10 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.fd.ratziel.common.block.BlockBuilder
 import cn.fd.ratziel.common.block.BlockScope
 import cn.fd.ratziel.common.block.ExecutableBlock
+import cn.fd.ratziel.common.scope.ItemScope
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
-import cn.fd.ratziel.common.scope.ItemScope
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.IdentifiedItem
@@ -16,6 +16,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
+import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.script.util.varsMap
 import kotlinx.coroutines.async
@@ -102,7 +103,7 @@ class DataInterpreter : ItemInterpreter {
 
         // 计算层标签处理 (实际上此标签处理的过程中可以获取到三个层的数据)
         stream.tree.withValue { tree ->
-            TaggedSectionResolver.resolveSingle(ComputationResolver, tree, stream.context)
+            DefaultResolver.resolveBy(ComputationResolver, tree, stream.context)
         }
 
         // 处理物品数据
@@ -121,7 +122,7 @@ class DataInterpreter : ItemInterpreter {
                         // 将物品放入上下文
                         stream.context.put(holder)
                         // 执行标签解析
-                        TaggedSectionResolver.resolveSingle(NativeDataResolver, tree, stream.context)
+                        DefaultResolver.resolveBy(NativeDataResolver, tree, stream.context)
                         // 清理物品上下文
                         stream.context.remove(DataHolder::class.java)
                     }

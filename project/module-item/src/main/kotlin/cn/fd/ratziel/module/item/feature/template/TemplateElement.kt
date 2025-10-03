@@ -21,7 +21,9 @@ object TemplateElement : ElementHandler {
     val templates: MutableMap<String, Template> = ConcurrentHashMap()
 
     override suspend fun handle(elements: Collection<Element>) {
-        val parsed = elements.map { TemplateParser.parse(it) }
+        val parsed = elements.mapNotNull { TemplateParser.parse(it) }
+        // 所有模板解析完成后, 触发下其元素的继承, 提前完成嵌套模板的基础
+        parsed.forEach { it.element }
         // 直接更新模板表
         templates.clear(); templates.putAll(parsed.associateBy { it.name })
     }
