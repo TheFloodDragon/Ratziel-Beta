@@ -29,12 +29,11 @@ object BlockBuilder {
     private fun build(element: JsonElement, scope: BlockScope, contextApplier: BlockContext.() -> Unit = {}): ExecutableBlock {
         // 创建调度器
         val scheduler = BlockScheduler(scope.parsers.map { it.get() })
+        // 带有调度器的上下文
         val context = BlockContext(scheduler)
         contextApplier(context)
-        // 调用调度器解析
-        val result = scheduler.parse(element, context)
-        // 返回解析结果
-        return result ?: throw Exception("Cannot parse the element to block. Source: $element")
+        // 调用调度器解析并返回解析结果
+        return context.parse(element)
     }
 
     class BlockScheduler(

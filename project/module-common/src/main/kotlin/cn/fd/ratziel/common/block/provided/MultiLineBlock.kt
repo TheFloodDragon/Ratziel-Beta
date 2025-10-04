@@ -27,7 +27,7 @@ class MultiLineBlock(val blocks: List<ExecutableBlock>) : ExecutableBlock {
         override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
             if (element is JsonArray) {
                 // 解析多行脚本块
-                val blocks = element.mapNotNull {
+                val blocks = element.map {
                     context.parse(it)
                 }
                 // 返回有效的 MultiLineBlock

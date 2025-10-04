@@ -30,9 +30,10 @@ open class BlockContext(
     /**
      * 使用此上下文解析 [JsonElement]
      */
-    fun parse(element: JsonElement): ExecutableBlock? {
+    fun parse(element: JsonElement): ExecutableBlock {
         val scheduler = this.scheduler ?: throw UnsupportedOperationException("BlockContext hasn't a scheduler.")
-        return scheduler.parse(element, this)
+        val parsed = scheduler.parse(element, this)
+        return parsed ?: throw IllegalStateException("Could not parse block: $element")
     }
 
     override fun toString() = "BlockContext(workFile=$workFile, scheduler=$scheduler)"
