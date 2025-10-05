@@ -1,10 +1,8 @@
-package cn.fd.ratziel.module.ui.inventory.internal.nms
+package cn.fd.ratziel.module.ui.inventory.click
 
-import cn.fd.ratziel.module.ui.inventory.click.InventoryClickAction
 import cn.fd.ratziel.module.ui.inventory.click.InventoryClickAction.*
-import cn.fd.ratziel.module.ui.inventory.click.InventoryClickType
+import cn.fd.ratziel.module.ui.inventory.click.InventoryClickPreprocessor.Mode.*
 import cn.fd.ratziel.module.ui.inventory.click.InventoryClickType.*
-import cn.fd.ratziel.module.ui.inventory.internal.PlayerDragging
 import cn.fd.ratziel.platform.bukkit.util.readOrThrow
 import taboolib.module.nms.Packet
 import java.util.function.Supplier
@@ -31,10 +29,16 @@ object InventoryClickPreprocessor {
         val button = packet.readOrThrow<Number>("buttonNum").toInt()
         val slot = packet.readOrThrow<Number>("slotNum").toInt()
 
+        val mode = try {
+            Mode.valueOf(clickType.name)
+        } catch (_: IllegalArgumentException) {
+            Mode.entries[clickType.ordinal]
+        }
+
         return if (slot != -999) {
-            processValid(clickType.name, slot, button, dragging)
+            processValid(mode, slot, button, dragging)
         } else {
-            processInvalid(clickType.name, button, dragging)
+            processInvalid(mode, button, dragging)
         }
     }
 
@@ -42,28 +46,28 @@ object InventoryClickPreprocessor {
      * Processes a click in a valid slot, possibly returning a result.
      */
     @JvmStatic
-    private fun processValid(typeName: String, slot: Int, button: Int, dragging: Supplier<PlayerDragging>): InventoryClickAction? {
-        when (typeName) {
-            "PICKUP" -> when (button) {
+    private fun processValid(mode: Mode, slot: Int, button: Int, dragging: Supplier<PlayerDragging>): InventoryClickAction? {
+        when (mode) {
+            PICKUP -> when (button) {
                 0 -> return MouseClick(slot, LEFT_CLICK)
                 1 -> return MouseClick(slot, RIGHT_CLICK)
             }
 
-            "QUICK_MOVE" -> when (button) {
+            QUICK_MOVE -> when (button) {
                 0 -> return MouseClick(slot, SHIFT_LEFT_CLICK)
                 1 -> return MouseClick(slot, SHIFT_RIGHT_CLICK)
             }
 
-            "SWAP" -> when (button) {
+            SWAP -> when (button) {
                 in 0..<9 -> return HotbarSwap(button, slot)
                 40 -> return OffhandSwap(slot)
             }
 
-            "CLONE" -> return MouseClick(slot, MIDDLE_CLICK)
+            CLONE -> return MouseClick(slot, MIDDLE_CLICK)
 
-            "THROW" -> return Drop(slot, if (button == 1) CONTROL_DROP else DROP)
+            THROW -> return Drop(slot, if (button == 1) CONTROL_DROP else DROP)
 
-            "QUICK_CRAFT" -> {
+            QUICK_CRAFT -> {
                 val slots: MutableSet<Int>
                 val type: InventoryClickType
                 // 拖动过程中
@@ -91,7 +95,7 @@ object InventoryClickPreprocessor {
                 return Drag(slots.toSet(), type) // toSet 复制一份
             }
 
-            "PICKUP_ALL" -> return MouseClick(slot, DOUBLE_CLICK)
+            PICKUP_ALL -> return MouseClick(slot, DOUBLE_CLICK)
         }
         return null
     }
@@ -100,17 +104,17 @@ object InventoryClickPreprocessor {
      * Processes a click in an invalid slot (i.e. the slot is irrelevant, like in a drop)
      */
     @JvmStatic
-    private fun processInvalid(typeName: String, button: Int, dragging: Supplier<PlayerDragging>): InventoryClickAction? {
-        when (typeName) {
-            "PICKUP", "THROW" -> when (button) {
+    private fun processInvalid(mode: Mode, button: Int, dragging: Supplier<PlayerDragging>): InventoryClickAction? {
+        when (mode) {
+            PICKUP, THROW -> when (button) {
                 0 -> return Drop(-999, LEFT_CLICK_OUTSIDE)
                 1 -> return Drop(-999, RIGHT_CLICK_OUTSIDE)
             }
 
             // 我也不知为啥会有这个, Minestom 的注解是: Why Mojang, why?
-            "CLONE" -> if (button == 2) error("Look my eyes, Mojang!Why, tell me why?")
+            CLONE -> if (button == 2) Drop(-999, MIDDLE_CLICK_OUTSIDE)
 
-            "QUICK_CRAFT" -> {
+            QUICK_CRAFT -> {
                 val slots: MutableSet<Int>
                 val type: InventoryClickType
                 when (button) {
@@ -155,8 +159,19 @@ object InventoryClickPreprocessor {
                 return action
             }
 
+            else -> return null
         }
         return null
+    }
+
+    enum class Mode {
+        PICKUP,
+        QUICK_MOVE,
+        SWAP,
+        CLONE,
+        THROW,
+        QUICK_CRAFT,
+        PICKUP_ALL;
     }
 
 }

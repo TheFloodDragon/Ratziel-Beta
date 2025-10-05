@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.ui.inventory.internal.nms
 
-import cn.fd.ratziel.module.ui.inventory.internal.PlayerDragging
+import cn.fd.ratziel.module.ui.inventory.click.InventoryClickPreprocessor
+import cn.fd.ratziel.module.ui.inventory.click.PlayerDragging
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.debug
 import taboolib.module.nms.PacketReceiveEvent

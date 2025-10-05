@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.ui.inventory.internal
+package cn.fd.ratziel.module.ui.inventory.click
 
 import java.util.*
 

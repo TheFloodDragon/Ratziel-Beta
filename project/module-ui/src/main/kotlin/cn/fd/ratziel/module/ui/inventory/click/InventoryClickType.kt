@@ -6,7 +6,7 @@ package cn.fd.ratziel.module.ui.inventory.click
  * @author TheFloodDragon
  * @since 2025/10/5 13:01
  */
-enum class InventoryClickType(val button: Int, val fixedSlot: Int = -1) {
+enum class InventoryClickType(val button: Int) {
 
     /** 鼠标左键 **/
     LEFT_CLICK(0),
@@ -24,10 +24,10 @@ enum class InventoryClickType(val button: Int, val fixedSlot: Int = -1) {
     DOUBLE_CLICK(0),
 
     /** 鼠标左键点击容器外 **/
-    LEFT_CLICK_OUTSIDE(0, -999),
+    LEFT_CLICK_OUTSIDE(0),
 
     /** 鼠标右键点击容器外 **/
-    RIGHT_CLICK_OUTSIDE(1, -999),
+    RIGHT_CLICK_OUTSIDE(1),
 
     /** 切换副手 **/
     OFFHAND_SWAP(40),
@@ -52,20 +52,23 @@ enum class InventoryClickType(val button: Int, val fixedSlot: Int = -1) {
     /** 鼠标中键 (仅创建模式) **/
     MIDDLE_CLICK(2),
 
+    /** 鼠标中键容器外 (仅创建模式) **/
+    MIDDLE_CLICK_OUTSIDE(2),
+
     /** 左键拖动 **/
-    LEFT_MOUSE_DRAG_START(0, -999),
+    LEFT_MOUSE_DRAG_START(0),
     LEFT_MOUSE_DRAG_ADD_SLOT(1),
-    LEFT_MOUSE_DRAG_END(2, -999),
+    LEFT_MOUSE_DRAG_END(2),
 
     /** 右键拖动 **/
-    RIGHT_MOUSE_DRAG_START(4, -999),
+    RIGHT_MOUSE_DRAG_START(4),
     RIGHT_MOUSE_DRAG_ADD_SLOT(5),
-    RIGHT_MOUSE_DRAG_END(6, -999),
+    RIGHT_MOUSE_DRAG_END(6),
 
     /** 中键拖动 (仅创建模式) **/
-    MIDDLE_MOUSE_DRAG_START(8, -999),
+    MIDDLE_MOUSE_DRAG_START(8),
     MIDDLE_MOUSE_DRAG_ADD_SLOT(9),
-    MIDDLE_MOUSE_DRAG_END(10, -999);
+    MIDDLE_MOUSE_DRAG_END(10);
 
     /** 是否左键点击 **/
     val isLeftClick get() = this == LEFT_CLICK || this == SHIFT_LEFT_CLICK || this == DOUBLE_CLICK
@@ -86,10 +89,10 @@ enum class InventoryClickType(val button: Int, val fixedSlot: Int = -1) {
     val isDrag get() = this.name.contains("DRAG")
 
     /** 是否为鼠标中键操作 (创造模式下的操作) **/
-    val isCreativeAction get() = this == MIDDLE_CLICK || this == MIDDLE_MOUSE_DRAG_START || this == MIDDLE_MOUSE_DRAG_ADD_SLOT || this == MIDDLE_MOUSE_DRAG_END
+    val isCreativeAction get() = this == MIDDLE_CLICK || this == MIDDLE_CLICK_OUTSIDE || this == MIDDLE_MOUSE_DRAG_START || this == MIDDLE_MOUSE_DRAG_ADD_SLOT || this == MIDDLE_MOUSE_DRAG_END
 
     /** 是否会直接移动物品 (而不是简单的拿去放下) **/
-    val isItemMove get() = isKeyboardClick || isShiftClick || isCreativeAction || this == DOUBLE_CLICK
+    val isItemMove get() = isShiftClick || isKeyboardClick || this == DOUBLE_CLICK || isCreativeAction
 
     companion object {
 

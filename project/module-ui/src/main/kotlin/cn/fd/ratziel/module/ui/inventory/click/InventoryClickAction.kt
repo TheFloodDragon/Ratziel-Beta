@@ -64,6 +64,7 @@ sealed interface InventoryClickAction {
                 InventoryClickType.CONTROL_DROP,
                 InventoryClickType.LEFT_CLICK_OUTSIDE,
                 InventoryClickType.RIGHT_CLICK_OUTSIDE,
+                InventoryClickType.MIDDLE_CLICK_OUTSIDE,
             )
         }
     }
