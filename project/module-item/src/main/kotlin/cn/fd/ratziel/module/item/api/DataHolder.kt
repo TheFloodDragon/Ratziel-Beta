@@ -23,4 +23,9 @@ interface DataHolder {
      */
     operator fun set(name: String, data: Any)
 
+    /**
+     * 转换成数据集
+     */
+    fun toMap(): Map<String, Any>
+
 }

@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.contextual
 
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * SimpleContext
@@ -9,11 +9,12 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 2024/6/28 16:19
  */
 class SimpleContext(
-    private val map: MutableMap<Class<*>, Any> = ConcurrentHashMap(),
+    /** [ArrayList] 的迭代速率相对较快 **/
+    private val list: MutableList<Pair<Class<*>, Any>> = CopyOnWriteArrayList(),
 ) : ArgumentContext {
 
     constructor(vararg values: Any) : this() {
-        for (value in values) this.map[value::class.java] = value
+        for (value in values) this.list.add(value::class.java to value)
     }
 
     constructor(vararg values: Any, action: ArgumentContext.() -> Unit) : this(values) {
@@ -21,23 +22,25 @@ class SimpleContext(
     }
 
     override fun <T : Any> popOrNull(type: Class<T>): T? {
-        val find = map[type] // 寻找同类型
-            ?: map.entries.find { type.isAssignableFrom(it.key) }?.value // 寻找子类
-            ?: return null
+        // 迭代查找类
+        val find = this.list.find { type.isAssignableFrom(it.first) }
+            ?.second ?: return null
         @Suppress("UNCHECKED_CAST")
         return find as T
     }
 
     override fun put(element: Any) {
-        map[element::class.java] = element
+        // 插入新元素到开头, 以便新元素能被第一个获取到
+        this.list.add(0, element::class.java to element)
     }
 
     override fun remove(type: Class<*>) {
-        map.entries.removeIf { type.isAssignableFrom(it.key) }
+        // 删除所有此类型的对象或者子类型的对象
+        this.list.removeIf { type.isAssignableFrom(it.first) }
     }
 
     override fun copy() = SimpleContext(this.args())
 
-    override fun args(): Collection<Any> = map.values
+    override fun args(): Collection<Any> = list
 
 }

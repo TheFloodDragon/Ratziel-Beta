@@ -148,6 +148,11 @@ class RatzielItem private constructor(
             this.data.tag.handle(RATZIEL_DATA_PATH) { put(name, NbtAdapter.box(data)) }
         }
 
+        /**
+         * 装箱所有数据并转换成数据集
+         */
+        override fun toMap() = data.tag.mapValues { NbtAdapter.box(data) }
+
     }
 
     /**

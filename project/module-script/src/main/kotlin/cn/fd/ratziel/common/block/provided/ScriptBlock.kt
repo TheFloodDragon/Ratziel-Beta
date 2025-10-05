@@ -4,6 +4,7 @@ import cn.fd.ratziel.common.block.BlockContext
 import cn.fd.ratziel.common.block.BlockParser
 import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.util.resolveBy
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
@@ -17,6 +18,7 @@ import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
 import taboolib.common.reflect.hasAnnotation
+import taboolib.common5.cbool
 import kotlin.concurrent.getOrSet
 
 /**
@@ -37,7 +39,7 @@ open class ScriptBlock(
 ) : ExecutableBlock {
 
     constructor(source: String, executor: ScriptExecutor, context: BlockContext) : this(
-        source, executor, context.caching, GroupImports.catcher[context.attached]
+        source, executor, context["caching"]?.cbool ?: true, GroupImports.catcher[context.attached]
     )
 
     /**
@@ -110,12 +112,17 @@ open class ScriptBlock(
         @JvmStatic
         private val threadLocal = ThreadLocal<Pair<ArgumentContext, ScriptEnvironment>>()
 
+        /**
+         * 显示脚本解析选项
+         */
+        const val EXPLICIT_SCRIPT_OPTION = "explicit-script"
+
     }
 
-    class Parser : BlockParser {
+    object Parser : BlockParser {
 
         /** 当前执行器 **/
-        private var currentExecutor: ScriptExecutor = ScriptManager.defaultLanguage.executor
+        private val currentExecutor = AttachedContext.catcher(this) { ScriptManager.defaultLanguage.executor }
 
         override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
             if (element is JsonObject) {
@@ -134,13 +141,16 @@ open class ScriptBlock(
                 if (entry != null) {
                     val type = ScriptType.matchOrThrow(entry.key.drop(1))
                     // 记录当前执行器
-                    val lastExecutor = currentExecutor
+                    val lastExecutor = currentExecutor[context.attached]
                     // 设置当前执行器
-                    currentExecutor = type.executor // 获取或创建执行器
+                    currentExecutor[context.attached] = type.executor // 获取或创建执行器
+                    val explicit = context[EXPLICIT_SCRIPT_OPTION] ?: true
+                    context[EXPLICIT_SCRIPT_OPTION] = false // 切换语言的时候可以直接解析字符串为脚本
                     // 使用调度器解析结果
                     val result = context.parse(entry.value)
                     // 恢复上一个执行器
-                    currentExecutor = lastExecutor
+                    currentExecutor[context.attached] = lastExecutor
+                    context[EXPLICIT_SCRIPT_OPTION] = explicit
                     // 返回结果
                     return result
                 }
@@ -158,19 +168,18 @@ open class ScriptBlock(
                 }
 
             }
+
+            // 默认情况下开启显式脚本, 不解析字符串类型
+            if (context[EXPLICIT_SCRIPT_OPTION]?.cbool ?: true) return null
+
             // 解析字符串脚本
-            else {
-                var content: String? = null
-                if (element is JsonPrimitive && element.isString) {
-                    content = element.content
-                } else if (element is JsonArray && element.all { it is JsonPrimitive }) {
-                    content = element.joinToString("\n")
-                }
-                if (content != null) {
-                    return ScriptBlock(content, currentExecutor, context)
-                }
+            var content: String? = null
+            if (element is JsonPrimitive && element.isString) {
+                content = element.content
+            } else if (element is JsonArray && element.all { it is JsonPrimitive }) {
+                content = element.joinToString("\n")
             }
-            return null
+            return if (content != null) ScriptBlock(content, currentExecutor[context.attached], context) else null
         }
 
     }

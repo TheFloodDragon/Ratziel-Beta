@@ -15,7 +15,7 @@ val baseJson = Json {
     isLenient = true
     // 忽略未知键
     ignoreUnknownKeys = true
-    // 隐式空值
+    // 显式空值
     explicitNulls = false
     // 数据修正
     coerceInputValues = true

@@ -23,15 +23,24 @@ open class BlockContext(
     var workFile: File? = null
 
     /**
-     * 是否开启缓存
-     * 如果语句块只执行一次, 可以关闭
+     * 选项
      */
-    var caching: Boolean = true
+    val options: MutableMap<String, Any> = hashMapOf()
 
     /**
      * 附加的上下文
      */
     val attached = AttachedContext.newContext()
+
+    /**
+     * 获取选项
+     */
+    operator fun get(name: String): String? = this.options[name]?.toString()
+
+    /**
+     * 设置选项
+     */
+    operator fun set(name: String, value: Any) = this.options.put(name, value)
 
     /**
      * 使用此上下文解析 [JsonElement]

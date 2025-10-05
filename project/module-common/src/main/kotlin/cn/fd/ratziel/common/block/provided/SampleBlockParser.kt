@@ -21,7 +21,7 @@ object SampleBlockParser : BlockParser {
     class WeightedSampleBlock(items: List<Pair<Double, ExecutableBlock>>) : ExecutableBlock {
 
         // 类加权重
-        private val cumulativeWeights = items.runningFold(0.0) { acc, pair -> acc + pair.first }.toDoubleArray()
+        private val cumulativeWeights = items.runningFold(0.0) { acc, pair -> acc + pair.first }.drop(1).toDoubleArray()
 
         // 所有值
         private val values = items.map { it.second }.toTypedArray()

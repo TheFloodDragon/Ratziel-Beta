@@ -66,7 +66,7 @@ class DataInterpreter : ItemInterpreter {
         launch {
             // 构建语句块
             val blocks = buildBlocks(element, PROPERTIES_ALIAS) {
-                caching = false // 常量层只执行一次
+                options["caching"] = false // 常量层只执行一次
             } ?: return@launch
             // 执行所有语句块
             val results = executeBlocks(blocks, stream.context)
@@ -172,14 +172,23 @@ class DataInterpreter : ItemInterpreter {
             if (vars.isEmpty() || !vars.containsKey(key)) {
                 // 如果变量表中没有这个键, 则尝试从物品中获取
                 val item = context.popOrNull(IdentifiedItem::class.java) ?: return null
-                // 从注册表中取
+                // 获取解释器
                 val interpreter = ItemManager.registry[item.identifier.content]?.compositor
                     ?.getInterpreter(DataInterpreter::class.java) ?: return null
-                // 可以获取属性的或者计算值
-                return when {
-                    interpreter.properties.containsKey(key) -> interpreter.properties[key].toString()
-                    interpreter.computationBlocks.containsKey(key) -> interpreter.computationBlocks[key]?.execute(context).toString()
-                    else -> null
+
+                // 尝试获取属性
+                if (interpreter.properties.containsKey(key)) {
+                    return interpreter.properties[key].toString()
+                } else {
+                    // 获取计算语句块 (找不到就没辙)
+                    val block = interpreter.computationBlocks[key] ?: return null
+                    // 导入物品的所有数据
+                    val holder = context.popOrNull(DataHolder::class.java)
+                    if (holder != null) {
+                        vars.putAll(holder.toMap())
+                    }
+                    // 执行语句块并返回结果
+                    return block.execute(context).toString()
                 }
             } else {
                 return vars[key].toString()
