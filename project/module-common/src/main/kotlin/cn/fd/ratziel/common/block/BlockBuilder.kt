@@ -32,7 +32,7 @@ object BlockBuilder {
     @JvmStatic
     private fun build(element: JsonElement, scope: BlockScope, contextApplier: BlockContext.() -> Unit): ExecutableBlock {
         // 创建调度器
-        val scheduler = BlockScheduler(scope.parsers.map { it.get() })
+        val scheduler = BlockScheduler(scope.parsers)
         // 带有调度器的上下文
         val context = BlockContext(scheduler)
         contextApplier(context)

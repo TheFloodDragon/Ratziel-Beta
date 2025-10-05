@@ -108,9 +108,9 @@ sealed interface InventoryClickAction {
                     || type == InventoryClickType.MIDDLE_MOUSE_DRAG_END
 
         /**
-         * 开始拖动时的栏位
+         * 上一个拖动时的栏位
          */
-        override val slot: Int = slots.firstOrNull() ?: -1
+        override val slot: Int = slots.lastOrNull() ?: -1
     }
 
 }
