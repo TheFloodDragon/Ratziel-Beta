@@ -7,7 +7,6 @@ import cn.fd.ratziel.module.item.impl.builder.provided.SourceInterpreter
 import kotlinx.coroutines.*
 import taboolib.common.platform.function.debug
 import taboolib.common.reflect.hasAnnotation
-import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.system.measureTimeMillis
 
 /**
@@ -64,7 +63,7 @@ class DefaultCompositor(override val baseStream: ItemStream) : ItemCompositor.St
             }.let { t -> debug("[TIME MARK] $this costs $t ms.") }
         }
 
-        val parallelTasks = ConcurrentLinkedQueue<Job>()
+        val parallelTasks = mutableListOf<Job>()
 
         // 解释器处理
         for (interpreter in interpreters) {

@@ -26,7 +26,7 @@ object ElementMatcher {
      *    命名空间:类型名称(或别名)
      */
     fun matchTypeOrNull(expression: String): ElementType? {
-        val split = expression.split(':')
+        val split = expression.split(':', limit = 2)
         return when {
             // 命名空间:类型名称(或别名)
             split.size >= 2 -> matchAll(split[0], split[1])

@@ -65,9 +65,9 @@ interface ScriptType {
          */
         @JvmStatic
         fun match(name: String): ScriptType? {
-            val trimmed = name.trim()
+            val cleaned = name.filterNot { it.isWhitespace() }
             return activeLanguages.find { type ->
-                type.name.equals(trimmed, true) || type.alias.any { it.equals(trimmed, true) }
+                type.name.equals(cleaned, true) || type.alias.any { it.equals(cleaned, true) }
             }
         }
 

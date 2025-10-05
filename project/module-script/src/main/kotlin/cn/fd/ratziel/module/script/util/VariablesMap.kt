@@ -12,16 +12,11 @@ import java.util.function.Consumer
  * @since 2025/6/9 17:15
  */
 class VariablesMap(
-    private val vars: MutableMap<String, Any?> = HashMap(),
+    private val vars: MutableMap<String, Any?> = hashMapOf(),
 ) : MutableMap<String, Any?> by vars {
 
     constructor(action: VariablesMap.() -> Unit) : this() {
         action(this)
-    }
-
-    @JvmName("putNonNullValues")
-    fun putValues(from: Map<String, Any?>) {
-        for ((k, v) in from) if (v != null) put(k, v)
     }
 
     /**

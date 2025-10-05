@@ -30,6 +30,7 @@ abstract class AbstractNeoItem : IdentifiedItem, ComponentHolder {
      * @param component 组件
      */
     override fun setComponent(component: Any) {
+        @Suppress("UNCHECKED_CAST")
         val integrated = ItemRegistry.getComponent(component::class.java) as ItemRegistry.ComponentIntegrated<Any>
         // 将组件序列化成标签
         val tag = ComponentConverter.serializeToNbtTag(integrated, component)

@@ -15,8 +15,12 @@ object BlockBuilder {
      * 构建语句块
      */
     @JvmStatic
-    fun build(element: Element, scope: BlockScope = BlockScope.DefaultScope): ExecutableBlock {
-        return this.build(element.property, scope) { workFile = element.file }
+    @JvmOverloads
+    fun build(element: Element, scope: BlockScope = BlockScope.DefaultScope, contextApplier: BlockContext.() -> Unit = {}): ExecutableBlock {
+        return this.build(element.property, scope) {
+            workFile = element.file
+            contextApplier()
+        }
     }
 
     /**
@@ -26,7 +30,7 @@ object BlockBuilder {
      * @return 解析后的语句块
      */
     @JvmStatic
-    private fun build(element: JsonElement, scope: BlockScope, contextApplier: BlockContext.() -> Unit = {}): ExecutableBlock {
+    private fun build(element: JsonElement, scope: BlockScope, contextApplier: BlockContext.() -> Unit): ExecutableBlock {
         // 创建调度器
         val scheduler = BlockScheduler(scope.parsers.map { it.get() })
         // 带有调度器的上下文

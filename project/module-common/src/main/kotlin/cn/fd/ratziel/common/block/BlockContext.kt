@@ -23,6 +23,12 @@ open class BlockContext(
     var workFile: File? = null
 
     /**
+     * 是否开启缓存
+     * 如果语句块只执行一次, 可以关闭
+     */
+    var caching: Boolean = true
+
+    /**
      * 附加的上下文
      */
     val attached = AttachedContext.newContext()

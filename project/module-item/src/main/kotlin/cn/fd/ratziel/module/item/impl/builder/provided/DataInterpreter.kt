@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.fd.ratziel.common.block.BlockBuilder
+import cn.fd.ratziel.common.block.BlockContext
 import cn.fd.ratziel.common.block.ExecutableBlock
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.contextual.plus
@@ -22,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -60,10 +62,12 @@ class DataInterpreter : ItemInterpreter {
     override suspend fun preFlow(stream: ItemStream): Unit = coroutineScope {
         val element = stream.fetchElement()
 
-        // 常量层
+        // 常量层 (只执行一次)
         launch {
             // 构建语句块
-            val blocks = buildBlocks(element, PROPERTIES_ALIAS) ?: return@launch
+            val blocks = buildBlocks(element, PROPERTIES_ALIAS) {
+                caching = false // 常量层只执行一次
+            } ?: return@launch
             // 执行所有语句块
             val results = executeBlocks(blocks, stream.context)
             // 将结果存入常量层属性数据
@@ -96,9 +100,9 @@ class DataInterpreter : ItemInterpreter {
         vars.putAll(properties)
         // 执行数据层语句块, 导入数据层数据
         val dataResults = executeBlocks(dataBlocks, stream.context)
-        vars.putValues(dataResults)
+        vars.putAll(dataResults)
         // 执行计算层语句块, 导入计算层数据
-        vars.putValues(executeBlocks(computationBlocks, stream.context))
+        vars.putAll(executeBlocks(computationBlocks, stream.context))
 
         // 计算层标签处理 (实际上此标签处理的过程中可以获取到三个层的数据)
         stream.tree.withValue { tree ->
@@ -195,7 +199,7 @@ class DataInterpreter : ItemInterpreter {
          * 常量层属性定义域别名
          */
         @JvmField
-        val PROPERTIES_ALIAS = arrayOf("props", "consts")
+        val PROPERTIES_ALIAS = arrayOf("props", "properties", "constants")
 
         /**
          * 数据层定义域别名
@@ -212,12 +216,12 @@ class DataInterpreter : ItemInterpreter {
         /**
          * 构建语句块表
          */
-        private suspend fun buildBlocks(element: Element, alias: Array<String>): Map<String, ExecutableBlock>? {
+        private suspend fun buildBlocks(element: Element, alias: Array<String>, contextApplier: BlockContext.() -> Unit = {}): Map<String, ExecutableBlock>? {
             val property = (element.property as? JsonObject)
-                ?.getBy(*alias) as? JsonObject ?: return null
+                ?.getBy(*alias)?.jsonObject ?: return null
             return coroutineScope {
                 property.mapValues {
-                    async { BlockBuilder.build(element.copyOf(it.value)) }
+                    async { BlockBuilder.build(element.copyOf(it.value), contextApplier = contextApplier) }
                 }.mapValues { it.value.await() }
             }
         }

@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.impl.CompileDefault
+import cn.fd.ratziel.module.script.impl.CompilationPreference
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.imports.GroupImports
 import org.graalvm.polyglot.Context
@@ -19,7 +19,8 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>(), CompileDefault {
+@CompilationPreference
+object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>() {
 
     private const val LANGUAGE_ID = "js"
     private const val IMPORTS_MEMBER = "_imports_"

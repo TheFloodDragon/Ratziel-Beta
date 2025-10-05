@@ -11,6 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 
 /**
  * PhysicalLayerInterpreter
@@ -32,7 +33,7 @@ object PhysicalLayerInterpreter : ItemInterpreter {
         // 获取图层元素
         val property = stream.fetchProperty()
         if (property !is JsonObject) return
-        val layerElements = property.getBy(*LAYER_ALIAS) as? JsonObject ?: return
+        val layerElements = property.getBy(*LAYER_ALIAS)?.jsonObject ?: return
 
         coroutineScope {
             // 序列化图层

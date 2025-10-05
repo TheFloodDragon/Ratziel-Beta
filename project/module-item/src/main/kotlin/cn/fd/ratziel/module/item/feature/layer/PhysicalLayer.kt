@@ -9,7 +9,6 @@ import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
-import kotlin.collections.iterator
 
 /**
  * PhysicalLayer - 物理图层
@@ -134,7 +133,7 @@ class PhysicalLayer(
                 // 更换图层
                 for ((key, value) in layer.data.tag) {
                     // 写入新图层数据
-                    if (value == REMOVE_MARK) root.remove(key) else root.put(key, value)
+                    if (value == REMOVE_MARK) root.remove(key) else root[key] = value
                 }
 
                 // 设置当前图层

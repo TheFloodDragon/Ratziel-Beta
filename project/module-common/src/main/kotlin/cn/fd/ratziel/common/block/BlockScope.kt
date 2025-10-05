@@ -2,6 +2,7 @@ package cn.fd.ratziel.common.block
 
 import cn.fd.ratziel.common.block.provided.ConditionBlock
 import cn.fd.ratziel.common.block.provided.MultiLineBlock
+import cn.fd.ratziel.common.block.provided.SampleBlockParser
 import cn.fd.ratziel.common.block.provided.ValueBlock
 import java.util.function.Supplier
 
@@ -32,6 +33,7 @@ class BlockScope(val parsers: ArrayDeque<Supplier<BlockParser>>) {
             BlockScope(
                 { ConditionBlock.Parser },
                 { MultiLineBlock.Parser },
+                { SampleBlockParser },
                 { ValueBlock.Parser },
             )
 
