@@ -55,9 +55,8 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
                     it.accept(actual, context)
                     count++
                 }
-            } catch (e: Exception) {
-                warning("Acceptor $it for virtual item rendering occurred a exception.")
-                e.printStackTrace()
+            } catch (ex: Exception) {
+                warning("Acceptor $it for virtual item rendering occurred a exception.", ex.stackTraceToString())
             }
         }
 

@@ -182,6 +182,8 @@ class DataInterpreter : ItemInterpreter {
                 } else {
                     // 获取计算语句块 (找不到就没辙)
                     val block = interpreter.computationBlocks[key] ?: return null
+                    // 导入常量层属性数据
+                    vars.putAll(interpreter.properties)
                     // 导入物品的所有数据
                     val holder = context.popOrNull(DataHolder::class.java)
                     if (holder != null) {

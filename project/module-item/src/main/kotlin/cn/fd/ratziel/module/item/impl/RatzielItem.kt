@@ -149,9 +149,12 @@ class RatzielItem private constructor(
         }
 
         /**
-         * 装箱所有数据并转换成数据集
+         * 拆箱所有数据并转换成数据集
          */
-        override fun toMap() = data.tag.mapValues { NbtAdapter.box(data) }
+        override fun toMap(): Map<String, Any> {
+            val originMap = this.data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound ?: return emptyMap()
+            return originMap.mapValues { NbtAdapter.unbox(it.value) } // 拆箱
+        }
 
     }
 

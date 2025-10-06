@@ -26,6 +26,8 @@ class VariablesMap(
         transformers.forEach { it.accept(this, context) }
     }
 
+    override fun toString() = "VariablesMap$vars"
+
     companion object {
 
         /**
