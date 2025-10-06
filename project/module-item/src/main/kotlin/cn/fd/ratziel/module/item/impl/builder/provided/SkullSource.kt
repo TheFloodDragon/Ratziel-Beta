@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
+import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
@@ -18,6 +19,7 @@ import kotlinx.serialization.json.contentOrNull
  * @author TheFloodDragon
  * @since 2025/5/25 08:58
  */
+@AutoRegister
 object SkullSource : ItemSource.Named {
 
     override val names = arrayOf("skull", "head")

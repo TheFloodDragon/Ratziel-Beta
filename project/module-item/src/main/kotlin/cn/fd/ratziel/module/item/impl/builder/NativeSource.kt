@@ -1,7 +1,8 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.element.Element
+import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
@@ -39,6 +40,7 @@ object NativeSource {
         return RatzielItem.of(info, sourceData)
     }
 
+    @AutoRegister
     object MaterialSource : ItemSource.Named {
 
         override val names = arrayOf("material", "mat", "materials", "mats")

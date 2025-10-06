@@ -33,7 +33,7 @@ open class ScriptBlock(
     /** 脚本执行器 */
     val executor: ScriptExecutor,
     /** 是否需要编译脚本 **/
-    needCompile: Boolean = false,
+    needCompile: Boolean = true,
     /** 导入组 **/
     val imports: GroupImports? = null,
 ) : ExecutableBlock {

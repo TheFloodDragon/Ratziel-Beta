@@ -13,7 +13,6 @@ import cn.fd.ratziel.module.item.feature.template.InheritInterpreter
 import cn.fd.ratziel.module.item.feature.template.TemplateElement
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
-import cn.fd.ratziel.module.item.impl.builder.NativeSource
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
@@ -97,14 +96,7 @@ object ItemElement : ElementHandler.ParralHandler {
     }
 
     init {
-        // 物品源注册
-        ItemRegistry.registerSource(NativeSource.MaterialSource)
-        ItemRegistry.registerSource(SkullSource)
-        ItemRegistry.registerSource(NbtTagSource)
-    }
-
-    init {
-        // 注册默认的解析器
+        // 注册默认的部分解析器
         ItemRegistry.registerSectionResolver(InlineScriptResolver)
         ItemRegistry.registerSectionResolver(TaggedSectionResolver(ItemRegistry.staticTagResolvers))
         ItemRegistry.registerSectionResolver(PapiResolver)

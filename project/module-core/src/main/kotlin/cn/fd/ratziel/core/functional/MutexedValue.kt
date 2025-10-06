@@ -29,7 +29,7 @@ abstract class MutexedValue<T> {
     /**
      * 获取值并处理, 在此期间只有一个线程可以操作
      */
-    suspend fun <R> withValue(block: suspend (T) -> R): R {
+    suspend inline fun <R> withValue(block: suspend (T) -> R): R {
         return try {
             block(take())
         } finally {
@@ -41,7 +41,7 @@ abstract class MutexedValue<T> {
      * 获取值并处理, 在此期间只有一个线程可以操作
      * @see withValue
      */
-    suspend inline operator fun <R> invoke(noinline block: suspend (T) -> R): R = this.withValue(block)
+    suspend inline operator fun <R> invoke(block: suspend (T) -> R): R = this.withValue(block)
 
     /**
      * 直接获取值

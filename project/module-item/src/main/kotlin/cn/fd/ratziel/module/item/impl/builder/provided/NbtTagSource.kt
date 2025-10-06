@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
 import cn.altawk.nbt.tag.NbtCompound
+import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.item.ItemElement
@@ -17,6 +18,7 @@ import kotlinx.serialization.json.JsonObject
  * @author TheFloodDragon
  * @since 2025/6/6 22:35
  */
+@AutoRegister
 object NbtTagSource : ItemSource {
 
     override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
