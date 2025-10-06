@@ -23,15 +23,15 @@ class InternalBuilderRegistrar : ClassVisitor(10) {
         if (!clazz.hasAnnotation(AutoRegister::class.java)) return
 
         // 注册 ItemTagResolver
-        if (clazz.hasInterface(ItemTagResolver::class.java)) {
-            val resolver = findInstance(clazz) as? ItemTagResolver ?: return
+        if (ItemTagResolver::class.java.isAssignableFrom(clazz.toClass())) {
+            val resolver = findInstance(clazz) as ItemTagResolver
             ItemRegistry.registerStaticTagResolver(resolver)
             ItemRegistry.registerDynamicTagResolver(resolver) // 默认支持动态解析
         }
 
         // 注册 ItemSource
-        if (clazz.hasInterface(ItemSource::class.java)) {
-            val source = findInstance(clazz) as? ItemSource ?: return
+        if (ItemSource::class.java.isAssignableFrom(clazz.toClass())) {
+            val source = findInstance(clazz) as ItemSource
             ItemRegistry.registerSource(source)
         }
 
