@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item
 
+import cn.fd.ratziel.core.serialization.elementNodes
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSource
@@ -156,6 +157,13 @@ object ItemRegistry {
         val type: Class<T>,
         /** 物品组件序列化器 **/
         val serializer: KSerializer<T>,
-    )
+    ) {
+
+        /**
+         * 使用到的所有元素的所有节点名称
+         */
+        val elementNodes = serializer.descriptor.elementNodes
+
+    }
 
 }

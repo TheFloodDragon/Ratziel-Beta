@@ -93,6 +93,7 @@ object ItemElement : ElementHandler.ParralHandler {
         ItemRegistry.registerInterpreter { DefaultResolver }
         ItemRegistry.registerInterpreter { DataInterpreter() }
         ItemRegistry.registerInterpreter { PhysicalLayerInterpreter }
+        ItemRegistry.registerInterpreter { ComponentInterpreter() }
     }
 
     init {

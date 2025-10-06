@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.core.serialization.elementAlias
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.ItemRegistry
 import cn.fd.ratziel.module.item.api.builder.*
@@ -38,7 +37,7 @@ object DefaultResolver : ItemInterpreter {
      * 允许访问的节点列表, 仅在 限制性解析 时使用
      */
     val accessibleNodes: MutableSet<String> by lazy {
-        CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.serializer.descriptor.elementAlias })
+        CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.elementNodes })
     }
 
     /**

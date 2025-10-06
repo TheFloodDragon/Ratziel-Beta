@@ -34,13 +34,17 @@ class SimpleContext(
         this.list.add(0, element::class.java to element)
     }
 
+    override fun putAll(elements: Iterable<Any>) {
+        this.list.addAll(elements.map { it::class.java to it })
+    }
+
     override fun remove(type: Class<*>) {
         // 删除所有此类型的对象或者子类型的对象
         this.list.removeIf { type.isAssignableFrom(it.first) }
     }
 
-    override fun copy() = SimpleContext(this.args())
+    override fun copy() = SimpleContext().also { it.list.addAll(this.list) }
 
-    override fun args(): Collection<Any> = list
+    override fun args() = list.map { it.second }
 
 }

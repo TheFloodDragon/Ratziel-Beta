@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.feature.layer
 
 import cn.fd.ratziel.core.functional.MutexedValue
 import cn.fd.ratziel.core.util.getBy
+import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.SimpleData
@@ -32,15 +33,18 @@ object PhysicalLayerInterpreter : ItemInterpreter {
     override suspend fun interpret(stream: ItemStream) {
         // 获取图层元素
         val property = stream.fetchProperty()
-        if (property !is JsonObject) return
+        if (property !is JsonObject || property.isEmpty()) return
         val layerElements = property.getBy(*LAYER_ALIAS)?.jsonObject ?: return
+
+        // 组件解析器
+        val interpreter = ItemManager.generatorInterpreter<ComponentInterpreter>(stream.identifier)
 
         coroutineScope {
             // 序列化图层
             val layers = layerElements.mapValues { entry ->
                 async {
                     MutexedValue.initial(SimpleData()).also { data ->
-                        ComponentInterpreter.parallelSerialize(entry.value, data).joinAll()
+                        interpreter.parallelSerialize(entry.value, data).joinAll()
                     }.withValue { it.tag }
                 }
             }.mapValues { PhysicalLayer(it.key, it.value.await()) }

@@ -21,6 +21,14 @@ class DefaultCompositor(override val baseStream: ItemStream) : ItemCompositor.St
      * 物品解释器列表
      */
     val interpreters: List<ItemInterpreter> = ItemRegistry.getInterpreterInstances()
+        .run { // 确保组件解析器在最后执行
+            forEachIndexed { index, value ->
+                if (value is ComponentInterpreter) {
+                    return@run this.subList(0, index) + this.subList(index + 1, this.size) + value
+                }
+            }
+            return@run this
+        }
 
     /**
      * 物品源列表
@@ -80,17 +88,11 @@ class DefaultCompositor(override val baseStream: ItemStream) : ItemCompositor.St
             }
         }
 
-        // 等待所有并行任务完成
+        // 等待所有并行任务完成 (串行解析器在此之前就已完成)
         parallelTasks.joinAll()
 
         // 物品源处理
-        val sourcesTask = SourceInterpreter.parallelInterpret(sources, stream)
-
-        // 物品源任务也需要在最后完成
-        sourcesTask.join()
-
-        // 序列化任务解释 (手动调用)
-        ComponentInterpreter.interpret()
+        SourceInterpreter.parallelInterpret(sources, stream)
     }
 
     override fun <T : ItemInterpreter> getInterpreter(type: Class<T>): T {

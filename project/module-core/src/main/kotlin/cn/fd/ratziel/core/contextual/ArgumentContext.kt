@@ -55,9 +55,7 @@ interface ArgumentContext {
     /**
      * 添加多个参数
      */
-    fun putAll(elements: Iterable<Any>) {
-        for (element in elements) put(element)
-    }
+    fun putAll(elements: Iterable<Any>)
 
     /**
      * 删除一个参数

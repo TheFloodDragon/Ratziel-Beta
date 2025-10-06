@@ -67,7 +67,7 @@ allprojects {
     kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_1_8
-            freeCompilerArgs.addAll("-Xallow-unstable-dependencies", "-Xnested-type-aliases")
+            freeCompilerArgs.addAll("-Xallow-unstable-dependencies", "-Xnested-type-aliases", "-Xcontext-parameters")
         }
     }
 

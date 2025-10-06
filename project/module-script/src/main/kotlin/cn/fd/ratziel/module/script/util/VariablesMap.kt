@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.script.util
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.module.script.util.VariablesMap.Companion.transformers
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.function.Consumer
+import java.util.function.BiConsumer
 
 /**
  * VariablesMap
@@ -23,7 +23,7 @@ class VariablesMap(
      * Transformer 机制: 接受 [context] 并使用 [transformers] 转化变量
      */
     fun accept(context: ArgumentContext) {
-        transformers.forEach { it.accept(context) }
+        transformers.forEach { it.accept(this, context) }
     }
 
     companion object {
@@ -31,7 +31,7 @@ class VariablesMap(
         /**
          * Transformer 机制: 从 [ArgumentContext] 中获取 [VariablesMap] 在实际运用中可能用到的变量
          */
-        val transformers: MutableList<Consumer<ArgumentContext>> = CopyOnWriteArrayList()
+        val transformers: MutableList<BiConsumer<VariablesMap, ArgumentContext>> = CopyOnWriteArrayList()
 
     }
 

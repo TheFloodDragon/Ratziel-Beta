@@ -20,6 +20,7 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import cn.fd.ratziel.module.script.util.varsMap
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
@@ -173,8 +174,7 @@ class DataInterpreter : ItemInterpreter {
                 // 如果变量表中没有这个键, 则尝试从物品中获取
                 val item = context.popOrNull(IdentifiedItem::class.java) ?: return null
                 // 获取解释器
-                val interpreter = ItemManager.registry[item.identifier.content]?.compositor
-                    ?.getInterpreter(DataInterpreter::class.java) ?: return null
+                val interpreter = ItemManager.generatorInterpreter<DataInterpreter>(item.identifier)
 
                 // 尝试获取属性
                 if (interpreter.properties.containsKey(key)) {
@@ -239,10 +239,12 @@ class DataInterpreter : ItemInterpreter {
          * 执行语句块
          * @return 执行结果
          */
-        private suspend fun executeBlocks(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): Map<String, Any?> = coroutineScope {
-            blocks.mapValues {
-                async { it.value.execute(context) }
-            }.mapValues { it.value.await() }
+        private suspend fun executeBlocks(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): List<Pair<String, Any?>> {
+            return if (blocks.isNotEmpty()) coroutineScope {
+                blocks.map {
+                    async { it.key to it.value.execute(context) }
+                }.awaitAll()
+            } else emptyList()
         }
 
     }

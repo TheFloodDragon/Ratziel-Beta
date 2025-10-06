@@ -11,6 +11,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 
 /**
  * ComponentInterpreter
@@ -18,9 +19,33 @@ import kotlinx.serialization.json.JsonElement
  * @author TheFloodDragon
  * @since 2025/7/24 11:40
  */
-object ComponentInterpreter : ItemInterpreter {
+class ComponentInterpreter : ItemInterpreter {
 
-    override suspend fun interpret(stream: ItemStream) = coroutineScope {
+    /**
+     * 此物品用到的组件列表
+     */
+    val detectedComponents = hashSetOf<ItemRegistry.ComponentIntegrated<*>>()
+
+    /**
+     * 寻找确定的用到的组件.
+     * 在 [preFlow] 阶段确定要用到的组件, 可以避免没有用的的组件被序列化耗时, 提升效率,
+     * 于此同时, 也将意味着物品生成的过程中无法新增别的组件.
+     */
+    override suspend fun preFlow(stream: ItemStream) {
+        val properties = stream.fetchProperty() as? JsonObject ?: return
+        for (key in properties.keys) {
+            // 寻找包含此节点名称的组件
+            val component = ItemRegistry.registry.find {
+                it.elementNodes.contains(key)
+            }
+            if (component != null) {
+                // 选中添加
+                detectedComponents += component
+            }
+        }
+    }
+
+    override suspend fun interpret(stream: ItemStream) {
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val element = stream.fetchProperty()
         val serializationTasks = parallelSerialize(element, stream.data)
@@ -31,14 +56,14 @@ object ComponentInterpreter : ItemInterpreter {
     /**
      * 并行序列化
      */
-    @JvmStatic
     suspend fun parallelSerialize(element: JsonElement, data: MutexedValue<out ItemData>) = coroutineScope {
-        ItemRegistry.registry.map { integrated ->
+        // 采用选中的组件 (提升效率)
+        detectedComponents.map { integrated ->
             launch {
                 val generated = ComponentConverter.transformToNbtTag(integrated, element).getOrNull()
                 // 合并数据
                 if (generated as? NbtCompound != null) data.withValue {
-                    // 合并标签
+                    // 合并标签 (覆盖原始数据)
                     it.tag.merge(generated, true)
                 }
             }

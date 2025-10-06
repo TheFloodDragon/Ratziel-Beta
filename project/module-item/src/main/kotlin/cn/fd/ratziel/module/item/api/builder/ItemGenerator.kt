@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.module.item.api.NeoItem
 import java.util.concurrent.CompletableFuture
 import java.util.function.Supplier
@@ -21,7 +22,7 @@ interface ItemGenerator {
     /**
      * 生成器上下文提供者
      */
-    val contextProvider: Supplier<out ArgumentContext>? get() = null
+    val contextProvider: Supplier<out ArgumentContext> get() = Supplier { SimpleContext() }
 
     /**
      * 构建物品

@@ -2,9 +2,7 @@ package cn.fd.ratziel.module.item.api.builder
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * ItemSectionResolver
@@ -31,19 +29,7 @@ interface ItemSectionResolver {
      * 直接尝试获取字符串部分
      */
     fun JsonTree.Node.stringSection(): JsonTree.PrimitiveNode? {
-        return (this as? JsonTree.PrimitiveNode)?.takeIf { isValidSection(it.value) }
-    }
-
-    companion object {
-
-        /**
-         * 判断部分的有效性
-         */
-        @JvmStatic
-        fun isValidSection(element: JsonElement): Boolean {
-            return element is JsonPrimitive && element.isString && element !is JsonNull
-        }
-
+        return (this as? JsonTree.PrimitiveNode)?.takeIf { it.value.isString && it.value !is JsonNull }
     }
 
 }

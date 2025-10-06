@@ -17,6 +17,8 @@ import taboolib.platform.compat.replacePlaceholder
 @AutoRegister
 object PapiResolver : ItemSectionResolver, ItemTagResolver {
 
+    override val alias = arrayOf("papi", "p")
+
     override fun resolve(node: JsonTree.Node, context: ArgumentContext) {
         val section = node.stringSection() ?: return
         // 仅当有玩家参数的时候解析
@@ -25,8 +27,6 @@ object PapiResolver : ItemSectionResolver, ItemTagResolver {
         val replaced = section.value.content.replacePlaceholder(player)
         section.value(replaced)
     }
-
-    override val alias = arrayOf("papi", "p")
 
     override fun resolve(args: List<String>, context: ArgumentContext): String? {
         // 获取玩家

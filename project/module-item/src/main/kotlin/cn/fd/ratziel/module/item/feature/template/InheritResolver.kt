@@ -72,7 +72,7 @@ object InheritResolver : ItemTagResolver {
         if (find is JsonPrimitive) {
             return find.content
         } else if (find is JsonArray) {
-            return find.joinToString(EnhancedListResolver.NEWLINE) { it.toString() }
+            return find.joinToString(EnhancedListResolver.NEWLINE) { (it as? JsonPrimitive)?.content ?: it.toString() }
         }
         return null
     }

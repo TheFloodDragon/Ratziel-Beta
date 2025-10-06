@@ -55,8 +55,7 @@ class DefaultGenerator(
         // 获取物品流
         val stream = compositor.produce().await() as NativeItemStream
         // 更新上下文
-        stream.context = contextProvider.get()
-        stream.context.putAll(context.args())
+        stream.context = contextProvider.get().apply { putAll(context.args()) }
 
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
