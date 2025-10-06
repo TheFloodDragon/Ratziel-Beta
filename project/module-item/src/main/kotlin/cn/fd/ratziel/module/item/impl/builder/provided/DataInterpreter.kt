@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.fd.ratziel.common.block.BlockBuilder
 import cn.fd.ratziel.common.block.BlockContext
 import cn.fd.ratziel.common.block.ExecutableBlock
+import cn.fd.ratziel.common.util.varsMap
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.contextual.plus
 import cn.fd.ratziel.core.element.Element
@@ -18,7 +19,6 @@ import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
-import cn.fd.ratziel.module.script.util.varsMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

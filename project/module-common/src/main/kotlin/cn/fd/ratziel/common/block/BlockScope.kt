@@ -1,9 +1,6 @@
 package cn.fd.ratziel.common.block
 
-import cn.fd.ratziel.common.block.provided.ConditionBlock
-import cn.fd.ratziel.common.block.provided.MultiLineBlock
-import cn.fd.ratziel.common.block.provided.SampleBlockParser
-import cn.fd.ratziel.common.block.provided.ValueBlock
+import cn.fd.ratziel.common.block.provided.*
 
 /**
  * BlockScope
@@ -26,6 +23,7 @@ class BlockScope(val parsers: ArrayDeque<BlockParser>) {
         val DefaultScope =
             BlockScope(
                 ConditionBlock.Parser,
+                WhenBlock.Parser,
                 MultiLineBlock.Parser,
                 SampleBlockParser,
                 ValueBlock.Parser,

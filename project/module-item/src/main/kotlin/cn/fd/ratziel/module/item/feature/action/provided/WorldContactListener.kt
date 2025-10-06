@@ -1,11 +1,11 @@
 package cn.fd.ratziel.module.item.feature.action.provided
 
+import cn.fd.ratziel.common.util.VariablesMap
 import cn.fd.ratziel.core.reactive.Trigger
 import cn.fd.ratziel.module.item.feature.action.ActionManager.registerSimple
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.util.writeTo
-import cn.fd.ratziel.module.script.util.VariablesMap
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.event.PlayerWorldContactEvent

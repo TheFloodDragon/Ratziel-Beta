@@ -1,7 +1,7 @@
 package cn.fd.ratziel.platform.bukkit.util
 
+import cn.fd.ratziel.common.util.VariablesMap
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.module.script.util.VariablesMap
 import org.bukkit.OfflinePlayer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyPlayer

@@ -6,7 +6,7 @@ import cn.fd.ratziel.core.reactive.SimpleTrigger
 import cn.fd.ratziel.core.reactive.Trigger
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
-import cn.fd.ratziel.module.script.util.VariablesMap
+import cn.fd.ratziel.common.util.VariablesMap
 import taboolib.common.platform.function.severe
 import java.util.concurrent.ConcurrentHashMap
 

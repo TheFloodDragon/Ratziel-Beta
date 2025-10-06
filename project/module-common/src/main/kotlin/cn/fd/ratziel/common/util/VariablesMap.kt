@@ -1,7 +1,7 @@
-package cn.fd.ratziel.module.script.util
+package cn.fd.ratziel.common.util
 
+import cn.fd.ratziel.common.util.VariablesMap.Companion.transformers
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.module.script.util.VariablesMap.Companion.transformers
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.BiConsumer
 
@@ -36,3 +36,16 @@ class VariablesMap(
     }
 
 }
+
+/**
+ * 从 [ArgumentContext] 中获取 [VariablesMap]
+ */
+fun ArgumentContext.varsMap(): VariablesMap =
+    popOr(VariablesMap::class.java) {
+        val vars = VariablesMap()
+        // 加入到上下文中
+        this.put(vars)
+        // 接受上下文, 将上下文中的参数转化为变量导入 vars
+        vars.accept(this)
+        return@popOr vars
+    }

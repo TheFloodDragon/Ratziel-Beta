@@ -2,8 +2,8 @@ package cn.fd.ratziel.platform.bukkit.command
 
 import cn.fd.ratziel.common.message.audienceSender
 import cn.fd.ratziel.common.message.sendMessage
+import cn.fd.ratziel.common.util.VariablesMap
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.util.VariablesMap
 import cn.fd.ratziel.module.script.util.eval
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
