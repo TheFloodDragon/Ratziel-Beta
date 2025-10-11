@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.feature.dynamic
 
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.item.feature.virtual.NativeVirtualItemRenderer
-import taboolib.common.platform.function.warning
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -25,10 +24,8 @@ object DynamicTagService {
     /**
      * 寻找动态标签解析器
      */
-    fun findResolver(name: String): ItemTagResolver? {
-        val resolver = supportedResolvers.firstOrNull { it.alias.contains(name) }
-        if (resolver == null) warning("ItemTagResolver for DynamicTagService '$name' not found.")
-        return resolver
+    fun findResolver(name: String): ItemTagResolver {
+        return supportedResolvers.firstOrNull { it.alias.contains(name) } ?: error("Dynamic resolver named '$name' not found!")
     }
 
     /**

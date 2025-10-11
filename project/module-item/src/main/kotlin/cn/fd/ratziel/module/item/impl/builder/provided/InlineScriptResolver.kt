@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.impl.builder.provided
 
+import cn.fd.ratziel.common.block.provided.ScriptBlock
 import cn.fd.ratziel.common.element.registry.AutoRegister
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.contextual.AttachedContext
@@ -8,7 +9,7 @@ import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.ScriptType
-import cn.fd.ratziel.common.block.provided.ScriptBlock
+import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
 import java.util.concurrent.ConcurrentHashMap
 
@@ -68,7 +69,28 @@ object InlineScriptResolver : ItemSectionResolver {
         override val alias = arrayOf("script")
 
         override fun prepare(args: List<String>, context: ArgumentContext) {
-            if (args.isEmpty()) return
+            // 解析内联脚本
+            val script = parse(args)
+            // 放入缓存
+            scriptsCatcher[context][args.joinToString("")] = script
+        }
+
+        override fun resolve(args: List<String>, context: ArgumentContext): String? {
+            if (args.isEmpty()) return null
+            val content = args.joinToString("")
+            // 获取内联脚本 (经过预处理的)
+            val script = scriptsCatcher[context].getOrPut(content) {
+                warning("No compiled script found for '$content'")
+                parse(args) // 按理来说不应该到这的
+            }
+            // 评估脚本并返回结果
+            return script.execute(context).toString()
+        }
+
+        /**
+         * 解析内联脚本
+         */
+        fun parse(args: List<String>): ScriptBlock {
             // 匹配脚本语言和内容
             var language: ScriptType? = null
             var content = args.joinToString("")
@@ -81,17 +103,7 @@ object InlineScriptResolver : ItemSectionResolver {
                 }
             }
             // 解析内联脚本
-            val script = ScriptBlock(content, (language ?: ScriptManager.defaultLanguage).executor)
-            // 放入缓存
-            scriptsCatcher[context][content] = script
-        }
-
-        override fun resolve(args: List<String>, context: ArgumentContext): String? {
-            val content = args.joinToString("")
-            // 获取内联脚本 (经过预处理的)
-            val script = scriptsCatcher[context][content] ?: return null
-            // 评估脚本并返回结果
-            return script.execute(context).toString()
+            return ScriptBlock(content, (language ?: ScriptManager.defaultLanguage).executor)
         }
 
     }

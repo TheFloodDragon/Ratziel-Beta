@@ -1,10 +1,13 @@
 package cn.fd.ratziel.module.item.internal.command
 
+import cn.fd.ratziel.common.command.CommandMain
 import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.util.toItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.*
@@ -22,6 +25,7 @@ import kotlin.time.TimeSource
  * @author TheFloodDragon
  * @since 2024/5/18 20:27
  */
+@Awake
 @CommandHeader(
     name = "r-item",
     aliases = ["ri"],
@@ -102,6 +106,12 @@ object ItemCommand {
             CompletableFuture.allOf(*futures.toTypedArray())
                 .thenRun { sender.sendLang("Item-Give-All", id, amount) }
         }
+    }
+
+    @Awake(LifeCycle.ENABLE)
+    private fun registerAsSubCommand() {
+        // 子命令注册
+        CommandMain.registerSubCommand(ItemCommand::class.java, "item")
     }
 
 }

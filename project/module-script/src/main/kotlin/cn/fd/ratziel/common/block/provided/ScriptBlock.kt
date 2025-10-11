@@ -177,7 +177,7 @@ open class ScriptBlock(
             if (element is JsonPrimitive && element.isString) {
                 content = element.content
             } else if (element is JsonArray && element.all { it is JsonPrimitive }) {
-                content = element.joinToString("\n")
+                content = element.joinToString("\n") { (it as JsonPrimitive).content }
             }
             return if (content != null) ScriptBlock(content, currentExecutor[context.attached], context) else null
         }
