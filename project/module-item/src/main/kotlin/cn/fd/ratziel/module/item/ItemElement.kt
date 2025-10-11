@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item
 
 import cn.altawk.nbt.NbtFormat
+import cn.fd.ratziel.common.command.CommandMain
 import cn.fd.ratziel.common.element.registry.ElementConfig
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
@@ -16,6 +17,7 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
+import cn.fd.ratziel.module.item.internal.command.ItemCommand
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.internal.serializers.*
 import kotlinx.coroutines.CoroutineName
@@ -137,6 +139,11 @@ object ItemElement : ElementHandler.ParralHandler {
 
     private inline fun <reified T : Any> register(serializer: KSerializer<T> = serializer<T>()) {
         ItemRegistry.registerComponent(T::class.java, serializer)
+    }
+
+    init {
+        // 子命令注册
+        CommandMain.registerSubCommand(ItemCommand::class.java, "item")
     }
 
 }

@@ -26,7 +26,7 @@ object ItemPickedListener {
         // 掉落物 (实体)
         val picked = event.item
         // 特征物品处理
-        val ratzielItem = RatzielItem.of(picked.itemStack) ?: return
+        val ratzielItem = RatzielItem.sourced(picked.itemStack) ?: return
 
         // 触发触发器
         val player = event.entity as? Player
@@ -38,7 +38,7 @@ object ItemPickedListener {
             set("item", ratzielItem) // 捡起的物品 (RatzielItem)
         }
         // 将修改后的物品重新写到玩家手上
-        picked.itemStack = ratzielItem.toItemStack()
+        if (ratzielItem.overwrite) picked.itemStack = ratzielItem.toItemStack()
     }
 
 }

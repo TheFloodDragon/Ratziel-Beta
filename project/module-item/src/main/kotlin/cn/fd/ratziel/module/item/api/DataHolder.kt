@@ -26,6 +26,6 @@ interface DataHolder {
     /**
      * 转换成数据集
      */
-    fun toMap(): Map<String, Any>
+    fun toDataMap(): Map<String, Any>
 
 }

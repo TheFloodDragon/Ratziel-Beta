@@ -25,7 +25,7 @@ object ItemDropListener {
         // 掉落物 (实体)
         val dropped = event.itemDrop
         // 特征物品处理
-        val ratzielItem = RatzielItem.of(dropped.itemStack) ?: return
+        val ratzielItem = RatzielItem.sourced(dropped.itemStack) ?: return
 
         // 触发触发器
         ON_DROP.trigger(ratzielItem.identifier, event.player, ratzielItem) {
@@ -35,7 +35,7 @@ object ItemDropListener {
             set("item", ratzielItem) // 丢弃的物品 (RatzielItem)
         }
         // 将修改后的物品重新写到玩家手上
-        dropped.itemStack = ratzielItem.toItemStack()
+        if (ratzielItem.overwrite) dropped.itemStack = ratzielItem.toItemStack()
     }
 
 }

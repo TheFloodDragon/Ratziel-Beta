@@ -82,7 +82,7 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
 
     private fun tick(player: Player, itemStack: ItemStack, identifiers: Iterable<Identifier>) {
         // 特征物品处理
-        val ratzielItem = RatzielItem.of(itemStack) ?: return
+        val ratzielItem = RatzielItem.sourced(itemStack, false) ?: return
         // 判断是不是要用的物品
         if (ratzielItem.identifier in identifiers) return
 
@@ -91,6 +91,8 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
             set("player", player)
             set("item", ratzielItem)
         }
+        // 重新写回物品
+        ratzielItem.tryRewrite()
     }
 
     @Suppress("unused")

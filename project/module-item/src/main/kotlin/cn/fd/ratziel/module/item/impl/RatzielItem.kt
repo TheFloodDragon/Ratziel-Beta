@@ -10,6 +10,7 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.service.ItemServiceManager
 import cn.fd.ratziel.module.item.internal.ItemSheet
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.util.writeTo
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
@@ -22,11 +23,11 @@ import taboolib.platform.util.isAir
  * @author TheFloodDragon
  * @since 2024/5/2 22:05
  */
-class RatzielItem private constructor(
+open class RatzielItem private constructor(
     /**
      * 物品信息
      */
-    val info: Info,
+    open val info: Info,
     /**
      * 物品数据
      */
@@ -107,6 +108,18 @@ class RatzielItem private constructor(
         }
 
         /**
+         * 将目标 [ItemStack] 转为 [RatzielItem.Sourced]
+         *
+         * @return 若目标不是 [RatzielItem], 返回空
+         */
+        @JvmStatic
+        fun sourced(source: ItemStack?, overwrite: Boolean = true): Sourced? {
+            if (source == null) return null
+            val neoItem = of(source) ?: return null
+            return Sourced(neoItem, source, overwrite)
+        }
+
+        /**
          * 检查 [ItemData], 判断是否具有 专有信息 [Info]
          *
          * @return 目标是否为 [RatzielItem]
@@ -124,6 +137,33 @@ class RatzielItem private constructor(
         @JvmStatic
         fun isRatzielItem(itemStack: ItemStack): Boolean {
             return isRatzielItem(RefItemStack.of(itemStack))
+        }
+
+    }
+
+    class Sourced(
+        /**
+         * [RatzielItem]
+         */
+        @JvmField
+        val neoItem: RatzielItem,
+        /**
+         * 源物品 [ItemStack]
+         */
+        @JvmField
+        val source: ItemStack,
+        /**
+         * 是否覆写源物品
+         */
+        @JvmField
+        var overwrite: Boolean = true,
+    ) : RatzielItem(neoItem.info, neoItem.data) {
+
+        /**
+         * 尝试重写 源物品 [source]
+         */
+        fun tryRewrite() {
+            if (this.overwrite) this.neoItem.writeTo(this.source)
         }
 
     }
@@ -151,7 +191,7 @@ class RatzielItem private constructor(
         /**
          * 拆箱所有数据并转换成数据集
          */
-        override fun toMap(): Map<String, Any> {
+        override fun toDataMap(): Map<String, Any> {
             val originMap = this.data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound ?: return emptyMap()
             return originMap.mapValues { NbtAdapter.unbox(it.value) } // 拆箱
         }

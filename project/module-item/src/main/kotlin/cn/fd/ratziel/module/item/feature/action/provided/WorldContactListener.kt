@@ -5,7 +5,6 @@ import cn.fd.ratziel.core.reactive.Trigger
 import cn.fd.ratziel.module.item.feature.action.ActionManager.registerSimple
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.RatzielItem
-import cn.fd.ratziel.module.item.util.writeTo
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.event.PlayerWorldContactEvent
@@ -51,7 +50,7 @@ object WorldContactListener {
         // 交互用的物品
         val itemStack = event.player.inventory.getItem(event.action.hand)
         // 仅处理 RatzielItem 物品, 其它的直接返回
-        val ratzielItem = RatzielItem.of(itemStack ?: return) ?: return
+        val ratzielItem = RatzielItem.sourced(itemStack) ?: return
 
         fun trigger(
             trigger: Trigger,
@@ -107,7 +106,7 @@ object WorldContactListener {
         }
 
         // 向事件的 ItemStack 写入 RatzielItem 的数据
-        ratzielItem.writeTo(itemStack)
+        ratzielItem.tryRewrite()
     }
 
 }

@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.feature.action.provided
 import cn.fd.ratziel.module.item.feature.action.ActionManager.registerSimple
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.RatzielItem
-import cn.fd.ratziel.module.item.util.writeTo
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDeathEvent
 import taboolib.common.platform.Awake
@@ -29,7 +28,7 @@ object EntityDeathListener {
         // 判断手持物品
         val itemInHand = killer.inventory.itemInMainHand
         // 特征物品处理
-        val ratzielItem = RatzielItem.of(itemInHand) ?: return
+        val ratzielItem = RatzielItem.sourced(itemInHand) ?: return
 
         // 触发触发器
         KILL_ENTITY.trigger(ratzielItem.identifier, killer, ratzielItem) {
@@ -40,7 +39,7 @@ object EntityDeathListener {
             set("entity", event.entity) // 被击杀的实体
         }
         // 将修改后的物品重新写到玩家手上
-        ratzielItem.writeTo(itemInHand)
+        ratzielItem.tryRewrite()
     }
 
 }

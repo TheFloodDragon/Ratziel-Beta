@@ -187,7 +187,7 @@ class DataInterpreter : ItemInterpreter {
                     // 导入物品的所有数据
                     val holder = context.popOrNull(DataHolder::class.java)
                     if (holder != null) {
-                        vars.putAll(holder.toMap())
+                        vars.putAll(holder.toDataMap())
                     }
                     // 执行语句块并返回结果
                     return block.execute(context).toString()
