@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.script.element
 import cn.fd.ratziel.common.element.registry.NewElement
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
-import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.ScriptType
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

@@ -22,23 +22,10 @@ sealed interface InventoryClickAction {
 
     /**
      * 鼠标点击操作 - 只涉及到一个有效栏位的 (拖动、点击容器外不算)
-     * 支持的类型见 [MouseClick.acceptableTypes]
      */
     data class MouseClick(override val slot: Int, override val type: InventoryClickType) : InventoryClickAction {
         init {
-            require(type in acceptableTypes)
-        }
-
-        companion object {
-            @JvmStatic
-            private val acceptableTypes = arrayOf(
-                InventoryClickType.LEFT_CLICK,
-                InventoryClickType.RIGHT_CLICK,
-                InventoryClickType.MIDDLE_CLICK,
-                InventoryClickType.SHIFT_LEFT_CLICK,
-                InventoryClickType.SHIFT_RIGHT_CLICK,
-                InventoryClickType.DOUBLE_CLICK,
-            )
+            require(type.isMouseClick)
         }
     }
 
@@ -54,18 +41,7 @@ sealed interface InventoryClickAction {
         override val type: InventoryClickType,
     ) : InventoryClickAction {
         init {
-            require(type in acceptableTypes)
-        }
-
-        companion object {
-            @JvmStatic
-            private val acceptableTypes = arrayOf(
-                InventoryClickType.DROP,
-                InventoryClickType.CONTROL_DROP,
-                InventoryClickType.LEFT_CLICK_OUTSIDE,
-                InventoryClickType.RIGHT_CLICK_OUTSIDE,
-                InventoryClickType.MIDDLE_CLICK_OUTSIDE,
-            )
+            require(type.isDrop || type.isOutsideAction)
         }
     }
 
@@ -79,8 +55,8 @@ sealed interface InventoryClickAction {
     /**
      * 数字快捷键切换
      */
-    data class HotbarSwap(val hotbarSlot: Int, override val slot: Int) : InventoryClickAction {
-        override val type = InventoryClickType.numberKey(hotbarSlot)
+    data class HotbarSwap(val hotbar: Int, override val slot: Int) : InventoryClickAction {
+        override val type = InventoryClickType.numberKey(hotbar)
     }
 
     /**

@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.script.lang.js
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.impl.CompilationPreference
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import cn.fd.ratziel.module.script.imports.GroupImports
@@ -19,7 +18,6 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:33
  */
-@CompilationPreference
 object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngine>() {
 
     /**
@@ -104,5 +102,7 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngin
             it.engineName == "OpenJDK Nashorn"
         } as? NashornScriptEngineFactory
     }
+
+    override val language get() = JavaScriptLang
 
 }

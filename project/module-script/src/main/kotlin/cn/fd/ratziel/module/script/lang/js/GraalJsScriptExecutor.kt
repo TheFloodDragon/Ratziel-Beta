@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.impl.CompilationPreference
 import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.imports.GroupImports
 import org.graalvm.polyglot.Context
@@ -19,7 +18,6 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-@CompilationPreference
 object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>() {
 
     private const val LANGUAGE_ID = "js"
@@ -118,5 +116,7 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>() {
     private fun internalSource(script: String): Source {
         return Source.newBuilder(LANGUAGE_ID, script, "<internal-script>").internal(true).buildLiteral()
     }
+
+    override val language get() = JavaScriptLang
 
 }

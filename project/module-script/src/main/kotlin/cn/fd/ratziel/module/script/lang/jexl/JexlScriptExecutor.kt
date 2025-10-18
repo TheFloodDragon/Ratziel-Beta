@@ -39,6 +39,8 @@ object JexlScriptExecutor : CompilableScriptExecutor<JexlScript> {
         return compiled.execute(WrappedJexlContext(environment))
     }
 
+    override val language get() = JexlLang
+
     /**
      * 封装的 [JexlContext]
      */

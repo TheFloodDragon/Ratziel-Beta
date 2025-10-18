@@ -3,12 +3,17 @@ package cn.fd.ratziel.module.script.api
 import javax.script.ScriptException
 
 /**
- * ScriptExecutor - 脚本执行者
+ * ScriptExecutor - 脚本执行器
  *
  * @author TheFloodDragon
  * @since 2024/7/14 21:26
  */
 interface ScriptExecutor {
+
+    /**
+     * 执行器属于的脚本语言类型
+     */
+    val language: ScriptType
 
     /**
      * 构建脚本

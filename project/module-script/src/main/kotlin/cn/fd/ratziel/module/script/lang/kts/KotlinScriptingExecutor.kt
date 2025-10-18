@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.script.lang.kts
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
 import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
-import cn.fd.ratziel.module.script.impl.CompilationPreference
 import cn.fd.ratziel.module.script.imports.GroupImports
 import javax.script.Compilable
 import javax.script.CompiledScript
@@ -17,7 +16,6 @@ import kotlin.script.experimental.api.defaultImports
  * @author TheFloodDragon
  * @since 2025/10/3 14:17
  */
-@CompilationPreference
 object KotlinScriptingExecutor : CompilableScriptExecutor<CompiledScript> {
 
     override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
@@ -54,5 +52,7 @@ object KotlinScriptingExecutor : CompilableScriptExecutor<CompiledScript> {
         engine.setBindings(environment.bindings, ScriptContext.ENGINE_SCOPE)
         return engine
     }
+
+    override val language get() = KotlinScriptingLang
 
 }

@@ -1,8 +1,9 @@
 package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.api.ScriptPreference
+import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
 import taboolib.library.configuration.ConfigurationSection
 
@@ -19,6 +20,8 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
     override val alias = arrayOf("Js")
 
     override val extensions = arrayOf("js", "javascript")
+
+    override val preference = ScriptPreference.COMPILATION_PREFERRED
 
     override val executor: ScriptExecutor get() = if (::selectedExecutor.isInitialized) selectedExecutor else super.executor
 

@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.script.imports
 import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.util.resolveBy
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.element.ScriptElementLoader
 import taboolib.common.platform.function.warning
 import java.io.File

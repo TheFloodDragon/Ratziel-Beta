@@ -4,7 +4,7 @@ import cn.fd.ratziel.common.Workspace
 import cn.fd.ratziel.common.element.ElementLoader
 import cn.fd.ratziel.common.element.registry.ElementRegistry
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.ScriptType
 import kotlinx.serialization.json.JsonNull
 import java.io.File
 

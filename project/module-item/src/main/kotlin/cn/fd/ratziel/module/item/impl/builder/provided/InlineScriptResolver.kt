@@ -8,7 +8,7 @@ import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.ScriptType
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
 import java.util.concurrent.ConcurrentHashMap

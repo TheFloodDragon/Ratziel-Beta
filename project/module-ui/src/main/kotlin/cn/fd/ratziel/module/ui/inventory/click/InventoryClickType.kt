@@ -71,28 +71,37 @@ enum class InventoryClickType(val button: Int) {
     MIDDLE_MOUSE_DRAG_END(10);
 
     /** 是否左键点击 **/
-    val isLeftClick get() = this == LEFT_CLICK || this == SHIFT_LEFT_CLICK || this == DOUBLE_CLICK
+    val isLeftClick by lazy { this == LEFT_CLICK || this == SHIFT_LEFT_CLICK || this == DOUBLE_CLICK }
 
     /** 是否右键点击 **/
-    val isRightClick get() = this == RIGHT_CLICK || this == SHIFT_RIGHT_CLICK
+    val isRightClick by lazy { this == RIGHT_CLICK || this == SHIFT_RIGHT_CLICK }
 
     /** 是否为 Shift + 鼠标点击 **/
-    val isShiftClick get() = this == SHIFT_LEFT_CLICK || this == SHIFT_RIGHT_CLICK
+    val isShiftClick by lazy { this == SHIFT_LEFT_CLICK || this == SHIFT_RIGHT_CLICK }
+
+    /** 是否为鼠标点击 **/
+    val isMouseClick by lazy { this.isLeftClick || this.isRightClick || this == MIDDLE_CLICK }
+
+    /** 是否为丢弃操作 **/
+    val isDrop by lazy { this == DROP || this == CONTROL_DROP }
+
+    /** 是否为外部点击 **/
+    val isOutsideAction by lazy { this == LEFT_CLICK_OUTSIDE || this == RIGHT_CLICK_OUTSIDE || this == MIDDLE_CLICK_OUTSIDE }
 
     /** 是否为数字快捷键点击 **/
-    val isNumberKey get() = this.name.startsWith("NUMBER_KEY")
+    val isNumberKey by lazy { this.name.startsWith("NUMBER_KEY") }
 
     /** 是否为键盘点击 **/
-    val isKeyboardClick get() = this == DROP || this == CONTROL_DROP || this == OFFHAND_SWAP || isNumberKey
+    val isKeyboardClick by lazy { this == DROP || this == CONTROL_DROP || this == OFFHAND_SWAP || isNumberKey }
 
     /** 是否为拖动操作 **/
-    val isDrag get() = this.name.contains("DRAG")
+    val isDrag by lazy { this.name.contains("DRAG") }
 
     /** 是否为鼠标中键操作 (创造模式下的操作) **/
-    val isCreativeAction get() = this == MIDDLE_CLICK || this == MIDDLE_CLICK_OUTSIDE || this == MIDDLE_MOUSE_DRAG_START || this == MIDDLE_MOUSE_DRAG_ADD_SLOT || this == MIDDLE_MOUSE_DRAG_END
+    val isCreativeAction by lazy { this == MIDDLE_CLICK || this == MIDDLE_CLICK_OUTSIDE || this == MIDDLE_MOUSE_DRAG_START || this == MIDDLE_MOUSE_DRAG_ADD_SLOT || this == MIDDLE_MOUSE_DRAG_END }
 
     /** 是否会直接移动物品 (而不是简单的拿去放下) **/
-    val isItemMove get() = isShiftClick || isKeyboardClick || this == DOUBLE_CLICK || isCreativeAction
+    val isItemMove by lazy { isShiftClick || isKeyboardClick || this == DOUBLE_CLICK || isCreativeAction }
 
     companion object {
 

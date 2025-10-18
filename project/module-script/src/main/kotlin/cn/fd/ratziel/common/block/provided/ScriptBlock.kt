@@ -7,17 +7,14 @@ import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.util.resolveBy
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.ScriptType
 import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
-import cn.fd.ratziel.module.script.impl.CompilationPreference
 import cn.fd.ratziel.module.script.imports.GroupImports
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
-import taboolib.common.reflect.hasAnnotation
 import taboolib.common5.cbool
 
 /**
@@ -44,7 +41,7 @@ open class ScriptBlock(
     /**
      * 是否编译脚本
      */
-    open val compile = needCompile && executor::class.java.hasAnnotation(CompilationPreference::class.java)
+    open val compile = needCompile && executor.language.preference.suggestingCompilation
 
     /** 编译后的脚本 **/
     open val script: ScriptContent = compileOrLiteral(executor, source)

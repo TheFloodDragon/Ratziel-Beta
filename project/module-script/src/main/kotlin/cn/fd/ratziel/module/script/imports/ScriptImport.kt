@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.script.imports
 
-import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
 import taboolib.common.platform.function.warning

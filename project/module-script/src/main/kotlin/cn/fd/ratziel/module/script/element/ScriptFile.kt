@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.script.element
 
-import cn.fd.ratziel.module.script.ScriptType
+import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.api.FileScriptSource
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment

@@ -244,8 +244,7 @@ class DataInterpreter : ItemInterpreter {
         private suspend fun executeBlocks(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): List<Pair<String, Any?>> {
             return if (blocks.isNotEmpty()) coroutineScope {
                 blocks.map {
-                    // 每个语句块都采用复制的上下文, 以便脚本环境隔离
-                    async { it.key to it.value.execute(context.copy()) }
+                    async { it.key to it.value.execute(context) }
                 }.awaitAll()
             } else emptyList()
         }

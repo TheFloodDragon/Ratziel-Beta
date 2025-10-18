@@ -1,6 +1,5 @@
-package cn.fd.ratziel.module.script
+package cn.fd.ratziel.module.script.api
 
-import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.lang.jexl.JexlLang
 import cn.fd.ratziel.module.script.lang.js.JavaScriptLang
 import cn.fd.ratziel.module.script.lang.kts.KotlinScriptingLang
@@ -30,23 +29,33 @@ interface ScriptType {
     val extensions: Array<out String> get() = emptyArray()
 
     /**
+     * 脚本偏好
+     */
+    val preference: ScriptPreference
+
+    /**
      * 获取脚本执行器
      */
     val executor: ScriptExecutor
         get() = throw UnsupportedOperationException("There's no executor of language '$name'.")
+
+    /**
+     * 脚本是否启用
+     */
+    val enabled get() = this in enabledLanguages
 
     companion object {
 
         /**
          * 脚本类型注册表
          */
+        @JvmStatic
         val registry: MutableSet<ScriptType> = CopyOnWriteArraySet()
 
         /**
          * 启用的脚本语言列表
          */
-        var activeLanguages: Set<ScriptType> = registry
-            internal set
+        internal var enabledLanguages: MutableSet<ScriptType> = CopyOnWriteArraySet()
 
         /** JavaScript **/
         @JvmStatic
@@ -64,11 +73,13 @@ interface ScriptType {
          * 匹配脚本类型
          */
         @JvmStatic
-        fun match(name: String): ScriptType? {
+        @JvmOverloads
+        fun match(name: String, onlyActive: Boolean = true): ScriptType? {
             val cleaned = name.filterNot { it.isWhitespace() }
-            return activeLanguages.find { type ->
-                type.name.equals(cleaned, true) || type.alias.any { it.equals(cleaned, true) }
-            }
+            return (if (onlyActive) enabledLanguages else registry)
+                .find { type ->
+                    type.name.equals(cleaned, true) || type.alias.any { it.equals(cleaned, true) }
+                }
         }
 
         /**

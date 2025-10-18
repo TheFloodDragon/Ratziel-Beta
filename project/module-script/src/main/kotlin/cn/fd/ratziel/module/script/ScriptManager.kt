@@ -6,7 +6,7 @@ import cn.fd.ratziel.common.config.Settings
 import cn.fd.ratziel.common.element.ElementLoader
 import cn.fd.ratziel.core.util.FileResolver
 import cn.fd.ratziel.core.util.JarUtil
-import cn.fd.ratziel.module.script.ScriptType.Companion.activeLanguages
+import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.element.ScriptElementLoader
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
 import cn.fd.ratziel.module.script.imports.GroupImports
@@ -73,32 +73,32 @@ object ScriptManager {
         // 初始化各个脚本类型
         val languages = conf.getConfigurationSection("languages")!!
         for (key in languages.getKeys(false)) {
-            val type = ScriptType.match(key) ?: continue
+            val type = ScriptType.match(key, false) ?: continue
             val settings = languages.getConfigurationSection(key)!!
             // 初始化脚本
             val enabled = settings.getBoolean("enabled", false)
             if (enabled && type is ScriptBootstrap) {
                 try {
                     type.initialize(settings)
-                    continue // 成功启用脚本, 初始化下一个
+                    // 成功启用脚本, 初始化下一个
+                    ScriptType.enabledLanguages.add(type)
+                    continue
                 } catch (ex: Exception) {
                     severe("Failed to enable script-language '${type.name}'!")
                     ex.printStackTrace()
                 }
             }
-            // 失败后禁用脚本
-            activeLanguages = activeLanguages.minus(type)
         }
 
         // 脚本全禁用了直接爬
-        if (activeLanguages.isEmpty()) {
+        if (ScriptType.enabledLanguages.isEmpty()) {
             warning("No script language is enabled! All scripts will not work!")
             return
         }
 
         // 设置默认语言
         this.defaultLanguage = conf.getString("default")?.let { ScriptType.match(it) }
-            ?: activeLanguages.first().also {
+            ?: ScriptType.enabledLanguages.first().also {
                 warning("Default script language is not set or invalid! Using ${it.name} instead.")
             }
     }

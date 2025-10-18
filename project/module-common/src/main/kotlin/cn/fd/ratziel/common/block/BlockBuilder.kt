@@ -1,7 +1,9 @@
 package cn.fd.ratziel.common.block
 
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import kotlinx.serialization.json.JsonElement
+import taboolib.common5.cbool
 
 /**
  * BlockBuilder
@@ -10,6 +12,8 @@ import kotlinx.serialization.json.JsonElement
  * @since 2025/4/5 12:56
  */
 object BlockBuilder {
+
+    const val OPTION_COPY_CONTEXT = "copy-context"
 
     /**
      * 构建语句块
@@ -37,7 +41,7 @@ object BlockBuilder {
         val context = BlockContext(scheduler)
         contextApplier(context)
         // 调用调度器解析并返回解析结果
-        return context.parse(element)
+        return ExecutionEntrance(context.parse(element), context) // 返回执行入口
     }
 
     class BlockScheduler(
@@ -60,6 +64,23 @@ object BlockBuilder {
             return result
         }
 
+    }
+
+    private class ExecutionEntrance(
+        val run: ExecutableBlock,
+        val blockContext: BlockContext,
+        val onStart: ((ArgumentContext) -> Unit)? = null,
+        val onEnd: ((ArgumentContext, Any?) -> Any?)? = null,
+    ) : ExecutableBlock {
+        // 运行时是否复制 ArgumentContext (默认为 true)
+        val copyContext = blockContext[OPTION_COPY_CONTEXT]?.cbool ?: true
+
+        override fun execute(context: ArgumentContext): Any? {
+            val ctx = if (copyContext) context.copy() else context
+            onStart?.invoke(ctx)
+            val result = run.execute(ctx)
+            return onEnd?.invoke(ctx, result) ?: result
+        }
     }
 
 }
