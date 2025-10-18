@@ -39,7 +39,7 @@ object EntityDeathListener {
             set("entity", event.entity) // 被击杀的实体
         }
         // 将修改后的物品重新写到玩家手上
-        ratzielItem.tryRewrite()
+        ratzielItem.overwrite()
     }
 
 }

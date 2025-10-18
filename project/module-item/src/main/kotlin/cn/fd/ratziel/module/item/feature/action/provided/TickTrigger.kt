@@ -92,7 +92,7 @@ object TickTrigger : ItemTrigger("onTick", "tick") {
             set("item", ratzielItem)
         }
         // 重新写回物品
-        ratzielItem.tryRewrite()
+        ratzielItem.overwrite()
     }
 
     @Suppress("unused")

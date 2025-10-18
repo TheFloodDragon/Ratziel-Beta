@@ -42,12 +42,4 @@ open class ScriptEnvironment(
         this.bindings[key] = value
     }
 
-    /**
-     * 复制脚本环境
-     */
-    fun copy() = ScriptEnvironment().also {
-        it.bindings.putAll(this.bindings)  // 复制脚本绑定键
-        it.context.putAll(this.context) // 复制上下文
-    }
-
 }

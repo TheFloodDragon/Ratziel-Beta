@@ -1,0 +1,45 @@
+# 武器类型模板
+Typed:
+  template:
+    # 常量层 (储存物品的自定义配置信息)
+    props:
+      type: 无 # 默认物品类型
+    # 数据层
+    data:
+      tier: # 品质数据 (采用数据层存储, 以便于读取)
+        sample @ weight: # 加权随机抽样
+          - value: 次品
+            weight: 3
+          - value: 凡品 # 数据不建议存中文 (存中文其实也没啥大事), 这里为了方便看, 所以就用中文了
+            weight: 5
+          - value: 良品
+            weight: 2
+          - value: 上品
+            weight: 1
+    # 计算层
+    compute:
+      # 对品质数据进行格式化
+      tier_formatted:
+        when 'tier':
+          次品: <grey>次品
+          凡品: <white>凡品
+          良品: <yellow>良品
+          上品: <red>上品
+    lore:
+      - '&c{props:type}' # 引用武器类型
+      - '&7品质: &l{computed:tier_formatted}' # 调用计算层, 计算格式化后的品质
+
+Sword:
+  item:
+    inherit: Typed # 继承模板
+    props: # 此处名字要与模板保持一致
+      type: 剑 # 覆写物品类型
+    material: andorid_sword
+    lore:
+      - '{inherit:Typed:lore}' # 引用模板的 lore
+      - ''
+      - '<blue>我只是一把钻石剑啦！' # 支持 MiniMessage
+      - ''
+      - '&e锻造者: &a{papi:player_name}' # 物品生成之后保持不变的
+      - '&e持有者: &a{dynamic:papi:player_name}' # 物品同步时变化 (几乎实时变化)
+      - ''

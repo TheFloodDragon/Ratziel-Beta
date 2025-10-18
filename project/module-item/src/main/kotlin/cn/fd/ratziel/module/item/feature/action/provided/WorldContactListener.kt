@@ -106,7 +106,7 @@ object WorldContactListener {
         }
 
         // 向事件的 ItemStack 写入 RatzielItem 的数据
-        ratzielItem.tryRewrite()
+        ratzielItem.overwrite()
     }
 
 }

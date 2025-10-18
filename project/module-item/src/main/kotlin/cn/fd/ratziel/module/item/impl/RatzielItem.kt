@@ -162,8 +162,9 @@ open class RatzielItem private constructor(
         /**
          * 尝试重写 源物品 [source]
          */
-        fun tryRewrite() {
-            if (this.overwrite) this.neoItem.writeTo(this.source)
+        @JvmOverloads
+        fun overwrite(force: Boolean = false) {
+            if (this.overwrite || force) this.neoItem.writeTo(this.source)
         }
 
     }

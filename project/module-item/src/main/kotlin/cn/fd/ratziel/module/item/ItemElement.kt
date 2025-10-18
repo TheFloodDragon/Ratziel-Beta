@@ -30,6 +30,7 @@ import kotlinx.serialization.modules.plus
 import kotlinx.serialization.serializer
 import taboolib.common.LifeCycle
 import taboolib.common.io.isDebugMode
+import taboolib.common.platform.Awake
 import taboolib.library.xseries.XItemFlag
 import taboolib.module.nms.MinecraftVersion
 
@@ -141,7 +142,9 @@ object ItemElement : ElementHandler.ParralHandler {
         ItemRegistry.registerComponent(T::class.java, serializer)
     }
 
-    init {
+    @Awake(LifeCycle.ENABLE)
+    @JvmStatic
+    private fun registerSubCommand() {
         // 子命令注册
         CommandMain.registerSubCommand(ItemCommand::class.java, "item")
     }
