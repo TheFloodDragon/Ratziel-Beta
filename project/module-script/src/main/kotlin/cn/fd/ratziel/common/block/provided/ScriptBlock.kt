@@ -65,12 +65,12 @@ open class ScriptBlock(
             // 预编译脚本
             try {
                 // 带环境的编译脚本
-                return executor.build(LiteralScriptSource(script), createEnvironment())
+                return executor.build(ScriptSource.literal(script), createEnvironment())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-        return LiteralScriptContent(script, executor)
+        return ScriptContent.literal(script)
     }
 
     open fun createEnvironment() = ScriptEnvironment().apply {

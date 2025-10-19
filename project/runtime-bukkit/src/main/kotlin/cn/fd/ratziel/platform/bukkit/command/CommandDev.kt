@@ -2,16 +2,14 @@ package cn.fd.ratziel.platform.bukkit.command
 
 import cn.fd.ratziel.common.message.audienceSender
 import cn.fd.ratziel.common.message.sendMessage
-import cn.fd.ratziel.common.util.VariablesMap
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.util.eval
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import taboolib.common.platform.command.CommandBody
-import taboolib.common.platform.command.CommandHeader
-import taboolib.common.platform.command.mainCommand
-import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.command.*
 import taboolib.expansion.createHelper
+import kotlin.time.measureTimedValue
 
 /**
  * CommandDev
@@ -37,16 +35,24 @@ object CommandDev {
      */
     @CommandBody
     val runScript = subCommand {
-        dynamic {
-            execute<CommandSender> { sender, _, content ->
-                val executor = ScriptManager.defaultLanguage.executor
-                executor.eval(content, VariablesMap {
-                    put("sender", sender)
-                    if (sender is Player) {
-                        put("player", sender)
+        dynamic("language") {
+            suggest {
+                ScriptType.enabledLanguages.flatMap { it.alias.asIterable() }
+            }
+            dynamic {
+                execute<CommandSender> { sender, ctx, content ->
+                    val language = ScriptType.match(ctx["language"]) ?: ScriptManager.defaultLanguage
+                    val executor = language.executor
+                    measureTimedValue {
+                        executor.eval(content) {
+                            put("sender", sender)
+                            if (sender is Player) {
+                                put("player", sender)
+                            }
+                        }
+                    }.also {
+                        sender.sendMessage("§7Result (${it.duration.inWholeMilliseconds}ms): ${it.value}")
                     }
-                }).also { result ->
-                    sender.sendMessage("§7Result: $result")
                 }
             }
         }

@@ -15,6 +15,16 @@ sealed interface ScriptSource {
      */
     val content: String
 
+    companion object {
+
+        @JvmStatic
+        fun literal(content: String) = LiteralScriptSource(content)
+
+        @JvmStatic
+        fun filed(file: File) = FileScriptSource(file)
+
+    }
+
 }
 
 /**

@@ -81,7 +81,7 @@ object ScriptManager {
                 try {
                     type.initialize(settings)
                     // 成功启用脚本, 初始化下一个
-                    ScriptType.enabledLanguages.add(type)
+                    ScriptType.enabledLanguages = ScriptType.enabledLanguages.plus(type)
                     continue
                 } catch (ex: Exception) {
                     severe("Failed to enable script-language '${type.name}'!")

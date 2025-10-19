@@ -55,7 +55,8 @@ interface ScriptType {
         /**
          * 启用的脚本语言列表
          */
-        internal var enabledLanguages: MutableSet<ScriptType> = CopyOnWriteArraySet()
+        var enabledLanguages: Set<ScriptType> = emptySet()
+            internal set
 
         /** JavaScript **/
         @JvmStatic

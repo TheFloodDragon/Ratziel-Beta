@@ -12,17 +12,17 @@ import taboolib.common.platform.function.warning
 interface CompilableScriptExecutor<T : Any> : ScriptExecutor {
 
     /**
-     * 直接评估脚本
-     */
-    fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any?
-
-    /**
      * 编译脚本
      */
     fun compile(source: ScriptSource, environment: ScriptEnvironment): T
 
     /**
-     * 评估编译后的脚本
+     * 直接评估脚本 (解释运行)
+     */
+    fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any?
+
+    /**
+     * 评估编译后的脚本 (编译运行)
      */
     fun evalCompiled(compiled: T, environment: ScriptEnvironment): Any?
 
@@ -30,11 +30,11 @@ interface CompilableScriptExecutor<T : Any> : ScriptExecutor {
      * 执行脚本
      */
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
-        if (script is CompiledScript<*> && script.executor == this) {
+        return if (script is CompiledScript<*> && script.executor == this) {
             @Suppress("UNCHECKED_CAST")
             val compiled = script.compiled as T
-            return evalCompiled(compiled, environment)
-        } else return evalDirectly(LiteralScriptSource(script.content), environment)
+            evalCompiled(compiled, environment) // 编译运行
+        } else evalDirectly(ScriptSource.literal(script.content), environment)
     }
 
     /**
@@ -45,13 +45,13 @@ interface CompilableScriptExecutor<T : Any> : ScriptExecutor {
         if (compile) {
             try {
                 val compiled = this.compile(source, environment)
-                return CompiledScript(source.content, this, compiled)
+                return CompiledScriptImpl(source.content, this, compiled)
             } catch (e: Exception) {
                 warning("Failed to compile script by '$this' ! Script Source: $source")
                 e.printStackTrace()
             }
         }
-        return LiteralScriptContent(source.content, this)
+        return ScriptContent.literal(source.content)
     }
 
     override fun build(source: ScriptSource, environment: ScriptEnvironment) = this.build(source, environment, true)

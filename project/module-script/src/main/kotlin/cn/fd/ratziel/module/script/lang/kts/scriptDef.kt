@@ -38,13 +38,13 @@ abstract class KtsScript(val vars: Map<String, Any?>)
  * Compilation Configuration
  */
 object KtsCompilationConfiguration : ScriptCompilationConfiguration({
-    defaultImports(KtsScript::class, Import::class)
+    defaultImports(Import::class)
     refineConfiguration {
         beforeCompiling(::configureProvidedPropertiesFromJsr223Context)
         onAnnotations(Import::class, handler = MainKtsConfigurator())
     }
     jvm {
-        dependenciesFromClassContext(KtsCompilationConfiguration::class, "kotlin-stdlib", "kotlin-reflect")
+        dependenciesFromClassContext(KtsCompilationConfiguration::class)
     }
     jsr223 {
         importAllBindings(true)
