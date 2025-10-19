@@ -8,7 +8,7 @@ Script:
       enabled: true
       # 使用的脚本引擎 (Nashorn/GraalJS)
       engine: Nashorn
-    # Jexl
+    # Jexl3 脚本
     Jexl:
       enabled: true
     # Kotlin Scripting

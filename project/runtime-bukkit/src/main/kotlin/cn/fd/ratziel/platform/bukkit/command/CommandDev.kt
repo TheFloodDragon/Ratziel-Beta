@@ -37,7 +37,7 @@ object CommandDev {
     val runScript = subCommand {
         dynamic("language") {
             suggest {
-                ScriptType.enabledLanguages.flatMap { it.alias.asIterable() }
+                ScriptType.enabledLanguages.map { it.name }
             }
             dynamic {
                 execute<CommandSender> { sender, ctx, content ->

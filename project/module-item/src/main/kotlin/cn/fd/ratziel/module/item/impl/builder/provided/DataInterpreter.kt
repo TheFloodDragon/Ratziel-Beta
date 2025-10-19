@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.fd.ratziel.common.block.BlockBuilder
 import cn.fd.ratziel.common.block.BlockContext
 import cn.fd.ratziel.common.block.ExecutableBlock
+import cn.fd.ratziel.common.block.provided.ScriptBlock
 import cn.fd.ratziel.common.util.varsMap
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.contextual.plus
@@ -67,7 +68,7 @@ class DataInterpreter : ItemInterpreter {
         launch {
             // 构建语句块
             val blocks = buildBlocks(element, PROPERTIES_ALIAS) {
-                options["caching"] = false // 常量层只执行一次
+                options[ScriptBlock.CACHING_OPTION] = false // 常量层只执行一次
             } ?: return@launch
             // 执行所有语句块
             val results = executeBlocks(blocks, stream.context)

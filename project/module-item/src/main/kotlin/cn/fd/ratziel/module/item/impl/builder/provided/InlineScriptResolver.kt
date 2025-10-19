@@ -80,7 +80,7 @@ object InlineScriptResolver : ItemSectionResolver {
             val content = args.joinToString("")
             // 获取内联脚本 (经过预处理的)
             val script = scriptsCatcher[context].getOrPut(content) {
-                warning("No compiled script found for '$content'")
+                warning("No script block found for '$content'")
                 parse(args) // 按理来说不应该到这的
             }
             // 评估脚本并返回结果

@@ -31,7 +31,7 @@ open class KtsJvmHost(baseHostConfiguration: ScriptingHostConfiguration? = null)
         evaluationConfiguration: ScriptEvaluationConfiguration,
     ): ResultWithDiagnostics<EvaluationResult> =
         runInCoroutineContext {
-            evaluator(compiled, evaluationConfiguration ?: ScriptEvaluationConfiguration.Default)
+            evaluator(compiled, evaluationConfiguration)
         }
 
 }

@@ -35,7 +35,7 @@ open class ScriptBlock(
 ) : ExecutableBlock {
 
     constructor(source: String, executor: ScriptExecutor, context: BlockContext) : this(
-        source, executor, context["caching"]?.cbool ?: true, GroupImports.catcher[context.attached]
+        source, executor, context[CACHING_OPTION]?.cbool ?: true, GroupImports.catcher[context.attached]
     )
 
     /**
@@ -93,9 +93,14 @@ open class ScriptBlock(
     companion object {
 
         /**
+         * 是否尽可能缓存脚本
+         */
+        const val CACHING_OPTION = "caching-script"
+
+        /**
          * 显示脚本解析选项
          */
-        const val EXPLICIT_SCRIPT_OPTION = "explicit-script"
+        const val EXPLICIT_PARSE_OPTION = "explicit-script-parse"
 
     }
 
@@ -124,13 +129,13 @@ open class ScriptBlock(
                     val lastExecutor = currentExecutor[context.attached]
                     // 设置当前执行器
                     currentExecutor[context.attached] = type.executor // 获取或创建执行器
-                    val explicit = context[EXPLICIT_SCRIPT_OPTION] ?: true
-                    context[EXPLICIT_SCRIPT_OPTION] = false // 切换语言的时候可以直接解析字符串为脚本
+                    val explicit = context[EXPLICIT_PARSE_OPTION] ?: true
+                    context[EXPLICIT_PARSE_OPTION] = false // 切换语言的时候可以直接解析字符串为脚本
                     // 使用调度器解析结果
                     val result = context.parse(entry.value)
                     // 恢复上一个执行器
                     currentExecutor[context.attached] = lastExecutor
-                    context[EXPLICIT_SCRIPT_OPTION] = explicit
+                    context[EXPLICIT_PARSE_OPTION] = explicit
                     // 返回结果
                     return result
                 }
@@ -150,7 +155,7 @@ open class ScriptBlock(
             }
 
             // 默认情况下开启显式脚本, 不解析字符串类型
-            if (context[EXPLICIT_SCRIPT_OPTION]?.cbool ?: true) return null
+            if (context[EXPLICIT_PARSE_OPTION]?.cbool ?: true) return null
 
             // 解析字符串脚本
             var content: String? = null
