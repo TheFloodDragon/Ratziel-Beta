@@ -13,7 +13,12 @@ import cn.fd.ratziel.core.reactive.SimpleTrigger
  * @author TheFloodDragon
  * @since 2025/8/6 22:09
  */
-abstract class ItemTrigger(vararg names: String) : SimpleTrigger(names) {
+open class ItemTrigger(vararg names: String) : SimpleTrigger(names) {
+
+    init {
+        // 默认绑定物品响应器
+        bind(ItemResponder)
+    }
 
     /**
      * 构建物品动作

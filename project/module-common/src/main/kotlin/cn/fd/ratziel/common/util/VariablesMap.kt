@@ -12,7 +12,7 @@ import java.util.function.BiConsumer
  * @since 2025/6/9 17:15
  */
 class VariablesMap(
-    private val vars: MutableMap<String, Any?> = hashMapOf(),
+    private val vars: MutableMap<String, Any?> = linkedMapOf(),
 ) : MutableMap<String, Any?> by vars {
 
     constructor(action: VariablesMap.() -> Unit) : this() {

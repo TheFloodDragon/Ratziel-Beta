@@ -66,7 +66,7 @@ class DefaultGenerator(
         }
 
         // 呼出生成结束的事件
-        val event = ItemGenerateEvent.Post(stream.identifier, this@DefaultGenerator, context, stream.item)
+        val event = ItemGenerateEvent.Post(stream.identifier, this@DefaultGenerator, context, stream.item.getValue())
         event.call()
         event.item // 返回最终结果
     }.asCompletableFuture()

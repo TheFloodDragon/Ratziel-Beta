@@ -1,12 +1,11 @@
 package cn.fd.ratziel.module.item.feature.action
 
+import cn.fd.ratziel.common.util.VariablesMap
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.reactive.ContextualResponse
-import cn.fd.ratziel.core.reactive.SimpleTrigger
 import cn.fd.ratziel.core.reactive.Trigger
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.service.ItemServiceRegistry
-import cn.fd.ratziel.common.util.VariablesMap
 import taboolib.common.platform.function.severe
 import java.util.concurrent.ConcurrentHashMap
 
@@ -21,12 +20,12 @@ object ActionManager {
     /**
      * 触发器注册表: 触发器名称 -> 触发器
      */
-    private val registry: MutableMap<String, Trigger> = ConcurrentHashMap()
+    private val registry: MutableMap<String, ItemTrigger> = ConcurrentHashMap()
 
     /**
      * 注册的物品触发器列表
      */
-    val triggers: Collection<Trigger> get() = registry.values
+    val triggers: Collection<ItemTrigger> get() = registry.values
 
     /**
      * 物品动作服务
@@ -46,23 +45,21 @@ object ActionManager {
      * 注册触发器
      */
     @JvmStatic
-    fun register(trigger: Trigger) {
-        // 绑定回应者
-        trigger.bind(ItemResponder)
+    fun register(trigger: ItemTrigger) {
         // 注册到注册表中
         for (name in trigger.names) this.registry[name] = trigger
     }
 
     /**
-     * 注册简易的 [SimpleTrigger]
+     * 注册简易的 [ItemTrigger]
      */
-    fun registerSimple(vararg names: String) = SimpleTrigger(names).also { this.register(it) }
+    fun registerSimple(vararg names: String) = ItemTrigger(*names).also { this.register(it) }
 
     /**
      * 匹配触发器
      */
     @JvmStatic
-    fun matchTrigger(name: String): Trigger? {
+    fun matchTrigger(name: String): ItemTrigger? {
         val trigger = registry[name]
         if (trigger == null) {
             severe("Unknown trigger: \"$name\" !")
