@@ -1,6 +1,5 @@
 package cn.fd.ratziel.module.item.impl.builder
 
-import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.MutexedValue
@@ -18,16 +17,16 @@ import kotlinx.serialization.json.JsonElement
  */
 class NativeItemStream(
     override val origin: Element,
-    val item: IdentifiedItem,
+    item: IdentifiedItem,
     context: ArgumentContext,
     rawElement: JsonElement = origin.property,
 ) : ItemStream {
 
-    override val identifier: Identifier get() = item.identifier
+    override val identifier = item.identifier
 
     override val tree = MutexedValue.initial(JsonTree(rawElement))
 
-    override val data = MutexedValue.getter { item.data }
+    override val item = MutexedValue.getter { item }
 
     override var context: ArgumentContext by synchronized { context }
 
@@ -37,7 +36,7 @@ class NativeItemStream(
     override suspend fun copy(): NativeItemStream {
         return NativeItemStream(
             this.origin,
-            this.item.clone(),
+            this.item.withValue { it.clone() },
             this.context,
             fetchProperty()
         )

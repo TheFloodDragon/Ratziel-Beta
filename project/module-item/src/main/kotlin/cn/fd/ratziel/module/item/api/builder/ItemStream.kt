@@ -5,7 +5,7 @@ import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.functional.MutexedValue
 import cn.fd.ratziel.core.serialization.json.JsonTree
-import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.IdentifiedItem
 import kotlinx.serialization.json.JsonElement
 
 /**
@@ -33,9 +33,9 @@ interface ItemStream {
     val tree: MutexedValue.Mutable<JsonTree>
 
     /**
-     * 物品数据 (最终产物)
+     * 物品实例
      */
-    val data: MutexedValue<ItemData>
+    val item: MutexedValue<IdentifiedItem>
 
     /**
      * 上下文

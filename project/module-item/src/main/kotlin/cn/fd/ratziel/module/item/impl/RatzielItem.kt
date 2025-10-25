@@ -175,6 +175,14 @@ open class RatzielItem private constructor(
     class Holder(val data: ItemData) : DataHolder {
 
         /**
+         * 是否含有数据
+         */
+        override fun has(name: String): Boolean {
+            return (this.data.tag.read(RATZIEL_DATA_PATH) as? NbtCompound)
+                ?.contains(name) == true
+        }
+
+        /**
          * 读取指定数据
          */
         override fun get(name: String): Any? {

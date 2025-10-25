@@ -5,7 +5,7 @@ import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
-import cn.fd.ratziel.module.item.impl.SimpleData
+import cn.fd.ratziel.module.item.impl.SimpleItem
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.ComponentInterpreter
 import kotlinx.coroutines.async
@@ -43,14 +43,14 @@ object PhysicalLayerInterpreter : ItemInterpreter {
             // 序列化图层
             val layers = layerElements.mapValues { entry ->
                 async {
-                    MutexedValue.initial(SimpleData()).also { data ->
-                        interpreter.parallelSerialize(entry.value, data).joinAll()
-                    }.withValue { it.tag }
+                    val layerItem = MutexedValue.initial(SimpleItem())
+                    interpreter.parallelSerialize(entry.value, layerItem).joinAll()
+                    layerItem.withValue { it.data.tag }
                 }
             }.mapValues { PhysicalLayer(it.key, it.value.await()) }
             // 写入到物品数据
-            stream.data.withValue {
-                PhysicalLayer.writeLayers(it, layers)
+            stream.item.useValue {
+                PhysicalLayer.writeLayers(data, layers)
             }
         }
     }

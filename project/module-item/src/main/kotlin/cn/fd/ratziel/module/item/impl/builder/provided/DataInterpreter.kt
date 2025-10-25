@@ -19,7 +19,6 @@ import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
-import cn.fd.ratziel.module.item.impl.builder.NativeItemStream
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -98,12 +97,16 @@ class DataInterpreter : ItemInterpreter {
         // 获取上下文变量表
         val vars = stream.context.varsMap()
 
-        // 导入常量层属性数据
+        // 常量层: 导入常量层属性数据
         vars.putAll(properties)
-        // 执行数据层语句块, 导入数据层数据
+
+        // 数据层: 执行数据层语句块, 导入数据层数据
         val dataResults = executeBlocks(dataBlocks, stream.context)
         vars.putAll(dataResults)
-        // 执行计算层语句块, 导入计算层数据
+        // 导入物品流中的物品数据
+        stream.item.withValue { if (it is DataHolder) vars.putAll(it.toDataMap()) }
+
+        // 计算层: 执行计算层语句块, 导入计算层数据
         vars.putAll(executeBlocks(computationBlocks, stream.context))
 
         // 计算层标签处理 (实际上此标签处理的过程中可以获取到三个层的数据)
@@ -112,35 +115,35 @@ class DataInterpreter : ItemInterpreter {
         }
 
         // 处理物品数据
-        if (stream is NativeItemStream) {
-            stream.data.withValue { _ -> // 这里只有占用锁的用处
+        stream.item.withValue { item ->
 
-                // 数据层处理
-                if (stream.item is DataHolder) {
-                    val holder = stream.item
-                    // 将数据层结果写入到物品数据中
-                    for ((key, value) in dataResults) {
-                        holder[key] = value ?: continue
-                    }
-                    // 数据层标签解析
-                    stream.tree.withValue { tree ->
-                        // 执行标签解析
-                        DefaultResolver.resolveBy(
-                            NativeDataResolver, tree,
-                            stream.context.plus(holder) // 加了物品的副本
-                        )
+            // 数据层处理
+            if (item is DataHolder) {
+                // 将数据层结果写入到物品数据中
+                for ((key, value) in dataResults) {
+                    // 不更新已有值
+                    if (!item.has(key)) {
+                        item[key] = value ?: continue
                     }
                 }
-
-                // 触发触发器
-                POST_TRIGGER.trigger(stream.identifier) {
-                    // 导入变量表
-                    putAll(vars)
-                    // 尝试获取 RatzielItem 物品
-                    set("item", stream.item)
+                // 数据层标签解析
+                stream.tree.withValue { tree ->
+                    // 执行标签解析
+                    DefaultResolver.resolveBy(
+                        NativeDataResolver, tree,
+                        stream.context.plus(item) // 加了物品的副本
+                    )
                 }
-
             }
+
+            // 触发触发器
+            POST_TRIGGER.trigger(stream.identifier) {
+                // 导入变量表
+                putAll(vars)
+                // 尝试获取 RatzielItem 物品
+                set("item", item)
+            }
+
         }
 
     }
@@ -228,6 +231,7 @@ class DataInterpreter : ItemInterpreter {
         /**
          * 构建语句块表
          */
+        @JvmStatic
         private suspend fun buildBlocks(element: Element, alias: Array<String>, contextApplier: BlockContext.() -> Unit = {}): Map<String, ExecutableBlock>? {
             val property = (element.property as? JsonObject)
                 ?.getBy(*alias)?.jsonObject ?: return null
@@ -242,6 +246,7 @@ class DataInterpreter : ItemInterpreter {
          * 执行语句块
          * @return 执行结果
          */
+        @JvmStatic
         private suspend fun executeBlocks(blocks: Map<String, ExecutableBlock>, context: ArgumentContext): List<Pair<String, Any?>> {
             return if (blocks.isNotEmpty()) coroutineScope {
                 blocks.map {

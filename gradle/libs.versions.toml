@@ -1,5 +1,5 @@
 [versions]
-taboolib = "6.2.3-6b5f38c"
+taboolib = "6.2.3-c573ce52"
 taboolibPlugin = "2.0.25"
 kotlin = "2.2.0"
 serialization = "1.9.0"

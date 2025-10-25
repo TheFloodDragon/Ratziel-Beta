@@ -9,6 +9,11 @@ package cn.fd.ratziel.module.item.api
 interface DataHolder {
 
     /**
+     * 是否含有数据
+     */
+    fun has(name: String): Boolean
+
+    /**
      * 获取数据
      *
      * @param name 数据名称

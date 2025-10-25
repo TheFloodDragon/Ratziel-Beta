@@ -28,13 +28,13 @@ object SourceInterpreter {
         val targetMaterial = item.data.material
         val targetAmount = item.data.amount
         // 合并任务
-        stream.data.withValue {
+        stream.item.useValue {
             // 设置材料
-            if (!targetMaterial.isEmpty()) it.material = targetMaterial
+            if (!targetMaterial.isEmpty()) data.material = targetMaterial
             // 设置数量
-            if (targetAmount > 1) it.amount = targetAmount
+            if (targetAmount > 1) data.amount = targetAmount
             // 合并标签
-            if (newTag.isNotEmpty()) it.tag.merge(newTag, true)
+            if (newTag.isNotEmpty()) data.tag.merge(newTag, true)
         }
         return item
     }
@@ -54,7 +54,7 @@ object SourceInterpreter {
         val results = tasks.awaitAll().mapNotNull { it?.data }
 
         // 物品材料重排序
-        stream.data.withValue { data ->
+        stream.item.useValue {
             for (targetData in results) {
                 if (!targetData.material.isEmpty()) {
                     data.material = targetData.material

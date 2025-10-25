@@ -9,7 +9,7 @@ import kotlinx.coroutines.sync.withLock
  * @author TheFloodDragon
  * @since 2025/5/14 21:06
  */
-abstract class MutexedValue<T> {
+abstract class MutexedValue<out T> {
 
     /**
      * 值是否被锁住
@@ -30,6 +30,17 @@ abstract class MutexedValue<T> {
      * 获取值并处理, 在此期间只有一个线程可以操作
      */
     suspend inline fun <R> withValue(block: suspend (T) -> R): R {
+        return try {
+            block(take())
+        } finally {
+            release()
+        }
+    }
+
+    /**
+     * 获取值并处理, 在此期间只有一个线程可以操作
+     */
+    suspend inline fun <R> useValue(block: suspend T.() -> R): R {
         return try {
             block(take())
         } finally {
@@ -74,7 +85,7 @@ abstract class MutexedValue<T> {
          * 创建一个 [MutexedValue.Mutable] 的实例
          */
         @JvmStatic
-        fun <T> initial(initialValue: T): Mutable<T> = InitialValue(initialValue)
+        fun <T> initial(initialValue: T): Mutable<out T> = InitialMutexedValue(initialValue)
 
     }
 
@@ -88,7 +99,7 @@ abstract class MutexedValue<T> {
         }
     }
 
-    private class InitialValue<T>(initialValue: T) : Mutable<T>() {
+    private class InitialMutexedValue<T>(initialValue: T) : Mutable<T>() {
         private var value = initialValue
         private val mutex: Mutex = Mutex()
         override val isLocked get() = mutex.isLocked

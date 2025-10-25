@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.functional.MutexedValue
 import cn.fd.ratziel.module.item.ItemRegistry
-import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.util.ComponentConverter
@@ -48,7 +48,7 @@ class ComponentInterpreter : ItemInterpreter {
     override suspend fun interpret(stream: ItemStream) {
         // 序列化任务: 元素(解析过后的) -> 组件 -> 数据
         val element = stream.fetchProperty()
-        val serializationTasks = parallelSerialize(element, stream.data)
+        val serializationTasks = parallelSerialize(element, stream.item)
         // 等待所有序列化任务完成
         serializationTasks.joinAll()
     }
@@ -56,15 +56,15 @@ class ComponentInterpreter : ItemInterpreter {
     /**
      * 并行序列化
      */
-    suspend fun parallelSerialize(element: JsonElement, data: MutexedValue<out ItemData>) = coroutineScope {
+    suspend fun parallelSerialize(element: JsonElement, item: MutexedValue<NeoItem>) = coroutineScope {
         // 采用选中的组件 (提升效率)
         detectedComponents.map { integrated ->
             launch {
                 val generated = ComponentConverter.transformToNbtTag(integrated, element).getOrNull()
                 // 合并数据
-                if (generated as? NbtCompound != null) data.withValue {
+                if (generated as? NbtCompound != null) item.withValue {
                     // 合并标签 (覆盖原始数据)
-                    it.tag.merge(generated, true)
+                    it.data.tag.merge(generated, true)
                 }
             }
         }
