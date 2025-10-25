@@ -1,5 +1,6 @@
 package cn.fd.ratziel.common.block
 
+import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.contextual.AttachedContext
 import kotlinx.serialization.json.JsonElement
 import java.io.File
@@ -33,6 +34,21 @@ open class BlockContext(
     val attached = AttachedContext.newContext()
 
     /**
+     * 运行时是否复制参数上下文
+     */
+    var copyContext: Boolean = true
+
+    /**
+     * 开始执行时调用
+     */
+    internal var onStart: (ArgumentContext) -> Unit = { }
+
+    /**
+     * 结束执行时调用
+     */
+    internal var onEnd: (ArgumentContext, Any?) -> Any? = { _, v -> v }
+
+    /**
      * 获取选项
      */
     operator fun get(name: String): String? = this.options[name]?.toString()
@@ -41,6 +57,26 @@ open class BlockContext(
      * 设置选项
      */
     operator fun set(name: String, value: Any) = this.options.put(name, value)
+
+    /**
+     * 添加开始执行时的回调
+     */
+    fun onStart(action: (ArgumentContext) -> Unit) {
+        onStart = {
+            onStart(it)
+            action(it)
+        }
+    }
+
+    /**
+     * 添加结束执行时的回调
+     */
+    fun onEnd(action: (ArgumentContext, Any?) -> Any?) {
+        onEnd = { c, v ->
+            onEnd(c, v)
+            action(c, v)
+        }
+    }
 
     /**
      * 使用此上下文解析 [JsonElement]

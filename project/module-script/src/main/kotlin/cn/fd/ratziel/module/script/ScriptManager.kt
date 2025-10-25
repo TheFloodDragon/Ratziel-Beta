@@ -66,7 +66,7 @@ object ScriptManager {
         // 注册下 脚本元素加载器
         ElementLoader.loaders.addFirst(ScriptElementLoader)
         // 你也注册下
-        BlockScope.DefaultScope.register(ScriptBlock.Parser)
+        BlockScope.DEFAULT.register(ScriptBlock.Parser)
 
         // 读取脚本设置
         val conf = Settings.conf.getConfigurationSection("Script")!!

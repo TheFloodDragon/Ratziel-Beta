@@ -2,12 +2,12 @@
 
 package cn.fd.ratziel.core.util
 
-import cn.fd.ratziel.core.Priority
+import cn.fd.ratziel.core.Prioritized
 
-inline infix fun <T : Any> T.priority(priority: Byte) = Priority(priority, this)
+inline infix fun <T : Any> T.priority(priority: Byte) = Prioritized(priority, this)
 
-inline fun <T : Any> T.priority() = Priority(0, this)
+inline fun <T : Any> T.priority() = Prioritized(0, this)
 
-inline fun <T> Array<Priority<T>>.sortPriority(): List<T> = this.apply { sortBy { it.priority } }.map { it.value }
+inline fun <T> Array<Prioritized<T>>.sortPriority(): List<T> = this.apply { sortBy { it.priority } }.map { it.value }
 
-inline fun <T> Iterable<Priority<T>>.sortPriority(): List<T> = sortedBy { it.priority }.map { it.value }
+inline fun <T> Iterable<Prioritized<T>>.sortPriority(): List<T> = sortedBy { it.priority }.map { it.value }

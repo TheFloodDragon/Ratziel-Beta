@@ -28,7 +28,7 @@ abstract class ItemTrigger(vararg names: String) : SimpleTrigger(names) {
         @JvmStatic
         fun build(element: Element) = BlockBuilder.build(element) {
             // 关闭复制上下文, 原因: 上下文就用一次
-            options[BlockBuilder.OPTION_COPY_CONTEXT] = false
+            copyContext = false
             // 关闭显示脚本, 库库解析字符串为脚本
             options[ScriptBlock.EXPLICIT_PARSE_OPTION] = false
         }

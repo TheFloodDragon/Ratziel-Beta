@@ -1,6 +1,6 @@
 package cn.fd.ratziel.core.reactive
 
-import cn.fd.ratziel.core.Priority
+import cn.fd.ratziel.core.Prioritized
 import cn.fd.ratziel.core.util.sortPriority
 import java.util.concurrent.ConcurrentHashMap
 
@@ -20,7 +20,7 @@ open class SimpleTrigger(
     /**
      * 回应者表
      */
-    val respondersMap: MutableMap<Class<*>, Priority<Responder>> = ConcurrentHashMap()
+    val respondersMap: MutableMap<Class<*>, Prioritized<Responder>> = ConcurrentHashMap()
 
     /**
      * 获取指定类型的回应者
@@ -34,7 +34,7 @@ open class SimpleTrigger(
      * 绑定回应者
      */
     override fun bind(responder: Responder, priority: Byte) {
-        respondersMap[responder::class.java] = Priority(priority, responder)
+        respondersMap[responder::class.java] = Prioritized(priority, responder)
     }
 
     /**

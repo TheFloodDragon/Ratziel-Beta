@@ -3,7 +3,6 @@ package cn.fd.ratziel.common.block
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import kotlinx.serialization.json.JsonElement
-import taboolib.common5.cbool
 
 /**
  * BlockBuilder
@@ -13,15 +12,18 @@ import taboolib.common5.cbool
  */
 object BlockBuilder {
 
-    const val OPTION_COPY_CONTEXT = "copy-context"
-
     /**
      * 构建语句块
      */
     @JvmStatic
     @JvmOverloads
-    fun build(element: Element, scope: BlockScope = BlockScope.DefaultScope, contextApplier: BlockContext.() -> Unit = {}): ExecutableBlock {
-        return this.build(element.property, scope) {
+    fun build(element: Element, vararg scopes: BlockScope, contextApplier: BlockContext.() -> Unit = {}): ExecutableBlock {
+        val sequentialScopes = if (scopes.isNotEmpty()) {
+            scopes.map { scope ->
+                scope as? BlockScope.PrioritizedScope ?: BlockScope.PrioritizedScope(0, scope)
+            }.sortedBy { it.priority }
+        } else BlockScope.registry
+        return this.build(element.property, sequentialScopes) {
             workFile = element.file
             contextApplier()
         }
@@ -34,9 +36,11 @@ object BlockBuilder {
      * @return 解析后的语句块
      */
     @JvmStatic
-    private fun build(element: JsonElement, scope: BlockScope, contextApplier: BlockContext.() -> Unit): ExecutableBlock {
+    private fun build(element: JsonElement, scopes: Iterable<BlockScope>, contextApplier: BlockContext.() -> Unit): ExecutableBlock {
+        // 排序获取顺序解析器列表
+        val sequentialParsers = scopes.flatMap { it.sequentialParsers }
         // 创建调度器
-        val scheduler = BlockScheduler(scope.parsers)
+        val scheduler = BlockScheduler(sequentialParsers)
         // 带有调度器的上下文
         val context = BlockContext(scheduler)
         contextApplier(context)
@@ -68,18 +72,13 @@ object BlockBuilder {
 
     private class ExecutionEntrance(
         val run: ExecutableBlock,
-        val blockContext: BlockContext,
-        val onStart: ((ArgumentContext) -> Unit)? = null,
-        val onEnd: ((ArgumentContext, Any?) -> Any?)? = null,
+        val ctx: BlockContext,
     ) : ExecutableBlock {
-        // 运行时是否复制 ArgumentContext (默认为 true)
-        val copyContext = blockContext[OPTION_COPY_CONTEXT]?.cbool ?: true
-
         override fun execute(context: ArgumentContext): Any? {
-            val ctx = if (copyContext) context.copy() else context
-            onStart?.invoke(ctx)
-            val result = run.execute(ctx)
-            return onEnd?.invoke(ctx, result) ?: result
+            val context = if (ctx.copyContext) context.copy() else context
+            ctx.onStart.invoke(context)
+            val result = run.execute(context)
+            return ctx.onEnd.invoke(context, result) ?: result
         }
     }
 

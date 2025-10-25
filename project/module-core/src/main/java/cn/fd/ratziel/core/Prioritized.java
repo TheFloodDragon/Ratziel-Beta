@@ -5,18 +5,25 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * Priority - 优先级
+ * Prioritized - 优先级
  *
  * @author TheFloodDragon
  * @since 2024/4/14 12:18
  */
-public class Priority<T> {
+public class Prioritized<T> {
 
-    public Priority(@NotNull Byte priority, @NotNull T value) {
+    public Prioritized(@NotNull T value) {
+        this(DEFAULT_PRIORITY, value);
+    }
+
+    public Prioritized(@NotNull Byte priority, @NotNull T value) {
         this.priority = priority;
         this.value = value;
     }
 
+    /**
+     * 默认优先级
+     */
     public static final Byte DEFAULT_PRIORITY = 0;
 
     @NotNull
@@ -47,8 +54,8 @@ public class Priority<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Priority)
-            return Objects.equals(((Priority<?>) obj).priority, this.priority) && Objects.equals(((Priority<?>) obj).value, this.value);
+        if (obj instanceof Prioritized)
+            return Objects.equals(((Prioritized<?>) obj).priority, this.priority) && Objects.equals(((Prioritized<?>) obj).value, this.value);
         else return super.equals(obj);
     }
 

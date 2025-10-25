@@ -85,7 +85,7 @@ abstract class MutexedValue<out T> {
          * 创建一个 [MutexedValue.Mutable] 的实例
          */
         @JvmStatic
-        fun <T> initial(initialValue: T): Mutable<out T> = InitialMutexedValue(initialValue)
+        fun <T> initial(initialValue: T): Mutable<T> = InitialMutexedValue(initialValue)
 
     }
 
