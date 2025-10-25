@@ -16,12 +16,11 @@ import taboolib.library.configuration.ConfigurationSection
 object JexlLang : ScriptType, ScriptBootstrap {
 
     override val name = "Jexl"
-
+    override val languageId = "jexl"
     override val alias = arrayOf("Jexl3")
+    override val preference = ScriptPreference.INTERPRETATION_PREFERRED
 
     override val executor: ScriptExecutor get() = JexlScriptExecutor
-
-    override val preference = ScriptPreference.INTERPRETATION_PREFERRED
 
     override fun initialize(settings: ConfigurationSection) {
         ScriptManager.loadDependencies("jexl")

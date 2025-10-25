@@ -19,6 +19,11 @@ interface ScriptType {
     val name: String
 
     /**
+     * 语言ID
+     */
+    val languageId: String
+
+    /**
      * 别名
      */
     val alias: Array<out String>
@@ -75,11 +80,13 @@ interface ScriptType {
          */
         @JvmStatic
         @JvmOverloads
-        fun match(name: String, onlyActive: Boolean = true): ScriptType? {
+        fun match(name: String, onlyEnabled: Boolean = true): ScriptType? {
             val cleaned = name.filterNot { it.isWhitespace() }
-            return (if (onlyActive) enabledLanguages else registry)
+            return (if (onlyEnabled) enabledLanguages else registry)
                 .find { type ->
-                    type.name.equals(cleaned, true) || type.alias.any { it.equals(cleaned, true) }
+                    type.name.equals(cleaned, true)
+                            || type.languageId.equals(cleaned, true)
+                            || type.alias.any { it.equals(cleaned, true) }
                 }
         }
 

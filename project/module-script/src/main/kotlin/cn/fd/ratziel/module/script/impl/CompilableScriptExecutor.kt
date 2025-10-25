@@ -1,6 +1,9 @@
 package cn.fd.ratziel.module.script.impl
 
-import cn.fd.ratziel.module.script.api.*
+import cn.fd.ratziel.module.script.api.ScriptContent
+import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.api.ScriptExecutor
+import cn.fd.ratziel.module.script.api.ScriptSource
 import taboolib.common.platform.function.warning
 
 /**
@@ -30,7 +33,7 @@ interface CompilableScriptExecutor<T : Any> : ScriptExecutor {
      * 执行脚本
      */
     override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
-        return if (script is CompiledScript<*> && script.executor == this) {
+        return if (script is CompiledScriptImpl<*> && script.executor == this) {
             @Suppress("UNCHECKED_CAST")
             val compiled = script.compiled as T
             evalCompiled(compiled, environment) // 编译运行

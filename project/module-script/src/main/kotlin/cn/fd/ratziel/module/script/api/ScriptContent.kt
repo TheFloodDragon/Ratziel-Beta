@@ -31,7 +31,7 @@ interface ScriptContent {
  * @author TheFloodDragon
  * @since 2025/10/19 10:07
  */
-interface CompiledScript<T> : ScriptContent {
+interface CompiledScript : ScriptContent {
 
     /**
      * 编译此脚本的脚本执行器
@@ -39,9 +39,9 @@ interface CompiledScript<T> : ScriptContent {
     val executor: ScriptExecutor
 
     /**
-     * 编译后的脚本实例
+     * 评估此编译后的脚本
      */
-    val compiled: T
+    fun evaluate(environment: ScriptEnvironment): Result<Any?>
 
 }
 
