@@ -6,6 +6,7 @@ import cn.fd.ratziel.core.contextual.SimpleContext
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.ItemData
+import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemGenerator
 import cn.fd.ratziel.module.item.api.event.ItemGenerateEvent
 import cn.fd.ratziel.module.item.impl.SimpleData
@@ -51,11 +52,20 @@ class DefaultGenerator(
     /**
      * 异步生成物品
      */
-    fun buildAsync(context: ArgumentContext) = ItemElement.scope.async {
+    fun buildAsync(context: ArgumentContext, baseItem: NeoItem? = null) = ItemElement.scope.async {
         // 获取物品流
         val stream = compositor.produce().await() as NativeItemStream
         // 更新上下文
         stream.context = contextProvider.get().apply { putAll(context.args()) }
+
+        // 处理基物品
+        if (baseItem != null) {
+            stream.item.useValue {
+                data.material = baseItem.data.material
+                data.amount = baseItem.data.amount
+                data.tag.merge(baseItem.data.tag, true)
+            }
+        }
 
         // 呼出开始生成的事件
         ItemGenerateEvent.Pre(stream.identifier, this@DefaultGenerator, context, origin.property).call()
@@ -77,7 +87,6 @@ class DefaultGenerator(
     fun createNativeStream(sourceData: ItemData, context: ArgumentContext): NativeItemStream {
         // 生成基本物品 (本地源物品)
         val item = NativeSource.generateItem(origin, sourceData)
-            ?: throw IllegalStateException("Failed to generate item source!")
         // 创建物品流并返回
         return NativeItemStream(origin, item, context)
     }

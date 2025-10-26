@@ -146,7 +146,7 @@ open class RatzielItem private constructor(
          * [RatzielItem]
          */
         @JvmField
-        val neoItem: RatzielItem,
+        var neoItem: RatzielItem,
         /**
          * 源物品 [ItemStack]
          */
@@ -158,6 +158,9 @@ open class RatzielItem private constructor(
         @JvmField
         var overwrite: Boolean = true,
     ) : RatzielItem(neoItem.info, neoItem.data) {
+
+        override val info get() = neoItem.info
+        override val data get() = neoItem.data
 
         /**
          * 尝试重写 源物品 [source]

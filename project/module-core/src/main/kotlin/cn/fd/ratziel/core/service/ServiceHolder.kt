@@ -25,7 +25,7 @@ interface ServiceHolder {
      * @return 服务对象
      */
     @Throws(UnsupportedOperationException::class)
-    operator fun <T> set(type: Class<T>, value: T)
+    operator fun <T> set(type: Class<T>, value: T): Unit = throw UnsupportedOperationException("Service ${type.simpleName} cannot be set!")
 
     /**
      * 获取指定类型的服务对象

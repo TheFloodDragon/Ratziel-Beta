@@ -27,11 +27,11 @@ object NativeSource {
     /**
      * 生成物品
      */
-    fun generateItem(element: Element, sourceData: ItemData): RatzielItem? {
+    fun generateItem(element: Element, sourceData: ItemData = SimpleData()): RatzielItem {
         // 生成物品唯一标识符
         val identifier = element.identifier.destrict()
         // 确定版本
-        val property = (element.property as? JsonObject) ?: return null
+        val property = element.property
         val version = property.toString().digest("SHA-256")
         // 生成物品信息
         val info = RatzielItem.Info(identifier, version)

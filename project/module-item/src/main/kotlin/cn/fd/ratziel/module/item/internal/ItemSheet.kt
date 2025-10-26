@@ -22,6 +22,9 @@ object ItemSheet {
     /** 自定义数据组件名称 **/
     const val CUSTOM_DATA_COMPONENT = "minecraft:custom_data"
 
+    /** 附魔组件名称 **/
+    val ENCHANTMENT_COMPONENT by lazy { mappings["ItemEnchant" to "enchantments"]!! }
+
     @Awake(LifeCycle.LOAD)
     private fun initialize() {
         mappings = Mapper.initialize("internal/nbt-mappings.json")
@@ -41,7 +44,7 @@ object ItemSheet {
         fun initialize(path: String): BiMap<Pair<String, String>, String> {
             // Read from resources
             val bytes = runningResources[path] ?: throw IllegalStateException("File not found: $path!")
-            val json = Json.Default.parseToJsonElement(bytes.toString(Charsets.UTF_8))
+            val json = Json.parseToJsonElement(bytes.toString(Charsets.UTF_8))
             // Analyze to map
             return HashBiMap.create<Pair<String, String>, String>().apply {
                 for ((id, verMap) in json.jsonObject) {
