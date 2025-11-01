@@ -82,7 +82,6 @@ object ScriptManager {
             if (type is ScriptBootstrap) {
                 try {
                     type.initialize(settings)
-                    type.executor // 尝试是否能正常获取到执行器
                 } catch (ex: Exception) {
                     severe("Failed to enable script-language '${type.name}'!", ex.stackTraceToString())
                     continue // 跳过不启用

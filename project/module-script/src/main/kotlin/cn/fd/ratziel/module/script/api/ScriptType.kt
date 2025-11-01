@@ -53,14 +53,14 @@ interface ScriptType {
          */
         @JvmStatic
         @JvmOverloads
-        fun matchOrThrow(name: String, onlyEnabled: Boolean = true) = ScriptService.matchOrThrow(name)
+        fun matchOrThrow(name: String, onlyEnabled: Boolean = true) = ScriptService.matchOrThrow(name, onlyEnabled)
 
         /**
          * 匹配脚本类型
          */
         @JvmStatic
         @JvmOverloads
-        fun match(name: String, onlyEnabled: Boolean = true): ScriptType? = runCatching { matchOrThrow(name, onlyEnabled) }.getOrNull()
+        fun match(name: String, onlyEnabled: Boolean = true): ScriptType? = runCatching { this.matchOrThrow(name, onlyEnabled) }.getOrNull()
 
     }
 

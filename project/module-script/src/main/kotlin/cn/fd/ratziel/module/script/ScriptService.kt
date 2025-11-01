@@ -46,14 +46,14 @@ object ScriptService {
      * 匹配脚本类型
      */
     @JvmStatic
-    fun matchOrThrow(name: String, onlyEnabled: Boolean = true): ScriptType {
+    fun matchOrThrow(name: String, onlyEnabled: Boolean): ScriptType {
         val cleaned = name.filterNot { it.isWhitespace() }
         val find = registry.find { type ->
             type.name.equals(cleaned, true)
                     || type.languageId.equals(cleaned, true)
                     || type.alias.any { it.equals(cleaned, true) }
         } ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
-        // 当脚本语言为启用并且要求只匹配启用的脚本时抛出异常
+        // 当脚本语言未启用并且要求只匹配启用的脚本时抛出异常
         if (!find.isEnabled && onlyEnabled) {
             error("Script language ${find.name} is not enabled.")
         }
@@ -71,7 +71,8 @@ object ScriptService {
      */
     @JvmStatic
     internal fun enableLanguage(type: ScriptType): Boolean {
-        if (isEnabled(type) || runCatching { type.executor }.isSuccess) {
+        if (isEnabled(type)) return true
+        if (runCatching { type.executor }.isSuccess) {
             // 成功启用脚本, 初始化下一个
             enabledLanguages = enabledLanguages.plus(type)
             return true
