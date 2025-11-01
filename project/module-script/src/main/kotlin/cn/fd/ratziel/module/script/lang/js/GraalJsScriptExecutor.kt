@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.script.lang.js
 
+import cn.fd.ratziel.module.script.api.IntegratedScriptExecutor
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.impl.IntegratedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ReplenishingScript
 import cn.fd.ratziel.module.script.imports.GroupImports
 import org.graalvm.polyglot.Context

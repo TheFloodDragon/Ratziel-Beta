@@ -28,7 +28,7 @@ object InlineScriptResolver : ItemSectionResolver {
         // 创建脚本
         val scripts = analyzeParts(section.value.content).mapNotNull { (content, language) ->
             if (language != null) {
-                ScriptBlock(content, language.executor)
+                ScriptBlock(content, language)
             } else null
         }
         // 扔到缓存里
@@ -41,7 +41,7 @@ object InlineScriptResolver : ItemSectionResolver {
             if (language != null) {
                 // 获取脚本
                 val script = scriptsCatcher[context].getOrPut(content) {
-                    ScriptBlock(content, language.executor)
+                    ScriptBlock(content, language)
                 }
                 // 评估脚本并返回结果
                 script.execute(context).toString()
@@ -103,7 +103,7 @@ object InlineScriptResolver : ItemSectionResolver {
                 }
             }
             // 解析内联脚本
-            return ScriptBlock(content, (language ?: ScriptManager.defaultLanguage).executor)
+            return ScriptBlock(content, language ?: ScriptManager.defaultLanguage)
         }
 
     }

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.api
 
+import cn.fd.ratziel.module.script.lang.fluxon.FluxonLang
 import cn.fd.ratziel.module.script.lang.jexl.JexlLang
 import cn.fd.ratziel.module.script.lang.js.JavaScriptLang
 import cn.fd.ratziel.module.script.lang.kts.KotlinScriptingLang
@@ -74,6 +75,10 @@ interface ScriptType {
         /** Kotlin Scripting **/
         @JvmStatic
         val KOTLIN_SCRIPTING = register(KotlinScriptingLang)
+
+        /** Fluxon **/
+        @JvmStatic
+        val FLUXON = register(FluxonLang)
 
         /**
          * 匹配脚本类型

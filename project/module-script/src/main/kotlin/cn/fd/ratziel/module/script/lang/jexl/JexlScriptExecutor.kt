@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.script.lang.jexl
 
 import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
-import cn.fd.ratziel.module.script.impl.IntegratedScriptExecutor
 import org.apache.commons.jexl3.JexlBuilder
 import org.apache.commons.jexl3.JexlContext
 import org.apache.commons.jexl3.JexlEngine
