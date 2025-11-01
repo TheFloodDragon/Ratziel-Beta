@@ -30,7 +30,7 @@ object ScriptManager {
     /**
      * 默认使用的的脚本语言
      */
-    var defaultLanguage: ScriptType = ScriptType.JAVASCRIPT
+    var defaultLanguage: ScriptType = ScriptService.JAVASCRIPT
         private set
 
     /**
@@ -77,28 +77,30 @@ object ScriptManager {
             val settings = languages.getConfigurationSection(key)!!
             // 初始化脚本
             val enabled = settings.getBoolean("enabled", false)
-            if (enabled && type is ScriptBootstrap) {
+            if (!enabled) continue // 配置里禁用的直接跳过
+            // 尝试启动有启动器的脚本
+            if (type is ScriptBootstrap) {
                 try {
                     type.initialize(settings)
-                    // 成功启用脚本, 初始化下一个
-                    ScriptType.enabledLanguages = ScriptType.enabledLanguages.plus(type)
-                    continue
+                    type.executor // 尝试是否能正常获取到执行器
                 } catch (ex: Exception) {
-                    severe("Failed to enable script-language '${type.name}'!")
-                    ex.printStackTrace()
+                    severe("Failed to enable script-language '${type.name}'!", ex.stackTraceToString())
+                    continue // 跳过不启用
                 }
             }
+            // 启用脚本
+            ScriptService.enableLanguage(type)
         }
 
         // 脚本全禁用了直接爬
-        if (ScriptType.enabledLanguages.isEmpty()) {
+        if (ScriptService.enabledLanguages.isEmpty()) {
             warning("No script language is enabled! All scripts will not work!")
             return
         }
 
         // 设置默认语言
         this.defaultLanguage = conf.getString("default")?.let { ScriptType.match(it) }
-            ?: ScriptType.enabledLanguages.first().also {
+            ?: ScriptService.enabledLanguages.first().also {
                 warning("Default script language is not set or invalid! Using ${it.name} instead.")
             }
     }

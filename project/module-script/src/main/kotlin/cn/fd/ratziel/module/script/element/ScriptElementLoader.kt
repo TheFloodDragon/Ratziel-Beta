@@ -4,7 +4,7 @@ import cn.fd.ratziel.common.Workspace
 import cn.fd.ratziel.common.element.ElementLoader
 import cn.fd.ratziel.common.element.registry.ElementRegistry
 import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.module.script.api.ScriptType
+import cn.fd.ratziel.module.script.ScriptService
 import kotlinx.serialization.json.JsonNull
 import java.io.File
 
@@ -31,7 +31,7 @@ object ScriptElementLoader : ElementLoader {
      * 匹配脚本文件类型
      */
     @JvmStatic
-    fun matchType(extension: String) = ScriptType.registry.find { lang ->
+    fun matchType(extension: String) = ScriptService.registry.find { lang ->
         lang.extensions.any { it.equals(extension, true) }
     }
 

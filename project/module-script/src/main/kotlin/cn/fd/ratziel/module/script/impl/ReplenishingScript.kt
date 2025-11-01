@@ -1,7 +1,10 @@
 package cn.fd.ratziel.module.script.impl
 
 import cn.fd.ratziel.core.functional.replenish
-import cn.fd.ratziel.module.script.api.*
+import cn.fd.ratziel.module.script.api.ScriptCompiler
+import cn.fd.ratziel.module.script.api.ScriptEnvironment
+import cn.fd.ratziel.module.script.api.ScriptSource
+import cn.fd.ratziel.module.script.api.ValuedCompiledScript
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -52,17 +55,13 @@ abstract class ReplenishingScript<C, E : Any>(
     abstract fun eval(engine: E): Any?
 
     final override fun eval(environment: ScriptEnvironment): Any? {
-        try {
-            // 获取脚本引擎实例:
-            // 用脚本语言类型做钥匙 (key), 确保同一语言的脚本在同一环境中使用同一引擎实例.
-            val engine: E = environment.context.fetch(source.language) {
-                pop().also { initRuntime(it, environment) }
-            }
-            // 调用评估函数
-            return this.eval(engine)
-        } catch (e: Throwable) {
-            throw ScriptEvaluationException(this, e)
+        // 获取脚本引擎实例:
+        // 用脚本语言类型做钥匙 (key), 确保同一语言的脚本在同一环境中使用同一引擎实例.
+        val engine: E = environment.context.fetch(source.language) {
+            pop().also { initRuntime(it, environment) }
         }
+        // 调用评估函数
+        return this.eval(engine)
     }
 
 }

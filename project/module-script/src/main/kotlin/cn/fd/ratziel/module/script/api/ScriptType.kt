@@ -1,10 +1,6 @@
 package cn.fd.ratziel.module.script.api
 
-import cn.fd.ratziel.module.script.lang.fluxon.FluxonLang
-import cn.fd.ratziel.module.script.lang.jexl.JexlLang
-import cn.fd.ratziel.module.script.lang.js.JavaScriptLang
-import cn.fd.ratziel.module.script.lang.kts.KotlinScriptingLang
-import java.util.concurrent.CopyOnWriteArraySet
+import cn.fd.ratziel.module.script.ScriptService
 
 /**
  * ScriptTypes - 脚本类型
@@ -48,64 +44,23 @@ interface ScriptType {
     /**
      * 脚本是否启用
      */
-    val enabled get() = this in enabledLanguages
+    val isEnabled get() = ScriptService.isEnabled(this)
 
     companion object {
 
         /**
-         * 脚本类型注册表
+         * 匹配脚本类型 (无法找到时抛出异常)
          */
         @JvmStatic
-        val registry: MutableSet<ScriptType> = CopyOnWriteArraySet()
-
-        /**
-         * 启用的脚本语言列表
-         */
-        var enabledLanguages: Set<ScriptType> = emptySet()
-            internal set
-
-        /** JavaScript **/
-        @JvmStatic
-        val JAVASCRIPT = register(JavaScriptLang)
-
-        /** Jexl **/
-        @JvmStatic
-        val JEXL = register(JexlLang)
-
-        /** Kotlin Scripting **/
-        @JvmStatic
-        val KOTLIN_SCRIPTING = register(KotlinScriptingLang)
-
-        /** Fluxon **/
-        @JvmStatic
-        val FLUXON = register(FluxonLang)
+        @JvmOverloads
+        fun matchOrThrow(name: String, onlyEnabled: Boolean = true) = ScriptService.matchOrThrow(name)
 
         /**
          * 匹配脚本类型
          */
         @JvmStatic
         @JvmOverloads
-        fun match(name: String, onlyEnabled: Boolean = true): ScriptType? {
-            val cleaned = name.filterNot { it.isWhitespace() }
-            return (if (onlyEnabled) enabledLanguages else registry)
-                .find { type ->
-                    type.name.equals(cleaned, true)
-                            || type.languageId.equals(cleaned, true)
-                            || type.alias.any { it.equals(cleaned, true) }
-                }
-        }
-
-        /**
-         * 匹配脚本类型 (无法找到时抛出异常)
-         */
-        @JvmStatic
-        fun matchOrThrow(name: String) = match(name) ?: throw IllegalArgumentException("Couldn't find script-language by id: $name")
-
-
-        private fun <T : ScriptType> register(scriptType: T): T {
-            this.registry.add(scriptType)
-            return scriptType
-        }
+        fun match(name: String, onlyEnabled: Boolean = true): ScriptType? = runCatching { matchOrThrow(name, onlyEnabled) }.getOrNull()
 
     }
 

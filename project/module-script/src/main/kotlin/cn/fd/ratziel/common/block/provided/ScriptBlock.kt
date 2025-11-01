@@ -11,6 +11,7 @@ import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
 import cn.fd.ratziel.module.script.imports.GroupImports
+import cn.fd.ratziel.module.script.util.eval
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
@@ -50,11 +51,13 @@ open class ScriptBlock(
     override fun execute(context: ArgumentContext): Any? {
         // 执行脚本
         measureTimeMillisWithResult {
-            // 评估脚本
-            language.executor.eval(script, context.scriptEnv())
+            runCatching {
+                // 评估脚本
+                script.eval(context.scriptEnv())
+            }.onFailure { warning("Failed to execute script:", it.stackTraceToString()) }
         }.also { (time, result) ->
             debug("[TIME MARK] ScriptBlock(${script !is LiteralScriptContent}) executed in $time ms. Content: $source")
-            return result
+            return result.getOrNull()
         }
     }
 
@@ -64,9 +67,9 @@ open class ScriptBlock(
     open fun compileOrLiteral(language: ScriptType, script: String): ScriptContent {
         if (this.compile) {
             // 预编译脚本
-            val compiled = language.executor.build(ScriptSource.literal(script, language), createEnvironment())
-                .onFailure { warning("Failed to compile script:", it.stackTraceToString()) }
-                .getOrNull()
+            val compiled = runCatching {
+                language.executor.build(ScriptSource.literal(script, language), createEnvironment())
+            }.onFailure { warning("Failed to compile script:", it.stackTraceToString()) }.getOrNull()
             if (compiled != null) return compiled
         }
         return ScriptContent.literal(script, language)

@@ -1,12 +1,13 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package cn.fd.ratziel.module.script.util
 
 import cn.fd.ratziel.common.util.VariablesMap
 import cn.fd.ratziel.common.util.varsMap
 import cn.fd.ratziel.core.contextual.ArgumentContext
+import cn.fd.ratziel.module.script.api.CompiledScript
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.api.ScriptType
 
 fun ArgumentContext.scriptEnv(): ScriptEnvironment {
     return this.popOrPut(ScriptEnvironment::class.java) {
@@ -14,18 +15,15 @@ fun ArgumentContext.scriptEnv(): ScriptEnvironment {
     }
 }
 
-fun ScriptType.eval(content: ScriptContent, vars: VariablesMap): Any? {
-    return this.executor.eval(content, ScriptEnvironment(vars))
-}
+inline fun VariablesMap.toScriptEnv() = ScriptEnvironment(this)
 
-fun ScriptType.eval(content: String, vars: VariablesMap): Any? {
-    return this.eval(ScriptContent.literal(content, this), vars)
-}
-
-fun ScriptType.eval(content: String, vars: VariablesMap.() -> Unit): Any? {
-    return this.eval(content, VariablesMap().apply(vars))
-}
-
-fun ScriptType.compile(content: String, vars: VariablesMap): ScriptContent? {
-    return this.executor.build(ScriptSource.literal(content, this), ScriptEnvironment(vars)).getOrNull()
+/**
+ * 快速评估脚本 (带编译后的脚本检测)
+ */
+fun ScriptContent.eval(environment: ScriptEnvironment): Any? {
+    return if (this is CompiledScript) {
+        this.eval(environment)
+    } else {
+        this.source.language.executor.eval(this, environment)
+    }
 }

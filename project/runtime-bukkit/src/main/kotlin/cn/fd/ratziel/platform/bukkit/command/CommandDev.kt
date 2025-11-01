@@ -4,9 +4,11 @@ import cn.fd.ratziel.common.message.audienceSender
 import cn.fd.ratziel.common.message.sendMessage
 import cn.fd.ratziel.common.util.VariablesMap
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.ScriptService
+import cn.fd.ratziel.module.script.api.ScriptContent
+import cn.fd.ratziel.module.script.api.ScriptSource
 import cn.fd.ratziel.module.script.api.ScriptType
-import cn.fd.ratziel.module.script.util.compile
-import cn.fd.ratziel.module.script.util.eval
+import cn.fd.ratziel.module.script.util.toScriptEnv
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.*
@@ -39,29 +41,30 @@ object CommandDev {
     val runScript = subCommand {
         dynamic("language") {
             suggest {
-                ScriptType.enabledLanguages.map { it.languageId }
+                ScriptService.enabledLanguages.map { it.languageId }
             }
             dynamic {
                 execute<CommandSender> { sender, ctx, content ->
                     val language = ScriptType.match(ctx["language"]) ?: ScriptManager.defaultLanguage
-                    // 变量
-                    val vars = VariablesMap {
+                    // 脚本环境
+                    val environment = VariablesMap {
                         put("sender", sender)
                         if (sender is Player) {
                             put("player", sender)
                         }
-                    }
+                    }.toScriptEnv()
                     // 编译脚本
                     val script = if (content.trim().startsWith("-c", ignoreCase = true)) {
-                        language.compile(content.substringAfter("-c"), vars)
-                    } else null
+                        val source = ScriptSource.literal(content.substringAfter("-c"), language)
+                        runCatching {
+                            language.executor.build(source, environment)
+                        }.getOrElse { sender.sendMessage("Error: " + it.message); it.printStackTrace(); return@execute }
+                    } else ScriptContent.literal(content, language)
                     // 运行
                     measureTimedValue {
-                        if (script != null) {
-                            language.eval(script, vars)
-                        } else {
-                            language.eval(content, vars)
-                        }
+                        runCatching {
+                            language.executor.eval(script, environment)
+                        }.getOrElse { sender.sendMessage("Error: " + it.message); it.printStackTrace(); return@execute }
                     }.also {
                         sender.sendMessage("§7Result (${it.duration.inWholeMilliseconds}ms): ${it.value}")
                     }

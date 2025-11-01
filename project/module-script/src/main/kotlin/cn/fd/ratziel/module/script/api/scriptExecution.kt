@@ -14,7 +14,6 @@ interface ScriptCompiler {
      * @param  source 脚本源
      * @param environment 脚本环境
      */
-    @Throws(ScriptCompilationException::class)
     fun compile(source: ScriptSource, environment: ScriptEnvironment): CompiledScript
 
 }
@@ -33,7 +32,6 @@ interface ScriptEvaluator {
      * @param script      原始脚本
      * @param environment 脚本运行环境
      */
-    @Throws(ScriptEvaluationException::class)
     fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any?
 
 }
@@ -63,16 +61,17 @@ interface ScriptExecutor {
      * @param  source 脚本源
      * @param environment 脚本环境
      */
-    fun build(source: ScriptSource, environment: ScriptEnvironment = ScriptEnvironment()): Result<ScriptContent>
+    @Throws(ScriptCompilationException::class)
+    fun build(source: ScriptSource, environment: ScriptEnvironment = ScriptEnvironment()): ScriptContent
 
     /**
      * 评估脚本
      *
      * @param script      原始脚本
      * @param environment 脚本运行环境
-     * @throws ScriptException 当脚本评估中产生错误时抛出
      */
-    fun eval(script: ScriptContent, environment: ScriptEnvironment = ScriptEnvironment()): Result<Any?>
+    @Throws(ScriptEvaluationException::class)
+    fun eval(script: ScriptContent, environment: ScriptEnvironment = ScriptEnvironment()): Any?
 
 }
 
@@ -84,15 +83,27 @@ interface ScriptExecutor {
  */
 abstract class IntegratedScriptExecutor : ScriptExecutor, ScriptCompiler, ScriptEvaluator {
 
-    final override fun build(source: ScriptSource, environment: ScriptEnvironment): Result<ScriptContent> {
-        return runCatching { this.compile(source, environment) }
+    final override fun build(source: ScriptSource, environment: ScriptEnvironment): ScriptContent {
+        try {
+            return this.compile(source, environment)
+        } catch (ex: ScriptCompilationException) {
+            throw ex
+        } catch (cause: Throwable) {
+            throw ScriptCompilationException(cause, source, this)
+        }
     }
 
-    final override fun eval(script: ScriptContent, environment: ScriptEnvironment): Result<Any?> {
-        return if (script is CompiledScript) {
-            runCatching { eval(script, environment) }
-        } else {
-            runCatching { this.evaluate(script, environment) }
+    final override fun eval(script: ScriptContent, environment: ScriptEnvironment): Any? {
+        try {
+            return if (script is CompiledScript) {
+                script.eval(environment)
+            } else {
+                this.evaluate(script, environment)
+            }
+        } catch (ex: ScriptEvaluationException) {
+            throw ex
+        } catch (cause: Throwable) {
+            throw ScriptEvaluationException(cause, script, this)
         }
     }
 
