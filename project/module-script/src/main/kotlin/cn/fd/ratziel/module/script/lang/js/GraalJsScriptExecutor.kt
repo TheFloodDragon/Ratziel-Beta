@@ -1,8 +1,10 @@
 package cn.fd.ratziel.module.script.lang.js
 
+import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
+import cn.fd.ratziel.module.script.impl.IntegratedScriptExecutor
+import cn.fd.ratziel.module.script.impl.ReplenishingScript
 import cn.fd.ratziel.module.script.imports.GroupImports
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Engine
@@ -18,16 +20,13 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:56
  */
-object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>() {
-
-    private const val LANGUAGE_ID = "js"
-    private const val IMPORTS_MEMBER = "_imports_"
+class GraalJsScriptExecutor : IntegratedScriptExecutor() {
 
     /**
      * 依照 GraalVM Polyglot 的文档, 代码缓存的数据作为 [Engine] 实例的一部分.
-     * 使用全局的 [Engine] 进行代码缓存或许可以提升效率.
+     * 使用同一的 [Engine] 进行代码缓存或许可以提升效率.
      */
-    val globalEngine: Engine = Engine.newBuilder(LANGUAGE_ID)
+    val sharedEngine: Engine = Engine.newBuilder(LANGUAGE_ID)
         .allowExperimentalOptions(true)
         .option("js.ecmascript-version", "latest")
         .option("js.nashorn-compat", "true") // Nashorn 兼容模式
@@ -39,26 +38,27 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>() {
     fun newContext(): Context = Context.newBuilder(LANGUAGE_ID)
         .hostClassLoader(this::class.java.classLoader)
         .allowAllAccess(true) // 全开了算了
-        .engine(globalEngine) // 绑定全局的 Engine
+        .engine(sharedEngine) // 绑定分享的 Engine
         .build()
 
-    override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
+    override fun compile(source: ScriptSource, environment: ScriptEnvironment) =
+        CompiledGraalJsScript(
+            createSource(source),
+            environment, source,
+        )
+
+    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
         // 创建运行上下文
-        val runtime = initRuntime(environment)
+        val runtime = createRuntime(environment)
         // 评估脚本源 (不缓存)
-        return runtime.eval(createSource(source, false)).`as`(Any::class.java)
+        return runtime.eval(createSource(script.source, false))
+            .`as`(Any::class.java)
     }
 
-    override fun compile(source: ScriptSource, environment: ScriptEnvironment): CachedScript<Source, Context> {
-        return CachedScript(createSource(source), environment, this)
-    }
-
-    override fun evalCompiled(compiled: CachedScript<Source, Context>, environment: ScriptEnvironment): Any? {
-        val runtime = environment.context.fetch(this) { compiled().importBindings(environment) }
-        return runtime.eval(compiled.script).`as`(Any::class.java)
-    }
-
-    override fun initRuntime(environment: ScriptEnvironment): Context {
+    /**
+     * 创建运行时所需的上下文
+     */
+    fun createRuntime(environment: ScriptEnvironment): Context {
         // 初始化预热上下文
         val context = newContext().importBindings(environment)
 
@@ -78,45 +78,73 @@ object GraalJsScriptExecutor : EnginedScriptExecutor<Source, Context>() {
         val scriptImports = imports.scripts(JavaScriptLang)
         if (scriptImports.isNotEmpty()) {
             for (import in scriptImports) {
-                this.evaluate(import.compiled ?: continue, environment)
+                // 调用脚本执行器的评估函数
+                super.eval(import.compiled ?: continue, environment)
             }
         }
 
         return context
     }
 
-    /**
-     * 导入环境的绑定键
-     */
-    @JvmStatic
-    fun Context.importBindings(environment: ScriptEnvironment): Context = this.also { context ->
-        // 导入环境的绑定键
-        val environmentBindings = environment.bindings
-        val contextBindings = context.getBindings(LANGUAGE_ID)
-        if (environmentBindings.isNotEmpty()) {
-            for ((key, value) in environmentBindings) {
-                contextBindings.putMember(key, value)
-            }
+    override fun compiler() = GraalJsScriptExecutor()
+    override fun evaluator() = GraalJsScriptExecutor()
+
+    inner class CompiledGraalJsScript(
+        script: Source,
+        compilationEnv: ScriptEnvironment,
+        source: ScriptSource,
+    ) : ReplenishingScript<Source, Context>(script, compilationEnv, source, this) {
+        override fun preheat() = createRuntime(compilationEnv)
+        override fun eval(engine: Context): Any? = engine.eval(script).`as`(Any::class.java)
+        override fun initRuntime(engine: Context, runtimeEnv: ScriptEnvironment) {
+            // 导入运行时的环境绑定键
+            engine.importBindings(runtimeEnv)
         }
     }
 
-    /** 用来导入包和类的脚本 **/
-    @JvmStatic
-    private val importingScript by lazy {
-        internalSource(this::class.java.classLoader.getResourceAsStream("internal/graaljs.importer.js")!!.reader().readText())
-    }
+    companion object {
 
-    @JvmStatic
-    private fun createSource(source: ScriptSource, cached: Boolean = true): Source {
-        return Source.newBuilder(LANGUAGE_ID, source.content, "<eval>").cached(cached).build()
-    }
+        private const val LANGUAGE_ID = "js"
+        private const val IMPORTS_MEMBER = "_imports_"
 
-    /** 编译内部脚本源 **/
-    @JvmStatic
-    private fun internalSource(script: String): Source {
-        return Source.newBuilder(LANGUAGE_ID, script, "<internal-script>").internal(true).buildLiteral()
-    }
+        /**
+         * 默认脚本实例
+         */
+        @JvmField
+        val DEFAULT = GraalJsScriptExecutor()
 
-    override val language get() = JavaScriptLang
+        /**
+         * 导入环境的绑定键
+         */
+        @JvmStatic
+        fun Context.importBindings(environment: ScriptEnvironment): Context = this.also { context ->
+            // 导入环境的绑定键
+            val environmentBindings = environment.bindings
+            val contextBindings = context.getBindings(LANGUAGE_ID)
+            if (environmentBindings.isNotEmpty()) {
+                for ((key, value) in environmentBindings) {
+                    contextBindings.putMember(key, value)
+                }
+            }
+        }
+
+        /** 用来导入包和类的脚本 **/
+        @JvmStatic
+        private val importingScript by lazy {
+            internalSource(this::class.java.classLoader.getResourceAsStream("internal/graaljs.importer.js")!!.reader().readText())
+        }
+
+        @JvmStatic
+        private fun createSource(source: ScriptSource, cached: Boolean = true): Source {
+            return Source.newBuilder(LANGUAGE_ID, source.content, source.name ?: "<eval>").cached(cached).build()
+        }
+
+        /** 编译内部脚本源 **/
+        @JvmStatic
+        private fun internalSource(script: String): Source {
+            return Source.newBuilder(LANGUAGE_ID, script, "<internal-script>").internal(true).buildLiteral()
+        }
+
+    }
 
 }

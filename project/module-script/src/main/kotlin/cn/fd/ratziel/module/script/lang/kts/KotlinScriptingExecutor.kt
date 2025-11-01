@@ -1,13 +1,12 @@
 package cn.fd.ratziel.module.script.lang.kts
 
+import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
+import cn.fd.ratziel.module.script.api.ValuedCompiledScript
+import cn.fd.ratziel.module.script.impl.IntegratedScriptExecutor
 import cn.fd.ratziel.module.script.imports.GroupImports
-import javax.script.Compilable
-import javax.script.CompiledScript
-import javax.script.ScriptContext
-import javax.script.ScriptEngine
+import javax.script.*
 import kotlin.script.experimental.api.defaultImports
 
 /**
@@ -16,18 +15,19 @@ import kotlin.script.experimental.api.defaultImports
  * @author TheFloodDragon
  * @since 2025/10/3 14:17
  */
-object KotlinScriptingExecutor : CompilableScriptExecutor<CompiledScript> {
+object KotlinScriptingExecutor : IntegratedScriptExecutor() {
 
-    override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
-        return getEngine(environment).eval(source.content)
+    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
+        return getEngine(environment).eval(script.content)
     }
 
-    override fun compile(source: ScriptSource, environment: ScriptEnvironment): CompiledScript {
-        return (getEngine(environment) as Compilable).compile(source.content)
-    }
-
-    override fun evalCompiled(compiled: CompiledScript, environment: ScriptEnvironment): Any? {
-        return compiled.eval(getEngine(environment).context)
+    override fun compile(source: ScriptSource, environment: ScriptEnvironment): ValuedCompiledScript<CompiledScript> {
+        val script = (getEngine(environment) as Compilable).compile(source.content)
+        return object : ValuedCompiledScript<CompiledScript>(script, source, this) {
+            override fun eval(environment: ScriptEnvironment): Any? {
+                return script.eval(getEngine(environment).context)
+            }
+        }
     }
 
     /**
@@ -49,10 +49,11 @@ object KotlinScriptingExecutor : CompilableScriptExecutor<CompiledScript> {
 
         }
         // 设置环境的绑定键
-        engine.setBindings(environment.bindings, ScriptContext.ENGINE_SCOPE)
+        engine.setBindings(SimpleBindings(environment.bindings), ScriptContext.ENGINE_SCOPE)
         return engine
     }
 
-    override val language get() = KotlinScriptingLang
+    override fun compiler() = this
+    override fun evaluator() = this
 
 }

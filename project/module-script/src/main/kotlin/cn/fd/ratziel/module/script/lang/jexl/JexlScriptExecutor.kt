@@ -1,14 +1,14 @@
 package cn.fd.ratziel.module.script.lang.jexl
 
-import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.impl.CompilableScriptExecutor
+import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
+import cn.fd.ratziel.module.script.impl.IntegratedScriptExecutor
 import org.apache.commons.jexl3.JexlBuilder
 import org.apache.commons.jexl3.JexlContext
 import org.apache.commons.jexl3.JexlEngine
 import org.apache.commons.jexl3.JexlScript
 import javax.script.ScriptContext
+import javax.script.SimpleBindings
 
 /**
  * JexlScriptExecutor
@@ -16,7 +16,7 @@ import javax.script.ScriptContext
  * @author TheFloodDragon
  * @since 2025/4/25 17:37
  */
-object JexlScriptExecutor : CompilableScriptExecutor<JexlScript> {
+class JexlScriptExecutor : IntegratedScriptExecutor() {
 
     /**
      * Jexl引擎实例
@@ -27,44 +27,52 @@ object JexlScriptExecutor : CompilableScriptExecutor<JexlScript> {
         }.create()
     }
 
-    override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
-        return engine.createExpression(source.content).evaluate(WrappedJexlContext(environment))
+    override fun compile(source: ScriptSource, environment: ScriptEnvironment): CompiledScript {
+        // 创建Jexl脚本
+        val jexlScript = when (source) {
+            is FileScriptSource -> engine.createScript(source.file)
+            is LiteralScriptSource -> engine.createScript(source.content)
+        }
+        // 返回封装后的脚本
+        return object : ValuedCompiledScript<JexlScript>(jexlScript, source, this) {
+            override fun eval(environment: ScriptEnvironment): Any? {
+                return script.execute(WrappedJexlContext(environment))
+            }
+        }
     }
 
-    override fun compile(source: ScriptSource, environment: ScriptEnvironment): JexlScript {
-        return engine.createScript(source.content)
+    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
+        return engine.createExpression(script.source.content)
+            .evaluate(WrappedJexlContext(environment))
     }
-
-    override fun evalCompiled(compiled: JexlScript, environment: ScriptEnvironment): Any? {
-        return compiled.execute(WrappedJexlContext(environment))
-    }
-
-    override val language get() = JexlLang
 
     /**
      * 封装的 [JexlContext]
      */
-    class WrappedJexlContext(context: ImportedScriptContext) : JexlContext {
+    class WrappedJexlContext(val context: ImportedScriptContext) : JexlContext {
 
         constructor(environment: ScriptEnvironment) : this(
             ImportedScriptContext().apply {
-                setBindings(environment.bindings, ScriptContext.ENGINE_SCOPE)
+                setBindings(SimpleBindings(environment.bindings), ScriptContext.ENGINE_SCOPE)
             }
         )
 
-        val scriptContext = context
+        override fun get(name: String): Any? = context.getAttribute(name)
+        override fun has(name: String) = context.getAttributesScope(name) != -1
+        override fun set(name: String, value: Any?) = context.setAttribute(name, value, ScriptContext.ENGINE_SCOPE)
 
-        override fun get(name: String): Any? {
-            return scriptContext.getAttribute(name)
-        }
+    }
 
-        override fun has(name: String): Boolean {
-            return scriptContext.getAttributesScope(name) != -1
-        }
+    override fun compiler() = JexlScriptExecutor()
+    override fun evaluator() = JexlScriptExecutor()
 
-        override fun set(name: String, value: Any?) {
-            this.scriptContext.setAttribute(name, value, ScriptContext.ENGINE_SCOPE)
-        }
+    companion object {
+
+        /**
+         * 默认脚本执行器实例
+         */
+        @JvmField
+        val DEFAULT = JexlScriptExecutor()
 
     }
 

@@ -47,10 +47,10 @@ class ScriptFile(
     fun compile(environment: ScriptEnvironment): ScriptContent {
         // 保存编译后的脚本
         this.compiled = this.executor.build(
-            ScriptSource.filed(file), environment.apply {
+            ScriptSource.filed(this.file, this.language), environment.apply {
                 // 导入组
                 GroupImports.catcher(context) { it.combine(desc.imports) }
-            })
+            }).getOrThrow()
         return this.compiled
     }
 

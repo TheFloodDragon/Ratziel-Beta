@@ -22,20 +22,23 @@ class SimpleContext(
     }
 
     override fun <T : Any> popOrNull(type: Class<T>): T? {
-        // 迭代查找类
-        val find = this.list.find { type.isAssignableFrom(it.first) }
-            ?.second ?: return null
-        @Suppress("UNCHECKED_CAST")
-        return find as T
+        // 查找类
+        for (i in 0..list.lastIndex) {
+            val find = this.list[i]
+            @Suppress("UNCHECKED_CAST")
+            if (type.isAssignableFrom(find.first)) {
+                return find.second as T
+            }
+        }
+        return null
     }
 
     override fun put(element: Any) {
+        val type = element::class.java
+        // 删除所有此类型的对象或者父类型的对象
+        this.list.removeIf { it.first.isAssignableFrom(type) }
         // 插入新元素到开头, 以便新元素能被第一个获取到
-        this.list.add(0, element::class.java to element)
-    }
-
-    override fun putAll(elements: Iterable<Any>) {
-        this.list.addAll(elements.map { it::class.java to it })
+        this.list.add(0, type to element)
     }
 
     override fun remove(type: Class<*>) {

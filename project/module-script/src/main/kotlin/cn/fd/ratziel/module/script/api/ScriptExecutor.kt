@@ -11,9 +11,14 @@ import javax.script.ScriptException
 interface ScriptExecutor {
 
     /**
-     * 执行器属于的脚本语言类型
+     * 创建一个新的脚本编译器
      */
-    val language: ScriptType
+    fun compiler(): ScriptCompiler
+
+    /**
+     * 创建一个新的脚本评估器
+     */
+    fun evaluator(): ScriptEvaluator
 
     /**
      * 构建脚本
@@ -21,7 +26,7 @@ interface ScriptExecutor {
      * @param  source 脚本源
      * @param environment 脚本环境
      */
-    fun build(source: ScriptSource, environment: ScriptEnvironment = ScriptEnvironment()): ScriptContent
+    fun build(source: ScriptSource, environment: ScriptEnvironment = ScriptEnvironment()): Result<ScriptContent>
 
     /**
      * 评估脚本
@@ -30,6 +35,6 @@ interface ScriptExecutor {
      * @param environment 脚本运行环境
      * @throws ScriptException 当脚本评估中产生错误时抛出
      */
-    fun evaluate(script: ScriptContent, environment: ScriptEnvironment = ScriptEnvironment()): Any?
+    fun eval(script: ScriptContent, environment: ScriptEnvironment = ScriptEnvironment()): Result<Any?>
 
 }

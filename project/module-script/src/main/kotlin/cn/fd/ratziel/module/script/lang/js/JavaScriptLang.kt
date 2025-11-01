@@ -36,12 +36,12 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
         selectedExecutor = when (selected?.lowercase()) {
             "nashorn" -> {
                 ScriptManager.loadDependencies("nashorn") // 加载 Nashorn JavaScript 依赖
-                NashornScriptExecutor
+                NashornScriptExecutor.DEFAULT
             }
 
             "graaljs" -> {
                 ScriptManager.loadDependencies("graaljs") // 加载 GraalVM JavaScript 依赖
-                GraalJsScriptExecutor
+                GraalJsScriptExecutor.DEFAULT
             }
 
             else -> throw IllegalArgumentException("Unknown engine '$selected' selected.")

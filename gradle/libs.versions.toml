@@ -10,6 +10,7 @@ nbt = "93144b3a54"
 shadowPlugin = "9.0.1"
 nashorn = "15.4"
 graaljs = "24.2.1"
+fluxon = "ff933a4055"
 jexl = "3.4.0"
 
 [libraries]
@@ -28,6 +29,7 @@ adventure-platform-bukkit = { group = "net.kyori", name = "adventure-platform-bu
 nashorn = { group = "org.openjdk.nashorn", name = "nashorn-core", version.ref = "nashorn" }
 graalvm-polyglot = { group = "org.graalvm.polyglot", name = "polyglot", version.ref = "graaljs" }
 jexl = { group = "org.apache.commons", name = "commons-jexl3", version.ref = "jexl" }
+fluxon = { group = "com.github.TabooLib.fluxon", name = "core", version.ref = "fluxon" }
 # Taboolib
 taboolib-common = { group = "io.izzel.taboolib", name = "common", version.ref = "taboolib" }
 taboolib-common-env = { group = "io.izzel.taboolib", name = "common-env", version.ref = "taboolib" }

@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.script.lang.jexl
 
 import cn.fd.ratziel.module.script.ScriptManager
-import cn.fd.ratziel.module.script.api.ScriptExecutor
 import cn.fd.ratziel.module.script.api.ScriptPreference
 import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
@@ -20,7 +19,7 @@ object JexlLang : ScriptType, ScriptBootstrap {
     override val alias = arrayOf("Jexl3")
     override val preference = ScriptPreference.INTERPRETATION_PREFERRED
 
-    override val executor: ScriptExecutor get() = JexlScriptExecutor
+    override val executor get() = JexlScriptExecutor.DEFAULT
 
     override fun initialize(settings: ConfigurationSection) {
         ScriptManager.loadDependencies("jexl")

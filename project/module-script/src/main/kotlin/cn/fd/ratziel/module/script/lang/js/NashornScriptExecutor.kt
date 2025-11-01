@@ -1,16 +1,15 @@
 package cn.fd.ratziel.module.script.lang.js
 
 import cn.fd.ratziel.module.script.ScriptManager
+import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.impl.EnginedScriptExecutor
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
+import cn.fd.ratziel.module.script.impl.IntegratedScriptExecutor
+import cn.fd.ratziel.module.script.impl.ReplenishingScript
 import cn.fd.ratziel.module.script.imports.GroupImports
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
-import javax.script.Compilable
-import javax.script.CompiledScript
-import javax.script.ScriptContext
-import javax.script.ScriptEngine
+import javax.script.*
 
 /**
  * NashornScriptExecutor
@@ -18,33 +17,28 @@ import javax.script.ScriptEngine
  * @author TheFloodDragon
  * @since 2025/4/26 09:33
  */
-object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngine>() {
-
-    /**
-     * 直接运行脚本
-     */
-    override fun evalDirectly(source: ScriptSource, environment: ScriptEnvironment): Any? {
-        return initRuntime(environment).eval(source.content)
-    }
+class NashornScriptExecutor : IntegratedScriptExecutor() {
 
     /**
      * 编译原始脚本
      */
-    override fun compile(source: ScriptSource, environment: ScriptEnvironment): CachedScript<CompiledScript, ScriptEngine> {
-        val compiler = initRuntime(environment) as Compilable
+    override fun compile(source: ScriptSource, environment: ScriptEnvironment): CompiledNashornScript {
+        val compiler = createRuntime(environment) as Compilable
         val script = compiler.compile(source.content)
-        return CachedScript(script, environment, this)
+        return CompiledNashornScript(script, environment, source)
     }
 
     /**
-     * 运行编译后的脚本
+     * 直接运行脚本
      */
-    override fun evalCompiled(compiled: CachedScript<CompiledScript, ScriptEngine>, environment: ScriptEnvironment): Any? {
-        val runtime = environment.context.fetch(this) { compiled().importBindings(environment) }
-        return compiled.script.eval(runtime.context)
+    override fun evaluate(script: ScriptContent, environment: ScriptEnvironment): Any? {
+        return createRuntime(environment).eval(script.source.content)
     }
 
-    override fun initRuntime(environment: ScriptEnvironment): ScriptEngine {
+    /**
+     * 创建运行时所需的上下文
+     */
+    fun createRuntime(environment: ScriptEnvironment): ScriptEngine {
         // 初始化预热脚本引擎
         val engine = newEngine().importBindings(environment)
 
@@ -77,32 +71,57 @@ object NashornScriptExecutor : EnginedScriptExecutor<CompiledScript, ScriptEngin
         return engine
     }
 
-    /**
-     * 导入环境的绑定键
-     */
-    @JvmStatic
-    fun ScriptEngine.importBindings(environment: ScriptEnvironment): ScriptEngine = this.also { engine ->
-        // 设置环境的绑定键 (直接导入全局域)
-        engine.setBindings(environment.bindings, ScriptContext.GLOBAL_SCOPE)
+    override fun compiler() = NashornScriptExecutor()
+    override fun evaluator() = NashornScriptExecutor()
+
+    inner class CompiledNashornScript(
+        script: CompiledScript,
+        compilationEnv: ScriptEnvironment,
+        source: ScriptSource,
+    ) : ReplenishingScript<CompiledScript, ScriptEngine>(script, compilationEnv, source, this) {
+        override fun preheat() = createRuntime(compilationEnv)
+        override fun eval(engine: ScriptEngine): Any? = script.eval(engine.context)
+        override fun initRuntime(engine: ScriptEngine, runtimeEnv: ScriptEnvironment) {
+            // 导入运行时的环境绑定键
+            engine.importBindings(runtimeEnv)
+        }
     }
 
-    /**
-     * 创建脚本引擎实例
-     */
-    @JvmStatic
-    fun newEngine(): ScriptEngine {
-        // 创建脚本引擎
-        return scriptEngineFactory?.getScriptEngine(
-            arrayOf("-Dnashorn.args=--language=es6"), this::class.java.classLoader
-        ) ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript(Nashorn) Language")
-    }
 
-    val scriptEngineFactory by lazy {
-        ScriptManager.engineManager.engineFactories.find {
-            it.engineName == "OpenJDK Nashorn"
-        } as? NashornScriptEngineFactory
-    }
+    companion object {
 
-    override val language get() = JavaScriptLang
+        /**
+         * 默认脚本实例
+         */
+        @JvmField
+        val DEFAULT = NashornScriptExecutor()
+
+        /**
+         * 导入环境的绑定键
+         */
+        @JvmStatic
+        fun ScriptEngine.importBindings(environment: ScriptEnvironment): ScriptEngine = this.also { engine ->
+            // 设置环境的绑定键 (直接导入全局域)
+            engine.setBindings(SimpleBindings(environment.bindings), ScriptContext.GLOBAL_SCOPE)
+        }
+
+        /**
+         * 创建脚本引擎实例
+         */
+        @JvmStatic
+        fun newEngine(): ScriptEngine {
+            // 创建脚本引擎
+            return scriptEngineFactory?.getScriptEngine(
+                arrayOf("-Dnashorn.args=--language=es6"), this::class.java.classLoader
+            ) ?: throw NullPointerException("Cannot find ScriptEngine for JavaScript(Nashorn) Language")
+        }
+
+        val scriptEngineFactory by lazy {
+            ScriptManager.engineManager.engineFactories.find {
+                it.engineName == "OpenJDK Nashorn"
+            } as? NashornScriptEngineFactory
+        }
+
+    }
 
 }

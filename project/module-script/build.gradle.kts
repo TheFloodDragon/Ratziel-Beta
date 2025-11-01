@@ -5,8 +5,8 @@ dependencies {
     compileOnly(kotlin("scripting-jvm-host"))
     compileOnly(kotlin("scripting-compiler-embeddable"))
     compileOnly(kotlin("compiler-embeddable"))
-    // Kether: Taboolib
-    compileOnly(libs.taboolib.minecraft.kether)
+    // Fluxon
+    implementation(libs.fluxon) { isTransitive = false }
     // JavaScript: Nashorn Engine
     compileOnly(libs.nashorn)
     // JavaScript: GraalJs

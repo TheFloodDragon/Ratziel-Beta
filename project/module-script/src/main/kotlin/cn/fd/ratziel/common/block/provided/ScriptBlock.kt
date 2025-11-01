@@ -15,6 +15,7 @@ import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
+import taboolib.common.platform.function.warning
 import taboolib.common5.cbool
 
 /**
@@ -26,31 +27,31 @@ import taboolib.common5.cbool
 open class ScriptBlock(
     /** 脚本原始内容 */
     val source: String,
-    /** 脚本执行器 */
-    val executor: ScriptExecutor,
+    /** 脚本类型 */
+    val language: ScriptType,
     /** 是否需要编译脚本 **/
     needCompile: Boolean = true,
     /** 导入组 **/
     val imports: GroupImports? = null,
 ) : ExecutableBlock {
 
-    constructor(source: String, executor: ScriptExecutor, context: BlockContext) : this(
-        source, executor, context[CACHING_OPTION]?.cbool ?: true, GroupImports.catcher[context.attached]
+    constructor(source: String, language: ScriptType, context: BlockContext) : this(
+        source, language, context[CACHING_OPTION]?.cbool ?: true, GroupImports.catcher[context.attached]
     )
 
     /**
      * 是否编译脚本
      */
-    open val compile = needCompile && executor.language.preference.suggestingCompilation
+    open val compile = needCompile && language.preference.suggestingCompilation
 
     /** 编译后的脚本 **/
-    open val script: ScriptContent = compileOrLiteral(executor, source)
+    open val script: ScriptContent = compileOrLiteral(language, source)
 
     override fun execute(context: ArgumentContext): Any? {
         // 执行脚本
         measureTimeMillisWithResult {
             // 评估脚本
-            executor.evaluate(script, context.scriptEnv())
+            language.executor.eval(script, context.scriptEnv())
         }.also { (time, result) ->
             debug("[TIME MARK] ScriptBlock(${script !is LiteralScriptContent}) executed in $time ms. Content: $source")
             return result
@@ -60,17 +61,15 @@ open class ScriptBlock(
     /**
      * 尝试编译脚本, 若编译失败或者语言不支持空脚本环境, 则返回一个脚本文本内容
      */
-    open fun compileOrLiteral(executor: ScriptExecutor, script: String): ScriptContent {
+    open fun compileOrLiteral(language: ScriptType, script: String): ScriptContent {
         if (this.compile) {
             // 预编译脚本
-            try {
-                // 带环境的编译脚本
-                return executor.build(ScriptSource.literal(script), createEnvironment())
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            val compiled = language.executor.build(ScriptSource.literal(script, language), createEnvironment())
+                .onFailure { warning("Failed to compile script:", it.stackTraceToString()) }
+                .getOrNull()
+            if (compiled != null) return compiled
         }
-        return ScriptContent.literal(script)
+        return ScriptContent.literal(script, language)
     }
 
     open fun createEnvironment() = ScriptEnvironment().apply {
@@ -78,12 +77,12 @@ open class ScriptBlock(
         if (imports != null) GroupImports.catcher(context) { it.combine(imports) }
     }
 
-    override fun toString() = "ScriptBlock(executor=$executor, source=$source)"
+    override fun toString() = "ScriptBlock(language=$language, source=$source)"
 
     /**
      * ScriptFileBlock
      */
-    class ScriptFileBlock(val scriptFile: ScriptFile, context: BlockContext) : ScriptBlock(scriptFile.source, scriptFile.executor, context) {
+    class ScriptFileBlock(val scriptFile: ScriptFile, context: BlockContext) : ScriptBlock(scriptFile.source, scriptFile.language, context) {
         /**
          * 使用编译后的脚本
          */
@@ -107,7 +106,7 @@ open class ScriptBlock(
     object Parser : BlockParser {
 
         /** 当前执行器 **/
-        private val currentExecutor = AttachedContext.catcher(this) { ScriptManager.defaultLanguage.executor }
+        private val currentLanguage = AttachedContext.catcher(this) { ScriptManager.defaultLanguage }
 
         override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
             if (element is JsonObject) {
@@ -125,16 +124,16 @@ open class ScriptBlock(
                 // 检查开头 (是否为转换语言的)
                 if (entry != null) {
                     val type = ScriptType.matchOrThrow(entry.key.drop(1))
-                    // 记录当前执行器
-                    val lastExecutor = currentExecutor[context.attached]
-                    // 设置当前执行器
-                    currentExecutor[context.attached] = type.executor // 获取或创建执行器
+                    // 记录当前语言类型
+                    val lastLanguage = currentLanguage[context.attached]
+                    // 设置当前语言类型
+                    currentLanguage[context.attached] = type // 获取或创建执行器
                     val explicit = context[EXPLICIT_PARSE_OPTION] ?: true
                     context[EXPLICIT_PARSE_OPTION] = false // 切换语言的时候可以直接解析字符串为脚本
                     // 使用调度器解析结果
                     val result = context.parse(entry.value)
                     // 恢复上一个执行器
-                    currentExecutor[context.attached] = lastExecutor
+                    currentLanguage[context.attached] = lastLanguage
                     context[EXPLICIT_PARSE_OPTION] = explicit
                     // 返回结果
                     return result
@@ -164,7 +163,7 @@ open class ScriptBlock(
             } else if (element is JsonArray && element.all { it is JsonPrimitive }) {
                 content = element.joinToString("\n") { (it as JsonPrimitive).content }
             }
-            return if (content != null) ScriptBlock(content, currentExecutor[context.attached], context) else null
+            return if (content != null) ScriptBlock(content, currentLanguage[context.attached], context) else null
         }
 
     }

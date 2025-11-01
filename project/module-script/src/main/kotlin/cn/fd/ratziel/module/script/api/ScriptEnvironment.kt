@@ -1,8 +1,6 @@
 package cn.fd.ratziel.module.script.api
 
 import cn.fd.ratziel.core.contextual.AttachedContext
-import javax.script.Bindings
-import javax.script.SimpleBindings
 
 
 /**
@@ -15,10 +13,8 @@ open class ScriptEnvironment(
     /**
      * 脚本的绑定键
      */
-    var bindings: Bindings = SimpleBindings(),
+    var bindings: MutableMap<String, Any?> = linkedMapOf(),
 ) {
-
-    constructor(bindings: MutableMap<String, Any?>) : this(SimpleBindings(bindings))
 
     /**
      * 执行器的上下文

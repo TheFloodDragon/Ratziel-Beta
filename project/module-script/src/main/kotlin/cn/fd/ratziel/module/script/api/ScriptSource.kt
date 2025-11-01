@@ -11,17 +11,27 @@ import java.io.File
 sealed interface ScriptSource {
 
     /**
+     * 脚本名称
+     */
+    val name: String? get() = null
+
+    /**
      * 源码内容
      */
     val content: String
 
+    /**
+     * 语言类型
+     */
+    val language: ScriptType
+
     companion object {
 
         @JvmStatic
-        fun literal(content: String) = LiteralScriptSource(content)
+        fun literal(content: String, language: ScriptType, name: String? = null) = LiteralScriptSource(content, language, name)
 
         @JvmStatic
-        fun filed(file: File) = FileScriptSource(file)
+        fun filed(file: File, language: ScriptType) = FileScriptSource(file, language)
 
     }
 
@@ -35,6 +45,8 @@ sealed interface ScriptSource {
  */
 data class LiteralScriptSource(
     override val content: String,
+    override val language: ScriptType,
+    override val name: String?,
 ) : ScriptSource
 
 /**
@@ -46,5 +58,8 @@ data class LiteralScriptSource(
 data class FileScriptSource(
     /** 脚本所在文件 **/
     val file: File,
-    override val content: String = file.readText(),
-) : ScriptSource
+    override val language: ScriptType,
+) : ScriptSource {
+    override val name: String get() = file.name
+    override val content: String by lazy { file.readText() }
+}

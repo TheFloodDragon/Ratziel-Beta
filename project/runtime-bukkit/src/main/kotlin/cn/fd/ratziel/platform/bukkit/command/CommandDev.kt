@@ -44,7 +44,6 @@ object CommandDev {
             dynamic {
                 execute<CommandSender> { sender, ctx, content ->
                     val language = ScriptType.match(ctx["language"]) ?: ScriptManager.defaultLanguage
-                    val executor = language.executor
                     // 变量
                     val vars = VariablesMap {
                         put("sender", sender)
@@ -54,14 +53,14 @@ object CommandDev {
                     }
                     // 编译脚本
                     val script = if (content.trim().startsWith("-c", ignoreCase = true)) {
-                        executor.compile(content.substringAfter("-c"), vars)
+                        language.compile(content.substringAfter("-c"), vars)
                     } else null
                     // 运行
                     measureTimedValue {
                         if (script != null) {
-                            executor.eval(script, vars)
+                            language.eval(script, vars)
                         } else {
-                            executor.eval(content, vars)
+                            language.eval(content, vars)
                         }
                     }.also {
                         sender.sendMessage("§7Result (${it.duration.inWholeMilliseconds}ms): ${it.value}")

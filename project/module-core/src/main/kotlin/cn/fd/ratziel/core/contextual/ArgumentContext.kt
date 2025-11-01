@@ -55,7 +55,7 @@ interface ArgumentContext {
     /**
      * 添加多个参数
      */
-    fun putAll(elements: Iterable<Any>)
+    fun putAll(elements: Iterable<Any>) = elements.forEach { this.put(it) }
 
     /**
      * 删除一个参数
