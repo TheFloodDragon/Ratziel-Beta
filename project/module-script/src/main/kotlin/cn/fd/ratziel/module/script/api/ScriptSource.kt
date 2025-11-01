@@ -3,7 +3,7 @@ package cn.fd.ratziel.module.script.api
 import java.io.File
 
 /**
- * ScriptSource
+ * ScriptSource - 脚本源
  *
  * @author TheFloodDragon
  * @since 2025/10/2 18:51
@@ -27,9 +27,15 @@ sealed interface ScriptSource {
 
     companion object {
 
+        /**
+         * 创建纯文本型脚本源
+         */
         @JvmStatic
         fun literal(content: String, language: ScriptType, name: String? = null) = LiteralScriptSource(content, language, name)
 
+        /**
+         * 创建文件型脚本源
+         */
         @JvmStatic
         fun filed(file: File, language: ScriptType) = FileScriptSource(file, language)
 

@@ -23,8 +23,8 @@ class NashornScriptExecutor : IntegratedScriptExecutor() {
      * 编译原始脚本
      */
     override fun compile(source: ScriptSource, environment: ScriptEnvironment): CompiledNashornScript {
-        val compiler = createRuntime(environment) as Compilable
-        val script = compiler.compile(source.content)
+        val engine = createRuntime(environment)
+        val script = (engine as Compilable).compile(source.content)
         return CompiledNashornScript(script, environment, source)
     }
 
@@ -79,7 +79,13 @@ class NashornScriptExecutor : IntegratedScriptExecutor() {
         compilationEnv: ScriptEnvironment,
         source: ScriptSource,
     ) : ReplenishingScript<CompiledScript, ScriptEngine>(script, compilationEnv, source, this) {
-        override fun preheat() = createRuntime(compilationEnv)
+        override fun preheat() = createRuntime(compilationEnv).apply {
+            // 设置脚本名称
+            if (source.name != null) {
+                context.setAttribute("javax.script.filename", source.name, ScriptContext.GLOBAL_SCOPE)
+            }
+        }
+
         override fun eval(engine: ScriptEngine): Any? = script.eval(engine.context)
         override fun initRuntime(engine: ScriptEngine, runtimeEnv: ScriptEnvironment) {
             // 导入运行时的环境绑定键

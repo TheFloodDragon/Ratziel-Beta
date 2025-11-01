@@ -26,18 +26,12 @@ open class ItemTrigger(vararg names: String) : SimpleTrigger(names) {
      * @param identifier 物品标识符
      * @param element 带有语句内容的元素
      */
-    open fun build(identifier: Identifier, element: Element): ExecutableBlock = build(element)
-
-    companion object {
-
-        @JvmStatic
-        fun build(element: Element) = BlockBuilder.build(element) {
-            // 关闭复制上下文, 原因: 上下文就用一次
-            copyContext = false
+    open fun build(identifier: Identifier, element: Element): ExecutableBlock =
+        BlockBuilder.build(element) {
+            // 脚本名称
+            options[ScriptBlock.SCRIPT_NAME] = "${identifier.content}@trigger#${names.first()}"
             // 关闭显示脚本, 库库解析字符串为脚本
             options[ScriptBlock.EXPLICIT_PARSE_OPTION] = false
         }
-
-    }
 
 }

@@ -36,7 +36,7 @@ open class BlockContext(
     /**
      * 运行时是否复制参数上下文
      */
-    var copyContext: Boolean = true
+    var copyContext: Boolean = false
 
     /**
      * 开始执行时调用

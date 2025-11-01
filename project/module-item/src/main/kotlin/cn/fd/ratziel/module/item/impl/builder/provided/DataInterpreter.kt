@@ -237,7 +237,13 @@ class DataInterpreter : ItemInterpreter {
                 ?.getBy(*alias)?.jsonObject ?: return null
             return coroutineScope {
                 property.mapValues {
-                    async { BlockBuilder.build(element.copyOf(it.value), contextApplier = contextApplier) }
+                    async {
+                        BlockBuilder.build(element.copyOf(it.value)) {
+                            // 开启上下文复制, 原因: 语句块表中的语句块都是并行处理的, 不开启会干扰上下文并且导致并发异常
+                            copyContext = true
+                            contextApplier() // 通过参数配置
+                        }
+                    }
                 }.mapValues { it.value.await() }
             }
         }

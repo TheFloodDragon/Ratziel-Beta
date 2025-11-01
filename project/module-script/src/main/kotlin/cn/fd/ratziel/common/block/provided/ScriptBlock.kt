@@ -30,6 +30,8 @@ open class ScriptBlock(
     val source: String,
     /** 脚本类型 */
     val language: ScriptType,
+    /** 脚本名称 **/
+    val scriptName: String? = null,
     /** 是否需要编译脚本 **/
     needCompile: Boolean = true,
     /** 导入组 **/
@@ -37,7 +39,9 @@ open class ScriptBlock(
 ) : ExecutableBlock {
 
     constructor(source: String, language: ScriptType, context: BlockContext) : this(
-        source, language, context[CACHING_OPTION]?.cbool ?: true, GroupImports.catcher[context.attached]
+        source, language, context[SCRIPT_NAME],
+        context[CACHING_OPTION]?.cbool ?: true,
+        GroupImports.catcher[context.attached]
     )
 
     /**
@@ -95,7 +99,12 @@ open class ScriptBlock(
     companion object {
 
         /**
-         * 是否尽可能缓存脚本
+         * 脚本名称
+         */
+        const val SCRIPT_NAME = "script-name"
+
+        /**
+         * 是否尽可能缓存脚本 (默认为 true)
          */
         const val CACHING_OPTION = "caching-script"
 

@@ -50,7 +50,7 @@ class ScriptFile(
             ScriptSource.filed(this.file, this.language), environment.apply {
                 // 导入组
                 GroupImports.catcher(context) { it.combine(desc.imports) }
-            }).getOrThrow()
+            })
         return this.compiled
     }
 
