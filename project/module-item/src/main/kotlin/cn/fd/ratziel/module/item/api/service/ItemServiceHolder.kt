@@ -9,7 +9,7 @@ import cn.fd.ratziel.core.service.ServiceHolder
  * @author TheFloodDragon
  * @since 2025/8/25 11:28
  */
-class ItemServiceHolder(val identifier: Identifier) : ServiceHolder {
+class ItemServiceHolder(private val identifier: Identifier) : ServiceHolder {
 
     override fun <T> get(type: Class<T>): T? {
         return ItemServiceRegistry[type]?.get(identifier)

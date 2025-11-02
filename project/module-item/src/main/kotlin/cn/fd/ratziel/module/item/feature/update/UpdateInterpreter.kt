@@ -88,7 +88,7 @@ class UpdateInterpreter : ItemInterpreter {
             val update = source.service[ItemUpdate::class.java]
             // 服务不存在或者未启用则不更新
             if (update?.enabled != true) return null
-            // 检查版本是否相同 (版本相同就更新)
+            // 检查版本是否相同 (版本不相同就更新)
             if (source.info.hash == update.version) return null
 
             // 提前保存受保护的节点 (克隆)

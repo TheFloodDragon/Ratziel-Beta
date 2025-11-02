@@ -10,6 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.ComponentIteratorType
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.TextReplacementConfig
 
@@ -45,7 +46,7 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
             // Lore 处理
             val newLore = display.lore?.map {
                 // 处理并分割换行符
-                async { it.replaceText(replacementConfig).split("\\n") }
+                async { it.replaceText(replacementConfig).splitNewline() }
             }
 
             // 创建新显示组件
@@ -75,47 +76,42 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
         }
     }.build()
 
-    /**
-     * 分割组件
-     */
-    private fun Component.split(str: String): List<Component> {
-        // 没有换行符直接返回
-        if (!this.contains(Component.newline())) return listOf(this)
+    fun Component.splitNewline(): List<Component> {
+        // 没换行符你来干什么?
+        if (!this.contains(Component.newline())) return emptyList()
 
-        val result = mutableListOf<Component>()
-        var acc: Component = Component.empty()
+        val results = mutableListOf<Component>()
 
-        fun flushAcc() {
-            result.add(acc)
-            acc = Component.empty()
-        }
+        // 建队并填充
+        val deque = java.util.ArrayDeque<Component>()
+        ComponentIteratorType.BREADTH_FIRST.populate(this, deque, emptySet())
 
-        fun process(node: Component) {
-            // 文本组件
-            if (node is TextComponent) {
-                val content = node.content()
-                // 含有换行符
-                if (content.contains(str)) {
-                    // 分割遍历
-                    for (part in content.split(str)) {
-                        acc = acc.append(Component.text(part, node.style()))
+        var acc = Component.empty()
+
+        var current: Component? = deque.poll()
+        while (current != null) {
+            // 如果含有换行符, 则进行分割
+            if (current is TextComponent && current.contains(Component.newline())) {
+                val split = current.content().split('\n')
+                for (i in 0..<split.lastIndex) { // 不包括最后一个
+                    val part = split[i]
+                    if (part.isNotEmpty()) {
+                        acc = acc.append(Component.text(part, current.style())) // 抓换行符前的
                     }
-                    // 添加完刷新 (加入到结果并开始下一个acc)
-                    flushAcc()
-                } else {
-                    // 只是一个普通的文本组件, 直接附加
-                    acc = acc.append(node)
+                    // 加入到结果集, 并清空 acc
+                    results.add(acc)
+                    acc = Component.empty()
                 }
+                // 处理最后一个
+                acc = acc.append(Component.text(split.last(), current.style()))
             } else {
-                // 一般情况下直接附加并且往下遍历就行
-                acc = acc.append(node)
-                node.children().forEach { process(it) }
+                // 啥也不是, 累加吧
+                acc = acc.append(current)
             }
+            // 下一个
+            current = deque.poll()
         }
-
-        process(this)
-        flushAcc() // 最后要刷新次
-        return result
+        return results
     }
 
 }

@@ -96,8 +96,7 @@ object ScriptElementHandler : ElementHandler.Updatable {
         val scriptFile = ScriptFile(file, desc, language)
         file to scriptFile
     } catch (ex: Exception) {
-        warning("Failed to build script file $file!")
-        ex.printStackTrace(); null
+        warning("Failed to compile script file $file!", ex.stackTraceToString()); null
     }
 
 }

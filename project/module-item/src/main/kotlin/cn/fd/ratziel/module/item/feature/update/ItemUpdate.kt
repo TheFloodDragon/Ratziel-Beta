@@ -75,7 +75,11 @@ class ItemUpdate(
             // 注册服务
             ItemServiceRegistry.register(
                 ItemUpdate::class.java,
-                { service[it] },
+                {
+                    service.getOrPut(it) {
+                        runCatching { ItemUpdate(it) }.getOrNull()
+                    }
+                },
                 { k, v -> service[k] = v }
             )
         }

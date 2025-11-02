@@ -145,7 +145,7 @@ object ItemCommand {
             val items = inv.contents.filterNotNull()
             for (item in items) {
                 val sourced = RatzielItem.sourced(item, true) ?: continue
-                val update = ItemUpdate.service[sourced.identifier] ?: continue
+                val update = sourced.service[ItemUpdate::class.java] ?: continue
                 val success = update.update(sourced, player)
                 if (success) successCount++
             }
@@ -158,7 +158,7 @@ object ItemCommand {
                 sender.sendLang("Item-Update-NotFound")
                 return
             }
-            val update = ItemUpdate.service[sourced.identifier]
+            val update = sourced.service[ItemUpdate::class.java]
             if (update == null) {
                 sender.sendLang("Item-Update-Disabled", sourced.identifier.content)
                 return

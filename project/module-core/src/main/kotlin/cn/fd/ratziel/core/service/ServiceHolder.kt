@@ -42,3 +42,5 @@ interface ServiceHolder {
     }
 
 }
+
+inline operator fun <reified T> ServiceHolder.invoke(): T? = this[T::class.java]
