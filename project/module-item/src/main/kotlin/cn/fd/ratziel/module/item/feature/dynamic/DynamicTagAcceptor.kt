@@ -46,14 +46,14 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
             // Lore 处理
             val newLore = display.lore?.map {
                 // 处理并分割换行符
-                async { it.replaceText(replacementConfig).splitNewline() }
+                async { it.replaceText(replacementConfig) }
             }
 
             // 创建新显示组件
             val newDisplay = ItemDisplay(
                 newName?.await(),
                 newLocalName?.await(),
-                newLore?.awaitAll()?.flatten()
+                newLore?.awaitAll()
             )
 
             // 将新的组件写入物品
@@ -76,9 +76,9 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
         }
     }.build()
 
+    // TODO 不会
     fun Component.splitNewline(): List<Component> {
-        // 没换行符你来干什么?
-        if (!this.contains(Component.newline())) return emptyList()
+        if (this == Component.empty()) return listOf(this)
 
         val results = mutableListOf<Component>()
 
@@ -86,31 +86,35 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
         val deque = java.util.ArrayDeque<Component>()
         ComponentIteratorType.BREADTH_FIRST.populate(this, deque, emptySet())
 
-        var acc = Component.empty()
+        var acc: Component? = null
 
         var current: Component? = deque.poll()
         while (current != null) {
             // 如果含有换行符, 则进行分割
-            if (current is TextComponent && current.contains(Component.newline())) {
+            if (current is TextComponent && current.content().contains('\n')) {
                 val split = current.content().split('\n')
                 for (i in 0..<split.lastIndex) { // 不包括最后一个
                     val part = split[i]
                     if (part.isNotEmpty()) {
-                        acc = acc.append(Component.text(part, current.style())) // 抓换行符前的
+                        val perv = Component.text(part, current.style())
+                        acc = acc?.append(perv) ?: perv // 抓换行符前的
                     }
                     // 加入到结果集, 并清空 acc
-                    results.add(acc)
-                    acc = Component.empty()
+                    results.add(acc!!)
+                    acc = null
                 }
                 // 处理最后一个
-                acc = acc.append(Component.text(split.last(), current.style()))
+                val last = Component.text(split.last(), current.style())
+                acc = acc?.append(last) ?: last
             } else {
                 // 啥也不是, 累加吧
-                acc = acc.append(current)
+                acc = acc?.append(current) ?: current
             }
             // 下一个
             current = deque.poll()
         }
+        // 添加最后的 acc
+        results.add(acc!!)
         return results
     }
 
