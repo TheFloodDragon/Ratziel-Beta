@@ -5,65 +5,65 @@
       "kotlin.reflect.jvm.ReflectLambdaKt"
     ],
     "transitive": false,
-    "ignoreOptional": false,
+    "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": []
+    "scopes": [],
     "external": true
   },
   {
     "value": "org.jetbrains.kotlin:kotlin-compiler:$kotlinVersion",
     "transitive": false,
-    "ignoreOptional": false,
+    "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": []
+    "scopes": [],
     "external": true
   },
   {
     "value": "org.jetbrains.kotlin:kotlin-script-runtime:$kotlinVersion",
     "transitive": false,
-    "ignoreOptional": false,
+    "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": []
+    "scopes": [],
     "external": true
   },
   {
     "value": "org.jetbrains.kotlin:kotlin-scripting-common:$kotlinVersion",
     "transitive": false,
-    "ignoreOptional": false,
+    "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": []
+    "scopes": [],
     "external": true
   },
   {
     "value": "org.jetbrains.kotlin:kotlin-scripting-jvm:$kotlinVersion",
     "transitive": false,
-    "ignoreOptional": false,
+    "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": []
+    "scopes": [],
     "external": true
   },
   {
     "value": "org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlinVersion",
     "transitive": false,
-    "ignoreOptional": false,
+    "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": []
+    "scopes": [],
     "external": true
   },
   {
     "value": "org.jetbrains.kotlin:kotlin-scripting-compiler:$kotlinVersion",
     "transitive": false,
-    "ignoreOptional": false,
+    "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": []
+    "scopes": [],
     "external": true
   },
   {
     "value": "org.jetbrains.kotlin:kotlin-scripting-compiler-impl:$kotlinVersion",
     "transitive": false,
-    "ignoreOptional": false,
+    "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": []
+    "scopes": [],
     "external": true
   }
 ]

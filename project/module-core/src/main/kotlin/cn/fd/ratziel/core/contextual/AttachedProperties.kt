@@ -13,6 +13,8 @@ import kotlin.reflect.KProperty
  */
 open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> = emptyMap()) {
 
+    constructor(another: AttachedProperties) : this(another.properties.toMap())
+
     /**
      * 属性键
      */
@@ -81,11 +83,11 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
 
     }
 
-    open class Mutable(baseProperties: Iterable<AttachedProperties> = emptyList()) : AttachedProperties() {
+    open class Mutable(baseConfigurations: Iterable<AttachedProperties> = emptyList()) : AttachedProperties() {
 
         /** 可变属性 **/
         override val properties: MutableMap<Key<*>, Any?> = LinkedHashMap<Key<*>, Any?>().apply {
-            baseProperties.forEach { putAll(it.properties) }
+            baseConfigurations.forEach { putAll(it.properties) }
         }
 
         /**

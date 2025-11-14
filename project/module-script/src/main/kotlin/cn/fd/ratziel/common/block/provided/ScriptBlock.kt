@@ -1,14 +1,11 @@
 package cn.fd.ratziel.common.block.provided
 
 import cn.fd.ratziel.common.block.*
-import cn.fd.ratziel.common.block.conf.explicitScriptParsing
-import cn.fd.ratziel.common.block.conf.scriptCaching
-import cn.fd.ratziel.common.block.conf.scriptImporting
-import cn.fd.ratziel.common.block.conf.scriptName
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.util.resolveBy
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.*
+import cn.fd.ratziel.module.script.conf.*
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
 import cn.fd.ratziel.module.script.importing.GroupImports
@@ -32,22 +29,22 @@ open class ScriptBlock(
     val language: ScriptType,
     /** 脚本名称 **/
     val scriptName: String? = null,
-    /** 是否需要编译脚本 **/
-    needCompile: Boolean = true,
+    /** 脚本缓存等级 **/
+    cachingLevel: Int = 1,
     /** 导入组 **/
     val imports: GroupImports? = null,
 ) : ExecutableBlock {
 
     constructor(source: String, language: ScriptType, context: BlockContext) : this(
-        source, language, context[BlockConfigurationKeys.scriptName],
-        context[BlockConfigurationKeys.scriptCaching],
-        context[BlockConfigurationKeys.scriptImporting]
+        source, language, context[ScriptConfigurationKeys.scriptName],
+        context[ScriptConfigurationKeys.scriptCaching],
+        context[ScriptConfigurationKeys.scriptImporting]
     )
 
     /**
      * 是否编译脚本
      */
-    open val compile = needCompile && language.preference.suggestingCompilation
+    open val compile = cachingLevel >= 1 && language.preference.suggestingCompilation
 
     /** 编译后的脚本 **/
     open val script: ScriptContent = compileOrLiteral(language, source)
@@ -81,7 +78,7 @@ open class ScriptBlock(
 
     open fun createEnvironment() = ScriptEnvironment().apply {
         // 处理导入组
-        if (imports != null) GroupImports.catcher(context) { it.combine(imports) }
+        if (imports != null) GroupImports.catcher(context) { it + imports }
     }
 
     override fun toString() = "ScriptBlock(language=$language, source=$source)"
@@ -109,7 +106,7 @@ open class ScriptBlock(
                     val lines = importsSection.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
                     val imports = GroupImports.parse(lines, workFile()?.parentFile)
                     // 添加进上下文中
-                    scriptImporting.put(scriptImporting().combine(imports))
+                    context[ScriptConfigurationKeys.scriptImporting] = context[ScriptConfigurationKeys.scriptImporting] + imports
                 }
 
                 // 寻找切换脚本语言的
@@ -121,13 +118,13 @@ open class ScriptBlock(
                     val lastLanguage = currentLanguage()
                     // 设置当前语言类型
                     currentLanguage(type)
-                    val explicit = explicitScriptParsing()
-                    explicitScriptParsing(false) // 切换语言的时候可以直接解析字符串为脚本
+                    val explicit = context[ScriptConfigurationKeys.explicitScriptParsing]
+                    context[ScriptConfigurationKeys.explicitScriptParsing] = false // 切换语言的时候可以直接解析字符串为脚本
                     // 使用调度器解析结果
                     val result = context.parse(entry.value)
                     // 恢复上一个执行器
                     currentLanguage(lastLanguage)
-                    explicitScriptParsing(explicit)
+                    context[ScriptConfigurationKeys.explicitScriptParsing] = explicit
                     // 返回结果
                     return result
                 }
@@ -147,7 +144,7 @@ open class ScriptBlock(
             }
 
             // 默认情况下开启显式脚本, 不解析字符串类型
-            if (explicitScriptParsing()) return null
+            if (context[ScriptConfigurationKeys.explicitScriptParsing]) return null
 
             // 解析字符串脚本
             var content: String? = null

@@ -3,7 +3,6 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.fd.ratziel.common.block.BlockBuilder
 import cn.fd.ratziel.common.block.BlockContext
 import cn.fd.ratziel.common.block.ExecutableBlock
-import cn.fd.ratziel.common.block.conf.scriptCaching
 import cn.fd.ratziel.common.block.copyContext
 import cn.fd.ratziel.common.util.varsMap
 import cn.fd.ratziel.core.contextual.ArgumentContext
@@ -20,6 +19,8 @@ import cn.fd.ratziel.module.item.api.builder.ParallelInterpretation
 import cn.fd.ratziel.module.item.feature.action.ActionManager
 import cn.fd.ratziel.module.item.feature.action.ActionManager.trigger
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
+import cn.fd.ratziel.module.script.conf.ScriptConfigurationKeys
+import cn.fd.ratziel.module.script.conf.scriptCaching
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -68,7 +69,7 @@ class DataInterpreter : ItemInterpreter {
         launch {
             // 构建语句块
             val blocks = buildBlocks(element, PROPERTIES_ALIAS) {
-                scriptCaching(false) // 常量层只执行一次, 故禁用脚本缓存
+                this[ScriptConfigurationKeys.scriptCaching] = -1 // 常量层只执行一次, 故禁用脚本缓存
             } ?: return@launch
             // 执行所有语句块
             val results = executeBlocks(blocks, stream.context)

@@ -2,11 +2,12 @@ package cn.fd.ratziel.module.item.feature.action
 
 import cn.fd.ratziel.common.block.BlockBuilder
 import cn.fd.ratziel.common.block.ExecutableBlock
-import cn.fd.ratziel.common.block.conf.explicitScriptParsing
-import cn.fd.ratziel.common.block.conf.scriptName
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.reactive.SimpleTrigger
+import cn.fd.ratziel.module.script.conf.ScriptConfigurationKeys
+import cn.fd.ratziel.module.script.conf.explicitScriptParsing
+import cn.fd.ratziel.module.script.conf.scriptName
 
 /**
  * ItemTrigger
@@ -30,9 +31,9 @@ open class ItemTrigger(vararg names: String) : SimpleTrigger(names) {
     open fun build(identifier: Identifier, element: Element): ExecutableBlock =
         BlockBuilder.build(element) {
             // 脚本名称
-            scriptName("${identifier.content}@trigger#${names.first()}")
+            this[ScriptConfigurationKeys.scriptName] = "${identifier.content}@trigger#${names.first()}"
             // 关闭显示脚本, 库库解析字符串为脚本
-            explicitScriptParsing(false)
+            this[ScriptConfigurationKeys.explicitScriptParsing] = false
         }
 
 }

@@ -49,7 +49,7 @@ class ScriptFile(
         this.compiled = this.executor.build(
             ScriptSource.filed(this.file, this.language), environment.apply {
                 // 导入组
-                GroupImports.catcher(context) { it.combine(desc.imports) }
+                GroupImports.catcher(context) { it + desc.imports }
             })
         return this.compiled
     }

@@ -55,7 +55,7 @@ open class GroupImports(
      * 合并另一个导入组
      * @return 新的合并后的导入组
      */
-    fun combine(other: GroupImports) = GroupImports(
+    operator fun plus(other: GroupImports) = GroupImports(
         this.classes + other.classes,
         this.packages + other.packages,
         this.scripts + other.scripts
