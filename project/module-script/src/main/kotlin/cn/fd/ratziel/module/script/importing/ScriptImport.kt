@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.script.imports
+package cn.fd.ratziel.module.script.importing
 
 import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.element.ScriptElementHandler

@@ -3,7 +3,6 @@
 package cn.fd.ratziel.core.contextual
 
 import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
 /**
@@ -28,28 +27,10 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
         override fun toString() = "Key($name)"
     }
 
-    class CopiedKey<T>(
-        source: Key<T>,
-        getSourceProperties: AttachedProperties.() -> AttachedProperties?,
-    ) : Key<T>(
-        source.name,
-        {
-            val sourceProperties = getSourceProperties()
-            if (sourceProperties == null) source.getDefaultValue(this)
-            else sourceProperties[source]
-        }
-    )
-
     class PropertyKeyDelegate<T>(private val getDefaultValue: AttachedProperties.() -> T) : ReadOnlyProperty<Any?, Key<T>> {
         constructor(defaultValue: T) : this({ defaultValue })
 
         override operator fun getValue(thisRef: Any?, property: KProperty<*>): Key<T> = Key(property.name, getDefaultValue)
-    }
-
-    class PropertyKeyCopyDelegate<T>(
-        val source: Key<T>, val getSourceProperties: AttachedProperties.() -> AttachedProperties? = { null },
-    ) : ReadOnlyProperty<Any?, Key<T>> {
-        override operator fun getValue(thisRef: Any?, property: KProperty<*>): Key<T> = CopiedKey(source, getSourceProperties)
     }
 
     /**
@@ -97,11 +78,6 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
 
         @JvmStatic
         fun <T> key(getDefaultValue: AttachedProperties.() -> T) = PropertyKeyDelegate(getDefaultValue)
-
-        @JvmStatic
-        fun <T> keyCopy(
-            source: Key<T>, getSourceProperties: AttachedProperties.() -> AttachedProperties? = { null },
-        ) = PropertyKeyCopyDelegate(source, getSourceProperties)
 
     }
 
@@ -175,18 +151,6 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
 
         operator fun <K, V> Key<Map<K, V>>.invoke(vararg vs: Pair<K, V>) {
             append(vs.asIterable())
-        }
-
-        // for strings and list of strings that could be converted from other types
-
-        @JvmName("invoke_string_fqn_from_reflected_class")
-        operator fun Key<String>.invoke(kclass: KClass<*>) {
-            properties[this] = kclass.java.name
-        }
-
-        @JvmName("invoke_string_list_fqn_from_reflected_class")
-        operator fun Key<in List<String>>.invoke(vararg kclasses: KClass<*>) {
-            append(kclasses.map { it.java.name })
         }
 
         // direct manipulation - public - for usage in inline dsl methods and for extending dsl

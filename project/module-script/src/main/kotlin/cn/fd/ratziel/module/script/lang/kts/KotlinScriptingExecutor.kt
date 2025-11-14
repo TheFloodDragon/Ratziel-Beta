@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.lang.kts
 
 import cn.fd.ratziel.module.script.api.*
-import cn.fd.ratziel.module.script.imports.GroupImports
+import cn.fd.ratziel.module.script.importing.GroupImports
 import javax.script.*
 import javax.script.CompiledScript
 import kotlin.script.experimental.api.defaultImports

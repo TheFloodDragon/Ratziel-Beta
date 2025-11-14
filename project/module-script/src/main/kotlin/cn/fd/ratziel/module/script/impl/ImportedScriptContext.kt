@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.impl
 
 import cn.fd.ratziel.core.functional.synchronized
-import cn.fd.ratziel.module.script.imports.GroupImports
+import cn.fd.ratziel.module.script.importing.GroupImports
 import javax.script.ScriptContext
 import javax.script.SimpleScriptContext
 

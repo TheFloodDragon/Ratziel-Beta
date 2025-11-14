@@ -9,7 +9,7 @@ import cn.fd.ratziel.core.util.JarUtil
 import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.element.ScriptElementLoader
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
-import cn.fd.ratziel.module.script.imports.GroupImports
+import cn.fd.ratziel.module.script.importing.GroupImports
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake

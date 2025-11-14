@@ -5,7 +5,7 @@ import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
 import cn.fd.ratziel.module.script.impl.ReplenishingScript
-import cn.fd.ratziel.module.script.imports.GroupImports
+import cn.fd.ratziel.module.script.importing.GroupImports
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Engine
 import org.graalvm.polyglot.Source

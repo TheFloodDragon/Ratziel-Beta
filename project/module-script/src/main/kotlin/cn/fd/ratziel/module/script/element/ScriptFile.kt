@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.element
 
 import cn.fd.ratziel.module.script.api.*
-import cn.fd.ratziel.module.script.imports.GroupImports
+import cn.fd.ratziel.module.script.importing.GroupImports
 import java.io.File
 
 /**

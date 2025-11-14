@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.element
 
 import cn.fd.ratziel.core.util.resolveBy
-import cn.fd.ratziel.module.script.imports.GroupImports
+import cn.fd.ratziel.module.script.importing.GroupImports
 import taboolib.common.platform.function.warning
 import taboolib.module.configuration.Configuration
 import java.io.File

@@ -2,7 +2,7 @@ package cn.fd.ratziel.common.block.conf
 
 import cn.fd.ratziel.common.block.BlockConfigurationKeys
 import cn.fd.ratziel.core.contextual.AttachedProperties
-import cn.fd.ratziel.module.script.imports.GroupImports
+import cn.fd.ratziel.module.script.importing.GroupImports
 
 /**
  * scriptBlockConfiguration

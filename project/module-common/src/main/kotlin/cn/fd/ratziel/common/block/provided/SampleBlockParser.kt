@@ -48,9 +48,6 @@ object SampleBlockParser : BlockParser {
     }
 
     /**
-     * 区间采样
-     */
-    /**
      * 解析
      */
     override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {

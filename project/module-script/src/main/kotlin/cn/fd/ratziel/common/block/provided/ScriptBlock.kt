@@ -11,7 +11,7 @@ import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
-import cn.fd.ratziel.module.script.imports.GroupImports
+import cn.fd.ratziel.module.script.importing.GroupImports
 import cn.fd.ratziel.module.script.util.eval
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
