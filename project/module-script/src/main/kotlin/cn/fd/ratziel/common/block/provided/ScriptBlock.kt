@@ -1,10 +1,11 @@
 package cn.fd.ratziel.common.block.provided
 
-import cn.fd.ratziel.common.block.BlockContext
-import cn.fd.ratziel.common.block.BlockParser
-import cn.fd.ratziel.common.block.ExecutableBlock
+import cn.fd.ratziel.common.block.*
+import cn.fd.ratziel.common.block.conf.explicitScriptParsing
+import cn.fd.ratziel.common.block.conf.scriptCaching
+import cn.fd.ratziel.common.block.conf.scriptImporting
+import cn.fd.ratziel.common.block.conf.scriptName
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.util.resolveBy
 import cn.fd.ratziel.module.script.ScriptManager
 import cn.fd.ratziel.module.script.api.*
@@ -17,7 +18,6 @@ import kotlinx.serialization.json.*
 import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.warning
-import taboolib.common5.cbool
 
 /**
  * ScriptBlock
@@ -39,9 +39,9 @@ open class ScriptBlock(
 ) : ExecutableBlock {
 
     constructor(source: String, language: ScriptType, context: BlockContext) : this(
-        source, language, context[SCRIPT_NAME],
-        context[CACHING_OPTION]?.cbool ?: true,
-        GroupImports.catcher[context.attached]
+        source, language, context[BlockConfigurationKeys.scriptName],
+        context[BlockConfigurationKeys.scriptCaching],
+        context[BlockConfigurationKeys.scriptImporting]
     )
 
     /**
@@ -96,39 +96,20 @@ open class ScriptBlock(
         override val script = scriptFile.compile(createEnvironment())
     }
 
-    companion object {
-
-        /**
-         * 脚本名称
-         */
-        const val SCRIPT_NAME = "script-name"
-
-        /**
-         * 是否尽可能缓存脚本 (默认为 true)
-         */
-        const val CACHING_OPTION = "caching-script"
-
-        /**
-         * 显示脚本解析选项
-         */
-        const val EXPLICIT_PARSE_OPTION = "explicit-script-parse"
-
-    }
-
     object Parser : BlockParser {
 
         /** 当前执行器 **/
-        private val currentLanguage = AttachedContext.catcher(this) { ScriptManager.defaultLanguage }
+        private val currentLanguage by BlockConfigurationKeys.weakKey { ScriptManager.defaultLanguage }
 
-        override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? {
+        override fun parse(element: JsonElement, context: BlockContext): ExecutableBlock? = with(context) {
             if (element is JsonObject) {
                 // 寻找脚本导入并处理
                 val importsSection = element["imports"] ?: element["import"]
                 if (importsSection != null && importsSection is JsonArray) {
                     val lines = importsSection.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
-                    val imports = GroupImports.parse(lines, context.workFile?.parentFile)
+                    val imports = GroupImports.parse(lines, workFile()?.parentFile)
                     // 添加进上下文中
-                    GroupImports.catcher(context.attached) { it.combine(imports) }
+                    scriptImporting.put(scriptImporting().combine(imports))
                 }
 
                 // 寻找切换脚本语言的
@@ -137,16 +118,16 @@ open class ScriptBlock(
                 if (entry != null) {
                     val type = ScriptType.matchOrThrow(entry.key.drop(1))
                     // 记录当前语言类型
-                    val lastLanguage = currentLanguage[context.attached]
+                    val lastLanguage = currentLanguage()
                     // 设置当前语言类型
-                    currentLanguage[context.attached] = type // 获取或创建执行器
-                    val explicit = context[EXPLICIT_PARSE_OPTION] ?: true
-                    context[EXPLICIT_PARSE_OPTION] = false // 切换语言的时候可以直接解析字符串为脚本
+                    currentLanguage(type)
+                    val explicit = explicitScriptParsing()
+                    explicitScriptParsing(false) // 切换语言的时候可以直接解析字符串为脚本
                     // 使用调度器解析结果
                     val result = context.parse(entry.value)
                     // 恢复上一个执行器
-                    currentLanguage[context.attached] = lastLanguage
-                    context[EXPLICIT_PARSE_OPTION] = explicit
+                    currentLanguage(lastLanguage)
+                    explicitScriptParsing(explicit)
                     // 返回结果
                     return result
                 }
@@ -154,7 +135,7 @@ open class ScriptBlock(
                 // 寻找脚本文件执行
                 val fileSection = (element["script"] as? JsonPrimitive)?.contentOrNull
                 if (fileSection != null) {
-                    val file = context.workFile?.parentFile.resolveBy(fileSection)
+                    val file = workFile()?.parentFile.resolveBy(fileSection)
                     // 查找脚本文件
                     val scriptFile = ScriptElementHandler.scriptFiles[file]
                     if (scriptFile != null) {
@@ -166,7 +147,7 @@ open class ScriptBlock(
             }
 
             // 默认情况下开启显式脚本, 不解析字符串类型
-            if (context[EXPLICIT_PARSE_OPTION]?.cbool ?: true) return null
+            if (explicitScriptParsing()) return null
 
             // 解析字符串脚本
             var content: String? = null
@@ -175,7 +156,7 @@ open class ScriptBlock(
             } else if (element is JsonArray && element.all { it is JsonPrimitive }) {
                 content = element.joinToString("\n") { (it as JsonPrimitive).content }
             }
-            return if (content != null) ScriptBlock(content, currentLanguage[context.attached], context) else null
+            return if (content != null) ScriptBlock(content, currentLanguage(), context) else null
         }
 
     }

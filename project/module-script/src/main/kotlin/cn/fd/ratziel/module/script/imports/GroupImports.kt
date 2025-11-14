@@ -14,7 +14,7 @@ import java.io.File
  * @author TheFloodDragon
  * @since 2025/8/11 15:06
  */
-class GroupImports(
+open class GroupImports(
     /**
      * 导入的类
      */
@@ -62,6 +62,11 @@ class GroupImports(
     )
 
     override fun toString() = "GroupImports(classes=$classes, packages=$packages, scripts=$scripts)"
+
+    /**
+     * 默认脚本导入
+     */
+    object Default : GroupImports()
 
     companion object {
 

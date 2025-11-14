@@ -1,9 +1,7 @@
 package cn.fd.ratziel.common.block
 
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.core.contextual.AttachedContext
 import kotlinx.serialization.json.JsonElement
-import java.io.File
 
 /**
  * BlockContext
@@ -13,30 +11,10 @@ import java.io.File
  */
 open class BlockContext(
     /**
-     * 语句块调度器
+     * 语句块调度器 (仅解析时有用)
      */
     val scheduler: BlockParser? = null,
-) {
-
-    /**
-     * 工作文件
-     */
-    var workFile: File? = null
-
-    /**
-     * 选项
-     */
-    val options: MutableMap<String, Any> = hashMapOf()
-
-    /**
-     * 附加的上下文
-     */
-    val attached = AttachedContext.newContext()
-
-    /**
-     * 运行时是否复制参数上下文
-     */
-    var copyContext: Boolean = false
+) : BlockConfiguration() {
 
     /**
      * 开始执行时调用
@@ -47,16 +25,6 @@ open class BlockContext(
      * 结束执行时调用
      */
     internal var onEnd: (ArgumentContext, Any?) -> Any? = { _, v -> v }
-
-    /**
-     * 获取选项
-     */
-    operator fun get(name: String): String? = this.options[name]?.toString()
-
-    /**
-     * 设置选项
-     */
-    operator fun set(name: String, value: Any) = this.options.put(name, value)
 
     /**
      * 添加开始执行时的回调
@@ -87,6 +55,32 @@ open class BlockContext(
         return parsed ?: throw IllegalStateException("Could not parse block: $element")
     }
 
-    override fun toString() = "BlockContext(workFile=$workFile, scheduler=$scheduler)"
+    override fun toString() = "BlockContext(workFile=${workFile()}, scheduler=$scheduler)"
 
+}
+
+/**
+ * 执行入口
+ */
+internal class ExecutionEntrance(
+    val run: ExecutableBlock,
+    val ctx: BlockContext,
+) : ExecutableBlock {
+
+    init {
+        ctx.cleanWeakKeys() // 清空非运行时需要的键
+    }
+
+    override fun execute(context: ArgumentContext): Any? {
+        // 根据配置复制上下文(或者不复制)
+        val context = if (ctx[BlockConfigurationKeys.copyContext]) context.copy() else context
+        // 开始时调用
+        ctx.onStart.invoke(context)
+        // 执行并取得结果
+        val result = run.execute(context)
+        // 结束时调用
+        return ctx.onEnd.invoke(context, result) ?: result
+    }
+
+    override fun toString() = "$run;"
 }

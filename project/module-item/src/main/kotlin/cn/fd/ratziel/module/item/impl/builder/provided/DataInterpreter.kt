@@ -3,7 +3,8 @@ package cn.fd.ratziel.module.item.impl.builder.provided
 import cn.fd.ratziel.common.block.BlockBuilder
 import cn.fd.ratziel.common.block.BlockContext
 import cn.fd.ratziel.common.block.ExecutableBlock
-import cn.fd.ratziel.common.block.provided.ScriptBlock
+import cn.fd.ratziel.common.block.conf.scriptCaching
+import cn.fd.ratziel.common.block.copyContext
 import cn.fd.ratziel.common.util.varsMap
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.contextual.plus
@@ -67,7 +68,7 @@ class DataInterpreter : ItemInterpreter {
         launch {
             // 构建语句块
             val blocks = buildBlocks(element, PROPERTIES_ALIAS) {
-                options[ScriptBlock.CACHING_OPTION] = false // 常量层只执行一次
+                scriptCaching(false) // 常量层只执行一次, 故禁用脚本缓存
             } ?: return@launch
             // 执行所有语句块
             val results = executeBlocks(blocks, stream.context)
@@ -240,7 +241,7 @@ class DataInterpreter : ItemInterpreter {
                     async {
                         BlockBuilder.build(element.copyOf(it.value)) {
                             // 开启上下文复制, 原因: 语句块表中的语句块都是并行处理的, 不开启会干扰上下文并且导致并发异常
-                            copyContext = true
+                            copyContext(true)
                             contextApplier() // 通过参数配置
                         }
                     }

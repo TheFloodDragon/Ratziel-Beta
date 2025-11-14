@@ -1,6 +1,5 @@
 package cn.fd.ratziel.common.block
 
-import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.element.Element
 import kotlinx.serialization.json.JsonElement
 
@@ -24,7 +23,7 @@ object BlockBuilder {
             }.sortedBy { it.priority }
         } else BlockScope.registry
         return this.build(element.property, sequentialScopes) {
-            workFile = element.file
+            workFile(element.file)
             contextApplier()
         }
     }
@@ -68,18 +67,6 @@ object BlockBuilder {
             return result
         }
 
-    }
-
-    private class ExecutionEntrance(
-        val run: ExecutableBlock,
-        val ctx: BlockContext,
-    ) : ExecutableBlock {
-        override fun execute(context: ArgumentContext): Any? {
-            val context = if (ctx.copyContext) context.copy() else context
-            ctx.onStart.invoke(context)
-            val result = run.execute(context)
-            return ctx.onEnd.invoke(context, result) ?: result
-        }
     }
 
 }
