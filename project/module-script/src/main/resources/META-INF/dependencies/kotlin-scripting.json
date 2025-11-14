@@ -7,21 +7,15 @@
     "transitive": false,
     "ignoreOptional": false,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
+    "scopes": []
     "external": true
   },
   {
-    "value": "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion",
+    "value": "org.jetbrains.kotlin:kotlin-compiler:$kotlinVersion",
     "transitive": false,
     "ignoreOptional": false,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
+    "scopes": []
     "external": true
   },
   {
@@ -29,10 +23,7 @@
     "transitive": false,
     "ignoreOptional": false,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
+    "scopes": []
     "external": true
   },
   {
@@ -40,10 +31,7 @@
     "transitive": false,
     "ignoreOptional": false,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
+    "scopes": []
     "external": true
   },
   {
@@ -51,10 +39,7 @@
     "transitive": false,
     "ignoreOptional": false,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
+    "scopes": []
     "external": true
   },
   {
@@ -62,32 +47,23 @@
     "transitive": false,
     "ignoreOptional": false,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
+    "scopes": []
     "external": true
   },
   {
-    "value": "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:$kotlinVersion",
+    "value": "org.jetbrains.kotlin:kotlin-scripting-compiler:$kotlinVersion",
     "transitive": false,
     "ignoreOptional": false,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
+    "scopes": []
     "external": true
   },
   {
-    "value": "org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:$kotlinVersion",
+    "value": "org.jetbrains.kotlin:kotlin-scripting-compiler-impl:$kotlinVersion",
     "transitive": false,
     "ignoreOptional": false,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
+    "scopes": []
     "external": true
   }
 ]

@@ -1,5 +1,5 @@
 [versions]
-taboolib = "6.2.3-c573ce52"
+taboolib = "6.2.4-7f8b30dc"
 taboolibPlugin = "2.0.25"
 kotlin = "2.2.0"
 serialization = "1.9.0"
@@ -10,7 +10,7 @@ nbt = "93144b3a54"
 shadowPlugin = "9.0.1"
 nashorn = "15.4"
 graaljs = "24.2.1"
-fluxon = "ff933a4055"
+fluxon = "2c7248ab7d"
 jexl = "3.4.0"
 
 [libraries]

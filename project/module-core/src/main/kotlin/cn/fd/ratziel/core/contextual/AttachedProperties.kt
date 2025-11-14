@@ -39,7 +39,7 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
      */
     operator fun <T> get(key: Key<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return properties.getOrDefault(key, key.getDefaultValue) as T
+        return properties.getOrDefault(key) { key.getDefaultValue(this) } as T
     }
 
     /**

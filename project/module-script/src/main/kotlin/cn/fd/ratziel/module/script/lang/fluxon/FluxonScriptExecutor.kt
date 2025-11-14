@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.script.lang.fluxon
 import cn.fd.ratziel.module.script.api.*
 import org.tabooproject.fluxon.Fluxon
 import org.tabooproject.fluxon.parser.ParseResult
+import org.tabooproject.fluxon.runtime.FluxonRuntime
 import org.tabooproject.fluxon.runtime.Environment
 
 
@@ -30,11 +31,7 @@ class FluxonScriptExecutor : IntegratedScriptExecutor() {
     }
 
     fun ScriptEnvironment.asFluxonEnv(): Environment {
-        return Environment(
-            linkedMapOf(),
-            this.bindings,
-            linkedMapOf(),
-        )
+        return FluxonRuntime.getInstance().newEnvironment()
     }
 
     override fun compiler() = FluxonScriptExecutor()
