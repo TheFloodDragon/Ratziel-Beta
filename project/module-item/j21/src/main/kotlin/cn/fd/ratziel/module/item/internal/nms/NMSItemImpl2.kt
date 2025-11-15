@@ -2,17 +2,22 @@ package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtTag
+import cn.fd.ratziel.module.item.impl.component.ItemComponentData
+import cn.fd.ratziel.module.item.impl.component.NamespacedIdentifier
 import com.mojang.serialization.DataResult
 import net.minecraft.core.component.DataComponentPatch
-import net.minecraft.core.component.DataComponents
+import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.component.PatchedDataComponentMap
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.nbt.NBTBase
+import net.minecraft.resources.MinecraftKey
 import net.minecraft.resources.RegistryOps
 import net.minecraft.world.item.component.CustomData
 import org.bukkit.craftbukkit.v1_21_R4.CraftRegistry
 import taboolib.common.platform.function.severe
 import taboolib.library.reflex.ReflexClass
+import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
 /**
@@ -94,15 +99,60 @@ class NMSItemImpl2 : NMSItem() {
         }
     }
 
-    override fun getCustomTag(nmsItem: Any): NbtCompound? {
-        val customData = (nmsItem as NMSItemStack).get(DataComponents.CUSTOM_DATA)
-        @Suppress("DEPRECATION")
-        return customData?.unsafe?.let { NMSNbt.INSTANCE.fromNms(it) } as? NbtCompound
+    override fun getComponent(nmsItem: Any, namespacedKey: NamespacedIdentifier): ItemComponentData? {
+        @Suppress("UNCHECKED_CAST")
+        val dct = typeByName(namespacedKey) as DataComponentType<Any>
+        val data = (nmsItem as NMSItemStack).componentsPatch.get(dct) ?: return null
+        val input = data.getOrNull() ?: return null
+        // 返回数据
+        return ItemComponentData.lazyGetter(
+            namespacedKey,
+            data.isEmpty
+        ) {
+            try {
+                val result = if (isModern) {
+                    dct.codecOrThrow().encodeStart(modernOps, input)
+                } else {
+                    dct.codecOrThrow().encodeStart(nmsOps, input).map {
+                        NMSNbt.INSTANCE.fromNms(it)
+                    }
+                }
+                result.getPartialOrThrow { error("Failed to save: $it") }
+            } catch (ex: Throwable) {
+                severe(ex.stackTraceToString()); null
+            }
+        }
     }
 
-    override fun setCustomTag(nmsItem: Any, tag: NbtCompound) {
-        val customData = customDataConstructor.instance(NMSNbt.INSTANCE.toNms(tag))!! as CustomData
-        (nmsItem as NMSItemStack).set(DataComponents.CUSTOM_DATA, customData)
+    override fun setComponent(nmsItem: Any, data: ItemComponentData): Boolean {
+        @Suppress("UNCHECKED_CAST")
+        val dct = typeByName(data.type) as DataComponentType<Any>
+        // 删除组件 (仅明确标记删除)
+        if (data.removed) {
+            (nmsItem as NMSItemStack).remove(dct)
+        } else {
+            // 标签不存在则不处理
+            val input = data.tag ?: return false
+            val value = try {
+                val result = if (isModern) {
+                    dct.codecOrThrow().parse(modernOps, input)
+                } else {
+                    dct.codecOrThrow().parse(nmsOps, NMSNbt.INSTANCE.toNms(input) as NBTBase)
+                }
+                result.getPartialOrThrow { error("Failed to save: $it") }
+            } catch (ex: Throwable) {
+                severe(ex.stackTraceToString()); return false
+            }
+            // 设置组件
+            (nmsItem as NMSItemStack).set(dct, value)
+        }
+        return true
+    }
+
+    fun typeByName(namespacedKey: NamespacedIdentifier): DataComponentType<*> {
+        val minecraftKey = MinecraftKey.fromNamespaceAndPath(namespacedKey.namespace, namespacedKey.key)
+        return BuiltInRegistries.DATA_COMPONENT_TYPE.get(minecraftKey)
+            .getOrNull()?.value() ?: error("DataComponentType by '${minecraftKey.path}' not found.")
     }
 
     override fun copyItem(nmsItem: Any): Any {

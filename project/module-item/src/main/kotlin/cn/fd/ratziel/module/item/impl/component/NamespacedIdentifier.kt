@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.internal.serializers.NamespacedIdentifierSerializer
 import kotlinx.serialization.Serializable
+import taboolib.module.nms.MinecraftVersion
 
 /**
  * NamespacedIdentifier
@@ -23,9 +24,11 @@ data class NamespacedIdentifier(
     val key: String,
 ) {
 
+    val content get() = "$namespace:$key"
+
     constructor(namespacedKey: org.bukkit.NamespacedKey) : this(namespacedKey.namespace, namespacedKey.key)
 
-    override fun toString() = "$namespace:$key"
+    override fun toString() = content
 
     companion object {
 
@@ -46,6 +49,16 @@ data class NamespacedIdentifier(
         fun fromString(identifier: String): NamespacedIdentifier {
             return fromString(identifier, MINECRAFT)
                 ?: throw IllegalArgumentException("Unknown namespaced identifier: '$identifier'")
+        }
+
+        /**
+         * 从字符串中解析 [NamespacedIdentifier]
+         */
+        @JvmStatic
+        fun fromStringOrLegacy(identifier: String, version: Int): NamespacedIdentifier {
+            return if (MinecraftVersion.versionId >= version) {
+                fromString(identifier)
+            } else minecraft(identifier)
         }
 
         @JvmStatic

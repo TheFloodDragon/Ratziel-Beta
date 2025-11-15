@@ -1,7 +1,8 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.internal.ItemSheet
+import cn.fd.ratziel.module.item.impl.component.ItemComponentData
+import cn.fd.ratziel.module.item.impl.component.NamespacedIdentifier
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
@@ -28,14 +29,14 @@ abstract class NMSItem {
     abstract fun setTag(nmsItem: Any, tag: NbtCompound)
 
     /**
-     * 获取 [NMSItemStack] 的自定义 NBT (克隆)
+     * 获取组件数据
      */
-    abstract fun getCustomTag(nmsItem: Any): NbtCompound?
+    abstract fun getComponent(nmsItem: Any, namespacedKey: NamespacedIdentifier): ItemComponentData?
 
     /**
-     * 设置 [NMSItemStack] 的自定义 NBT (克隆)
+     * 设置组件数据
      */
-    abstract fun setCustomTag(nmsItem: Any, tag: NbtCompound)
+    abstract fun setComponent(nmsItem: Any, data: ItemComponentData): Boolean
 
     /**
      * 克隆 [NMSItemStack]
@@ -78,25 +79,20 @@ class NMSItemImpl1 : NMSItem() {
         nmsTagField.set(nmsItem, NMSNbt.INSTANCE.toNms(tag))
     }
 
-    override fun getCustomTag(nmsItem: Any): NbtCompound? {
-        val nmsTag = nmsTagField.get(nmsItem) ?: return null
-        @Suppress("UNCHECKED_CAST") val map = srcMapField.get(nmsTag) as? MutableMap<String, Any> ?: return null
-        val customTag = map[ItemSheet.CUSTOM_DATA_COMPONENT] as? NBTTagCompound12 ?: return null
-        return NMSNbt.INSTANCE.fromNms(customTag) as NbtCompound
+    override fun getComponent(nmsItem: Any, namespacedKey: NamespacedIdentifier): ItemComponentData? {
+        val root = getTag(nmsItem) ?: return null
+        val value = root[namespacedKey.key] // 低版本不管命名空间
+        return ItemComponentData.of(namespacedKey, value?.clone())
     }
 
-    override fun setCustomTag(nmsItem: Any, tag: NbtCompound) {
-        val nmsTag = nmsTagField.get(nmsItem) as? NBTTagCompound12 ?: return
-        @Suppress("UNCHECKED_CAST") val map = srcMapField.get(nmsTag) as? MutableMap<String, Any>
-        if (map != null) {
-            // 直接对源标签操作
-            map[ItemSheet.CUSTOM_DATA_COMPONENT] = NMSNbt.INSTANCE.toNms(tag)
-        } else {
-            val newTag = NbtCompound { put(ItemSheet.CUSTOM_DATA_COMPONENT, tag) }
-                .let { NMSNbt.INSTANCE.toNms(it) } // 转换成 NMS 形式
-            // 设置新的标签
-            nmsTagField.set(nmsItem, newTag)
+    override fun setComponent(nmsItem: Any, data: ItemComponentData): Boolean {
+        val root = getTag(nmsItem) ?: NbtCompound().also {
+            setTag(nmsItem, it) // 没有根标签则创建并设置
         }
+        val value = data.tag?.clone() ?: return false
+        // 设置组件数据
+        root[data.type.key] = value
+        return true
     }
 
     override fun copyItem(nmsItem: Any): Any {

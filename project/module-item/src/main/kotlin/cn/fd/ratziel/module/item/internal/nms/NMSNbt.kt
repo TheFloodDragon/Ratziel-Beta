@@ -18,12 +18,12 @@ interface NMSNbt {
     /**
      * [NbtTag] to [NBTTagCompound]
      */
-    fun toNms(data: NbtTag): Any
+    fun toNms(input: NbtTag): Any
 
     /**
      * [NBTTagCompound] to [NbtTag]
      */
-    fun fromNms(nmsData: Any): NbtTag
+    fun fromNms(input: Any): NbtTag
 
     companion object {
 
@@ -46,35 +46,35 @@ interface NMSNbt {
 @Suppress("unused", "DuplicatedCode")
 class NMSNbtImpl2 : NMSNbt {
 
-    override fun toNms(data: NbtTag): NbtBase = when (data) {
-        is NbtString -> NBTTagString.valueOf(data.content)
-        is NbtInt -> NBTTagInt.valueOf(data.content)
-        is NbtByte -> NBTTagByte.valueOf(data.content)
-        is NbtDouble -> NBTTagDouble.valueOf(data.content)
-        is NbtFloat -> NBTTagFloat.valueOf(data.content)
-        is NbtLong -> NBTTagLong.valueOf(data.content)
-        is NbtShort -> NBTTagShort.valueOf(data.content)
-        is NbtIntArray -> NBTTagIntArray(data.content.copyOf())
-        is NbtByteArray -> NBTTagByteArray(data.content.copyOf())
-        is NbtLongArray -> NBTTagLongArray(data.content.copyOf())
-        is NbtList -> NBTTagList().apply { data.forEach { add(toNms(it)) } }
-        is NbtCompound -> NBTTagCompound().apply { data.forEach { put(it.key, toNms(it.value)) } }
+    override fun toNms(input: NbtTag): NbtBase = when (input) {
+        is NbtString -> NBTTagString.valueOf(input.content)
+        is NbtInt -> NBTTagInt.valueOf(input.content)
+        is NbtByte -> NBTTagByte.valueOf(input.content)
+        is NbtDouble -> NBTTagDouble.valueOf(input.content)
+        is NbtFloat -> NBTTagFloat.valueOf(input.content)
+        is NbtLong -> NBTTagLong.valueOf(input.content)
+        is NbtShort -> NBTTagShort.valueOf(input.content)
+        is NbtIntArray -> NBTTagIntArray(input.content.copyOf())
+        is NbtByteArray -> NBTTagByteArray(input.content.copyOf())
+        is NbtLongArray -> NBTTagLongArray(input.content.copyOf())
+        is NbtList -> NBTTagList().apply { input.forEach { add(toNms(it)) } }
+        is NbtCompound -> NBTTagCompound().apply { input.forEach { put(it.key, toNms(it.value)) } }
     }
 
-    override fun fromNms(nmsData: Any): NbtTag = when (nmsData) {
-        is NBTTagString -> NbtString(nmsData.asString)
-        is NBTTagInt -> NbtInt(nmsData.asInt)
-        is NBTTagByte -> NbtByte(nmsData.asByte)
-        is NBTTagDouble -> NbtDouble(nmsData.asDouble)
-        is NBTTagFloat -> NbtFloat(nmsData.asFloat)
-        is NBTTagLong -> NbtLong(nmsData.asLong)
-        is NBTTagShort -> NbtShort(nmsData.asShort)
-        is NBTTagByteArray -> NbtByteArray(nmsData.asByteArray.copyOf())
-        is NBTTagIntArray -> NbtIntArray(nmsData.asIntArray.copyOf())
-        is NBTTagLongArray -> NbtLongArray(nmsData.asLongArray.copyOf())
-        is NBTTagList -> NbtList { nmsData.forEach { add(fromNms(it)) } }
-        is NBTTagCompound -> NbtCompound { nmsData.allKeys.forEach { put(it, fromNms(nmsData.get(it)!!)) } }
-        else -> throw UnsupportedTypeException(nmsData::class.java)
+    override fun fromNms(input: Any): NbtTag = when (input) {
+        is NBTTagString -> NbtString(input.asString)
+        is NBTTagInt -> NbtInt(input.asInt)
+        is NBTTagByte -> NbtByte(input.asByte)
+        is NBTTagDouble -> NbtDouble(input.asDouble)
+        is NBTTagFloat -> NbtFloat(input.asFloat)
+        is NBTTagLong -> NbtLong(input.asLong)
+        is NBTTagShort -> NbtShort(input.asShort)
+        is NBTTagByteArray -> NbtByteArray(input.asByteArray.copyOf())
+        is NBTTagIntArray -> NbtIntArray(input.asIntArray.copyOf())
+        is NBTTagLongArray -> NbtLongArray(input.asLongArray.copyOf())
+        is NBTTagList -> NbtList { input.forEach { add(fromNms(it)) } }
+        is NBTTagCompound -> NbtCompound { input.allKeys.forEach { put(it, fromNms(input.get(it)!!)) } }
+        else -> throw UnsupportedTypeException(input::class.java)
     }
 
 }
@@ -105,22 +105,22 @@ class NMSNbtImpl1 : NMSNbt {
 
     private val new = MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_15)
 
-    override fun toNms(data: NbtTag): Any = when (data) {
-        is NbtString -> if (new) NBTTagString15.a(data.content) else NBTTagString12(data.content)
-        is NbtInt -> if (new) NBTTagInt15.a(data.content) else NBTTagInt12(data.content)
-        is NbtByte -> if (new) NBTTagByte15.a(data.content) else NBTTagByte12(data.content)
-        is NbtDouble -> if (new) NBTTagDouble15.a(data.content) else NBTTagDouble12(data.content)
-        is NbtFloat -> if (new) NBTTagFloat15.a(data.content) else NBTTagFloat12(data.content)
-        is NbtLong -> if (new) NBTTagLong15.a(data.content) else NBTTagLong12(data.content)
-        is NbtShort -> if (new) NBTTagShort15.a(data.content) else NBTTagShort12(data.content)
-        is NbtIntArray -> NBTTagIntArray12(data.content.copyOf())
-        is NbtByteArray -> NBTTagByteArray12(data.content.copyOf())
-        is NbtLongArray -> NBTTagLongArray12(data.content.copyOf())
+    override fun toNms(input: NbtTag): Any = when (input) {
+        is NbtString -> if (new) NBTTagString15.a(input.content) else NBTTagString12(input.content)
+        is NbtInt -> if (new) NBTTagInt15.a(input.content) else NBTTagInt12(input.content)
+        is NbtByte -> if (new) NBTTagByte15.a(input.content) else NBTTagByte12(input.content)
+        is NbtDouble -> if (new) NBTTagDouble15.a(input.content) else NBTTagDouble12(input.content)
+        is NbtFloat -> if (new) NBTTagFloat15.a(input.content) else NBTTagFloat12(input.content)
+        is NbtLong -> if (new) NBTTagLong15.a(input.content) else NBTTagLong12(input.content)
+        is NbtShort -> if (new) NBTTagShort15.a(input.content) else NBTTagShort12(input.content)
+        is NbtIntArray -> NBTTagIntArray12(input.content.copyOf())
+        is NbtByteArray -> NBTTagByteArray12(input.content.copyOf())
+        is NbtLongArray -> NBTTagLongArray12(input.content.copyOf())
         is NbtList -> NBTTagList12().also { src ->
             // 反射获取字段：
             // private final List<NbtBase> list;
             val list = nbtTagListGetter.get<MutableList<Any>>(src)
-            val dataList = data.content
+            val dataList = input.content
             if (dataList.isNotEmpty()) {
                 dataList.forEach { list.add(toNms(it)) }
                 // 修改 NBTTagList 的类型，不改他妈这条 List 作废，天坑。。。
@@ -132,24 +132,24 @@ class NMSNbtImpl1 : NMSNbt {
             // 反射获取字段：
             // private final Map<String, NbtBase> map
             val map = nbtTagCompoundGetter.get<MutableMap<String, Any>>(src)
-            data.forEach { map[it.key] = toNms(it.value) }
+            input.forEach { map[it.key] = toNms(it.value) }
         }
     }
 
-    override fun fromNms(nmsData: Any): NbtTag = when (nmsData) {
-        is NBTTagString12 -> NbtString(nbtTagStringGetter.get(nmsData))
-        is NBTTagInt12 -> NbtInt(nbtTagIntGetter.get(nmsData))
-        is NBTTagByte12 -> NbtByte(nbtTagByteGetter.get<Byte>(nmsData))
-        is NBTTagDouble12 -> NbtDouble(nbtTagDoubleGetter.get(nmsData))
-        is NBTTagFloat12 -> NbtFloat(nbtTagFloatGetter.get(nmsData))
-        is NBTTagLong12 -> NbtLong(nbtTagLongGetter.get(nmsData))
-        is NBTTagShort12 -> NbtShort(nbtTagShortGetter.get(nmsData))
-        is NBTTagByteArray12 -> NbtByteArray(nbtTagByteArrayGetter.get<ByteArray>(nmsData).copyOf())
-        is NBTTagIntArray12 -> NbtIntArray(nbtTagIntArrayGetter.get<IntArray>(nmsData).copyOf())
-        is NBTTagLongArray12 -> NbtLongArray(nbtTagLongArrayGetter!!.get<LongArray>(nmsData).copyOf())
-        is NBTTagList12 -> NbtList().apply { nbtTagListGetter.get<List<Any>>(nmsData).forEach { add(fromNms(it)) } }
-        is NBTTagCompound12 -> NbtCompound().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nmsData).forEach { put(it.key, fromNms(it.value)) } }
-        else -> throw UnsupportedOperationException("NmsNBTTag cannot convert to NBTTag: $nmsData")
+    override fun fromNms(input: Any): NbtTag = when (input) {
+        is NBTTagString12 -> NbtString(nbtTagStringGetter.get(input))
+        is NBTTagInt12 -> NbtInt(nbtTagIntGetter.get(input))
+        is NBTTagByte12 -> NbtByte(nbtTagByteGetter.get<Byte>(input))
+        is NBTTagDouble12 -> NbtDouble(nbtTagDoubleGetter.get(input))
+        is NBTTagFloat12 -> NbtFloat(nbtTagFloatGetter.get(input))
+        is NBTTagLong12 -> NbtLong(nbtTagLongGetter.get(input))
+        is NBTTagShort12 -> NbtShort(nbtTagShortGetter.get(input))
+        is NBTTagByteArray12 -> NbtByteArray(nbtTagByteArrayGetter.get<ByteArray>(input).copyOf())
+        is NBTTagIntArray12 -> NbtIntArray(nbtTagIntArrayGetter.get<IntArray>(input).copyOf())
+        is NBTTagLongArray12 -> NbtLongArray(nbtTagLongArrayGetter!!.get<LongArray>(input).copyOf())
+        is NBTTagList12 -> NbtList().apply { nbtTagListGetter.get<List<Any>>(input).forEach { add(fromNms(it)) } }
+        is NBTTagCompound12 -> NbtCompound().apply { nbtTagCompoundGetter.get<Map<String, Any>>(input).forEach { put(it.key, fromNms(it.value)) } }
+        else -> throw UnsupportedOperationException("NmsNBTTag cannot convert to NBTTag: $input")
     }
 
     private fun getter(type: Class<*>, name: String): MethodHandle {

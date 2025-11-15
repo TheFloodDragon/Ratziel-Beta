@@ -5,7 +5,6 @@ import cn.fd.ratziel.module.ui.inventory.click.InventoryClickPreprocessor.Mode.*
 import cn.fd.ratziel.module.ui.inventory.click.InventoryClickType.*
 import cn.fd.ratziel.platform.bukkit.util.readOrThrow
 import taboolib.module.nms.Packet
-import java.util.function.Supplier
 
 
 /**
@@ -24,7 +23,7 @@ object InventoryClickPreprocessor {
      * @param packet the click packet
      */
     @JvmStatic
-    fun processClick(packet: Packet, dragging: Supplier<PlayerDragging>): InventoryClickAction? {
+    fun processClick(packet: Packet, dragging: () -> PlayerDragging?): InventoryClickAction? {
         val clickType = packet.readOrThrow<Enum<*>>("clickType")
         val button = packet.readOrThrow<Number>("buttonNum").toInt()
         val slot = packet.readOrThrow<Number>("slotNum").toInt()
@@ -46,7 +45,7 @@ object InventoryClickPreprocessor {
      * Processes a click in a valid slot, possibly returning a result.
      */
     @JvmStatic
-    private fun processValid(mode: Mode, slot: Int, button: Int, dragging: Supplier<PlayerDragging>): InventoryClickAction? {
+    private fun processValid(mode: Mode, slot: Int, button: Int, dragging: () -> PlayerDragging?): InventoryClickAction? {
         when (mode) {
             PICKUP -> when (button) {
                 0 -> return MouseClick(slot, LEFT_CLICK)
@@ -73,17 +72,17 @@ object InventoryClickPreprocessor {
                 // 拖动过程中
                 when (button) {
                     1 -> {
-                        slots = dragging.get().leftDrag
+                        slots = (dragging() ?: return null).leftDrag
                         type = LEFT_MOUSE_DRAG_ADD_SLOT
                     }
 
                     5 -> {
-                        slots = dragging.get().rightDrag
+                        slots = (dragging() ?: return null).rightDrag
                         type = RIGHT_MOUSE_DRAG_ADD_SLOT
                     }
 
                     9 -> {
-                        slots = dragging.get().middleDrag
+                        slots = (dragging() ?: return null).middleDrag
                         type = MIDDLE_MOUSE_DRAG_ADD_SLOT
                     }
 
@@ -104,7 +103,7 @@ object InventoryClickPreprocessor {
      * Processes a click in an invalid slot (i.e. the slot is irrelevant, like in a drop)
      */
     @JvmStatic
-    private fun processInvalid(mode: Mode, button: Int, dragging: Supplier<PlayerDragging>): InventoryClickAction? {
+    private fun processInvalid(mode: Mode, button: Int, dragging: () -> PlayerDragging?): InventoryClickAction? {
         when (mode) {
             PICKUP, THROW -> when (button) {
                 0 -> return Drop(-999, LEFT_CLICK_OUTSIDE)
@@ -120,32 +119,32 @@ object InventoryClickPreprocessor {
                 when (button) {
                     // 拖动开始
                     0 -> {
-                        slots = dragging.get().leftDrag
+                        slots = (dragging() ?: return null).leftDrag
                         type = LEFT_MOUSE_DRAG_START
                     }
 
                     4 -> {
-                        slots = dragging.get().rightDrag
+                        slots = (dragging() ?: return null).rightDrag
                         type = RIGHT_MOUSE_DRAG_START
                     }
 
                     8 -> {
-                        slots = dragging.get().middleDrag
+                        slots = (dragging() ?: return null).middleDrag
                         type = MIDDLE_MOUSE_DRAG_START
                     }
                     // 拖动结束
                     2 -> {
-                        slots = dragging.get().leftDrag
+                        slots = (dragging() ?: return null).leftDrag
                         type = LEFT_MOUSE_DRAG_END
                     }
 
                     6 -> {
-                        slots = dragging.get().rightDrag
+                        slots = (dragging() ?: return null).rightDrag
                         type = RIGHT_MOUSE_DRAG_END
                     }
 
                     10 -> {
-                        slots = dragging.get().middleDrag
+                        slots = (dragging() ?: return null).middleDrag
                         type = MIDDLE_MOUSE_DRAG_END
                     }
 

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.ui.inventory.click
 
+import taboolib.platform.util.PlayerSessionMap
 import java.util.*
 
 /**
@@ -17,14 +18,14 @@ class PlayerDragging {
     companion object {
 
         @JvmStatic
-        private val instances = hashMapOf<UUID, PlayerDragging>()
+        private val instances = PlayerSessionMap<PlayerDragging>()
 
         /**
          * 获取玩家拖动实例
          */
         @JvmStatic
-        operator fun get(uuid: UUID): PlayerDragging {
-            return instances.computeIfAbsent(uuid) { PlayerDragging() }
+        operator fun get(uuid: UUID): PlayerDragging? {
+            return instances.getOrCreate(uuid) { PlayerDragging() }
         }
 
     }
