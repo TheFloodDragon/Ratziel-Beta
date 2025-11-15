@@ -3,8 +3,8 @@ dependencies {
     compileOnly(kotlin("scripting-common"))
     compileOnly(kotlin("scripting-jvm"))
     compileOnly(kotlin("scripting-jvm-host"))
-    compileOnly(kotlin("scripting-compiler"))
-    compileOnly(kotlin("compiler"))
+    compileOnly(kotlin("scripting-compiler-embeddable"))
+    compileOnly(kotlin("compiler-embeddable"))
     // Fluxon
     implementation(libs.fluxon) { isTransitive = false }
     // JavaScript: Nashorn Engine
