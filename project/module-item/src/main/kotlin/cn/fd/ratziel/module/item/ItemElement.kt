@@ -12,7 +12,6 @@ import cn.fd.ratziel.module.item.feature.action.ActionInterpreter
 import cn.fd.ratziel.module.item.feature.layer.PhysicalLayerInterpreter
 import cn.fd.ratziel.module.item.feature.template.InheritInterpreter
 import cn.fd.ratziel.module.item.feature.template.TemplateElement
-import cn.fd.ratziel.module.item.feature.update.UpdateInterpreter
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
@@ -95,7 +94,6 @@ object ItemElement : ElementHandler.ParralHandler {
         ItemRegistry.registerInterpreter { InheritInterpreter }
         ItemRegistry.registerInterpreter { DefaultResolver }
         ItemRegistry.registerInterpreter { DataInterpreter() }
-        ItemRegistry.registerInterpreter { UpdateInterpreter() }
         ItemRegistry.registerInterpreter { PhysicalLayerInterpreter }
         ItemRegistry.registerInterpreter { ComponentInterpreter() }
     }

@@ -31,8 +31,7 @@ object VirtualItemPacketHandler {
                 "PacketPlayInWindowClick", "ServerboundContainerClickPacket" -> handleContainerClick(event)
             }
         } catch (e: Throwable) {
-            severe("Exception occurred while receiving packet: ${event.packet.name}")
-            e.printStackTrace()
+            severe("Exception occurred while receiving packet: ${event.packet.name}", e.stackTraceToString())
         }
     }
 
@@ -60,8 +59,7 @@ object VirtualItemPacketHandler {
                 "ClientboundSetPlayerInventoryPacket" -> handleSetPlayerInventoryPacket(event)
             }
         } catch (e: Throwable) {
-            severe("Exception occurred while sending packet: ${event.packet.name}")
-            e.printStackTrace()
+            severe("Exception occurred while sending packet: ${event.packet.name}", e.stackTraceToString())
         }
     }
 

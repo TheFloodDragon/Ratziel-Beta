@@ -10,6 +10,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
+import taboolib.common.platform.function.severe
 import taboolib.module.lang.sendLang
 import java.io.File
 import java.util.concurrent.CompletableFuture
@@ -105,7 +106,10 @@ object WorkspaceLoader {
             // 从评估过的元素中删除
             ElementEvaluator.evaluatedElements.remove(element.identifier)
             // 失败时发送失败消息
-            if (throwable != null) sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file.name)
+            if (throwable != null) {
+                severe(throwable.stackTraceToString())
+                sender.sendLang("Element-File-Evaluate-Failed", element.name, element.file.name)
+            }
         }
 
         WorkspaceLoadEvent.Start().call() // 事件 - 开始加载

@@ -68,6 +68,7 @@ subprojects {
 
             // 合并配置文件
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            mergeServiceFiles()
             setOf(
                 "settings.yml",
                 "lang/zh_CN.yml",

@@ -93,7 +93,6 @@ interface ElementHandler {
          */
         fun fail(element: Element, cause: Throwable? = null) {
             failureCallback?.invoke(element, cause)
-            cause?.printStackTrace()
         }
 
     }

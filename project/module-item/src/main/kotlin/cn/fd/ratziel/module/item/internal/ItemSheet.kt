@@ -21,9 +21,6 @@ object ItemSheet {
     /** 自定义数据组件名称 **/
     const val CUSTOM_DATA_COMPONENT = "minecraft:custom_data"
 
-    /** 附魔组件名称 **/
-    val ENCHANTMENT_COMPONENT by lazy { mappings["ItemEnchant" to "enchantments"]!! }
-
     /**
      * Mapper
      *

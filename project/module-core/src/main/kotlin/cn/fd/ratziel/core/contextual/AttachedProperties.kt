@@ -30,8 +30,6 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
     }
 
     class PropertyKeyDelegate<T>(private val getDefaultValue: AttachedProperties.() -> T) : ReadOnlyProperty<Any?, Key<T>> {
-        constructor(defaultValue: T) : this({ defaultValue })
-
         override operator fun getValue(thisRef: Any?, property: KProperty<*>): Key<T> = Key(property.name, getDefaultValue)
     }
 
@@ -40,8 +38,10 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
      * @return 不存在时返回默认值
      */
     operator fun <T> get(key: Key<T>): T {
-        @Suppress("UNCHECKED_CAST")
-        return properties.getOrDefault(key) { key.getDefaultValue(this) } as T
+        return if (properties.containsKey(key)) {
+            @Suppress("UNCHECKED_CAST")
+            properties[key] as T
+        } else key.getDefaultValue(this)
     }
 
     /**
@@ -76,7 +76,7 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
     companion object {
 
         @JvmStatic
-        fun <T> key(defaultValue: T) = PropertyKeyDelegate(defaultValue)
+        fun <T> key(defaultValue: T) = PropertyKeyDelegate { defaultValue }
 
         @JvmStatic
         fun <T> key(getDefaultValue: AttachedProperties.() -> T) = PropertyKeyDelegate(getDefaultValue)
