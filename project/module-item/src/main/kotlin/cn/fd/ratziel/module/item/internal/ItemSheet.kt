@@ -3,9 +3,7 @@ package cn.fd.ratziel.module.item.internal
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import kotlinx.serialization.json.*
-import taboolib.common.LifeCycle
 import taboolib.common.io.runningResources
-import taboolib.common.platform.Awake
 import taboolib.module.nms.MinecraftVersion
 
 /**
@@ -16,19 +14,15 @@ import taboolib.module.nms.MinecraftVersion
  */
 object ItemSheet {
 
-    lateinit var mappings: BiMap<Pair<String, String>, String>
-        private set
+    val mappings: BiMap<Pair<String, String>, String> by lazy {
+        Mapper.initialize("internal/nbt-mappings.json")
+    }
 
     /** 自定义数据组件名称 **/
     const val CUSTOM_DATA_COMPONENT = "minecraft:custom_data"
 
     /** 附魔组件名称 **/
     val ENCHANTMENT_COMPONENT by lazy { mappings["ItemEnchant" to "enchantments"]!! }
-
-    @Awake(LifeCycle.LOAD)
-    private fun initialize() {
-        mappings = Mapper.initialize("internal/nbt-mappings.json")
-    }
 
     /**
      * Mapper

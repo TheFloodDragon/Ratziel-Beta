@@ -4,10 +4,7 @@
     "transitive": false,
     "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
-    ],
+    "scopes": [],
     "external": true
   },
   {
@@ -15,10 +12,18 @@
     "transitive": false,
     "ignoreOptional": true,
     "ignoreException": false,
-    "scopes": [
-      "compile",
-      "runtime"
+    "scopes": [],
+    "external": true
+  },
+  {
+    "value": "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
+    "test": [
+      "kotlin.reflect.jvm.ReflectLambdaKt"
     ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": false,
+    "scopes": [],
     "external": true
   },
   {

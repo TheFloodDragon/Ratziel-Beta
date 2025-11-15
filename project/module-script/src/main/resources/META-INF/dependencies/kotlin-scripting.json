@@ -1,16 +1,5 @@
 [
   {
-    "value": "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
-    "test": [
-      "kotlin.reflect.jvm.ReflectLambdaKt"
-    ],
-    "transitive": false,
-    "ignoreOptional": true,
-    "ignoreException": false,
-    "scopes": [],
-    "external": true
-  },
-  {
     "value": "org.jetbrains.kotlin:kotlin-compiler:$kotlinVersion",
     "transitive": false,
     "ignoreOptional": true,
