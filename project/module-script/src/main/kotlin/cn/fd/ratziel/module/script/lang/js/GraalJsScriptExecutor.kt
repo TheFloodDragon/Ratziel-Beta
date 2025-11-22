@@ -95,7 +95,7 @@ class GraalJsScriptExecutor : IntegratedScriptExecutor() {
         script: Source,
         compilationEnv: ScriptEnvironment,
         source: ScriptSource,
-    ) : ReplenishingScript<Source, Context>(script, compilationEnv, source, this) {
+    ) : ReplenishingScript<Source, Context>(script, compilationEnv, source) {
         override fun preheat() = createRuntime(compilationEnv)
         override fun eval(engine: Context): Any? = engine.eval(script).`as`(Any::class.java)
         override fun initRuntime(engine: Context, runtimeEnv: ScriptEnvironment) {

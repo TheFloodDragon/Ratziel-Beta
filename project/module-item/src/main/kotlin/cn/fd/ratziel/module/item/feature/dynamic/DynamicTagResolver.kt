@@ -20,7 +20,7 @@ object DynamicTagResolver : ItemTagResolver {
     override val alias = arrayOf("dynamic", "d")
 
     @JvmStatic
-    internal val isDynamic = AttachedContext.catcher(this) { false }
+    internal val isDynamic by AttachedContext.catcher { false }
 
     const val IDENTIFIED_START = $$"{${"
     const val IDENTIFIED_END = "}$}"

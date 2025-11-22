@@ -39,11 +39,6 @@ interface ScriptContent {
 interface CompiledScript : ScriptContent {
 
     /**
-     * 编译此脚本的编译器
-     */
-    val compiler: ScriptCompiler
-
-    /**
      * 评估此编译后的脚本
      */
     fun eval(environment: ScriptEnvironment): Any?
@@ -72,7 +67,6 @@ abstract class ValuedCompiledScript<T>(
     /** 编译后的非封装脚本实例 **/
     val script: T,
     override val source: ScriptSource,
-    override val compiler: ScriptCompiler,
 ) : CompiledScript {
-    override fun toString() = "ValuedCompiledScript(script=$script, source=$source, compiler=$compiler)"
+    override fun toString() = "ValuedCompiledScript(script=$script, source=$source)"
 }

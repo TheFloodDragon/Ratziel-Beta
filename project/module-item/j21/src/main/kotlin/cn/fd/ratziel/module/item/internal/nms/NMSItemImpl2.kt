@@ -99,16 +99,13 @@ class NMSItemImpl2 : NMSItem() {
         }
     }
 
-    override fun getComponent(nmsItem: Any, namespacedKey: NamespacedIdentifier): ItemComponentData? {
+    override fun getComponent(nmsItem: Any, type: NamespacedIdentifier): ItemComponentData? {
         @Suppress("UNCHECKED_CAST")
-        val dct = typeByName(namespacedKey) as DataComponentType<Any>
+        val dct = typeByName(type) as DataComponentType<Any>
         val data = (nmsItem as NMSItemStack).componentsPatch.get(dct) ?: return null
         val input = data.getOrNull() ?: return null
         // 返回数据
-        return ItemComponentData.lazyGetter(
-            namespacedKey,
-            data.isEmpty
-        ) {
+        return ItemComponentData.lazyGetter(data.isEmpty) {
             try {
                 val result = if (isModern) {
                     dct.codecOrThrow().encodeStart(modernOps, input)
@@ -124,9 +121,9 @@ class NMSItemImpl2 : NMSItem() {
         }
     }
 
-    override fun setComponent(nmsItem: Any, data: ItemComponentData): Boolean {
+    override fun setComponent(nmsItem: Any, type: NamespacedIdentifier, data: ItemComponentData): Boolean {
         @Suppress("UNCHECKED_CAST")
-        val dct = typeByName(data.type) as DataComponentType<Any>
+        val dct = typeByName(type) as DataComponentType<Any>
         // 删除组件 (仅明确标记删除)
         if (data.removed) {
             (nmsItem as NMSItemStack).remove(dct)
@@ -149,8 +146,8 @@ class NMSItemImpl2 : NMSItem() {
         return true
     }
 
-    fun typeByName(namespacedKey: NamespacedIdentifier): DataComponentType<*> {
-        val minecraftKey = MinecraftKey.fromNamespaceAndPath(namespacedKey.namespace, namespacedKey.key)
+    fun typeByName(type: NamespacedIdentifier): DataComponentType<*> {
+        val minecraftKey = MinecraftKey.fromNamespaceAndPath(type.namespace, type.key)
         return BuiltInRegistries.DATA_COMPONENT_TYPE.get(minecraftKey)
             .getOrNull()?.value() ?: error("DataComponentType by '${minecraftKey.path}' not found.")
     }

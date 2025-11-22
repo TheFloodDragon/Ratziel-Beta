@@ -23,6 +23,9 @@ data class NamespacedIdentifier(
     val key: String,
 ) {
 
+    /**
+     * 命名空间 + ID
+     */
     val content get() = "$namespace:$key"
 
     constructor(namespacedKey: org.bukkit.NamespacedKey) : this(namespacedKey.namespace, namespacedKey.key)

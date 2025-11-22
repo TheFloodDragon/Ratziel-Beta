@@ -31,9 +31,9 @@ open class ScriptEnvironment(
     constructor(other: ScriptEnvironment, body: ScriptConfiguration.Builder.() -> Unit) : this(other.bindings, other.configuration.with(body))
 
     /**
-     * 执行器的上下文
+     * 运行时状态 (存放各种脚本的上下文)
      */
-    val context: AttachedContext = AttachedContext.newContext()
+    val runningState: AttachedContext = AttachedContext.newContext()
 
     /**
      * 获取绑定内容

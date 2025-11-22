@@ -60,13 +60,11 @@ sealed interface InventoryClickAction {
     }
 
     /**
-     * 拖动完成后触发
+     * 拖动时触发 (开始, 过程, 结束)
      */
     data class Drag(
         /**
-         * Returns the list of slots. When the event inventory is the opened inventory, slots greater than its size
-         * indicate slots in the player inventory; subtract the size of the event inventory to get the player inventory
-         * slot.
+         * 拖动过程中的栏位
          */
         val slots: Set<Int>,
         override val type: InventoryClickType,
@@ -78,10 +76,7 @@ sealed interface InventoryClickAction {
         /**
          * 拖动是否结束
          */
-        val isEnd =
-            type == InventoryClickType.LEFT_MOUSE_DRAG_END
-                    || type == InventoryClickType.RIGHT_MOUSE_DRAG_END
-                    || type == InventoryClickType.MIDDLE_MOUSE_DRAG_END
+        val isEnd get() = type.isDragEnd
 
         /**
          * 上一个拖动时的栏位

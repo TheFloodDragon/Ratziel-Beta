@@ -41,7 +41,7 @@ class FluxonScriptExecutor : IntegratedScriptExecutor() {
                     compilation.fileName + randomUuid().digest(),
                     environment.asFluxonEnv(),
                 ),
-                source, this
+                source,
             ) {
                 val definedClass = script.defineClass(FluxonClassLoader())
                 override fun eval(environment: ScriptEnvironment): Any? {
@@ -52,7 +52,7 @@ class FluxonScriptExecutor : IntegratedScriptExecutor() {
             // AST 编译
             else -> object : ValuedCompiledScript<List<ParseResult>>(
                 Fluxon.parse(environment.asFluxonEnv(), compilation),
-                source, this
+                source
             ) {
                 override fun eval(environment: ScriptEnvironment): Any? {
                     return Fluxon.eval(script, environment.asFluxonEnv())

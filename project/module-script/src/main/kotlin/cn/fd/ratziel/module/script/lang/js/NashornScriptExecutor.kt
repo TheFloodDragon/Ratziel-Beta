@@ -80,7 +80,7 @@ class NashornScriptExecutor : IntegratedScriptExecutor() {
         script: CompiledScript,
         compilationEnv: ScriptEnvironment,
         source: ScriptSource,
-    ) : ReplenishingScript<CompiledScript, ScriptEngine>(script, compilationEnv, source, this) {
+    ) : ReplenishingScript<CompiledScript, ScriptEngine>(script, compilationEnv, source) {
         override fun preheat() = createRuntime(compilationEnv).apply {
             // 设置脚本名称
             if (source.name != null) {

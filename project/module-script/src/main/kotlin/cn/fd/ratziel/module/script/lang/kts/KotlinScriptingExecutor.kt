@@ -21,7 +21,7 @@ object KotlinScriptingExecutor : IntegratedScriptExecutor() {
 
     override fun compile(source: ScriptSource, environment: ScriptEnvironment): ValuedCompiledScript<CompiledScript> {
         val script = (getEngine(environment) as Compilable).compile(source.content)
-        return object : ValuedCompiledScript<CompiledScript>(script, source, this) {
+        return object : ValuedCompiledScript<CompiledScript>(script, source) {
             override fun eval(environment: ScriptEnvironment): Any? {
                 return script.eval(getEngine(environment).context)
             }
@@ -33,7 +33,7 @@ object KotlinScriptingExecutor : IntegratedScriptExecutor() {
      */
     fun getEngine(environment: ScriptEnvironment): ScriptEngine {
         // 获取脚本引擎
-        val engine = environment.context.fetch(this) {
+        val engine = environment.runningState.fetch(this) {
             KtsScriptEngineFactory.getScriptEngine(compilationBody = {
                 // 导入类包
                 val imports = environment.configuration[ScriptConfigurationKeys.scriptImporting]

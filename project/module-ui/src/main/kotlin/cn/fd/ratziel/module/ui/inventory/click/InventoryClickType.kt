@@ -97,6 +97,9 @@ enum class InventoryClickType(val button: Int) {
     /** 是否为拖动操作 **/
     val isDrag by lazy { this.name.contains("DRAG") }
 
+    /** 是否为拖动结束 **/
+    val isDragEnd by lazy { isDrag && this.name.contains("END") }
+
     /** 是否为鼠标中键操作 (创造模式下的操作) **/
     val isCreativeAction by lazy { this == MIDDLE_CLICK || this == MIDDLE_CLICK_OUTSIDE || this == MIDDLE_MOUSE_DRAG_START || this == MIDDLE_MOUSE_DRAG_ADD_SLOT || this == MIDDLE_MOUSE_DRAG_END }
 
@@ -106,10 +109,10 @@ enum class InventoryClickType(val button: Int) {
     companion object {
 
         @JvmStatic
-        fun numberKey(hotbarSlot: Int): InventoryClickType {
+        fun numberKey(hotbar: Int): InventoryClickType {
             return InventoryClickType.entries
-                .find { it.isNumberKey && it.button == hotbarSlot }
-                ?: throw IllegalStateException("Invalid hotbar slot for number key: $hotbarSlot")
+                .find { it.isNumberKey && it.button == hotbar }
+                ?: throw IllegalStateException("Invalid hotbar for number key: $hotbar")
         }
 
     }

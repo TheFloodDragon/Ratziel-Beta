@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.script.impl
 
 import cn.fd.ratziel.core.functional.replenish
-import cn.fd.ratziel.module.script.api.ScriptCompiler
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
 import cn.fd.ratziel.module.script.api.ValuedCompiledScript
@@ -23,8 +22,7 @@ abstract class ReplenishingScript<C, E : Any>(
      */
     val compilationEnv: ScriptEnvironment,
     source: ScriptSource,
-    compiler: ScriptCompiler,
-) : ValuedCompiledScript<C>(script, source, compiler) {
+) : ValuedCompiledScript<C>(script, source) {
 
     /**
      * 脚本引擎补充器 (提前预热脚本以提高运行性能)
@@ -57,7 +55,7 @@ abstract class ReplenishingScript<C, E : Any>(
     final override fun eval(environment: ScriptEnvironment): Any? {
         // 获取脚本引擎实例:
         // 用脚本语言类型做钥匙 (key), 确保同一语言的脚本在同一环境中使用同一引擎实例.
-        val engine: E = environment.context.fetch(source.language) {
+        val engine: E = environment.runningState.fetch(source.language) {
             pop().also { initRuntime(it, environment) }
         }
         // 调用评估函数

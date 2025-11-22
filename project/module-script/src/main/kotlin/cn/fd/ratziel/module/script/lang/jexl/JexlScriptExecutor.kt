@@ -33,7 +33,7 @@ class JexlScriptExecutor : IntegratedScriptExecutor() {
             is LiteralScriptSource -> engine.createScript(source.content)
         }
         // 返回封装后的脚本
-        return object : ValuedCompiledScript<JexlScript>(jexlScript, source, this) {
+        return object : ValuedCompiledScript<JexlScript>(jexlScript, source) {
             override fun eval(environment: ScriptEnvironment): Any? {
                 return script.execute(WrappedJexlContext(environment))
             }
