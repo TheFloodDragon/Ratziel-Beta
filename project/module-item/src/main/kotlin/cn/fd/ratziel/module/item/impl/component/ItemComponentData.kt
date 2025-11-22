@@ -16,7 +16,8 @@ interface ItemComponentData {
     val type: NamespacedIdentifier
 
     /**
-     * 数据实例的 [NbtTag] 形式
+     * 数据实例的 [NbtTag] 形式 (原物品数据的副本)
+     * (空的时候代表数据被删除)
      */
     val tag: NbtTag?
 

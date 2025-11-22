@@ -9,7 +9,7 @@ import cn.fd.ratziel.core.util.JarUtil
 import cn.fd.ratziel.module.script.api.ScriptType
 import cn.fd.ratziel.module.script.element.ScriptElementLoader
 import cn.fd.ratziel.module.script.impl.ScriptBootstrap
-import cn.fd.ratziel.module.script.importing.GroupImports
+import cn.fd.ratziel.module.script.importing.ImportationGroup
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
@@ -41,10 +41,10 @@ object ScriptManager {
     /**
      * 全局导入组
      */
-    val globalGroup: GroupImports by lazy {
+    val globalGroup: ImportationGroup by lazy {
         // 读取文件
         val imports = JarUtil.getEntries { it.name.startsWith("internal/script-imports") && it.name.endsWith(".imports") }.flatMap { it.reader().readLines() }
-        GroupImports.parse(imports)
+        ImportationGroup.parse(imports)
     }
 
     /**

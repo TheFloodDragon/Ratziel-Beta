@@ -4,8 +4,10 @@ import cn.fd.ratziel.module.script.api.IntegratedScriptExecutor
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
+import cn.fd.ratziel.module.script.conf.ScriptConfigurationKeys
+import cn.fd.ratziel.module.script.conf.scriptImporting
 import cn.fd.ratziel.module.script.impl.ReplenishingScript
-import cn.fd.ratziel.module.script.importing.GroupImports
+import cn.fd.ratziel.module.script.importing.ScriptImport
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Engine
 import org.graalvm.polyglot.Source
@@ -63,7 +65,7 @@ class GraalJsScriptExecutor : IntegratedScriptExecutor() {
         val context = newContext().importBindings(environment)
 
         // 导入环境的导入组 (类、包、脚本)
-        val imports = GroupImports.catcher[environment.context]
+        val imports = environment.configuration[ScriptConfigurationKeys.scriptImporting]
 
         // 导入类、包
         if (imports.classes.isNotEmpty() || imports.packages.isNotEmpty()) {
@@ -75,7 +77,7 @@ class GraalJsScriptExecutor : IntegratedScriptExecutor() {
         }
 
         // 导入脚本
-        val scriptImports = imports.scripts(JavaScriptLang)
+        val scriptImports = imports.getSource<ScriptImport>(JavaScriptLang)
         if (scriptImports.isNotEmpty()) {
             for (import in scriptImports) {
                 // 调用脚本执行器的评估函数

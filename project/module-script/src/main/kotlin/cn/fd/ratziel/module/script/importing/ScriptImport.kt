@@ -7,12 +7,13 @@ import taboolib.common.platform.function.warning
 import java.io.File
 
 /**
- * ScriptImport
+ * ScriptImport TODO
  *
  * @author TheFloodDragon
  * @since 2025/8/31 10:52
  */
 data class ScriptImport(
+    override val content: String,
     /**
      * 脚本文件路径
      */
@@ -20,8 +21,8 @@ data class ScriptImport(
     /**
      * 脚本语言类型
      */
-    val type: ScriptType,
-) {
+    override val type: ScriptType,
+): SourceImportation {
 
     /**
      * 脚本文件

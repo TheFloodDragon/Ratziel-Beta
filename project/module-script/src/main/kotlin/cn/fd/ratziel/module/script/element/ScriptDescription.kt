@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.element
 
 import cn.fd.ratziel.core.util.resolveBy
-import cn.fd.ratziel.module.script.importing.GroupImports
+import cn.fd.ratziel.module.script.importing.ImportationGroup
 import taboolib.common.platform.function.warning
 import taboolib.module.configuration.Configuration
 import java.io.File
@@ -24,7 +24,7 @@ class ScriptDescription(
     /**
      * 脚本导入
      */
-    val imports: GroupImports = GroupImports(),
+    val imports: ImportationGroup = ImportationGroup(),
 ) {
 
     override fun toString() = "{descFile=$descFile, scriptFiles=$files, imports=$imports}"
@@ -76,7 +76,7 @@ class ScriptDescription(
                 is String -> listOf(importsSection)
                 is List<*> -> importsSection.map { it.toString() }
                 else -> emptyList()
-            }.let { GroupImports.parse(it, descFile.parentFile) }
+            }.let { ImportationGroup.parse(it, descFile.parentFile) }
 
             // 返回脚本描述
             return ScriptDescription(files, descFile, imports)

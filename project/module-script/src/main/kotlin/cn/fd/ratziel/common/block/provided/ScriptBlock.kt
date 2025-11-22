@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.script.api.*
 import cn.fd.ratziel.module.script.conf.*
 import cn.fd.ratziel.module.script.element.ScriptElementHandler
 import cn.fd.ratziel.module.script.element.ScriptFile
-import cn.fd.ratziel.module.script.importing.GroupImports
+import cn.fd.ratziel.module.script.importing.ImportationGroup
 import cn.fd.ratziel.module.script.util.eval
 import cn.fd.ratziel.module.script.util.scriptEnv
 import kotlinx.serialization.json.*
@@ -32,7 +32,7 @@ open class ScriptBlock(
     /** 脚本缓存等级 **/
     cachingLevel: Int = 1,
     /** 导入组 **/
-    val imports: GroupImports? = null,
+    val imports: ImportationGroup? = null,
 ) : ExecutableBlock {
 
     constructor(source: String, language: ScriptType, context: BlockContext) : this(
@@ -76,9 +76,9 @@ open class ScriptBlock(
         return ScriptContent.literal(script, language)
     }
 
-    open fun createEnvironment() = ScriptEnvironment().apply {
+    open fun createEnvironment() = ScriptEnvironment {
         // 处理导入组
-        if (imports != null) GroupImports.catcher(context) { it + imports }
+        if (imports != null) scriptImporting(imports)
     }
 
     override fun toString() = "ScriptBlock(language=$language, source=$source)"
@@ -104,7 +104,7 @@ open class ScriptBlock(
                 val importsSection = element["imports"] ?: element["import"]
                 if (importsSection != null && importsSection is JsonArray) {
                     val lines = importsSection.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
-                    val imports = GroupImports.parse(lines, workFile()?.parentFile)
+                    val imports = ImportationGroup.parse(lines, workFile()?.parentFile)
                     // 添加进上下文中
                     context[ScriptConfigurationKeys.scriptImporting] = context[ScriptConfigurationKeys.scriptImporting] + imports
                 }

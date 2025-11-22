@@ -4,17 +4,17 @@ import java.lang.ref.WeakReference
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * PackageImport - 包导入
+ * PackageImportation - 包导入件
  *
  * @author TheFloodDragon
  * @since 2025/8/11 15:07
  */
-data class PackageImport(
+data class PackageImportation(
     /**
      * 包名称
      */
     val packageName: String,
-) {
+) : Importation {
 
     /**
      * 包名称 (带 * 的)

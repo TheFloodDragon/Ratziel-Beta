@@ -5,9 +5,11 @@ import cn.fd.ratziel.module.script.api.IntegratedScriptExecutor
 import cn.fd.ratziel.module.script.api.ScriptContent
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
+import cn.fd.ratziel.module.script.conf.ScriptConfigurationKeys
+import cn.fd.ratziel.module.script.conf.scriptImporting
 import cn.fd.ratziel.module.script.impl.ImportedScriptContext
 import cn.fd.ratziel.module.script.impl.ReplenishingScript
-import cn.fd.ratziel.module.script.importing.GroupImports
+import cn.fd.ratziel.module.script.importing.ScriptImport
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
 import javax.script.*
 
@@ -43,7 +45,7 @@ class NashornScriptExecutor : IntegratedScriptExecutor() {
         val engine = newEngine().importBindings(environment)
 
         // 导入导入组
-        val imports = GroupImports.catcher[environment.context]
+        val imports = environment.configuration[ScriptConfigurationKeys.scriptImporting]
 
         // 导入类、包
         if (imports.classes.isNotEmpty() || imports.packages.isNotEmpty()) {
@@ -61,7 +63,7 @@ class NashornScriptExecutor : IntegratedScriptExecutor() {
         }
 
         // 导入导入组里的脚本
-        val scriptImports = imports.scripts(JavaScriptLang)
+        val scriptImports = imports.getSource<ScriptImport>(JavaScriptLang)
         if (scriptImports.isNotEmpty()) {
             for (import in scriptImports) {
                 this.evaluate(import.compiled ?: continue, environment)

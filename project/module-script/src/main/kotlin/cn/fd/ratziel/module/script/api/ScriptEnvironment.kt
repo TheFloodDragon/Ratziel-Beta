@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.script.api
 
 import cn.fd.ratziel.core.contextual.AttachedContext
+import cn.fd.ratziel.module.script.conf.ScriptConfiguration
+import cn.fd.ratziel.module.script.conf.with
 
 
 /**
@@ -14,7 +16,19 @@ open class ScriptEnvironment(
      * 脚本的绑定键
      */
     var bindings: MutableMap<String, Any?> = linkedMapOf(),
+    /**
+     * 脚本配置
+     */
+    var configuration: ScriptConfiguration = ScriptConfiguration.Default,
 ) {
+
+    constructor(
+        bindings: MutableMap<String, Any?> = linkedMapOf(),
+        baseConfigurations: Iterable<ScriptConfiguration> = emptyList(),
+        body: ScriptConfiguration.Builder.() -> Unit,
+    ) : this(bindings, ScriptConfiguration(baseConfigurations, body))
+
+    constructor(other: ScriptEnvironment, body: ScriptConfiguration.Builder.() -> Unit) : this(other.bindings, other.configuration.with(body))
 
     /**
      * 执行器的上下文

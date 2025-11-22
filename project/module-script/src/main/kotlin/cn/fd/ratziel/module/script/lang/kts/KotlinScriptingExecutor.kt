@@ -1,7 +1,8 @@
 package cn.fd.ratziel.module.script.lang.kts
 
 import cn.fd.ratziel.module.script.api.*
-import cn.fd.ratziel.module.script.importing.GroupImports
+import cn.fd.ratziel.module.script.conf.ScriptConfigurationKeys
+import cn.fd.ratziel.module.script.conf.scriptImporting
 import javax.script.*
 import javax.script.CompiledScript
 import kotlin.script.experimental.api.defaultImports
@@ -35,7 +36,7 @@ object KotlinScriptingExecutor : IntegratedScriptExecutor() {
         val engine = environment.context.fetch(this) {
             KtsScriptEngineFactory.getScriptEngine(compilationBody = {
                 // 导入类包
-                val imports = GroupImports.catcher[environment.context]
+                val imports = environment.configuration[ScriptConfigurationKeys.scriptImporting]
                 // 更新默认导入
                 defaultImports.update { origin ->
                     (origin ?: arrayListOf()) +

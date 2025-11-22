@@ -46,14 +46,14 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
             // Lore 处理
             val newLore = display.lore?.map {
                 // 处理并分割换行符
-                async { it.replaceText(replacementConfig).let { split(it, "\\n") } }
+                async { it.replaceText(replacementConfig) }
             }
 
             // 创建新显示组件
             val newDisplay = ItemDisplay(
                 newName?.await(),
                 newLocalName?.await(),
-                newLore?.awaitAll()?.flatten()
+                newLore?.awaitAll()
             )
 
             // 将新的组件写入物品

@@ -3,17 +3,17 @@ package cn.fd.ratziel.module.script.importing
 import java.lang.ref.WeakReference
 
 /**
- * ClassImport - 类导入
+ * ClassImportation - 类导入件
  *
  * @author TheFloodDragon
  * @since 2025/8/11 15:07
  */
-data class ClassImport(
+data class ClassImportation(
     /**
      * 类全名
      */
     val fullName: String,
-) {
+) : Importation {
 
     /**
      * 类简单名称

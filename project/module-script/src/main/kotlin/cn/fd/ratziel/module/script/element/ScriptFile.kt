@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.script.element
 
 import cn.fd.ratziel.module.script.api.*
-import cn.fd.ratziel.module.script.importing.GroupImports
+import cn.fd.ratziel.module.script.conf.scriptImporting
 import java.io.File
 
 /**
@@ -47,9 +47,8 @@ class ScriptFile(
     fun compile(environment: ScriptEnvironment): ScriptContent {
         // 保存编译后的脚本
         this.compiled = this.executor.build(
-            ScriptSource.filed(this.file, this.language), environment.apply {
-                // 导入组
-                GroupImports.catcher(context) { it + desc.imports }
+            ScriptSource.filed(this.file, this.language), ScriptEnvironment(environment) {
+                scriptImporting(scriptImporting() + desc.imports)
             })
         return this.compiled
     }
