@@ -1,10 +1,12 @@
 package cn.fd.ratziel.module.item.internal.nms
 
+import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.component.ItemComponentData
 import cn.fd.ratziel.module.item.impl.component.NamespacedIdentifier
 import cn.fd.ratziel.module.item.internal.nms.CodecSerialization.modernOps
 import cn.fd.ratziel.module.item.internal.nms.CodecSerialization.nmsOps
 import cn.fd.ratziel.module.item.internal.nms.NMSItem.Companion.isModern
+import com.google.common.collect.HashBiMap
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.NBTBase
@@ -21,6 +23,20 @@ import net.minecraft.world.item.ItemStack as NMSItemStack
  */
 @Suppress("unused")
 class NMSComponentImpl2 : NMSComponent() {
+
+    val componentTypesBridge: HashBiMap<ItemComponentType<*>, DataComponentType<*>> = HashBiMap.create()
+
+    fun <T : Any> getComponent(nmsItem: Any, type: ItemComponentType<T>): T? {
+        val dct = type.dataComponentType
+        val data = (nmsItem as NMSItemStack).componentsPatch.get(dct) ?: return null
+        return type.transformer.transform(data.getOrNull() ?: return null)
+    }
+
+    fun <T : Any> setComponent(nmsItem: Any, type: ItemComponentType<T>, value: T) {
+        val dct = type.dataComponentType
+        val transformed = type.transformer.detransform(value)
+        (nmsItem as NMSItemStack).set(dct, transformed)
+    }
 
     override fun getComponent(nmsItem: Any, type: NamespacedIdentifier): ItemComponentData? {
         @Suppress("UNCHECKED_CAST")
@@ -69,6 +85,19 @@ class NMSComponentImpl2 : NMSComponent() {
         return true
     }
 
+    @Suppress("UNCHECKED_CAST")
+    val ItemComponentType<*>.dataComponentType: DataComponentType<Any>
+        get() = componentTypesBridge.computeIfAbsent(this) {
+            val id = this.identifier
+            val key = if (id is NamespacedIdentifier) {
+                MinecraftKey.fromNamespaceAndPath(id.namespace, id.key)
+            } else MinecraftKey.parse(id.content)
+            // 从注册表中获取
+            return@computeIfAbsent BuiltInRegistries.DATA_COMPONENT_TYPE.get(key)
+                .getOrNull()?.value() ?: error("DataComponentType by '${key.path}' not found.")
+        } as DataComponentType<Any>
+
+    @Deprecated("Will be removed")
     fun typeByName(type: NamespacedIdentifier): DataComponentType<*> {
         val minecraftKey = MinecraftKey.fromNamespaceAndPath(type.namespace, type.key)
         return BuiltInRegistries.DATA_COMPONENT_TYPE.get(minecraftKey)

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.impl.component
 
+import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.module.item.internal.serializers.NamespacedIdentifierSerializer
 import kotlinx.serialization.Serializable
 
@@ -21,16 +22,16 @@ data class NamespacedIdentifier(
      * ID 标识符
      */
     val key: String,
-) {
+) : Identifier {
 
     /**
      * 命名空间 + ID
      */
-    val content get() = "$namespace:$key"
+    override val content get() = "$namespace:$key"
 
     constructor(namespacedKey: org.bukkit.NamespacedKey) : this(namespacedKey.namespace, namespacedKey.key)
 
-    override fun toString() = content
+    override fun toString() = "NamespacedIdentifier($content)"
 
     companion object {
 
@@ -40,17 +41,17 @@ data class NamespacedIdentifier(
          * Minecraft 默认命名空间的 [NamespacedIdentifier]
          */
         @JvmStatic
-        fun minecraft(identifier: String): NamespacedIdentifier {
-            return NamespacedIdentifier(MINECRAFT, identifier)
+        fun minecraft(path: String): NamespacedIdentifier {
+            return NamespacedIdentifier(MINECRAFT, path)
         }
 
         /**
          * 从字符串中解析 [NamespacedIdentifier]
          */
         @JvmStatic
-        fun fromString(identifier: String): NamespacedIdentifier {
-            return fromString(identifier, MINECRAFT)
-                ?: throw IllegalArgumentException("Unknown namespaced identifier: '$identifier'")
+        fun fromString(path: String): NamespacedIdentifier {
+            return fromString(path, MINECRAFT)
+                ?: throw IllegalArgumentException("Unknown namespaced path: '$path'")
         }
 
         @JvmStatic

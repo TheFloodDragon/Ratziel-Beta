@@ -17,11 +17,13 @@ abstract class NMSComponent {
     /**
      * 获取组件数据
      */
+    @Deprecated("Will be edited")
     abstract fun getComponent(nmsItem: Any, type: NamespacedIdentifier): ItemComponentData?
 
     /**
      * 设置组件数据
      */
+    @Deprecated("Will be edited")
     abstract fun setComponent(nmsItem: Any, type: NamespacedIdentifier, data: ItemComponentData): Boolean
 
     companion object {
