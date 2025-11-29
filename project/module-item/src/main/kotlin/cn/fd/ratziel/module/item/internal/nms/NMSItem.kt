@@ -1,8 +1,6 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.impl.component.ItemComponentData
-import cn.fd.ratziel.module.item.impl.component.NamespacedIdentifier
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
@@ -27,16 +25,6 @@ abstract class NMSItem {
      * 设置 [NMSItemStack] 的 NBT (克隆)
      */
     abstract fun setTag(nmsItem: Any, tag: NbtCompound)
-
-    /**
-     * 获取组件数据
-     */
-    abstract fun getComponent(nmsItem: Any, type: NamespacedIdentifier): ItemComponentData?
-
-    /**
-     * 设置组件数据
-     */
-    abstract fun setComponent(nmsItem: Any, type: NamespacedIdentifier, data: ItemComponentData): Boolean
 
     /**
      * 克隆 [NMSItemStack]
@@ -77,23 +65,6 @@ class NMSItemImpl1 : NMSItem() {
 
     override fun setTag(nmsItem: Any, tag: NbtCompound) {
         nmsTagField.set(nmsItem, NMSNbt.INSTANCE.toNms(tag))
-    }
-
-    override fun getComponent(nmsItem: Any, type: NamespacedIdentifier): ItemComponentData? {
-        val root = getTag(nmsItem) ?: return null
-        val value = root[type.key] // 低版本不管命名空间
-            ?: return ItemComponentData.removed()
-        return ItemComponentData.of(value.clone())
-    }
-
-    override fun setComponent(nmsItem: Any, type: NamespacedIdentifier, data: ItemComponentData): Boolean {
-        val root = getTag(nmsItem) ?: NbtCompound().also {
-            setTag(nmsItem, it) // 没有根标签则创建并设置
-        }
-        val value = data.tag?.clone() ?: return false
-        // 设置组件数据
-        root[type.key] = value
-        return true
     }
 
     override fun copyItem(nmsItem: Any): Any {

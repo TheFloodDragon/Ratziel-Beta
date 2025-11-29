@@ -94,7 +94,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
             return DataResult.error({ "mergeToMap called with not a map: $map" }, map)
         } else if (key is NbtString) {
             val result = if (map is NbtCompound) map.cloneShallow() else NbtCompound()
-            result.put(key.content, value)
+            result[key.content] = value
             return DataResult.success(result)
         } else {
             return DataResult.error({ "key is not a string: $key" }, map)
@@ -110,7 +110,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
             otherMap.entries().forEach { pair ->
                 val keyTag: NbtTag = pair.getFirst()
                 if (keyTag is NbtString) {
-                    result.put(keyTag.content, pair.getSecond())
+                    result[keyTag.content] = pair.getSecond()
                 } else {
                     invalidKeys.add(keyTag)
                 }
@@ -128,7 +128,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         for (entry in entriesToMerge.entries) {
             val keyTag: NbtTag = entry.key
             if (keyTag is NbtString) {
-                result.put(keyTag.content, entry.value)
+                result[keyTag.content] = entry.value
             } else {
                 invalidKeys.add(keyTag)
             }
@@ -186,9 +186,9 @@ object ModernNbtOps : DynamicOps<NbtTag> {
 
     override fun getStream(tag: NbtTag): DataResult<Stream<NbtTag>> = when (tag) {
         is NbtList -> DataResult.success(tag.content.stream())
-        is NbtByteArray -> DataResult.success((Arrays.stream(tag.content.toTypedArray())).map<NbtTag> { NbtByte(it) })
-        is NbtIntArray -> DataResult.success((Arrays.stream(tag.content.toTypedArray())).map<NbtTag> { NbtInt(it) })
-        is NbtLongArray -> DataResult.success((Arrays.stream(tag.content.toTypedArray())).map<NbtTag> { NbtLong(it) })
+        is NbtByteArray -> DataResult.success((Arrays.stream(tag.content.toTypedArray())).map { NbtByte(it) })
+        is NbtIntArray -> DataResult.success((Arrays.stream(tag.content.toTypedArray())).map { NbtInt(it) })
+        is NbtLongArray -> DataResult.success((Arrays.stream(tag.content.toTypedArray())).map { NbtLong(it) })
         else -> DataResult.error { "Not a list" }
     }
 
@@ -232,7 +232,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         else getStream(tag).flatMap { stream ->
             val list: MutableList<NbtTag> = stream.toList()
             if (list.stream().allMatch { getNumberValue(it).result().isPresent }) {
-                return@flatMap DataResult.success<LongStream?>(
+                return@flatMap DataResult.success(
                     list.stream().mapToLong { getNumberValue(it).result().get().toLong() })
             }
             DataResult.error { "Some elements are not longs: $tag" }
@@ -353,7 +353,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
                 }
                 val copied = tag.cloneShallow()
                 for ((key, value) in compoundTag) {
-                    copied.put(key, value)
+                    copied[key] = value
                 }
                 return DataResult.success(copied)
             }

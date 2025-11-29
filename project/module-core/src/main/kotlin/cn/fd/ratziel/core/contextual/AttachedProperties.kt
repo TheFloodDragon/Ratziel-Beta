@@ -3,6 +3,7 @@
 package cn.fd.ratziel.core.contextual
 
 import kotlin.properties.ReadOnlyProperty
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
@@ -27,10 +28,6 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
         override fun equals(other: Any?) = if (other is Key<*>) name == other.name else false
         override fun hashCode() = name.hashCode()
         override fun toString() = "Key($name)"
-    }
-
-    class PropertyKeyDelegate<T>(private val getDefaultValue: AttachedProperties.() -> T) : ReadOnlyProperty<Any?, Key<T>> {
-        override operator fun getValue(thisRef: Any?, property: KProperty<*>): Key<T> = Key(property.name, getDefaultValue)
     }
 
     /**
@@ -73,6 +70,15 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
 
     override fun hashCode() = properties.hashCode()
 
+    class PropertyKeyDelegate<T>(private val getDefaultValue: AttachedProperties.() -> T) : ReadOnlyProperty<Any?, Key<T>> {
+        override operator fun getValue(thisRef: Any?, property: KProperty<*>) = Key(property.name, getDefaultValue)
+    }
+
+    class PropertyValueDelegate<T>(private val getDefaultValue: AttachedProperties.() -> T) : ReadWriteProperty<Mutable, T> {
+        override operator fun getValue(thisRef: Mutable, property: KProperty<*>) = thisRef[Key(property.name, getDefaultValue)]
+        override fun setValue(thisRef: Mutable, property: KProperty<*>, value: T) = thisRef.set(Key(property.name, getDefaultValue), value)
+    }
+
     companion object {
 
         @JvmStatic
@@ -80,6 +86,9 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
 
         @JvmStatic
         fun <T> key(getDefaultValue: AttachedProperties.() -> T) = PropertyKeyDelegate(getDefaultValue)
+
+        @JvmStatic
+        fun <T> value(getDefaultValue: AttachedProperties.() -> T) = PropertyValueDelegate(getDefaultValue)
 
     }
 
