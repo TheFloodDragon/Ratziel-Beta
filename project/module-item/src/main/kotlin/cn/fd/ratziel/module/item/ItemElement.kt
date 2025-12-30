@@ -130,6 +130,8 @@ object ItemElement : ElementHandler.ParralHandler {
             val bi = ri.bukkitStack
             println(bi)
 
+            println(ItemComponents.LORE)
+
         }
     }
 

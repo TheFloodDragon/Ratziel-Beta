@@ -1,9 +1,9 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.api.component.ComponentHolder
+import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
-import cn.fd.ratziel.module.item.impl.component.CachedComponentHolder
+import cn.fd.ratziel.module.item.impl.component.CachedItemComponentHolder
 import cn.fd.ratziel.module.item.impl.component.NamespacedIdentifier
 import com.google.common.collect.HashBiMap
 import net.minecraft.core.component.DataComponentType
@@ -24,9 +24,9 @@ class NMSComponentImpl2 : NMSComponent() {
 
     val componentTypesBridge: HashBiMap<ItemComponentType<*>, DataComponentType<*>> = HashBiMap.create()
 
-    override fun createComponentHolder(nmsItem: Any): ComponentHolder {
+    override fun createComponentHolder(nmsItem: Any): ItemComponentHolder {
         nmsItem as NMSItemStack
-        return object : CachedComponentHolder<Any>() {
+        return object : CachedItemComponentHolder<Any>() {
             override fun <T : Any> exchangeFromRaw(type: ItemComponentType<T>, raw: Any) = type.transformer.transform(raw)
             override fun <T : Any> exchangeToRaw(type: ItemComponentType<T>, value: T) = type.transformer.detransform(value)
 

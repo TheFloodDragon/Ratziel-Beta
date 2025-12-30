@@ -5,6 +5,7 @@ import cn.fd.ratziel.common.config.Settings
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
+import taboolib.common.reflect.getAnnotationIfPresent
 import taboolib.expansion.createHelper
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.lang.Language
@@ -66,8 +67,14 @@ object CommandMain {
      */
     fun registerSubCommand(clazz: Class<*>, commandName: String) {
         val owner = ReflexClass.of(clazz, false)
+        // 获取 CommandHeader 注解
+        val anno = clazz.getAnnotationIfPresent(CommandHeader::class.java)
         val body = SimpleCommandBody().apply {
             this.name = commandName
+            if (anno != null) {
+                this.permission = anno.permission
+                this.permissionDefault = anno.permissionDefault
+            }
             owner.structure.fields.forEach {
                 children += commandRegister.loadBody(it, owner) ?: return@forEach
             }

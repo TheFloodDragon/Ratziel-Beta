@@ -1,6 +1,6 @@
 package cn.fd.ratziel.module.item.impl.component
 
-import cn.fd.ratziel.module.item.api.component.ComponentHolder
+import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 
 /**
@@ -9,7 +9,7 @@ import cn.fd.ratziel.module.item.api.component.ItemComponentType
  * @author TheFloodDragon
  * @since 2025/12/31 00:02
  */
-abstract class CachedComponentHolder<Raw> : ComponentHolder {
+abstract class CachedItemComponentHolder<Raw> : ItemComponentHolder {
 
     /**
      * 获取原始数据

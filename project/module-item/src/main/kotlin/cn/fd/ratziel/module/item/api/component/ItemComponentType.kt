@@ -24,12 +24,12 @@ interface ItemComponentType<T : Any> {
     val serializer: KSerializer<T>
 
     /**
-     * 数据类型转换器
+     * 数据类型转换器 (1.20.5+)
      */
     val transformer: Transformer<T>
 
     /**
-     * Transformer - 数据类型转换器 (1.20.5+)
+     * Transformer - 数据类型转换器
      */
     interface Transformer<T : Any> {
 

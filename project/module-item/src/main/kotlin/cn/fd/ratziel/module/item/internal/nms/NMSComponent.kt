@@ -3,9 +3,9 @@ package cn.fd.ratziel.module.item.internal.nms
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.module.item.ItemElement
-import cn.fd.ratziel.module.item.api.component.ComponentHolder
+import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
-import cn.fd.ratziel.module.item.impl.component.CachedComponentHolder
+import cn.fd.ratziel.module.item.impl.component.CachedItemComponentHolder
 import cn.fd.ratziel.module.item.impl.component.NbtNodeIdentifier
 import cn.fd.ratziel.module.nbt.delete
 import cn.fd.ratziel.module.nbt.read
@@ -25,7 +25,13 @@ abstract class NMSComponent {
     /**
      * 获取组件持有器
      */
-    abstract fun createComponentHolder(nmsItem: Any): ComponentHolder
+    abstract fun createComponentHolder(nmsItem: Any): ItemComponentHolder
+
+    /**
+     * 创建未验证的组件类型
+     */
+    // TODO
+//    abstract fun createUnverifiedComponentType(identifier: Identifier): ItemComponentType<Any>
 
     /**
      * 1.20.5+ only: CustomDataComponentTransformer
@@ -49,7 +55,7 @@ class NMSComponentImpl1 : NMSComponent() {
 
     private val ItemComponentType<*>.path get() = (this.identifier as NbtNodeIdentifier).path
 
-    override fun createComponentHolder(nmsItem: Any) = object : CachedComponentHolder<NbtTag>() {
+    override fun createComponentHolder(nmsItem: Any) = object : CachedItemComponentHolder<NbtTag>() {
 
         override fun getRaw(type: ItemComponentType<*>): NbtTag? {
             val root = NMSItem.INSTANCE.getTag(nmsItem) ?: return null

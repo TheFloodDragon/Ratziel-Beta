@@ -1,12 +1,12 @@
 package cn.fd.ratziel.module.item.api.component
 
 /**
- * ComponentHolder
+ * ItemComponentHolder
  * 
  * @author TheFloodDragon
  * @since 2025/12/30 22:43
  */
-interface ComponentHolder {
+interface ItemComponentHolder {
 
     /**
      * 获取组件
