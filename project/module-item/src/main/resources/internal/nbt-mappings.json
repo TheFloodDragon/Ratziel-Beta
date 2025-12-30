@@ -1,4 +1,17 @@
 {
+  "custom-data": {
+    "0": "minecraft:custom_data"
+  },
+  "display-name": {
+    "0": "display.Name",
+    "12005": "minecraft:custom_name"
+  },
+  "item-name": {
+    "0": "display.LocName",
+    "12005": "minecraft:item_name"
+  },
+
+
   "ItemDisplay.name": {
     "0": "Name",
     "12005": "minecraft:custom_name"

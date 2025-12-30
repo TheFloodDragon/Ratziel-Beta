@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.*
+import cn.fd.ratziel.platform.bukkit.nms.share.NMSShare
 import com.google.common.collect.Lists
 import com.mojang.datafixers.util.Pair
 import com.mojang.serialization.DataResult
@@ -26,6 +27,7 @@ import java.util.stream.Stream
  * @author TheFloodDragon
  * @since 2025/8/5 10:25
  */
+@NMSShare(NMSItem.modernVer)
 object ModernNbtOps : DynamicOps<NbtTag> {
 
     override fun empty(): NbtEnd = NbtEnd.INSTANCE

@@ -1,8 +1,11 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.impl.component.ItemComponentData
-import cn.fd.ratziel.module.item.impl.component.NamespacedIdentifier
+import cn.altawk.nbt.tag.NbtTag
+import cn.fd.ratziel.module.item.ItemElement
+import cn.fd.ratziel.module.item.api.component.ComponentHolder
+import cn.fd.ratziel.module.item.api.component.ItemComponentType
+import cn.fd.ratziel.module.item.impl.component.CachedComponentHolder
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
 
@@ -15,16 +18,9 @@ import taboolib.module.nms.nmsProxy
 abstract class NMSComponent {
 
     /**
-     * 获取组件数据
+     * 获取组件持有器
      */
-    @Deprecated("Will be edited")
-    abstract fun getComponent(nmsItem: Any, type: NamespacedIdentifier): ItemComponentData?
-
-    /**
-     * 设置组件数据
-     */
-    @Deprecated("Will be edited")
-    abstract fun setComponent(nmsItem: Any, type: NamespacedIdentifier, data: ItemComponentData): Boolean
+    abstract fun createComponentHolder(nmsItem: Any): ComponentHolder
 
     companion object {
 
@@ -32,7 +28,7 @@ abstract class NMSComponent {
         val INSTANCE by lazy {
             if (MinecraftVersion.versionId >= 12005)
                 nmsProxy<NMSItem>("{name}Impl2")
-            else nmsProxy<NMSItem>("{name}Impl1")
+            else NMSComponentImpl1()
         }
 
     }
@@ -42,21 +38,39 @@ abstract class NMSComponent {
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class NMSComponentImpl1 : NMSComponent() {
 
-    override fun getComponent(nmsItem: Any, type: NamespacedIdentifier): ItemComponentData? {
-        val root = NMSItem.INSTANCE.getTag(nmsItem) ?: return null
-        val value = root[type.key] // 低版本不管命名空间
-            ?: return ItemComponentData.removed()
-        return ItemComponentData.of(value.clone())
-    }
+    override fun createComponentHolder(nmsItem: Any): ComponentHolder {
+        return object : CachedComponentHolder<NbtTag>() {
 
-    override fun setComponent(nmsItem: Any, type: NamespacedIdentifier, data: ItemComponentData): Boolean {
-        val root = NMSItem.INSTANCE.getTag(nmsItem) ?: NbtCompound().also {
-            NMSItem.INSTANCE.setTag(nmsItem, it) // 没有根标签则创建并设置
+            override fun getRaw(type: ItemComponentType<*>): NbtTag? {
+                val root = NMSItem.INSTANCE.getTag(nmsItem) ?: return null
+                // 直接读取标签数据
+                return root[type.identifier.content]
+            }
+
+            override fun setRaw(type: ItemComponentType<*>, raw: NbtTag?) {
+                if (raw == null) {
+                    // 填空跳到删除
+                    removeRaw(type); return
+                }
+                val root = NMSItem.INSTANCE.getTag(nmsItem) ?: NbtCompound().also {
+                    NMSItem.INSTANCE.setTag(nmsItem, it) // 没有根标签则创建并设置
+                }
+                root[type.identifier.content] = raw
+            }
+
+            override fun removeRaw(type: ItemComponentType<*>) {
+                NMSItem.INSTANCE.getTag(nmsItem)?.remove(type.identifier.content)
+            }
+
+            override fun <T : Any> exchangeFromRaw(type: ItemComponentType<T>, raw: NbtTag): T {
+                return ItemElement.nbt.decodeFromNbtTag(type.serializer, raw)
+            }
+
+            override fun <T : Any> exchangeToRaw(type: ItemComponentType<T>, value: T): NbtTag {
+                return ItemElement.nbt.encodeToNbtTag(type.serializer, value)
+            }
+
         }
-        val value = data.tag?.clone() ?: return false
-        // 设置组件数据
-        root[type.key] = value
-        return true
     }
 
 }

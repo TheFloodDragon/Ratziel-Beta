@@ -37,8 +37,10 @@ abstract class NMSItem {
          * 是否支持最新的 NbtOps 解析 (1.20.5+ : 物品数据改组件存之后)
          * Tips: 这玩意会随版本变, 所以只能支持最后一个修改的版本及以上
          */
-        @JvmStatic
-        val isModern = MinecraftVersion.versionId >= 12105
+        @JvmField
+        val isModern = MinecraftVersion.versionId >= modernVer
+
+        const val modernVer = 12105
 
         @JvmStatic
         val INSTANCE by lazy {

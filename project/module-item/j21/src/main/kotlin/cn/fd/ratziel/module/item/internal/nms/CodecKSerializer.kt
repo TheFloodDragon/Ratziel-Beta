@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.NbtDecoder
 import cn.altawk.nbt.NbtEncoder
+import cn.fd.ratziel.platform.bukkit.nms.share.NMSShare
 import cn.fd.ratziel.platform.bukkit.util.toGson
 import cn.fd.ratziel.platform.bukkit.util.toKotlinx
 import com.mojang.serialization.Codec
@@ -20,6 +21,7 @@ import kotlinx.serialization.json.JsonEncoder
  * @author TheFloodDragon
  * @since 2025/11/29 20:47
  */
+@NMSShare(12005)
 class CodecKSerializer<T>(val codec: Codec<T>) : KSerializer<T> {
 
     override val descriptor = PrimitiveSerialDescriptor("Codec.$codec", PrimitiveKind.STRING)

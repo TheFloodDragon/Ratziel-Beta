@@ -18,8 +18,33 @@ object ItemSheet {
         Mapper.initialize("internal/nbt-mappings.json")
     }
 
+    val mappings2: BiMap<String, String> by lazy {
+        val path = "internal/nbt-mappings.json"
+        // Read from resources
+        val bytes = this::class.java.classLoader.getResourceAsStream(path)?.readBytes()
+            ?: throw IllegalStateException("File not found: $path!")
+        val json = Json.parseToJsonElement(bytes.toString(Charsets.UTF_8))
+        // Analyze to map
+        HashBiMap.create<String, String>().apply {
+            for ((key, verMap) in json.jsonObject) {
+                forcePut(key, matchVersion(verMap))
+            }
+        }
+    }
+
     /** 自定义数据组件名称 **/
     const val CUSTOM_DATA_COMPONENT = "minecraft:custom_data"
+
+    private fun matchVersion(json: JsonElement): String = when (json) {
+        is JsonObject ->
+            json.toSortedMap(Comparator.comparingInt { it.toInt() }).let { sortedMap ->
+                sortedMap.entries.findLast { MinecraftVersion.versionId >= it.key.toInt() }
+            }?.let { it.value as? JsonPrimitive }?.content
+
+        is JsonNull -> null
+        is JsonPrimitive -> json.content
+        else -> null
+    } ?: "" // 返回空字符串, 代表不支持
 
     /**
      * Mapper

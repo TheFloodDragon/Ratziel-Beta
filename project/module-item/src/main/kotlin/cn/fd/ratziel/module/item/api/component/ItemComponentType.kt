@@ -29,7 +29,7 @@ interface ItemComponentType<T : Any> {
     val transformer: Transformer<T>
 
     /**
-     * Transformer
+     * Transformer - 数据类型转换器 (1.20.5+)
      */
     interface Transformer<T : Any> {
 
@@ -46,14 +46,19 @@ interface ItemComponentType<T : Any> {
     }
 
     /**
-     * Unverified
+     * Unverified - 未经校验的物品组件类型
      */
-    class Unverified<T : Any>(
+    class Unverified<T : Any> internal constructor(
         override val identifier: Identifier,
         override val serializer: KSerializer<T>,
         override val transformer: Transformer<T> = Transformer.NoTransformation(),
+        private val verified: Boolean = true,
     ) : ItemComponentType<T> {
-        override fun toString() = "UnverifiedComponentType(identifier=$identifier, serializer=$serializer, transformer=$transformer)"
+
+        constructor(identifier: Identifier, serializer: KSerializer<T>, transformer: Transformer<T>) : this(identifier, serializer, transformer, false)
+
+        override fun toString() = (if (verified) "ComponentType" else "UnverifiedComponentType") +
+                "(identifier=$identifier, serializer=$serializer, transformer=$transformer)"
     }
 
 }

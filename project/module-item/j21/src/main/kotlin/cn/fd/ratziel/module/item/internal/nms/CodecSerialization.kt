@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.module.item.internal.nms.NMSItem.Companion.isModern
+import cn.fd.ratziel.platform.bukkit.nms.share.NMSShare
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
 import net.minecraft.nbt.DynamicOpsNBT
@@ -15,6 +16,7 @@ import org.bukkit.craftbukkit.v1_21_R4.CraftRegistry
  * @author TheFloodDragon
  * @since 2025/11/29 21:36
  */
+@NMSShare(12005)
 object CodecSerialization {
 
     @JvmStatic

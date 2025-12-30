@@ -1,17 +1,13 @@
 package cn.fd.ratziel.module.item.internal.nms
 
+import cn.fd.ratziel.module.item.api.component.ComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
-import cn.fd.ratziel.module.item.impl.component.ItemComponentData
+import cn.fd.ratziel.module.item.impl.component.CachedComponentHolder
 import cn.fd.ratziel.module.item.impl.component.NamespacedIdentifier
-import cn.fd.ratziel.module.item.internal.nms.CodecSerialization.modernOps
-import cn.fd.ratziel.module.item.internal.nms.CodecSerialization.nmsOps
-import cn.fd.ratziel.module.item.internal.nms.NMSItem.Companion.isModern
 import com.google.common.collect.HashBiMap
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.nbt.NBTBase
 import net.minecraft.resources.MinecraftKey
-import taboolib.common.platform.function.severe
 import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
@@ -26,63 +22,22 @@ class NMSComponentImpl2 : NMSComponent() {
 
     val componentTypesBridge: HashBiMap<ItemComponentType<*>, DataComponentType<*>> = HashBiMap.create()
 
-    fun <T : Any> getComponent(nmsItem: Any, type: ItemComponentType<T>): T? {
-        val dct = type.dataComponentType
-        val data = (nmsItem as NMSItemStack).componentsPatch.get(dct) ?: return null
-        return type.transformer.transform(data.getOrNull() ?: return null)
-    }
+    override fun createComponentHolder(nmsItem: Any): ComponentHolder {
+        nmsItem as NMSItemStack
+        return object : CachedComponentHolder<Any>() {
+            override fun <T : Any> exchangeFromRaw(type: ItemComponentType<T>, raw: Any) = type.transformer.transform(raw)
+            override fun <T : Any> exchangeToRaw(type: ItemComponentType<T>, value: T) = type.transformer.detransform(value)
 
-    fun <T : Any> setComponent(nmsItem: Any, type: ItemComponentType<T>, value: T) {
-        val dct = type.dataComponentType
-        val transformed = type.transformer.detransform(value)
-        (nmsItem as NMSItemStack).set(dct, transformed)
-    }
+            override fun getRaw(type: ItemComponentType<*>) = nmsItem.get(type.dataComponentType)
 
-    override fun getComponent(nmsItem: Any, type: NamespacedIdentifier): ItemComponentData? {
-        @Suppress("UNCHECKED_CAST")
-        val dct = typeByName(type) as DataComponentType<Any>
-        val data = (nmsItem as NMSItemStack).componentsPatch.get(dct) ?: return null
-        val input = data.getOrNull() ?: return null
-        // 返回数据
-        return ItemComponentData.lazyGetter(data.isEmpty) {
-            try {
-                val result = if (isModern) {
-                    dct.codecOrThrow().encodeStart(modernOps, input)
-                } else {
-                    dct.codecOrThrow().encodeStart(nmsOps, input).map {
-                        NMSNbt.INSTANCE.fromNms(it)
-                    }
-                }
-                result.getPartialOrThrow { error("Failed to save: $it") }
-            } catch (ex: Throwable) {
-                severe(ex.stackTraceToString()); null
+            override fun setRaw(type: ItemComponentType<*>, raw: Any?) {
+                nmsItem.set(type.dataComponentType, raw)
+            }
+
+            override fun removeRaw(type: ItemComponentType<*>) {
+                nmsItem.remove(type.dataComponentType)
             }
         }
-    }
-
-    override fun setComponent(nmsItem: Any, type: NamespacedIdentifier, data: ItemComponentData): Boolean {
-        @Suppress("UNCHECKED_CAST")
-        val dct = typeByName(type) as DataComponentType<Any>
-        // 删除组件 (仅明确标记删除)
-        if (data.removed) {
-            (nmsItem as NMSItemStack).remove(dct)
-        } else {
-            // 标签不存在则不处理
-            val input = data.tag ?: return false
-            val value = try {
-                val result = if (isModern) {
-                    dct.codecOrThrow().parse(modernOps, input)
-                } else {
-                    dct.codecOrThrow().parse(nmsOps, NMSNbt.INSTANCE.toNms(input) as NBTBase)
-                }
-                result.getPartialOrThrow { error("Failed to save: $it") }
-            } catch (ex: Throwable) {
-                severe(ex.stackTraceToString()); return false
-            }
-            // 设置组件
-            (nmsItem as NMSItemStack).set(dct, value)
-        }
-        return true
     }
 
     @Suppress("UNCHECKED_CAST")
