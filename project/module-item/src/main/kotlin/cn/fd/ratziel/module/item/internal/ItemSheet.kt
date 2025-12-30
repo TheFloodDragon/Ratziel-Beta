@@ -65,6 +65,7 @@ object ItemSheet {
             return HashBiMap.create<Pair<String, String>, String>().apply {
                 for ((id, verMap) in json.jsonObject) {
                     val split = id.split('.', limit = 2)
+                    if (split.size < 2) continue
                     forcePut(split[0] to split[1], matchVersion(verMap))
                 }
             }

@@ -10,6 +10,13 @@
     "0": "display.LocName",
     "12005": "minecraft:item_name"
   },
+  "lore": {
+    "0": "Lore",
+    "12005": "minecraft:lore"
+  },
+  "max-damage": {
+    "12005": "minecraft:max_damage"
+  },
 
 
   "ItemDisplay.name": {

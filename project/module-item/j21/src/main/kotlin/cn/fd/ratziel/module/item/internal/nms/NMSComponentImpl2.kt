@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.internal.nms
 
+import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.component.ComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.component.CachedComponentHolder
@@ -8,6 +9,7 @@ import com.google.common.collect.HashBiMap
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.MinecraftKey
+import net.minecraft.world.item.component.CustomData
 import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
@@ -57,6 +59,22 @@ class NMSComponentImpl2 : NMSComponent() {
         val minecraftKey = MinecraftKey.fromNamespaceAndPath(type.namespace, type.key)
         return BuiltInRegistries.DATA_COMPONENT_TYPE.get(minecraftKey)
             .getOrNull()?.value() ?: error("DataComponentType by '${minecraftKey.path}' not found.")
+    }
+
+    // some transformers
+
+    override fun customDataComponentTransformer() = object : ItemComponentType.Transformer<NbtCompound> {
+
+        override fun transform(src: Any): NbtCompound {
+            src as CustomData
+            @Suppress("DEPRECATION")
+            return NMSNbt.INSTANCE.fromNms(src.unsafe) as NbtCompound
+        }
+
+        override fun detransform(tar: NbtCompound): Any {
+            return NMSNbt.INSTANCE.toNms(tar)
+        }
+
     }
 
 }

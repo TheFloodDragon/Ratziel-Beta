@@ -57,8 +57,18 @@ interface ItemComponentType<T : Any> {
 
         constructor(identifier: Identifier, serializer: KSerializer<T>, transformer: Transformer<T>) : this(identifier, serializer, transformer, false)
 
-        override fun toString() = (if (verified) "ComponentType" else "UnverifiedComponentType") +
+        override fun toString() = (if (verified) "VerifiedComponentType" else "UnverifiedComponentType") +
                 "(identifier=$identifier, serializer=$serializer, transformer=$transformer)"
+    }
+
+    /**
+     * Unsupported - 当前版本不支持的组件类型
+     */
+    class Unsupported<T : Any> internal constructor(val key: String) : ItemComponentType<T> {
+        override val identifier get() = error("UnsupportedComponentType called.")
+        override val serializer get() = error("UnsupportedComponentType called.")
+        override val transformer get() = error("UnsupportedComponentType called.")
+        override fun toString() = "UnsupportedComponentType(key=$key)"
     }
 
 }
