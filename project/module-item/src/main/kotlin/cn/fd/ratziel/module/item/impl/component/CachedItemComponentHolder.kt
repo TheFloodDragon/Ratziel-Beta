@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
-import cn.fd.ratziel.module.item.api.component.ItemComponentType
+import cn.fd.ratziel.module.item.api.component.ItemComponentType3
 
 /**
  * CachedComponentHolder
@@ -14,34 +14,34 @@ abstract class CachedItemComponentHolder<Raw> : ItemComponentHolder {
     /**
      * 获取原始数据
      */
-    abstract fun getRaw(type: ItemComponentType<*>): Raw?
+    abstract fun getRaw(type: ItemComponentType3<*>): Raw?
 
     /**
      * 设置原始数据
      */
-    abstract fun setRaw(type: ItemComponentType<*>, raw: Raw?)
+    abstract fun setRaw(type: ItemComponentType3<*>, raw: Raw?)
 
     /**
      * 删除原始数据
      */
-    abstract fun removeRaw(type: ItemComponentType<*>)
+    abstract fun removeRaw(type: ItemComponentType3<*>)
 
     /**
      * 原始数据 -> 操作数据
      */
-    abstract fun <T : Any> exchangeFromRaw(type: ItemComponentType<T>, raw: Raw): T
+    abstract fun <T : Any> exchangeFromRaw(type: ItemComponentType3<T>, raw: Raw): T
 
     /**
      * 操作数据 -> 原始数据
      */
-    abstract fun <T : Any> exchangeToRaw(type: ItemComponentType<T>, value: T): Raw
+    abstract fun <T : Any> exchangeToRaw(type: ItemComponentType3<T>, value: T): Raw
 
     /**
      * 交换数据缓存
      */
-    private val cache = LinkedHashMap<ItemComponentType<*>, Pair<Raw, Any>>()
+    private val cache = LinkedHashMap<ItemComponentType3<*>, Pair<Raw, Any>>()
 
-    final override fun <T : Any> get(type: ItemComponentType<T>): T? {
+    final override fun <T : Any> get(type: ItemComponentType3<T>): T? {
         val raw = getRaw(type) ?: return null
         // 尝试获取缓存
         val record = cache[type]
@@ -58,7 +58,7 @@ abstract class CachedItemComponentHolder<Raw> : ItemComponentHolder {
         }
     }
 
-    final override fun <T : Any> set(type: ItemComponentType<T>, value: T) {
+    final override fun <T : Any> set(type: ItemComponentType3<T>, value: T) {
         // 转换传入数据
         val exchanged = exchangeToRaw(type, value)
         // 设置组件
@@ -67,13 +67,13 @@ abstract class CachedItemComponentHolder<Raw> : ItemComponentHolder {
         cache[type] = exchanged to value
     }
 
-    final override fun remove(type: ItemComponentType<*>) {
+    final override fun remove(type: ItemComponentType3<*>) {
         removeRaw(type)
         // 清除缓存
         cache.remove(type)
     }
 
-    final override fun restore(type: ItemComponentType<*>) {
+    final override fun restore(type: ItemComponentType3<*>) {
         setRaw(type, null)
         // 清除缓存
         cache.remove(type)

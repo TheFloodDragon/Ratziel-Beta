@@ -132,7 +132,7 @@ object ItemElement : ElementHandler.ParralHandler {
             println(bi)
 
             debug(ItemComponents.registry.map {
-                Triple(it.identifier, it.transformer, it.serializer)
+                it.key to it.transformer
             })
 
         }

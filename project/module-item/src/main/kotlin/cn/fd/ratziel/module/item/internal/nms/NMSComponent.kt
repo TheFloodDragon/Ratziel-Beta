@@ -5,7 +5,7 @@ import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
-import cn.fd.ratziel.module.item.api.component.ItemComponentType
+import cn.fd.ratziel.module.item.api.component.ItemComponentType3
 import cn.fd.ratziel.module.item.impl.component.CachedItemComponentHolder
 import cn.fd.ratziel.module.item.impl.component.NbtNodeIdentifier
 import cn.fd.ratziel.module.nbt.delete
@@ -31,12 +31,12 @@ abstract class NMSComponent {
     /**
      * 创建未验证的组件类型 (1.20.5+ only)
      */
-    open fun unverifiedComponentType(identifier: Identifier): ItemComponentType<*> = throw UnsupportedVersionException()
+    open fun unverifiedComponentType(identifier: Identifier): ItemComponentType3<*> = throw UnsupportedVersionException()
 
     /**
      * 1.20.5+ only: CustomDataComponentTransformer
      */
-    open fun customDataComponentTransformer(): ItemComponentType.Transformer<NbtCompound> = throw UnsupportedVersionException()
+    open fun customDataComponentTransformer(): ItemComponentType3.Transformer<NbtCompound> = throw UnsupportedVersionException()
 
     companion object {
 
@@ -53,17 +53,17 @@ abstract class NMSComponent {
 
 class NMSComponentImpl1 : NMSComponent() {
 
-    private val ItemComponentType<*>.path get() = (this.identifier as NbtNodeIdentifier).path
+    private val ItemComponentType3<*>.path get() = (this.identifier as NbtNodeIdentifier).path
 
     override fun createComponentHolder(nmsItem: Any) = object : CachedItemComponentHolder<NbtTag>() {
 
-        override fun getRaw(type: ItemComponentType<*>): NbtTag? {
+        override fun getRaw(type: ItemComponentType3<*>): NbtTag? {
             val root = NMSItem.INSTANCE.getTag(nmsItem) ?: return null
             // 直接读取标签数据
             return root.read(type.path)
         }
 
-        override fun setRaw(type: ItemComponentType<*>, raw: NbtTag?) {
+        override fun setRaw(type: ItemComponentType3<*>, raw: NbtTag?) {
             if (raw == null) {
                 // 填空跳到删除
                 removeRaw(type); return
@@ -74,15 +74,15 @@ class NMSComponentImpl1 : NMSComponent() {
             root.write(type.path, raw, true)
         }
 
-        override fun removeRaw(type: ItemComponentType<*>) {
+        override fun removeRaw(type: ItemComponentType3<*>) {
             NMSItem.INSTANCE.getTag(nmsItem)?.delete(type.path)
         }
 
-        override fun <T : Any> exchangeFromRaw(type: ItemComponentType<T>, raw: NbtTag): T {
+        override fun <T : Any> exchangeFromRaw(type: ItemComponentType3<T>, raw: NbtTag): T {
             return ItemElement.nbt.decodeFromNbtTag(type.serializer, raw)
         }
 
-        override fun <T : Any> exchangeToRaw(type: ItemComponentType<T>, value: T): NbtTag {
+        override fun <T : Any> exchangeToRaw(type: ItemComponentType3<T>, value: T): NbtTag {
             return ItemElement.nbt.encodeToNbtTag(type.serializer, value)
         }
 

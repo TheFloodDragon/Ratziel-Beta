@@ -1,6 +1,6 @@
-package cn.fd.ratziel.module.item.impl.component.internal
+package cn.fd.ratziel.module.item.impl.component.transformers
 
-import cn.fd.ratziel.module.item.api.component.ItemComponentType
+import cn.fd.ratziel.module.item.api.component.ItemComponentType3
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
 import net.kyori.adventure.text.Component
 
@@ -11,7 +11,7 @@ import net.kyori.adventure.text.Component
  * @since 2025/12/31 00:37
  */
 @Suppress("UnstableApiUsage")
-object MessageComponentTransformer : ItemComponentType.Transformer<Component> {
+object MessageComponentTransformer : ItemComponentType3.Transformer<Component> {
 
     override fun transform(src: Any): Component {
         return MinecraftComponentSerializer.get().deserialize(src)

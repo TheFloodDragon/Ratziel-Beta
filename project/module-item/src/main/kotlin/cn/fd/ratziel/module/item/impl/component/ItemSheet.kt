@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal
+package cn.fd.ratziel.module.item.impl.component
 
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
@@ -23,13 +23,17 @@ object ItemSheet {
         // Read from resources
         val bytes = this::class.java.classLoader.getResourceAsStream(path)?.readBytes()
             ?: throw IllegalStateException("File not found: $path!")
-        val json = Json.parseToJsonElement(bytes.toString(Charsets.UTF_8))
+        val json = Json.Default.parseToJsonElement(bytes.toString(Charsets.UTF_8))
         // Analyze to map
         HashBiMap.create<String, String>().apply {
             for ((key, verMap) in json.jsonObject) {
                 forcePut(key, matchVersion(verMap))
             }
         }
+    }
+
+    fun mapping(key: String): String {
+        return mappings2[key] ?: error("Mapping not found for key: $key")
     }
 
     /** 自定义数据组件名称 **/
@@ -60,7 +64,7 @@ object ItemSheet {
         fun initialize(path: String): BiMap<Pair<String, String>, String> {
             // Read from resources
             val bytes = runningResources[path] ?: throw IllegalStateException("File not found: $path!")
-            val json = Json.parseToJsonElement(bytes.toString(Charsets.UTF_8))
+            val json = Json.Default.parseToJsonElement(bytes.toString(Charsets.UTF_8))
             // Analyze to map
             return HashBiMap.create<Pair<String, String>, String>().apply {
                 for ((id, verMap) in json.jsonObject) {
