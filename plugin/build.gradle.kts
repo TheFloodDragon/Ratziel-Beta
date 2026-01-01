@@ -84,6 +84,10 @@ subprojects {
             relocate("taboolib", "${rootProject.group}.taboolib")
             // NBT
             relocate("cn.altawk.nbt.", "${rootProject.group}.module.nbt.")
+            // ItemBridge: https://github.com/jhqwqmc/ItemBridge
+            relocate("cn.gtemc.itembridge.", "${rootProject.group}.libraries.itembridge.")
+            // Fluxon
+            relocate("org.tabooproject.fluxon.", "${rootProject.group}.libraries.fluxon.")
             // 删除模块元数据
             exclude("META-INF/*.kotlin_module")
         }

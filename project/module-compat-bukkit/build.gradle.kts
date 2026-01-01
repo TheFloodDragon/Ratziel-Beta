@@ -7,5 +7,5 @@ dependencies {
 }
 
 tasks.jar {
-    from(zipTree(project(":project:module-compat-bukkit:j21").tasks.jar.get().archiveFile))
+    from(zipTree(project(":project:module-compat-bukkit:j21").tasks.shadowJar.get().archiveFile))
 }

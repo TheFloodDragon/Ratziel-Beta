@@ -71,7 +71,7 @@ allprojects {
         }
     }
 
-    buildDirClean()
+//    buildDirClean()
 
 }
 

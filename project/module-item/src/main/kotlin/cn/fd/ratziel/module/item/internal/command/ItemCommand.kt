@@ -86,12 +86,11 @@ object ItemCommand {
     private fun cmdGive(sender: ProxyCommandSender, players: List<ProxyPlayer>, id: String, amount: Int) {
         if (players.size == 1) {
             val player = players[0]
-            giveById(player.cast(), id, amount).thenRun {
-                // 发送给命名发送者
-                sender.sendLang("Item-Give", player.name, id, amount)
-                // 发送给物品接收者
-                if (sender.name != player.name) player.sendLang("Item-Get", id, amount)
-            }
+            giveById(player.cast(), id, amount).join()
+            // 发送给命名发送者
+            sender.sendLang("Item-Give", player.name, id, amount)
+            // 发送给物品接收者
+            if (sender.name != player.name) player.sendLang("Item-Get", id, amount)
         } else {
             val futures = players.map { player ->
                 giveById(player.cast(), id, amount).thenRun {
@@ -99,8 +98,8 @@ object ItemCommand {
                     if (sender.name != player.name) player.sendLang("Item-Get", id, amount)
                 }
             }
-            CompletableFuture.allOf(*futures.toTypedArray())
-                .thenRun { sender.sendLang("Item-Give-All", id, amount) }
+            CompletableFuture.allOf(*futures.toTypedArray()).join()
+            sender.sendLang("Item-Give-All", id, amount)
         }
     }
 
