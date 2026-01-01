@@ -24,6 +24,8 @@ allprojects {
         maven("https://papermc.io/repo/repository/maven-public/")
         // JitPack
         maven("https://jitpack.io")
+        // ItemBridge
+        maven("https://repo-momi.gtemc.cn/releases/")
     }
 
     dependencies {
@@ -71,7 +73,7 @@ allprojects {
         }
     }
 
-//    buildDirClean()
+    buildDirClean()
 
 }
 

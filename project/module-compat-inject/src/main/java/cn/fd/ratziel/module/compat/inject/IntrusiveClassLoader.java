@@ -29,20 +29,22 @@ public final class IntrusiveClassLoader extends ClassLoader {
         synchronized (getClassLoadingLock(name)) {
             // 依赖包重定向
             if (name.startsWith(ACCESS_LIBRARIES_NAME)) {
-                return loadClass(name.substring(ACCESS_LIBRARIES_NAME.length()));
+                return loadClass(name.substring(ACCESS_LIBRARIES_NAME.length()), resolve);
             }
 
             // 优先父级加载
             Class<?> find = loadClassOrNull(getParent(), name);
+            if (name.contains("cn.fd.ratziel.core.contextual.")) System.out.println(":::"+ find);
             // 隔离类加载器加载 (不检查其父级)
             // 同时检查可访问性
             if (find == null && name.startsWith(ACCESS_GROUP_NAME)) try {
                 find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
+            if (name.contains("cn.fd.ratziel.core.contextual.")) System.out.println("::::::::"+ find);
             } catch (ClassNotFoundException ignored) {
             }
 
             // 检查结果
-            if (find == null) throw new ClassNotFoundException(name);
+            if (find == null) throw new ClassNotFoundException("-----------"+name);
             // 返回值
             return find;
         }
