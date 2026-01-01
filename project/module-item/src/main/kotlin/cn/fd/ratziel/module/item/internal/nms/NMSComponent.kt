@@ -2,6 +2,7 @@ package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtTag
+import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
@@ -28,10 +29,9 @@ abstract class NMSComponent {
     abstract fun createComponentHolder(nmsItem: Any): ItemComponentHolder
 
     /**
-     * 创建未验证的组件类型
+     * 创建未验证的组件类型 (1.20.5+ only)
      */
-    // TODO
-//    abstract fun createUnverifiedComponentType(identifier: Identifier): ItemComponentType<Any>
+    open fun unverifiedComponentType(identifier: Identifier): ItemComponentType<*> = throw UnsupportedVersionException()
 
     /**
      * 1.20.5+ only: CustomDataComponentTransformer

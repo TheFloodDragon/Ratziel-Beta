@@ -33,28 +33,23 @@ public final class IntrusiveClassLoader extends ClassLoader {
             }
 
             // 优先父级加载
-            Class<?> find = loadClassOrNull(getParent(), name);
-            if (name.contains("cn.fd.ratziel.core.contextual.")) System.out.println(":::"+ find);
+            ClassLoader parent = getParent();
+            if (parent != null) {
+                try {
+                    return parent.loadClass(name);
+                } catch (ClassNotFoundException ignored) {
+                }
+            }
+
             // 隔离类加载器加载 (不检查其父级)
             // 同时检查可访问性
-            if (find == null && name.startsWith(ACCESS_GROUP_NAME)) try {
-                find = IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
-            if (name.contains("cn.fd.ratziel.core.contextual.")) System.out.println("::::::::"+ find);
+            if (name.startsWith(ACCESS_GROUP_NAME)) try {
+                return IsolatedClassLoader.INSTANCE.loadClass(name, resolve, false);
             } catch (ClassNotFoundException ignored) {
             }
 
-            // 检查结果
-            if (find == null) throw new ClassNotFoundException("-----------"+name);
-            // 返回值
-            return find;
-        }
-    }
-
-    public static Class<?> loadClassOrNull(ClassLoader loader, String name) {
-        try {
-            return loader.loadClass(name);
-        } catch (ClassNotFoundException ignored) {
-            return null;
+            // 找不到类抛出异常
+            throw new ClassNotFoundException(name);
         }
     }
 

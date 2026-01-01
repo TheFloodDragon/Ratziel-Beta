@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.item.api.component
 
+import cn.altawk.nbt.tag.NbtTag
 import cn.fd.ratziel.core.Identifier
 import kotlinx.serialization.KSerializer
 
@@ -24,7 +25,7 @@ interface ItemComponentType<T : Any> {
     val serializer: KSerializer<T>
 
     /**
-     * 数据类型转换器 (1.20.5+)
+     * 数据类型转换器
      */
     val transformer: Transformer<T>
 
@@ -43,6 +44,11 @@ interface ItemComponentType<T : Any> {
             override fun detransform(tar: T) = tar
         }
 
+    }
+
+    interface SerializerTransformer<T:Any> : Transformer<T>{
+        override fun transform(src: Any): T
+        fun transform(root: NbtTag): T
     }
 
     /**

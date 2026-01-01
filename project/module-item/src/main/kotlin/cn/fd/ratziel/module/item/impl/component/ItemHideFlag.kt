@@ -41,7 +41,7 @@ class ItemHideFlag(
     fun add(vararg flags: HideFlag) {
         val hideFlags = this.hideFlags
         if (hideFlags == null) {
-            this.hideFlags = HashSet(flags.toList())
+            this.hideFlags = flags.toMutableSet()
         } else hideFlags.addAll(flags)
     }
 
@@ -49,7 +49,7 @@ class ItemHideFlag(
      * 删除物品隐藏标签
      */
     fun remove(vararg flags: HideFlag) {
-        hideFlags?.removeAll(flags)
+        hideFlags?.removeAll(flags.toSet())
     }
 
     private object Serializer : KSerializer<ItemHideFlag> {

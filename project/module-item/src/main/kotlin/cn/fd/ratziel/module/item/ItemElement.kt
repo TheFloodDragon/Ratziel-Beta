@@ -31,6 +31,7 @@ import kotlinx.serialization.serializer
 import taboolib.common.LifeCycle
 import taboolib.common.io.isDebugMode
 import taboolib.common.platform.Awake
+import taboolib.common.platform.function.debug
 import taboolib.library.xseries.XItemFlag
 import taboolib.module.nms.MinecraftVersion
 
@@ -130,7 +131,9 @@ object ItemElement : ElementHandler.ParralHandler {
             val bi = ri.bukkitStack
             println(bi)
 
-            println(ItemComponents.LORE)
+            debug(ItemComponents.registry.map {
+                Triple(it.identifier, it.transformer, it.serializer)
+            })
 
         }
     }

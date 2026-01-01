@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.api.component.ItemComponentType.Transformer
 import cn.fd.ratziel.module.item.impl.component.internal.ComponentListTransformer
@@ -13,8 +12,6 @@ import cn.fd.ratziel.module.item.internal.serializers.MessageComponentSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.serializer
-import taboolib.common.platform.function.debug
 import taboolib.module.nms.MinecraftVersion
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -31,11 +28,6 @@ object ItemComponents {
      */
     val registry: MutableCollection<ItemComponentType<*>> = CopyOnWriteArraySet()
 
-    /**
-     * 物品组件注册表 (外部注册的)
-     */
-    val unverifiedRegistry: MutableCollection<ItemComponentType<*>> = CopyOnWriteArraySet()
-
     @JvmField
     val CUSTOM_DATA = r("custom-data", NbtCompound.serializer(), NMSComponent.INSTANCE.customDataComponentTransformer())
 
@@ -48,27 +40,12 @@ object ItemComponents {
     @JvmField
     val LORE = r("lore", ListSerializer(MessageComponentSerializer), ComponentListTransformer(MessageComponentTransformer))
 
-    @JvmField
-    val DURABILITY = r("max-damage", Int.serializer())
+    @JvmField // TODO 低版本处理
+    val MAX_DAMAGE = r("max-damage", Int.serializer(), Transformer.NoTransformation())
 
 
     // TODO .... more ... and .. more
 
-    init {
-        debug(registry.map {
-            Triple(it.identifier, it.transformer, it.serializer)
-        })
-    }
-
-    inline fun <reified T : Any> createUnverified(name: String) = this.createUnverified(name, T::class.java)
-
-    fun <T : Any> createUnverified(name: String, type: Class<T>): ItemComponentType.Unverified<T> {
-        @Suppress("UNCHECKED_CAST")
-        val serializer = ItemElement.nbt.serializersModule.serializer(type) as KSerializer<T>
-        val componentType = ItemComponentType.Unverified(keyName(name), serializer, Transformer.NoTransformation(), false)
-        unverifiedRegistry.add(componentType)
-        return componentType
-    }
 
     private fun keyName(name: String): Identifier {
         // 1.20.5 + 的格式为 minecraft:custom_data (NamespacedIdentifier)
@@ -78,7 +55,7 @@ object ItemComponents {
         } else NbtNodeIdentifier(name)
     }
 
-    private fun <T : Any> r(key: String, serializer: KSerializer<T>, transformer: Transformer<T> = Transformer.NoTransformation()): ItemComponentType<T> {
+    private fun <T : Any> r(key: String, serializer: KSerializer<T>, transformer: Transformer<T>): ItemComponentType<T> {
         // 跨版本映射组件 ID
         val mapped = ItemSheet.mappings2[key] ?: key
         // 代表当前版本不支持

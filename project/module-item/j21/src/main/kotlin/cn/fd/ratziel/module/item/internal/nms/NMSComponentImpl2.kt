@@ -1,15 +1,16 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
+import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.component.CachedItemComponentHolder
 import cn.fd.ratziel.module.item.impl.component.NamespacedIdentifier
-import com.google.common.collect.HashBiMap
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.MinecraftKey
 import net.minecraft.world.item.component.CustomData
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
@@ -22,7 +23,15 @@ import net.minecraft.world.item.ItemStack as NMSItemStack
 @Suppress("unused")
 class NMSComponentImpl2 : NMSComponent() {
 
-    val componentTypesBridge: HashBiMap<ItemComponentType<*>, DataComponentType<*>> = HashBiMap.create()
+    /**
+     * [DataComponentType] 表
+     */
+    val nmsComponentTypesMap: MutableMap<NamespacedIdentifier, DataComponentType<*>> = ConcurrentHashMap()
+
+    /**
+     * 创建的 [ItemComponentType] 表
+     */
+    val unverifiedComponentTypesMap: MutableMap<NamespacedIdentifier, ItemComponentType<*>> = ConcurrentHashMap()
 
     override fun createComponentHolder(nmsItem: Any): ItemComponentHolder {
         nmsItem as NMSItemStack
@@ -42,24 +51,26 @@ class NMSComponentImpl2 : NMSComponent() {
         }
     }
 
+    override fun unverifiedComponentType(identifier: Identifier) = unverifiedComponentTypesMap.computeIfAbsent(identifier as NamespacedIdentifier) {
+        val codec = identifier.dataComponentType.codecOrThrow()
+        val serializer = CodecKSerializer(codec)
+        ItemComponentType.Unverified(
+            identifier,
+            serializer,
+            ItemComponentType.Transformer.NoTransformation()
+        )
+    }
+
+    inline val ItemComponentType<*>.dataComponentType get() = this.identifier.dataComponentType
+
     @Suppress("UNCHECKED_CAST")
-    val ItemComponentType<*>.dataComponentType: DataComponentType<Any>
-        get() = componentTypesBridge.computeIfAbsent(this) {
-            val id = this.identifier
-            val key = if (id is NamespacedIdentifier) {
-                MinecraftKey.fromNamespaceAndPath(id.namespace, id.key)
-            } else MinecraftKey.parse(id.content)
+    val Identifier.dataComponentType: DataComponentType<Any>
+        get() = nmsComponentTypesMap.computeIfAbsent(this as NamespacedIdentifier) {
+            val key = MinecraftKey.fromNamespaceAndPath(this.namespace, this.key)
             // 从注册表中获取
             return@computeIfAbsent BuiltInRegistries.DATA_COMPONENT_TYPE.get(key)
                 .getOrNull()?.value() ?: error("DataComponentType by '${key.path}' not found.")
         } as DataComponentType<Any>
-
-    @Deprecated("Will be removed")
-    fun typeByName(type: NamespacedIdentifier): DataComponentType<*> {
-        val minecraftKey = MinecraftKey.fromNamespaceAndPath(type.namespace, type.key)
-        return BuiltInRegistries.DATA_COMPONENT_TYPE.get(minecraftKey)
-            .getOrNull()?.value() ?: error("DataComponentType by '${minecraftKey.path}' not found.")
-    }
 
     // some transformers
 

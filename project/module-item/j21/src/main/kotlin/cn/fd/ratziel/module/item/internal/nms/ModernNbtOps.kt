@@ -108,7 +108,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
             return DataResult.error({ "mergeToMap called with not a map: $map" }, map)
         } else {
             val result = if (map is NbtCompound) map.cloneShallow() else NbtCompound()
-            val invalidKeys: MutableList<NbtTag> = ArrayList<NbtTag>()
+            val invalidKeys = ArrayList<NbtTag>()
             otherMap.entries().forEach { pair ->
                 val keyTag: NbtTag = pair.getFirst()
                 if (keyTag is NbtString) {
@@ -126,7 +126,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
             return DataResult.error({ "mergeToMap called with not a map: $inputTag" }, inputTag)
         }
         val result = if (inputTag is NbtCompound) inputTag.cloneShallow() else NbtCompound()
-        val invalidKeys: MutableList<NbtTag> = ArrayList<NbtTag>()
+        val invalidKeys = ArrayList<NbtTag>()
         for (entry in entriesToMerge.entries) {
             val keyTag: NbtTag = entry.key
             if (keyTag is NbtString) {
@@ -147,7 +147,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
     }
 
     override fun getMapEntries(map: NbtTag): DataResult<Consumer<BiConsumer<NbtTag, NbtTag>>> {
-        return if (map is NbtCompound) DataResult.success(Consumer<BiConsumer<NbtTag, NbtTag>> {
+        return if (map is NbtCompound) DataResult.success(Consumer {
             for ((key, value) in map.entries) {
                 it.accept(this.createString(key), value)
             }
@@ -266,9 +266,9 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         return "Modern-NbtOps-For-Altawk-Nbt"
     }
 
-    interface ListCollector {
-        fun accept(tag: NbtTag): ListCollector
-        fun result(): NbtTag
+    abstract class ListCollector {
+        abstract fun accept(tag: NbtTag): ListCollector
+        abstract fun result(): NbtTag
         fun acceptAll(iterable: Iterable<NbtTag>) = acceptAll(iterable.iterator())
         fun acceptAll(iterator: Iterator<NbtTag>): ListCollector {
             var collector = this
@@ -277,7 +277,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         }
     }
 
-    class GenericListCollector(private val result: NbtList = NbtList()) : ListCollector {
+    class GenericListCollector(private val result: NbtList = NbtList()) : ListCollector() {
         constructor(list: IntArrayList) : this() {
             list.forEach { this.result.add(NbtInt(it)) }
         }
@@ -294,7 +294,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         override fun result() = this.result
     }
 
-    class ByteListCollector(values: ByteArray) : ListCollector {
+    class ByteListCollector(values: ByteArray) : ListCollector() {
         private val values = ByteArrayList()
 
         init {
@@ -311,7 +311,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         }
     }
 
-    class IntListCollector(values: IntArray) : ListCollector {
+    class IntListCollector(values: IntArray) : ListCollector() {
         private val values = IntArrayList()
 
         init {
@@ -328,7 +328,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         }
     }
 
-    class LongListCollector(values: LongArray) : ListCollector {
+    class LongListCollector(values: LongArray) : ListCollector() {
         private val values = LongArrayList()
 
         init {
