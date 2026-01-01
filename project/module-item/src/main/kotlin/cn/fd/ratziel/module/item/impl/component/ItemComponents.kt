@@ -1,18 +1,16 @@
+@file:Suppress("NOTHING_TO_INLINE", "unused")
+
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
-import cn.fd.ratziel.module.item.api.component.ItemComponentType.Transformer
-import cn.fd.ratziel.module.item.impl.component.internal.ComponentListTransformer
-import cn.fd.ratziel.module.item.impl.component.internal.MessageComponentTransformer
-import cn.fd.ratziel.module.item.internal.ItemSheet
-import cn.fd.ratziel.module.item.internal.nms.NMSComponent
+import cn.fd.ratziel.module.item.impl.component.transformers.MinecraftObjListTransformer
+import cn.fd.ratziel.module.item.impl.component.transformers.MinecraftObjMessageTransformer
+import cn.fd.ratziel.module.item.impl.component.transformers.MinecraftObjNoTransformation
 import cn.fd.ratziel.module.item.internal.serializers.MessageComponentSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
-import taboolib.module.nms.MinecraftVersion
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -29,40 +27,42 @@ object ItemComponents {
     val registry: MutableCollection<ItemComponentType<*>> = CopyOnWriteArraySet()
 
     @JvmField
-    val CUSTOM_DATA = r("custom-data", NbtCompound.serializer(), NMSComponent.INSTANCE.customDataComponentTransformer())
+    val CUSTOM_DATA = r("custom-data", NbtCompound.serializer()) {
+        jsonEntry(); nbtEntry()
+    }
 
     @JvmField
-    val DISPLAY_NAME = r("display-name", MessageComponentSerializer, MessageComponentTransformer)
+    val DISPLAY_NAME = r("display-name", MessageComponentSerializer) {
+        jsonEntry("displayName", "name"); nbtEntry();
+        nms(MinecraftObjMessageTransformer)
+    }
 
     @JvmField
-    val ITEM_NAME = r("item-name", MessageComponentSerializer, MessageComponentTransformer)
+    val ITEM_NAME = r("item-name", MessageComponentSerializer) {
+        jsonEntry("itemName", "localized-name", "localizedName"); nbtEntry();
+        nms(MinecraftObjMessageTransformer)
+    }
 
     @JvmField
-    val LORE = r("lore", ListSerializer(MessageComponentSerializer), ComponentListTransformer(MessageComponentTransformer))
+    val LORE = r("lore", ListSerializer(MessageComponentSerializer)) {
+        jsonEntry("lores"); nbtEntry();
+        nms(MinecraftObjListTransformer(MinecraftObjMessageTransformer))
+    }
 
     @JvmField // TODO 低版本处理
-    val MAX_DAMAGE = r("max-damage", Int.serializer(), Transformer.NoTransformation())
-
+    val MAX_DAMAGE = r("max-damage", Int.serializer()) {
+        jsonEntry("maxDamage", "maxDurability", "max-durability", "durability"); nbtEntry()
+        nms(MinecraftObjNoTransformation())
+    }
 
     // TODO .... more ... and .. more
 
-
-    private fun keyName(name: String): Identifier {
-        // 1.20.5 + 的格式为 minecraft:custom_data (NamespacedIdentifier)
-        // 1.20.5- 的格式为 display.Name (NbtNodeIdentifier)
-        return if (MinecraftVersion.versionId >= 12005) {
-            NamespacedIdentifier.fromString(name)
-        } else NbtNodeIdentifier(name)
-    }
-
-    private fun <T : Any> r(key: String, serializer: KSerializer<T>, transformer: Transformer<T>): ItemComponentType<T> {
-        // 跨版本映射组件 ID
-        val mapped = ItemSheet.mappings2[key] ?: key
-        // 代表当前版本不支持
-        if (mapped.isEmpty()) return ItemComponentType.Unsupported(key)
-        // 创建验证后的类型
-        val componentType = ItemComponentType.Unverified(keyName(key), serializer, transformer, true)
-        this.registry.add(componentType)
+    private fun <T : Any> r(key: String, serializer: KSerializer<T>, builder: TransformerBuilder<T>.() -> Unit = {}): ItemComponentType<T> {
+        val componentType = object : ItemComponentType<T> {
+            override val key = key
+            override val transformer = TransformerBuilder(key, serializer).apply(builder).build()
+        }
+        registry.add(componentType)
         return componentType
     }
 

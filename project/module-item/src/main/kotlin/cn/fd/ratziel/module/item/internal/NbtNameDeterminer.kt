@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.internal
 
 import cn.altawk.nbt.SerialNameDeterminer
+import cn.fd.ratziel.module.item.impl.component.ItemSheet
 import kotlinx.serialization.descriptors.SerialDescriptor
 
 /**

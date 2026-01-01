@@ -1,4 +1,4 @@
-package cn.fd.ratziel.module.item.internal
+package cn.fd.ratziel.module.item.impl.component
 
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
@@ -30,6 +30,10 @@ object ItemSheet {
                 forcePut(key, matchVersion(verMap))
             }
         }
+    }
+
+    fun mapping(key: String): String {
+        return mappings2[key] ?: error("Mapping not found for key: $key")
     }
 
     /** 自定义数据组件名称 **/

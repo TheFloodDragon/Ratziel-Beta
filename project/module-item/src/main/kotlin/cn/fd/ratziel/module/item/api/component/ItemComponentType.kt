@@ -1,8 +1,7 @@
 package cn.fd.ratziel.module.item.api.component
 
 import cn.altawk.nbt.tag.NbtTag
-import cn.fd.ratziel.core.Identifier
-import kotlinx.serialization.KSerializer
+import kotlinx.serialization.json.JsonElement
 
 /**
  * ItemComponentType - 物品组件类型
@@ -10,71 +9,67 @@ import kotlinx.serialization.KSerializer
  * @author TheFloodDragon
  * @since 2025/11/29 21:48
  */
-interface ItemComponentType<T : Any> {
+interface ItemComponentType<T> {
 
     /**
-     * 物品组件标识符
-     *   1.20.5 + 的格式为 minecraft:custom_data (NamespacedIdentifier)
-     *   1.20.5- 的格式为 display.Name (NbtNodeIdentifier)
+     * 组件标识符 (插件内部命名)
      */
-    val identifier: Identifier
+    val key: String
 
     /**
-     * 物品组件序列化器
-     */
-    val serializer: KSerializer<T>
-
-    /**
-     * 数据类型转换器
+     * 组件数据类型转换器
      */
     val transformer: Transformer<T>
 
     /**
-     * Transformer - 数据类型转换器
+     * Transformer - 组件数据类型转换器
+     *
+     * 一个基本的组件必须实现 [JsonTransformer] 和 [NbtTransformer] 两种数据转换器.
      */
-    interface Transformer<T : Any> {
+    interface Transformer<T> : JsonTransformer<T>, NbtTransformer<T>
 
-        fun transform(src: Any): T
+    /**
+     * JsonTransformer - [JsonElement] 数据类型转换
+     *
+     * @author TheFloodDragon
+     * @since 2026/1/1 21:27
+     */
+    interface JsonTransformer<T> {
 
-        fun detransform(tar: T): Any
+        /**
+         * 组件 -> [JsonElement]
+         */
+        fun transformToJson(tar: T): JsonElement
 
-        class NoTransformation<T : Any> : Transformer<T> {
-            @Suppress("UNCHECKED_CAST")
-            override fun transform(src: Any) = src as T
-            override fun detransform(tar: T) = tar
-        }
+        /**
+         * [JsonElement] -> 组件
+         *
+         * @return 传入数据不合法或者没有被转换信息时, 可返回 null
+         */
+        fun detransformFromJson(src: JsonElement): T?
 
-    }
-
-    interface SerializerTransformer<T:Any> : Transformer<T>{
-        override fun transform(src: Any): T
-        fun transform(root: NbtTag): T
     }
 
     /**
-     * Unverified - 未经校验的物品组件类型
+     * NbtTransformer - [NbtTag] 数据类型转换
+     *
+     * @author TheFloodDragon
+     * @since 2026/1/1 21:27
      */
-    class Unverified<T : Any> internal constructor(
-        override val identifier: Identifier,
-        override val serializer: KSerializer<T>,
-        override val transformer: Transformer<T> = Transformer.NoTransformation(),
-        private val verified: Boolean = true,
-    ) : ItemComponentType<T> {
+    interface NbtTransformer<T> {
 
-        constructor(identifier: Identifier, serializer: KSerializer<T>, transformer: Transformer<T>) : this(identifier, serializer, transformer, false)
+        /**
+         * 组件 -> [NbtTag]
+         */
+        fun transformToNbtTag(tar: T): NbtTag
 
-        override fun toString() = (if (verified) "VerifiedComponentType" else "UnverifiedComponentType") +
-                "(identifier=$identifier, serializer=$serializer, transformer=$transformer)"
-    }
+        /**
+         * [NbtTag] -> 组件
+         *
+         * @return 传入数据不合法或者没有被转换信息时, 可返回 null
+         */
+        fun detransformFromNbtTag(src: NbtTag): T?
 
-    /**
-     * Unsupported - 当前版本不支持的组件类型
-     */
-    class Unsupported<T : Any> internal constructor(val key: String) : ItemComponentType<T> {
-        override val identifier get() = error("UnsupportedComponentType called.")
-        override val serializer get() = error("UnsupportedComponentType called.")
-        override val transformer get() = error("UnsupportedComponentType called.")
-        override fun toString() = "UnsupportedComponentType(key=$key)"
     }
 
 }

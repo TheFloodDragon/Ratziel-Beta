@@ -10,7 +10,7 @@ import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.feature.virtual.ComponentChange.OperationType.*
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
-import cn.fd.ratziel.module.item.internal.ItemSheet
+import cn.fd.ratziel.module.item.impl.component.ItemSheet
 import cn.fd.ratziel.module.nbt.delete
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read

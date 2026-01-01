@@ -8,7 +8,7 @@ import cn.fd.ratziel.core.NamedIdentifier
 import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.service.ItemServiceManager
-import cn.fd.ratziel.module.item.internal.ItemSheet
+import cn.fd.ratziel.module.item.impl.component.ItemSheet
 import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.writeTo
 import cn.fd.ratziel.module.nbt.NbtAdapter

@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @author TheFloodDragon
  * @since 2024/6/28 16:19
  */
-class SimpleContext(
+class SimpleContext private constructor(
     /** [ArrayList] 的迭代速率相对较快 **/
     private val list: MutableList<Pair<Class<*>, Any>> = CopyOnWriteArrayList(),
 ) : ArgumentContext {

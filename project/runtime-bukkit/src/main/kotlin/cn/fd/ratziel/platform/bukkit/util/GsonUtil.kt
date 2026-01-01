@@ -1,6 +1,5 @@
 package cn.fd.ratziel.platform.bukkit.util
 
-import com.google.gson.JsonParser
 import kotlinx.serialization.json.*
 
 /**
@@ -24,4 +23,24 @@ fun GsonJsonElement.toKotlinx(): JsonElement = when (this) {
     else -> error("Unsupported Gson JsonElement: $this")
 }
 
-fun JsonElement.toGson(): GsonJsonElement = JsonParser().parse(this.toString())
+fun JsonElement.toGson(): GsonJsonElement = when (val el = this) {
+    is JsonNull -> GsonJsonNull.INSTANCE
+    is JsonPrimitive -> {
+        // Preserve quoted strings
+        if (el.isString) return GsonJsonPrimitive(el.content)
+
+        // Try to convert to boolean / integer / double in that order, fall back to string
+        el.booleanOrNull?.let { return GsonJsonPrimitive(it) }
+        el.longOrNull?.let { return GsonJsonPrimitive(it) }
+        el.doubleOrNull?.let { return GsonJsonPrimitive(it) }
+
+        // Fallback: treat as string
+        GsonJsonPrimitive(el.content)
+    }
+    is JsonObject -> GsonJsonObject().apply {
+        for ((k, v) in el) add(k, v.toGson())
+    }
+    is JsonArray -> GsonJsonArray().apply {
+        for (item in el) add(item.toGson())
+    }
+}
