@@ -59,6 +59,7 @@ object CommandMain {
      * 注册子命令
      */
     fun registerSubCommand(body: SimpleCommandBody) {
+        // TODO may call NPE
         commandRegister.body[CommandMain::class.java.name]!!.add(body)
     }
 
