@@ -2,7 +2,7 @@ package cn.fd.ratziel.module.compat.impl
 
 import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.builder.ItemSource
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.util.asItemData
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -40,8 +40,7 @@ abstract class CompatibleItemSource(
     }
 
     fun ItemStack.asCompatible(): CompatibleItem {
-        val data = RefItemStack.of(this).extractData()
-        return CompatibleItem(pluginName, data)
+        return CompatibleItem(pluginName, asItemData())
     }
 
 }

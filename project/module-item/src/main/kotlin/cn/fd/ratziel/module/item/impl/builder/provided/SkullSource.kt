@@ -7,8 +7,8 @@ import cn.fd.ratziel.core.util.getBy
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.impl.SimpleItem
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
 import cn.fd.ratziel.module.item.util.SkullUtil
+import cn.fd.ratziel.module.item.util.extractData
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
@@ -31,10 +31,9 @@ object SkullSource : ItemSource.Named {
 
         // 创建物品
         val itemStack = SkullUtil.fetchSkull(value)
-        val data = RefItemStack.of(itemStack).extractData()
 
         // 创建仅使用数据功能的物品
-        return SimpleItem(data)
+        return SimpleItem(itemStack.extractData())
     }
 
 }

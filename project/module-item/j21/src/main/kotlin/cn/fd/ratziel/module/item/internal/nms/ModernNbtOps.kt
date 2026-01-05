@@ -27,7 +27,7 @@ import java.util.stream.Stream
  * @author TheFloodDragon
  * @since 2025/8/5 10:25
  */
-@NMSShare(NMSItem.modernVer)
+@NMSShare(NMSItem.MODERN_VERSION)
 object ModernNbtOps : DynamicOps<NbtTag> {
 
     override fun empty(): NbtEnd = NbtEnd.INSTANCE
@@ -266,9 +266,9 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         return "Modern-NbtOps-For-Altawk-Nbt"
     }
 
-    abstract class ListCollector {
-        abstract fun accept(tag: NbtTag): ListCollector
-        abstract fun result(): NbtTag
+    interface ListCollector {
+        fun accept(tag: NbtTag): ListCollector
+        fun result(): NbtTag
         fun acceptAll(iterable: Iterable<NbtTag>) = acceptAll(iterable.iterator())
         fun acceptAll(iterator: Iterator<NbtTag>): ListCollector {
             var collector = this
@@ -277,7 +277,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         }
     }
 
-    class GenericListCollector(private val result: NbtList = NbtList()) : ListCollector() {
+    class GenericListCollector(private val result: NbtList = NbtList()) : ListCollector {
         constructor(list: IntArrayList) : this() {
             list.forEach { this.result.add(NbtInt(it)) }
         }
@@ -294,7 +294,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         override fun result() = this.result
     }
 
-    class ByteListCollector(values: ByteArray) : ListCollector() {
+    class ByteListCollector(values: ByteArray) : ListCollector {
         private val values = ByteArrayList()
 
         init {
@@ -311,7 +311,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         }
     }
 
-    class IntListCollector(values: IntArray) : ListCollector() {
+    class IntListCollector(values: IntArray) : ListCollector {
         private val values = IntArrayList()
 
         init {
@@ -328,7 +328,7 @@ object ModernNbtOps : DynamicOps<NbtTag> {
         }
     }
 
-    class LongListCollector(values: LongArray) : ListCollector() {
+    class LongListCollector(values: LongArray) : ListCollector {
         private val values = LongArrayList()
 
         init {

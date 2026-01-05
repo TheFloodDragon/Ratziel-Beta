@@ -5,7 +5,7 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.altawk.nbt.NbtDecoder
 import cn.altawk.nbt.NbtEncoder
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.internal.RefItemStack
 import cn.fd.ratziel.module.item.internal.serializers.HideFlagSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer

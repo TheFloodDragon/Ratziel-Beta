@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.feature.virtual
 
 import cn.fd.ratziel.module.item.impl.RatzielItem
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.internal.RefItemStack
 import cn.fd.ratziel.platform.bukkit.util.readOrThrow
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps

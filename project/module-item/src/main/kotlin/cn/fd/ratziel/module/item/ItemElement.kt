@@ -18,7 +18,7 @@ import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.command.ItemCommand
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.internal.RefItemStack
 import cn.fd.ratziel.module.item.internal.serializers.*
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope

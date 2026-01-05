@@ -1,6 +1,7 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
+import cn.fd.ratziel.module.item.internal.RefItemStack
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
@@ -38,9 +39,9 @@ abstract class NMSItem {
          * Tips: 这玩意会随版本变, 所以只能支持最后一个修改的版本及以上
          */
         @JvmField
-        val isModern = MinecraftVersion.versionId >= modernVer
+        val isModern = MinecraftVersion.versionId >= MODERN_VERSION
 
-        const val modernVer = 12105
+        const val MODERN_VERSION = 12105
 
         @JvmStatic
         val INSTANCE by lazy {

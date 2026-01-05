@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.util
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.internal.RefItemStack
 import org.bukkit.inventory.ItemStack
 import taboolib.platform.util.isAir
 import java.util.function.Consumer

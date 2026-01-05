@@ -9,7 +9,8 @@ import cn.fd.ratziel.module.item.api.DataHolder
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.service.ItemServiceManager
 import cn.fd.ratziel.module.item.impl.component.ItemSheet
-import cn.fd.ratziel.module.item.internal.nms.RefItemStack
+import cn.fd.ratziel.module.item.util.asItemData
+import cn.fd.ratziel.module.item.util.extractData
 import cn.fd.ratziel.module.item.util.writeTo
 import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.nbt.handle
@@ -103,7 +104,7 @@ open class RatzielItem private constructor(
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
             if (itemStack.isAir()) return null
-            val itemData = RefItemStack.of(itemStack).extractData()
+            val itemData = itemStack.extractData()
             return of(itemData)
         }
 
@@ -136,7 +137,7 @@ open class RatzielItem private constructor(
          */
         @JvmStatic
         fun isRatzielItem(itemStack: ItemStack): Boolean {
-            return isRatzielItem(RefItemStack.of(itemStack))
+            return isRatzielItem(itemStack.asItemData())
         }
 
     }
