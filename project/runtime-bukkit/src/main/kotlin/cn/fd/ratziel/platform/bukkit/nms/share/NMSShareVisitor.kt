@@ -17,17 +17,39 @@ import taboolib.module.nms.MinecraftVersion
 @Awake
 class NMSShareVisitor : ClassVisitor(10) {
 
+    val sharingClasses = mutableListOf<String>()
+
     override fun visitStart(clazz: ReflexClass) {
         val share = clazz.getAnnotationIfPresent(NMSShare::class.java) ?: return
         // 版本校验
         val version = share.property("version", 0)
         if (MinecraftVersion.versionId < version) return
         // 生成代理类
-        val bindClass = clazz.name!! // 勿用 ReflexClass#toClass, 会导致类被另一个类加载器先加载
-        AsmClassTranslation(bindClass).createNewClass()
+        val baseClassName = clazz.name!!
+        load(baseClassName) // 加载注解修饰的类
         // 同时生成所有的内部类
-        runningClassMapWithoutLibrary.filter { (name, _) -> name.startsWith("$bindClass$") }.forEach { (source, _) ->
-            AsmClassTranslation(source).createNewClass()
+        val innerClasses = runningClassMapWithoutLibrary.filter { (name, _) -> name.startsWith("$baseClassName$") }
+        innerClasses.forEach { (className, clazz) ->
+            // 优先加载该类的父类和接口 (前提是这些类在innerClasses中)
+            loadParents(clazz, innerClasses)
+            // 加载该内部类
+            load(className)
+        }
+    }
+
+    fun loadParents(clazz: ReflexClass, availableClasses: Map<String, ReflexClass>) {
+        if (clazz.name !in availableClasses) return // 防止加载其他的非内部类
+        clazz.superclass?.let { loadParents(it, availableClasses) }
+        clazz.interfaces.forEach { loadParents(it, availableClasses) }
+    }
+
+    /**
+     * 将指定类加载到 AsmClassLoader 中
+     */
+    fun load(className: String) {
+        if (className !in sharingClasses) {
+            sharingClasses.add(className)
+            AsmClassTranslation(className).createNewClass()
         }
     }
 

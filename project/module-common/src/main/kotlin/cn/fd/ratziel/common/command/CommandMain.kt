@@ -2,9 +2,11 @@ package cn.fd.ratziel.common.command
 
 import cn.fd.ratziel.common.WorkspaceLoader
 import cn.fd.ratziel.common.config.Settings
+import taboolib.common.LifeCycle
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
+import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.reflect.getAnnotationIfPresent
 import taboolib.expansion.createHelper
 import taboolib.library.reflex.ReflexClass
@@ -59,8 +61,10 @@ object CommandMain {
      * 注册子命令
      */
     fun registerSubCommand(body: SimpleCommandBody) {
-        // TODO may call NPE
-        commandRegister.body[CommandMain::class.java.name]!!.add(body)
+        // 推迟到插件的 ACTIVE 阶段, 确保此时主命令已注册
+        registerLifeCycleTask(LifeCycle.ACTIVE) {
+            commandRegister.body[CommandMain::class.java.name]!!.add(body)
+        }
     }
 
     /**

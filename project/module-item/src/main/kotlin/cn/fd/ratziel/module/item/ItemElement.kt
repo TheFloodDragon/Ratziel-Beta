@@ -147,8 +147,7 @@ object ItemElement : ElementHandler.ParralHandler {
         ItemRegistry.registerComponent(T::class.java, serializer)
     }
 
-    @Awake(LifeCycle.ENABLE)
-    @JvmStatic
+    @Awake(LifeCycle.ACTIVE)
     private fun registerSubCommand() {
         // 子命令注册
         CommandMain.registerSubCommand(ItemCommand::class.java, "item")
