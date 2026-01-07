@@ -30,17 +30,16 @@ class NMSShareVisitor : ClassVisitor(10) {
         // 同时生成所有的内部类
         val innerClasses = runningClassMapWithoutLibrary.filter { (name, _) -> name.startsWith("$baseClassName$") }
         innerClasses.forEach { (className, clazz) ->
-            // 优先加载该类的父类和接口 (前提是这些类在innerClasses中)
-            loadParents(clazz, innerClasses)
-            // 加载该内部类
-            load(className)
+            loadWithParents(clazz, innerClasses)
         }
     }
 
-    fun loadParents(clazz: ReflexClass, availableClasses: Map<String, ReflexClass>) {
+    fun loadWithParents(clazz: ReflexClass, availableClasses: Map<String, ReflexClass>) {
         if (clazz.name !in availableClasses) return // 防止加载其他的非内部类
-        clazz.superclass?.let { loadParents(it, availableClasses) }
-        clazz.interfaces.forEach { loadParents(it, availableClasses) }
+        // 优先加载该类的父类和接口 (前提是这些类在innerClasses中)
+        clazz.superclass?.let { loadWithParents(it, availableClasses) }
+        clazz.interfaces.forEach { loadWithParents(it, availableClasses) }
+        load(clazz.name!!) // 加载该类
     }
 
     /**
