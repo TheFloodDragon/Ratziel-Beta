@@ -23,12 +23,12 @@ interface ScriptType {
     /**
      * 别名
      */
-    val alias: Array<out String>
+    val alias: List<String>
 
     /**
      * 文件扩展名
      */
-    val extensions: Array<out String> get() = emptyArray()
+    val extensions: List<String> get() = emptyList()
 
     /**
      * 脚本偏好

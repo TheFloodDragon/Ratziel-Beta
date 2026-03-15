@@ -13,7 +13,7 @@ object FluxonLang : ScriptType {
 
     override val name = "Fluxon"
     override val languageId = "fs"
-    override val alias = arrayOf("fluxon", "fs")
+    override val alias = listOf("fluxon", "fs")
     override val preference = ScriptPreference.INTERPRETATION_PREFERRED
 
     override val executor get() = FluxonScriptExecutor.DEFAULT

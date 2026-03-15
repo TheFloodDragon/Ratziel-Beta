@@ -16,7 +16,7 @@ object JexlLang : ScriptType, ScriptBootstrap {
 
     override val name = "Jexl"
     override val languageId = "jexl"
-    override val alias = arrayOf("Jexl3")
+    override val alias = listOf("Jexl3")
     override val preference = ScriptPreference.INTERPRETATION_PREFERRED
 
     override val executor get() = JexlScriptExecutor.DEFAULT

@@ -17,8 +17,8 @@ object JavaScriptLang : ScriptType, ScriptBootstrap {
 
     override val name = "JavaScript"
     override val languageId = "js"
-    override val alias = arrayOf("Js")
-    override val extensions = arrayOf("js", "javascript")
+    override val alias = listOf("Js")
+    override val extensions = listOf("js", "javascript")
     override val preference = ScriptPreference.COMPILATION_PREFERRED
 
     override val executor: ScriptExecutor get() = if (::selectedExecutor.isInitialized) selectedExecutor else super.executor

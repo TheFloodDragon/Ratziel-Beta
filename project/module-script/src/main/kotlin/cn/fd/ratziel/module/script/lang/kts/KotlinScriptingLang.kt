@@ -17,8 +17,8 @@ object KotlinScriptingLang : ScriptType, ScriptBootstrap {
 
     override val name = "KotlinScripting"
     override val languageId = "kts"
-    override val alias = arrayOf("Kotlin", "kts")
-    override val extensions = arrayOf("kts", "kt")
+    override val alias = listOf("Kotlin", "kts")
+    override val extensions = listOf("kts", "kt")
     override val preference = ScriptPreference.COMPILATION_REQUIRED
 
     override val executor: ScriptExecutor get() = KotlinScriptingExecutor
