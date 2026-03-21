@@ -1,8 +1,9 @@
-package cn.fd.ratziel.module.item.impl.component
+package cn.fd.ratziel.module.item.impl.component.type
 
 import cn.fd.ratziel.core.Identifier
 import cn.fd.ratziel.module.item.internal.serializers.NamespacedIdentifierSerializer
 import kotlinx.serialization.Serializable
+import org.bukkit.NamespacedKey
 
 /**
  * NamespacedIdentifier
@@ -29,7 +30,7 @@ data class NamespacedIdentifier(
      */
     override val content get() = "$namespace:$key"
 
-    constructor(namespacedKey: org.bukkit.NamespacedKey) : this(namespacedKey.namespace, namespacedKey.key)
+    constructor(namespacedKey: NamespacedKey) : this(namespacedKey.namespace, namespacedKey.key)
 
     override fun toString() = "NamespacedIdentifier($content)"
 

@@ -4,7 +4,6 @@ import cn.altawk.nbt.NbtFormat
 import cn.altawk.nbt.NbtPath
 import cn.altawk.nbt.tag.NbtCompound
 import cn.altawk.nbt.tag.NbtTag
-import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.nbt.read
 import cn.fd.ratziel.module.nbt.write
 import kotlinx.serialization.KSerializer
@@ -18,14 +17,14 @@ import kotlinx.serialization.KSerializer
 open class SerialNbtTransformer<T>(
     val serializer: KSerializer<T>,
     val nbtFormat: NbtFormat,
-) : ItemComponentType.NbtTransformer<T> {
+) : NbtTransformer<T> {
 
-    override fun transformToNbtTag(tar: T): NbtTag {
-        return nbtFormat.encodeToNbtTag(serializer, tar)
+    override fun toNbtTag(component: T, root: NbtCompound): NbtTag {
+        return nbtFormat.encodeToNbtTag(serializer, component)
     }
 
-    override fun detransformFromNbtTag(src: NbtTag): T? {
-        return nbtFormat.decodeFromNbtTag(serializer, src)
+    override fun fromNbtTag(tag: NbtTag): T? {
+        return nbtFormat.decodeFromNbtTag(serializer, tag)
     }
 
     override fun toString() = "SerialNbtTransformer(serializer=$serializer, nbtFormat=$nbtFormat)"
@@ -45,15 +44,15 @@ open class SerialNbtTransformer<T>(
         val path: NbtPath,
     ) : SerialNbtTransformer<T>(serializer, nbtFormat) {
 
-        override fun transformToNbtTag(tar: T): NbtCompound {
-            val serialized = super.transformToNbtTag(tar)
+        override fun toNbtTag(component: T, root: NbtCompound): NbtCompound {
+            val serialized = super.toNbtTag(component, root)
             return NbtCompound { write(path, serialized, true) }
         }
 
-        override fun detransformFromNbtTag(src: NbtTag): T? {
-            if (src !is NbtCompound) return null
-            val tag = src.read(path, false) ?: return null
-            return super.detransformFromNbtTag(tag)
+        override fun fromNbtTag(tag: NbtTag): T? {
+            if (tag !is NbtCompound) return null
+            val tag = tag.read(path, false) ?: return null
+            return super.fromNbtTag(tag)
         }
 
         override fun toString() = "SerialNbtEntryTransformer(path=$path, serializer=$serializer, nbtFormat=$nbtFormat)"

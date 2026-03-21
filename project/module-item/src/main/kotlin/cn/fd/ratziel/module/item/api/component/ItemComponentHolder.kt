@@ -11,21 +11,16 @@ interface ItemComponentHolder {
     /**
      * 获取组件
      */
-    operator fun <T : Any> get(type: ItemComponentType3<T>): T?
+    operator fun <T : Any> get(type: ItemComponentType<T>): T?
 
     /**
      * 设置组件
      */
-    operator fun <T : Any> set(type: ItemComponentType3<T>, value: T)
+    operator fun <T : Any> set(type: ItemComponentType<T>, value: T)
 
     /**
-     * 删除组件 (彻底删除)
+     * 删除组件
      */
-    fun remove(type: ItemComponentType3<*>)
-
-    /**
-     * 恢复组件 (清空组件)
-     */
-    fun restore(type: ItemComponentType3<*>)
+    fun remove(type: ItemComponentType<*>)
 
 }

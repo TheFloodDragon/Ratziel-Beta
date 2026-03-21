@@ -1,9 +1,6 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
-package cn.fd.ratziel.module.item.impl.component
+package cn.fd.ratziel.module.item.impl.component.type
 
 import cn.fd.ratziel.module.item.internal.serializers.SoundInstanceSerializer
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KeepGeneratedSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

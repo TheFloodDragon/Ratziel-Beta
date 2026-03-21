@@ -1,19 +1,13 @@
 package cn.fd.ratziel.module.item.internal.nms
 
-import cn.altawk.nbt.tag.NbtCompound
-import cn.altawk.nbt.tag.NbtTag
-import cn.fd.ratziel.core.Identifier
-import cn.fd.ratziel.module.item.ItemElement
-import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
-import cn.fd.ratziel.module.item.api.component.ItemComponentType3
-import cn.fd.ratziel.module.item.impl.component.CachedItemComponentHolder
-import cn.fd.ratziel.module.item.impl.component.NbtNodeIdentifier
-import cn.fd.ratziel.module.nbt.delete
-import cn.fd.ratziel.module.nbt.read
-import cn.fd.ratziel.module.nbt.write
-import taboolib.common.UnsupportedVersionException
+import cn.fd.ratziel.core.exception.UnsupportedVersionException
+import net.minecraft.core.component.DataComponentType
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.resources.MinecraftKey
+import net.minecraft.world.item.ItemStack
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * NMSComponent
@@ -24,68 +18,76 @@ import taboolib.module.nms.nmsProxy
 abstract class NMSComponent {
 
     /**
-     * 获取组件持有器
+     * 获取组件
+     *
+     * @param nmsItem [net.minecraft.world.item.ItemStack]
+     * @param type [net.minecraft.core.component.DataComponentType]
      */
-    abstract fun createComponentHolder(nmsItem: Any): ItemComponentHolder
+    abstract fun getComponent(nmsItem: Any, type: Any): Any?
 
     /**
-     * 创建未验证的组件类型 (1.20.5+ only)
+     * 设置组件
+     *
+     * @param nmsItem [net.minecraft.world.item.ItemStack]
+     * @param type [net.minecraft.core.component.DataComponentType]
+     * @param component Minecraft 组件数据对象
      */
-    open fun unverifiedComponentType(identifier: Identifier): ItemComponentType3<*> = throw UnsupportedVersionException()
+    abstract fun setComponent(nmsItem: Any, type: Any, component: Any)
 
     /**
-     * 1.20.5+ only: CustomDataComponentTransformer
+     * 移除组件
+     *
+     * @param nmsItem [net.minecraft.world.item.ItemStack]
+     * @param type [net.minecraft.core.component.DataComponentType]
      */
-    open fun customDataComponentTransformer(): ItemComponentType3.Transformer<NbtCompound> = throw UnsupportedVersionException()
+    abstract fun removeComponent(nmsItem: Any, type: Any)
+
+    /**
+     * 通过 [MinecraftKey] 形式的 ID 获取 [DataComponentType]
+     */
+    abstract fun getType(key: String): Any
 
     companion object {
 
         @JvmStatic
         val INSTANCE by lazy {
             if (MinecraftVersion.versionId >= 12005)
-                nmsProxy<NMSComponent>("{name}Impl2")
-            else NMSComponentImpl1()
+                nmsProxy<NMSComponent>("{name}Impl")
+            else throw UnsupportedVersionException("NMSComponent only supports Minecraft 1.20.5+")
         }
 
     }
 
 }
 
-class NMSComponentImpl1 : NMSComponent() {
+@Suppress("unused")
+class NMSComponentImpl : NMSComponent() {
 
-    private val ItemComponentType3<*>.path get() = (this.identifier as NbtNodeIdentifier).path
+    override fun getComponent(nmsItem: Any, type: Any): Any? {
+        nmsItem as ItemStack
+        @Suppress("UNCHECKED_CAST")
+        type as DataComponentType<Any?>
+        return nmsItem.get(type)
+    }
 
-    override fun createComponentHolder(nmsItem: Any) = object : CachedItemComponentHolder<NbtTag>() {
+    override fun setComponent(nmsItem: Any, type: Any, component: Any) {
+        nmsItem as ItemStack
+        @Suppress("UNCHECKED_CAST")
+        type as DataComponentType<Any?>
+        nmsItem.set(type, component)
+    }
 
-        override fun getRaw(type: ItemComponentType3<*>): NbtTag? {
-            val root = NMSItem.INSTANCE.getTag(nmsItem) ?: return null
-            // 直接读取标签数据
-            return root.read(type.path)
-        }
+    override fun removeComponent(nmsItem: Any, type: Any) {
+        nmsItem as ItemStack
+        @Suppress("UNCHECKED_CAST")
+        type as DataComponentType<*>
+        nmsItem.remove(type)
+    }
 
-        override fun setRaw(type: ItemComponentType3<*>, raw: NbtTag?) {
-            if (raw == null) {
-                // 填空跳到删除
-                removeRaw(type); return
-            }
-            val root = NMSItem.INSTANCE.getTag(nmsItem) ?: NbtCompound().also {
-                NMSItem.INSTANCE.setTag(nmsItem, it) // 没有根标签则创建并设置
-            }
-            root.write(type.path, raw, true)
-        }
-
-        override fun removeRaw(type: ItemComponentType3<*>) {
-            NMSItem.INSTANCE.getTag(nmsItem)?.delete(type.path)
-        }
-
-        override fun <T : Any> exchangeFromRaw(type: ItemComponentType3<T>, raw: NbtTag): T {
-            return ItemElement.nbt.decodeFromNbtTag(type.serializer, raw)
-        }
-
-        override fun <T : Any> exchangeToRaw(type: ItemComponentType3<T>, value: T): NbtTag {
-            return ItemElement.nbt.encodeToNbtTag(type.serializer, value)
-        }
-
+    override fun getType(key: String): Any {
+        val minecraftKey = MinecraftKey.tryParse(key) ?: error("Invalid MinecraftKey: $key")
+        val opt = BuiltInRegistries.DATA_COMPONENT_TYPE.getOptional(minecraftKey)
+        return opt.getOrNull() ?: error("DataComponentType not found for key: $key")
     }
 
 }

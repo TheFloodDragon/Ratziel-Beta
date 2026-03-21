@@ -13,25 +13,31 @@ import kotlin.reflect.KProperty
 interface AttachedContext {
 
     /**
-     * 获取附加值（通过 Catcher）
-     * 若传入初始化函数返回 null，则回退到 Catcher 自身的初始化函数。
+     * 获取附加值
      */
-    fun <T : Any> fetch(catcher: Catcher<T>, ifAbsent: () -> T?): T
+    operator fun <T : Any> get(catcher: Catcher<T>): T
 
     /**
-     * 设置附加值（通过 Catcher）
+     * 设置附加值
      */
     operator fun <T : Any> set(catcher: Catcher<T>, value: T)
 
     /**
-     * 获取附加值（通过 Catcher）
+     * 获取附加值
+     * @param ifAbsent 若函数返回 null，则回退到 Catcher 自身的初始化函数。
      */
-    operator fun <T : Any> get(catcher: Catcher<T>): T
+    fun <T : Any> fetch(catcher: Catcher<T>, ifAbsent: () -> T?): T
+
 
     /**
      * [AttachedContext] 捕获器
      */
     interface Catcher<T : Any> {
+
+        /**
+         * 初始化函数
+         */
+        val initializer: () -> T
 
         /**
          * 获取附加值
@@ -63,11 +69,6 @@ interface AttachedContext {
          */
         operator fun invoke(context: ArgumentContext, block: (T) -> T): T
 
-        /**
-         * 从 [ArgumentContext] 中获取附加的上下文
-         */
-        fun attach(context: ArgumentContext): AttachedContext
-
     }
 
     class PropertyCatcherDelegate<T : Any>(initializer: () -> T) : ReadOnlyProperty<Any?, Catcher<T>> {
@@ -89,14 +90,13 @@ interface AttachedContext {
          */
         @JvmStatic
         fun <T : Any> catcherOf(initializer: () -> T): Catcher<T> = AttachedContextImpl.CatcherImpl(initializer)
- 
+
         /**
          * 创建一个新的 [AttachedContext.Catcher]
          * 用于属性委托：`val x by AttachedContext.catcher { ... }`
          */
         @JvmStatic
         fun <T : Any> catcher(initializer: () -> T) = PropertyCatcherDelegate(initializer)
-
 
     }
 
@@ -109,53 +109,44 @@ interface AttachedContext {
  * @since 2025/8/8 16:17
  */
 private class AttachedContextImpl(
-    val map: ConcurrentHashMap<AttachedContext.Catcher<*>, Any> = ConcurrentHashMap()
+    val map: ConcurrentHashMap<AttachedContext.Catcher<*>, Any> = ConcurrentHashMap(),
 ) : AttachedContext {
 
     /**
      * 获取附加值
      */
     override fun <T : Any> fetch(catcher: AttachedContext.Catcher<T>, ifAbsent: () -> T?): T {
+        // 尝试直接获取已存在的值
         @Suppress("UNCHECKED_CAST")
         map[catcher]?.let { return it as T }
-
-        val resolved = ifAbsent() ?: when (catcher) {
-            is CatcherImpl<T> -> catcher.initializer()
-            else -> catcher[this]
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        return (map.putIfAbsent(catcher, resolved) ?: resolved) as T
+        // 如果不存在，则通过 ifAbsent 获取值 (如果 ifAbsent 返回 null，则回退到 Catcher 自身的初始化函数)
+        val resolved = ifAbsent() ?: catcher.initializer()
+        map.putIfAbsent(catcher, resolved) // 设置新值
+        return resolved // 返回新值
     }
 
     override operator fun <T : Any> get(catcher: AttachedContext.Catcher<T>): T = catcher[this]
 
-    override operator fun <T : Any> set(catcher: AttachedContext.Catcher<T>, value: T) {
-        map[catcher] = value
-    }
+    override operator fun <T : Any> set(catcher: AttachedContext.Catcher<T>, value: T) = map.set(catcher, value)
 
     override fun toString() = "AttachedContext$map"
 
     /**
      * [AttachedContext] 捕获器
      */
-    open class CatcherImpl<T : Any>(
-        val initializer: () -> T
+    class CatcherImpl<T : Any>(
+        override val initializer: () -> T,
     ) : AttachedContext.Catcher<T> {
 
         /**
          * 获取附加值
          */
-        override operator fun get(attached: AttachedContext): T {
-            return attached.fetch(this, initializer)
-        }
+        override operator fun get(attached: AttachedContext): T = attached.fetch(this, initializer)
 
         /**
          * 设置附加值
          */
-        override operator fun set(attached: AttachedContext, value: T) {
-            attached[this] = value
-        }
+        override operator fun set(attached: AttachedContext, value: T) = attached.set(this, value)
 
         /**
          * 更新附加值
@@ -184,10 +175,9 @@ private class AttachedContextImpl(
         /**
          * 获取 [AttachedContext] (没有的话就创建)
          */
-        override fun attach(context: ArgumentContext): AttachedContext {
+        fun attach(context: ArgumentContext): AttachedContext {
             return context.popOrPut(AttachedContext::class.java) { AttachedContextImpl() }
         }
     }
-
 
 }

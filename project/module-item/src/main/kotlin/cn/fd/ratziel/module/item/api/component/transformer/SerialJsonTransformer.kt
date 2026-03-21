@@ -1,7 +1,6 @@
 package cn.fd.ratziel.module.item.api.component.transformer
 
 import cn.fd.ratziel.core.util.getBy
-import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -16,14 +15,14 @@ import kotlinx.serialization.json.JsonObject
 open class SerialJsonTransformer<T>(
     val serializer: KSerializer<T>,
     val jsonFormat: Json,
-) : ItemComponentType.JsonTransformer<T> {
+) : JsonTransformer<T> {
 
-    override fun transformToJson(tar: T): JsonElement {
-        return jsonFormat.encodeToJsonElement(serializer, tar)
+    override fun toJsonElement(component: T): JsonElement {
+        return jsonFormat.encodeToJsonElement(serializer, component)
     }
 
-    override fun detransformFromJson(src: JsonElement): T? {
-        return jsonFormat.decodeFromJsonElement(serializer, src)
+    override fun formJsonElement(element: JsonElement): T? {
+        return jsonFormat.decodeFromJsonElement(serializer, element)
     }
 
     override fun toString() = "SerialJsonTransformer(serializer=$serializer, jsonFormat=$jsonFormat)"
@@ -43,15 +42,15 @@ open class SerialJsonTransformer<T>(
         vararg val alias: String,
     ) : SerialJsonTransformer<T>(serializer, jsonFormat) {
 
-        override fun transformToJson(tar: T): JsonObject {
-            val serialized = super.transformToJson(tar)
+        override fun toJsonElement(component: T): JsonObject {
+            val serialized = super.toJsonElement(component)
             return JsonObject(mapOf(serialName to serialized))
         }
 
-        override fun detransformFromJson(src: JsonElement): T? {
-            if (src !is JsonObject) return null // 仅支持对象
-            val element = src[serialName] ?: src.getBy(*alias) ?: return null
-            return super.detransformFromJson(element)
+        override fun formJsonElement(element: JsonElement): T? {
+            if (element !is JsonObject) return null // 仅支持对象
+            val element = element[serialName] ?: element.getBy(*alias) ?: return null
+            return super.formJsonElement(element)
         }
 
         override fun toString() = "SerialJsonEntryTransformer(serialName=$serialName, alias=$alias, serializer=$serializer, jsonFormat=$jsonFormat)"

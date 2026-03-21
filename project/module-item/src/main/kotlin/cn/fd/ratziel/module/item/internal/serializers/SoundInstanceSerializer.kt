@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.internal.serializers
 
 import cn.fd.ratziel.core.serialization.json.TolerantJsonTransformingSerializer
-import cn.fd.ratziel.module.item.impl.component.SoundInstance
+import cn.fd.ratziel.module.item.impl.component.type.SoundInstance
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject

@@ -1,8 +1,6 @@
 package cn.fd.ratziel.module.item.internal.nms
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.fd.ratziel.module.item.internal.nms.CodecSerialization.parseFromTag
-import cn.fd.ratziel.module.item.internal.nms.CodecSerialization.saveToTag
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.PatchedDataComponentMap
 import net.minecraft.world.item.component.CustomData

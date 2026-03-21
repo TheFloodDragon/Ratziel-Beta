@@ -1,7 +1,9 @@
 package cn.fd.ratziel.module.item.api.component
 
-import cn.altawk.nbt.tag.NbtTag
-import kotlinx.serialization.json.JsonElement
+import cn.fd.ratziel.module.item.api.component.transformer.JsonTransformer
+import cn.fd.ratziel.module.item.api.component.transformer.MinecraftTransformer
+import cn.fd.ratziel.module.item.api.component.transformer.NbtTransformer
+import kotlinx.serialization.KSerializer
 
 /**
  * ItemComponentType - 物品组件类型
@@ -14,61 +16,42 @@ interface ItemComponentType<T> {
     /**
      * 组件标识符 (插件内部命名)
      */
-    val key: String
+    val id: String
 
     /**
-     * 组件数据类型转换器
+     * 组件封装对象类型
      */
-    val transformer: Transformer<T>
+    val type: Class<T>
 
     /**
-     * Transformer - 组件数据类型转换器
-     *
-     * 一个基本的组件必须实现 [JsonTransformer] 和 [NbtTransformer] 两种数据转换器.
+     * 组件封装对象的序列化器
      */
-    interface Transformer<T> : JsonTransformer<T>, NbtTransformer<T>
+    val serializer: KSerializer<T>
 
     /**
-     * JsonTransformer - [JsonElement] 数据类型转换
-     *
-     * @author TheFloodDragon
-     * @since 2026/1/1 21:27
+     * 组件转换模块接口
      */
-    interface JsonTransformer<T> {
-
-        /**
-         * 组件 -> [JsonElement]
-         */
-        fun transformToJson(tar: T): JsonElement
-
-        /**
-         * [JsonElement] -> 组件
-         *
-         * @return 传入数据不合法或者没有被转换信息时, 可返回 null
-         */
-        fun detransformFromJson(src: JsonElement): T?
-
-    }
+    val transforming: Transforming<T>
 
     /**
-     * NbtTransformer - [NbtTag] 数据类型转换
-     *
-     * @author TheFloodDragon
-     * @since 2026/1/1 21:27
+     * 组件转换模块接口
      */
-    interface NbtTransformer<T> {
+    interface Transforming<T> {
 
         /**
-         * 组件 -> [NbtTag]
+         * 获取 [JsonTransformer]
          */
-        fun transformToNbtTag(tar: T): NbtTag
+        val jsonTransformer: JsonTransformer<T>
 
         /**
-         * [NbtTag] -> 组件
-         *
-         * @return 传入数据不合法或者没有被转换信息时, 可返回 null
+         * 获取 [NbtTransformer]
          */
-        fun detransformFromNbtTag(src: NbtTag): T?
+        val nbtTransformer: NbtTransformer<T>
+
+        /**
+         * 获取 [MinecraftTransformer]
+         */
+        val minecraftTransformer: MinecraftTransformer<T>
 
     }
 
