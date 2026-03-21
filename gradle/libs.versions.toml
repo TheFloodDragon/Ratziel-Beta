@@ -6,11 +6,11 @@ serialization = "1.9.0"
 coroutines = "1.10.1"
 adventureApi = "4.26.1"
 adventurePlatform = "4.4.1"
-nbt = "93144b3a54"
+nbt = "6f9229c235"
 shadowPlugin = "9.3.0"
 nashorn = "15.7"
 graaljs = "24.2.1"
-fluxon = "8cd16a9041"
+fluxon = "-SNAPSHOT"
 jexl = "3.6.1"
 
 [libraries]

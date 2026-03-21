@@ -49,9 +49,9 @@ class FluxonScriptExecutor : IntegratedScriptExecutor() {
                     return runtime.eval(environment.asFluxonEnv())
                 }
             }
-            // AST 编译
-            else -> object : ValuedCompiledScript<List<ParseResult>>(
-                Fluxon.parse(environment.asFluxonEnv(), compilation),
+            // AST 路径：直接保留源码并在执行时解析（避免不兼容的 API 调用）
+            else -> object : ValuedCompiledScript<String>(
+                source.content,
                 source
             ) {
                 override fun eval(environment: ScriptEnvironment): Any? {

@@ -1,5 +1,6 @@
 package cn.fd.ratziel.module.script.impl
 
+import cn.fd.ratziel.core.contextual.AttachedContext
 import cn.fd.ratziel.core.functional.replenish
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
@@ -32,6 +33,11 @@ abstract class ReplenishingScript<C, E : Any>(
     }
 
     /**
+     * 引擎捕获器（实例级，不同脚本实例/运行环境互不干扰）
+     */
+    private val engineCatcher by AttachedContext.catcher<E> { preheat() }
+
+    /**
      * 弹出一个预热后的脚本引擎实例
      */
     private fun pop(): E = preheatedEngineReplenishing.get()
@@ -55,7 +61,7 @@ abstract class ReplenishingScript<C, E : Any>(
     final override fun eval(environment: ScriptEnvironment): Any? {
         // 获取脚本引擎实例:
         // 用脚本语言类型做钥匙 (key), 确保同一语言的脚本在同一环境中使用同一引擎实例.
-        val engine: E = environment.runningState.fetch(source.language) {
+        val engine: E = environment.runningState.fetch(engineCatcher) {
             pop().also { initRuntime(it, environment) }
         }
         // 调用评估函数

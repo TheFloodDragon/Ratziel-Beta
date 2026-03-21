@@ -88,8 +88,6 @@ subprojects {
             relocate("cn.gtemc.itembridge.", "${rootProject.group}.libraries.itembridge.")
             // Fluxon
             relocate("org.tabooproject.fluxon.", "${rootProject.group}.libraries.fluxon.")
-            // 删除模块元数据
-            exclude("META-INF/*.kotlin_module")
         }
         build { dependsOn(shadowJar) }
     }
