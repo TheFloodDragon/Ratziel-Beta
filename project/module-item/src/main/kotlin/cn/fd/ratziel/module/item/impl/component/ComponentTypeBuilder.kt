@@ -131,7 +131,7 @@ class ComponentTypeBuilder<T>(val id: String, val type: Class<T>, val serializer
     /**
      * 通过反射 [cn.fd.ratziel.module.item.impl.component.transformers] 中的类获取 [MinecraftE2MTransformer]
      */
-    fun e2mByReflex(className: String): MinecraftE2MTransformer<T> {
+    private fun e2mByReflex(className: String): MinecraftE2MTransformer<T> {
         return MinecraftE2MTransformer.of("cn.fd.ratziel.module.item.impl.component.transformers.$className")
     }
 

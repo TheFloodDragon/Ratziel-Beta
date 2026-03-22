@@ -75,7 +75,7 @@ object ItemComponents {
         CUSTOM_DATA = r("custom-data", NbtCompound.serializer()) {
             serialJsonEntry()
             serialNbtEntry("minecraft:custom_data")
-            minecraftKeyed("custom_data", e2mByReflex("CustomDataE2MTransformer"))
+            minecraftKeyed("custom_data", "CustomDataE2MTransformer")
         }
         DISPLAY_NAME = r("display-name", MessageComponentSerializer) {
             serialJsonEntry("displayName", "name", "custom_name", "customName")
@@ -90,7 +90,7 @@ object ItemComponents {
         LORE = r("lore", ListSerializer(MessageComponentSerializer)) {
             serialJsonEntry("lores")
             serialNbtEntry(if (v >= 12005) "minecraft:lore" else "Lore")
-            minecraftKeyed("lore", e2mByReflex("ItemLoreE2MTransformer"))
+            minecraftKeyed("lore", "ItemLoreE2MTransformer")
         }
         MAX_DAMAGE = r("max-damage", Int.serializer()) {
             isSupported = v >= 12005
