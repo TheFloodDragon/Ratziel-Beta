@@ -65,4 +65,4 @@ val BlockConfigurationKeys.workFile by AttachedProperties.key<File?>(null)
 /**
  * 运行时是否复制参数上下文
  */
-val BlockConfigurationKeys.copyContext by AttachedProperties.key(false)
+val BlockConfigurationKeys.copyContext by AttachedProperties.serialKey(false)

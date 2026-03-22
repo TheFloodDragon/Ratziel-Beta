@@ -44,7 +44,7 @@ val ScriptConfigurationKeys.scriptImporting by AttachedProperties.key { ScriptMa
 /**
  * 脚本名称
  */
-val ScriptConfigurationKeys.scriptName by AttachedProperties.key<String?>(null)
+val ScriptConfigurationKeys.scriptName by AttachedProperties.serialKey<String?>(null)
 
 /**
  * 脚本缓存等级: (默认为1)
@@ -55,9 +55,9 @@ val ScriptConfigurationKeys.scriptName by AttachedProperties.key<String?>(null)
  *   1 - AST 缓存
  *   2 - 字节码缓存
  */
-val ScriptConfigurationKeys.scriptCaching by AttachedProperties.key(1)
+val ScriptConfigurationKeys.scriptCaching by AttachedProperties.serialKey(1)
 
 /**
  * 显式脚本解析 (默认为 true)
  */
-val ScriptConfigurationKeys.explicitScriptParsing by AttachedProperties.key(true)
+val ScriptConfigurationKeys.explicitScriptParsing by AttachedProperties.serialKey(true)
