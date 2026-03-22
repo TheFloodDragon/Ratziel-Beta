@@ -26,7 +26,7 @@ open class MinecraftHandleTransformer<T>(
 
     override fun write(nmsItem: Any, component: T) {
         val minecraftObj = e2mTransformer.toMinecraftObj(component)
-        NMSComponent.INSTANCE.setComponent(e2mTransformer, dct, minecraftObj)
+        NMSComponent.INSTANCE.setComponent(nmsItem, dct, minecraftObj)
     }
 
     override fun remove(nmsItem: Any) {

@@ -217,6 +217,6 @@ class ComponentTypeBuilder<T>(val id: String, val type: Class<T>, val serializer
             get() = _transforming
                 ?: throw UnsupportedVersionException("Component '$id' is not supported in Minecraft ${MinecraftVersion.minecraftVersion}")
 
-        override fun toString() = "ItemComponentType(id=$id, type=$type, serializer=$serializer, transforming=$transforming)"
+        override fun toString() = "ItemComponentType(id='$id', tserializer=$serializer, transforming=$transforming)"
     }
 }

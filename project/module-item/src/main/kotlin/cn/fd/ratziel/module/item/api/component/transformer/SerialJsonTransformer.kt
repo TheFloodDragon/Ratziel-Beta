@@ -25,7 +25,7 @@ open class SerialJsonTransformer<T>(
         return jsonFormat.decodeFromJsonElement(serializer, element)
     }
 
-    override fun toString() = "SerialJsonTransformer(serializer=$serializer, jsonFormat=$jsonFormat)"
+    override fun toString() = "SerialJsonTransformer(serializer=$serializer)"
 
     /**
      * EntryTransformer
@@ -53,7 +53,7 @@ open class SerialJsonTransformer<T>(
             return super.formJsonElement(element)
         }
 
-        override fun toString() = "SerialJsonEntryTransformer(serialName=$serialName, alias=$alias, serializer=$serializer, jsonFormat=$jsonFormat)"
+        override fun toString() = "SerialJsonEntryTransformer(serialName='$serialName', alias=${alias.contentToString()})"
 
     }
 

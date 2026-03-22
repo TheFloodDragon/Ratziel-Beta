@@ -27,7 +27,7 @@ open class SerialNbtTransformer<T>(
         return nbtFormat.decodeFromNbtTag(serializer, tag)
     }
 
-    override fun toString() = "SerialNbtTransformer(serializer=$serializer, nbtFormat=$nbtFormat)"
+    override fun toString() = "SerialNbtTransformer(serializer=$serializer)"
 
     /**
      * EntryTransformer
@@ -55,7 +55,7 @@ open class SerialNbtTransformer<T>(
             return super.fromNbtTag(tag)
         }
 
-        override fun toString() = "SerialNbtEntryTransformer(path=$path, serializer=$serializer, nbtFormat=$nbtFormat)"
+        override fun toString() = "SerialNbtEntryTransformer(path=$path)"
 
     }
 

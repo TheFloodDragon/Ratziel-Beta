@@ -2,10 +2,10 @@ package cn.fd.ratziel.module.item.feature.dynamic
 
 import cn.fd.ratziel.common.message.Message
 import cn.fd.ratziel.core.contextual.ArgumentContext
-import cn.fd.ratziel.module.item.api.ComponentHolder
 import cn.fd.ratziel.module.item.api.NeoItem
+import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.feature.virtual.VirtualItemRenderer
-import cn.fd.ratziel.module.item.impl.component.ItemDisplay
+import cn.fd.ratziel.module.item.impl.component.dsl
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -30,34 +30,23 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
     }
 
     override fun accept(actual: NeoItem, context: ArgumentContext) {
-        if (actual !is ComponentHolder) return
+        if (actual !is ItemComponentHolder) return
 
-        // 读取显示组件
-        val display = actual.getComponent(ItemDisplay::class.java)
+        val dsl = actual.dsl()
+        val displayName = dsl.displayName
+        val itemName = dsl.itemName
+        val lore = dsl.lore
+        if (displayName == null && itemName == null && lore.isEmpty()) return
 
         // 创建文本替换配置
         val replacementConfig = createReplacementConfig(context)
 
         runBlocking {
-            // 显示名称处理
-            val newName = display.name?.run { async { replaceText(replacementConfig) } }
-            // 本地化名称处理
-            val newLocalName = display.localizedName?.run { async { replaceText(replacementConfig) } }
-            // Lore 处理
-            val newLore = display.lore?.map {
-                // 处理并分割换行符
-                async { it.replaceText(replacementConfig) }
+            dsl.displayName = displayName?.run { async { replaceText(replacementConfig) } }?.await()
+            dsl.itemName = itemName?.run { async { replaceText(replacementConfig) } }?.await()
+            if (lore.isNotEmpty()) {
+                dsl.lore = lore.map { async { it.replaceText(replacementConfig) } }.awaitAll()
             }
-
-            // 创建新显示组件
-            val newDisplay = ItemDisplay(
-                newName?.await(),
-                newLocalName?.await(),
-                newLore?.awaitAll()
-            )
-
-            // 将新的组件写入物品
-            actual.setComponent(newDisplay)
         }
     }
 
