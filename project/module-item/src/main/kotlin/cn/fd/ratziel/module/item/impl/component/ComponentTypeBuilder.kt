@@ -11,13 +11,16 @@ import taboolib.module.nms.MinecraftVersion
 /**
  * ComponentTypeBuilder
  *
- * 用于组装一个 [ItemComponentType] 所需的转换器集合（JSON / NBT / Minecraft）。
+ * 用于组装一个 [ItemComponentType] 所需的转换器集合。
  *
  * 传入组件标识符、组件类型与对应的 Kotlinx 序列化器后，
  * 可以手动指定各类转换器，也可以通过 [serialJsonEntry] / [serialNbtEntry]
  * 快速创建基于序列化器的 entry 转换器。
  *
- * 调用 [build] 前必须提供 JSON、NBT 与 Minecraft 三类转换器。
+ * 调用 [build] 前必须始终提供 JSON 转换器；
+ * 另外会根据当前 Minecraft 版本要求对应的底层转换器：
+ * - 1.20.5 以下需要 NBT 转换器
+ * - 1.20.5 及以上需要 Minecraft 转换器
  *
  * @param T 组件数据类型
  * @property id 组件标识符（插件内部命名）
@@ -135,24 +138,35 @@ class ComponentTypeBuilder<T>(val id: String, val type: Class<T>, val serializer
     /**
      * 构建 [ItemComponentType]。
      *
-     * 当前实现会先校验三类转换器都已提供，随后再根据 [isSupported]
-     * 决定是否返回带有转换模块的组件类型。
+     * 构建时始终要求提供 JSON 转换器，
+     * 并根据当前 Minecraft 版本要求对应的底层转换器：
+     * - 1.20.5 以下需要 NBT 转换器
+     * - 1.20.5 及以上需要 Minecraft 转换器
+     *
+     * 若访问了当前版本不适用的转换器，则由 [ItemComponentType.Transforming]
+     * 在 getter 中抛出明确异常。
      */
     fun build(): ItemComponentType<T> {
-        // 校验构建所需的转换器
         requireNotNull(jsonTransformer) { "JsonTransformer is required for component '$id'" }
-        requireNotNull(nbtTransformer) { "NbtTransformer is required for component '$id'" }
-        require(v < 12005 || minecraftTransformer != null) { "MinecraftTransformer is required for component '$id'" }
+        if (v < 12005) {
+            requireNotNull(nbtTransformer) {
+                "NbtTransformer is required for component '$id' on Minecraft versions below 1.20.5"
+            }
+        } else {
+            requireNotNull(minecraftTransformer) {
+                "MinecraftTransformer is required for component '$id' on Minecraft 1.20.5+"
+            }
+        }
 
-        // 当前版本不支持该组件
         if (!isSupported) {
             return InternalComponentType(id, type, serializer, null)
         }
 
         val transforming = DelegateTransforming(
-            jsonTransformer!!,
-            nbtTransformer!!,
-            if (v >= 12005) minecraftTransformer else null
+            componentId = id,
+            jsonTransformer = jsonTransformer!!,
+            nbtTransformerOrNull = nbtTransformer,
+            minecraftTransformerOrNull = minecraftTransformer
         )
         return InternalComponentType(id, type, serializer, transforming)
     }
@@ -161,15 +175,32 @@ class ComponentTypeBuilder<T>(val id: String, val type: Class<T>, val serializer
      * [ItemComponentType.Transforming] 的简单委托实现。
      */
     private class DelegateTransforming<T>(
+        private val componentId: String,
         override val jsonTransformer: JsonTransformer<T>,
-        override val nbtTransformer: NbtTransformer<T>,
-        private val _minecraftTransformer: MinecraftTransformer<T>?,
+        private val nbtTransformerOrNull: NbtTransformer<T>?,
+        private val minecraftTransformerOrNull: MinecraftTransformer<T>?,
     ) : ItemComponentType.Transforming<T> {
+
+        override val nbtTransformer: NbtTransformer<T>
+            get() = nbtTransformerOrNull ?: throw UnsupportedVersionException(
+                if (MinecraftVersion.versionId >= 12005) {
+                    "NbtTransformer is unavailable on Minecraft 1.20.5+; use MinecraftTransformer instead."
+                } else {
+                    "NbtTransformer is not configured for component '$componentId'."
+                }
+            )
+
         override val minecraftTransformer: MinecraftTransformer<T>
-            get() = _minecraftTransformer ?: throw UnsupportedVersionException("MinecraftTransformer only supports Minecraft 1.20.5+ !")
+            get() = minecraftTransformerOrNull ?: throw UnsupportedVersionException(
+                if (MinecraftVersion.versionId < 12005) {
+                    "MinecraftTransformer only supports Minecraft 1.20.5+; use NbtTransformer on older versions instead."
+                } else {
+                    "MinecraftTransformer is not configured for component '$componentId'."
+                }
+            )
 
         override fun toString() =
-            "Transforming(json=$jsonTransformer, nbt=$nbtTransformer, minecraft=${this@DelegateTransforming.minecraftTransformer})"
+            "Transforming(json=$jsonTransformer, nbt=$nbtTransformerOrNull, minecraft=$minecraftTransformerOrNull)"
     }
 
     /**
@@ -188,5 +219,4 @@ class ComponentTypeBuilder<T>(val id: String, val type: Class<T>, val serializer
 
         override fun toString() = "ItemComponentType(id=$id, type=$type, serializer=$serializer, transforming=$transforming)"
     }
-
 }
