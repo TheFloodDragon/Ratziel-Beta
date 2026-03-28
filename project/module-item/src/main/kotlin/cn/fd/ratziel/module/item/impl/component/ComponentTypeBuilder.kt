@@ -46,7 +46,7 @@ class ComponentTypeBuilder<T>(
     private var minecraftTransformer: MinecraftTransformer<T>? = null
 
     /** 当前版本的数字 ID **/
-    val v get() = versionIdProvider()
+    val v get() = MinecraftVersion.versionId
 
     /**
      * 设置当前版本是否支持该组件类型。
@@ -187,9 +187,7 @@ class ComponentTypeBuilder<T>(
         override val nbtTransformer: NbtTransformer<T>,
         override val minecraftTransformer: MinecraftTransformer<T>,
     ) : ItemComponentType.Transforming<T> {
-
-        override fun toString() =
-            "Transforming(json=$jsonTransformer, nbt=$nbtTransformer, minecraft=$minecraftTransformer)"
+        override fun toString() = "Transforming(json=$jsonTransformer, nbt=$nbtTransformer, minecraft=$minecraftTransformer)"
     }
 
     /**
@@ -209,15 +207,4 @@ class ComponentTypeBuilder<T>(
         override fun toString() = "ItemComponentType(id='$id', tserializer=$serializer, transforming=$transforming)"
     }
 
-    companion object {
-
-        /**
-         * 当前版本号提供器。
-         *
-         * 默认读取全局 [MinecraftVersion.versionId]；测试中可临时替换。
-         */
-        @JvmStatic
-        var versionIdProvider: () -> Int = { MinecraftVersion.versionId }
-
-    }
 }

@@ -5,7 +5,7 @@ import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer
 import net.kyori.adventure.text.Component
 
 /**
- * MinecraftObjMessageTransformer
+ * MessageE2MTransformer
  * 
  * @author TheFloodDragon
  * @since 2025/12/31 00:37

@@ -50,7 +50,7 @@ class AttachedPropertiesSerialTest {
             this[SecondGroupKeys.shared] = 7
         }.toImmutable()
 
-        assertNotEquals(FirstGroupKeys.shared, SecondGroupKeys.shared)
+        assertFalse(FirstGroupKeys.shared == SecondGroupKeys.shared)
         assertEquals(2, properties.entries.size)
         assertEquals(true, properties[FirstGroupKeys.shared])
         assertEquals(7, properties[SecondGroupKeys.shared])

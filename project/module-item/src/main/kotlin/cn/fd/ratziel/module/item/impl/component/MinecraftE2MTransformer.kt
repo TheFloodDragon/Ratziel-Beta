@@ -48,7 +48,7 @@ interface MinecraftE2MTransformer<T> {
                     @Suppress("UNCHECKED_CAST")
                     return constructor.newInstance() as T
                 }
-                throw NoSuchMethodException("没有找到空构造函数: ${clazz.name}")
+                throw NoSuchMethodException("No empty constructor found: ${clazz.name}")
             }
 
             // 生成代理类

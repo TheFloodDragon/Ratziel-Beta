@@ -31,9 +31,13 @@ allprojects {
     dependencies {
         // Kotlin标准库
         compileOnly(kotlin("stdlib"))
+        // Kotlin反射
+        compileOnly(kotlin("reflect"))
 
         // 测试依赖
         testImplementation(kotlin("test-junit5"))
+        testImplementation(kotlin("reflect"))
+
 
         // 项目依赖
         if (path.contains("project")) {

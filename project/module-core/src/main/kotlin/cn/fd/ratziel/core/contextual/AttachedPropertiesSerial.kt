@@ -3,28 +3,75 @@
 package cn.fd.ratziel.core.contextual
 
 import cn.fd.ratziel.core.serialization.json.baseJson
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.SerializationException
+import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonEncoder
-import kotlinx.serialization.json.JsonNames
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.serializer
+import kotlinx.serialization.json.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+
+
+/**
+ * 创建可序列化属性键。
+ *
+ * 建议让 [group] 与声明该属性的 Kotlin 文件保持一致，便于查找与维护注册关系。
+ */
+fun <T> AttachedProperties.Companion.serialKey(group: SerialGroup, serializer: KSerializer<T>, defaultValue: T) =
+    PropertySerialKeyDelegate(group, serializer) { defaultValue }
+
+fun <T> AttachedProperties.Companion.serialKey(
+    group: SerialGroup,
+    serializer: KSerializer<T>,
+    getDefaultValue: AttachedProperties.() -> T,
+) = PropertySerialKeyDelegate(group, serializer, getDefaultValue)
+
+inline fun <reified T> AttachedProperties.Companion.serialKey(group: SerialGroup, defaultValue: T) =
+    serialKey(group, serializer<T>(), defaultValue)
+
+inline fun <reified T> AttachedProperties.Companion.serialKey(
+    group: SerialGroup,
+    noinline getDefaultValue: AttachedProperties.() -> T,
+) = serialKey(group, serializer<T>(), getDefaultValue)
+
+/**
+ * 将 [AttachedProperties] 序列化为 [JsonObject]
+ */
+fun AttachedProperties.serializeToJson(
+    group: SerialGroup,
+    json: Json = baseJson,
+): JsonObject = group.typedSerializer().serializeToJson(json, this)
+
+/**
+ * 将 [JsonElement] 反序列化为 [AttachedProperties]
+ */
+fun JsonElement.deserializeFromJson(
+    group: SerialGroup,
+    json: Json = baseJson,
+): AttachedProperties = group.typedSerializer().deserializeFromJson(json, this)
+
+/**
+ * 将 [AttachedProperties] 转换为 JSON 节点
+ */
+fun AttachedProperties.toJsonElement(
+    group: SerialGroup,
+    json: Json = baseJson,
+): JsonObject = serializeToJson(group, json)
+
+/**
+ * 将 JSON 节点转换为 [AttachedProperties]
+ */
+fun JsonElement.toAttachedProperties(
+    group: SerialGroup,
+    json: Json = baseJson,
+): AttachedProperties = deserializeFromJson(group, json)
+
 
 /**
  * 序列化分组。
  *
- * 建议将分组对象与对应的 [AttachedProperties.serialKey] 属性放在同一个 Kotlin 文件中维护，
+ * 建议将分组对象与对应的 [SerialKey] 属性放在同一个 Kotlin 文件中维护，
  * 以避免后续重构时遗漏注册定义。
  */
 open class SerialGroup {
@@ -49,7 +96,7 @@ open class SerialGroup {
 
     internal fun typedSerializer(): AttachedPropertiesKSerializer = attachedPropertiesSerializer
 
-    override fun toString() = javaClass.simpleName.takeIf { it.isNotBlank() } ?: javaClass.name
+    override fun toString(): String = javaClass.simpleName
 
     private fun registerNodeName(nodeName: String, key: SerialKey<*>) {
         val existing = keysByNodeName[nodeName]
@@ -64,10 +111,10 @@ open class SerialGroup {
 
     private fun isSameKey(existing: SerialKey<*>, incoming: SerialKey<*>): Boolean {
         return existing.group === incoming.group &&
-            existing.name == incoming.name &&
-            existing.serialName == incoming.serialName &&
-            existing.alias == incoming.alias &&
-            existing.serializer.descriptor.serialName == incoming.serializer.descriptor.serialName
+                existing.name == incoming.name &&
+                existing.serialName == incoming.serialName &&
+                existing.alias == incoming.alias &&
+                existing.serializer.descriptor.serialName == incoming.serializer.descriptor.serialName
     }
 
 }
@@ -124,60 +171,6 @@ class PropertySerialKeyDelegate<T>(
         getDefaultValue = getDefaultValue,
     )
 }
-
-/**
- * 创建可序列化属性键。
- *
- * 建议让 [group] 与声明该属性的 Kotlin 文件保持一致，便于查找与维护注册关系。
- */
-fun <T> AttachedProperties.Companion.serialKey(group: SerialGroup, serializer: KSerializer<T>, defaultValue: T) =
-    PropertySerialKeyDelegate(group, serializer) { defaultValue }
-
-fun <T> AttachedProperties.Companion.serialKey(
-    group: SerialGroup,
-    serializer: KSerializer<T>,
-    getDefaultValue: AttachedProperties.() -> T,
-) = PropertySerialKeyDelegate(group, serializer, getDefaultValue)
-
-inline fun <reified T> AttachedProperties.Companion.serialKey(group: SerialGroup, defaultValue: T) =
-    serialKey(group, serializer<T>(), defaultValue)
-
-inline fun <reified T> AttachedProperties.Companion.serialKey(
-    group: SerialGroup,
-    noinline getDefaultValue: AttachedProperties.() -> T,
-) = serialKey(group, serializer<T>(), getDefaultValue)
-
-/**
- * 将 [AttachedProperties] 序列化为 [JsonObject]
- */
-fun AttachedProperties.serializeToJson(
-    group: SerialGroup,
-    json: Json = baseJson,
-): JsonObject = group.typedSerializer().serializeToJson(json, this)
-
-/**
- * 将 [JsonElement] 反序列化为 [AttachedProperties]
- */
-fun JsonElement.deserializeFromJson(
-    group: SerialGroup,
-    json: Json = baseJson,
-): AttachedProperties = group.typedSerializer().deserializeFromJson(json, this)
-
-/**
- * 将 [AttachedProperties] 转换为 JSON 节点
- */
-fun AttachedProperties.toJsonElement(
-    group: SerialGroup,
-    json: Json = baseJson,
-): JsonObject = serializeToJson(group, json)
-
-/**
- * 将 JSON 节点转换为 [AttachedProperties]
- */
-fun JsonElement.toAttachedProperties(
-    group: SerialGroup,
-    json: Json = baseJson,
-): AttachedProperties = deserializeFromJson(group, json)
 
 /**
  * AttachedProperties 的 Kotlin 序列化器

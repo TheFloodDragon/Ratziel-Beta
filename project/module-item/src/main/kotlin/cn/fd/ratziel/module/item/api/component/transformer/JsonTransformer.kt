@@ -18,8 +18,8 @@ interface JsonTransformer<T> {
     /**
      * [JsonElement] -> 组件
      *
-     * @return 传入数据不合法或者没有被转换信息时, 可返回 null
+     * @return 传入数据不合法或者没有被转换信息时，可返回 null
      */
-    fun formJsonElement(element: JsonElement): T?
+    fun fromJsonElement(element: JsonElement): T?
 
 }

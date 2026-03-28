@@ -8,7 +8,9 @@ import kotlinx.serialization.json.JsonObject
 
 /**
  * SerialJsonTransformer
- * 
+ *
+ * 基于 Kotlinx Serialization 的 [JsonTransformer] 默认实现。
+ *
  * @author TheFloodDragon
  * @since 2026/1/1 22:12
  */
@@ -21,7 +23,7 @@ open class SerialJsonTransformer<T>(
         return jsonFormat.encodeToJsonElement(serializer, component)
     }
 
-    override fun formJsonElement(element: JsonElement): T? {
+    override fun fromJsonElement(element: JsonElement): T? {
         return jsonFormat.decodeFromJsonElement(serializer, element)
     }
 
@@ -29,6 +31,8 @@ open class SerialJsonTransformer<T>(
 
     /**
      * EntryTransformer
+     *
+     * 将组件映射到 JSON 对象中的指定主字段，并支持别名读取。
      *
      * @author TheFloodDragon
      * @since 2026/1/1 21:41
@@ -47,10 +51,10 @@ open class SerialJsonTransformer<T>(
             return JsonObject(mapOf(serialName to serialized))
         }
 
-        override fun formJsonElement(element: JsonElement): T? {
+        override fun fromJsonElement(element: JsonElement): T? {
             if (element !is JsonObject) return null // 仅支持对象
             val element = element[serialName] ?: element.getBy(*alias) ?: return null
-            return super.formJsonElement(element)
+            return super.fromJsonElement(element)
         }
 
         override fun toString() = "SerialJsonEntryTransformer(serialName='$serialName', alias=${alias.contentToString()})"
