@@ -2,6 +2,8 @@ package cn.fd.ratziel.common.block
 
 import cn.fd.ratziel.common.block.BlockConfigurationKeys.WeakKey
 import cn.fd.ratziel.core.contextual.AttachedProperties
+import cn.fd.ratziel.core.contextual.SerialGroup
+import cn.fd.ratziel.core.contextual.serialKey
 import java.io.File
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -50,10 +52,14 @@ interface BlockConfigurationKeys {
     }
 
     class PropertyWeakKeyDelegate<T>(private val getDefaultValue: AttachedProperties.() -> T) : ReadOnlyProperty<Any?, WeakKey<T>> {
-        override operator fun getValue(thisRef: Any?, property: KProperty<*>): WeakKey<T> = WeakKey(property.name, getDefaultValue)
+        override operator fun getValue(thisRef: Any?, property: KProperty<*>) = WeakKey(property.name, getDefaultValue)
     }
 }
 
+/**
+ * 注意：请与下方 block 序列化属性定义保存在同一个文件中，便于维护注册关系。
+ */
+object BlockSerialGroup : SerialGroup()
 
 // basic configurations
 
@@ -63,6 +69,10 @@ interface BlockConfigurationKeys {
 val BlockConfigurationKeys.workFile by AttachedProperties.key<File?>(null)
 
 /**
+ * 与 [BlockSerialGroup] 一起维护，避免后续拆文件时遗漏序列化注册。
+ */
+
+/**
  * 运行时是否复制参数上下文
  */
-val BlockConfigurationKeys.copyContext by AttachedProperties.serialKey(false)
+val BlockConfigurationKeys.copyContext by AttachedProperties.serialKey(BlockSerialGroup, false)

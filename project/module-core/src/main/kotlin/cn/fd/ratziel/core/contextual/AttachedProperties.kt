@@ -1,14 +1,7 @@
-@file:OptIn(ExperimentalSerializationApi::class)
 @file:Suppress("NOTHING_TO_INLINE")
 
 package cn.fd.ratziel.core.contextual
 
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
-import kotlinx.serialization.serializer
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -19,7 +12,6 @@ import kotlin.reflect.KProperty
  * @author TheFloodDragon
  * @since 2025/11/14 18:16
  */
-@Serializable(with = AttachedPropertiesKSerializer::class)
 open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> = emptyMap()) {
 
     constructor(another: AttachedProperties) : this(another.properties.toMap())
@@ -33,25 +25,15 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
         /** 获取默认值的函数 **/
         val getDefaultValue: AttachedProperties.() -> T,
     ) {
-        override fun equals(other: Any?) = if (other is Key<*>) name == other.name else false
+        override fun equals(other: Any?) = when {
+            this === other -> true
+            other !is Key<*> -> false
+            this is SerialKey<*> || other is SerialKey<*> -> false
+            else -> name == other.name
+        }
+
         override fun hashCode() = name.hashCode()
         override fun toString() = "Key($name)"
-    }
-
-    /**
-     * 可序列化的属性键
-     */
-    open class SerialKey<T>(
-        name: String,
-        /** 序列化名称 **/
-        val serialName: String,
-        /** 反序列化别名 **/
-        val alias: Set<String> = emptySet(),
-        /** 序列化器 **/
-        val serializer: KSerializer<T>,
-        getDefaultValue: AttachedProperties.() -> T,
-    ) : Key<T>(name, getDefaultValue) {
-        override fun toString() = "SerialKey($name:$serialName, aliases=$alias)"
     }
 
     /**
@@ -98,31 +80,6 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
         override operator fun getValue(thisRef: Any?, property: KProperty<*>) = Key(property.name, getDefaultValue)
     }
 
-    class PropertySerialKeyDelegate<T>(
-        private val serializer: KSerializer<T>,
-        private val getDefaultValue: AttachedProperties.() -> T,
-    ) : ReadOnlyProperty<Any?, SerialKey<T>> {
-
-        private lateinit var key: SerialKey<T>
-
-        operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): PropertySerialKeyDelegate<T> {
-            key = AttachedPropertiesSerialRegistry.register(createKey(property))
-            return this
-        }
-
-        override operator fun getValue(thisRef: Any?, property: KProperty<*>): SerialKey<T> = key
-
-        private fun createKey(property: KProperty<*>) = SerialKey(
-            name = property.name,
-            serialName = property.annotations.filterIsInstance<SerialName>().firstOrNull()?.value ?: property.name,
-            alias = property.annotations
-                .filterIsInstance<JsonNames>()
-                .flatMapTo(LinkedHashSet()) { it.names.asIterable() },
-            serializer = serializer,
-            getDefaultValue = getDefaultValue,
-        )
-    }
-
     class PropertyValueDelegate<T>(private val getDefaultValue: AttachedProperties.() -> T) : ReadWriteProperty<Mutable, T> {
         override operator fun getValue(thisRef: Mutable, property: KProperty<*>) = thisRef[Key(property.name, getDefaultValue)]
         override fun setValue(thisRef: Mutable, property: KProperty<*>, value: T) = thisRef.set(Key(property.name, getDefaultValue), value)
@@ -135,25 +92,6 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
 
         @JvmStatic
         fun <T> key(getDefaultValue: AttachedProperties.() -> T) = PropertyKeyDelegate(getDefaultValue)
-
-        @JvmStatic
-        fun <T> serialKey(serializer: KSerializer<T>, defaultValue: T) =
-            PropertySerialKeyDelegate(serializer) { defaultValue }
-
-        @JvmStatic
-        fun <T> serialKey(
-            serializer: KSerializer<T>,
-            getDefaultValue: AttachedProperties.() -> T,
-        ) = PropertySerialKeyDelegate(serializer, getDefaultValue)
-
-        @JvmStatic
-        inline fun <reified T> serialKey(defaultValue: T) =
-            serialKey(serializer<T>(), defaultValue)
-
-        @JvmStatic
-        inline fun <reified T> serialKey(
-            noinline getDefaultValue: AttachedProperties.() -> T,
-        ) = serialKey(serializer<T>(), getDefaultValue)
 
         @JvmStatic
         fun <T> value(getDefaultValue: AttachedProperties.() -> T) = PropertyValueDelegate(getDefaultValue)
@@ -273,7 +211,6 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
 
         @Suppress("UNCHECKED_CAST")
         private fun <T : Any> tolerantGet(key: Key<in T>): T? = properties[key]?.let { it as T }
-
 
         // include another builder
         operator fun <T : Mutable> T.invoke(body: T.() -> Unit) {

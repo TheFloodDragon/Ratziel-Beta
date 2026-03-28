@@ -1,6 +1,8 @@
 package cn.fd.ratziel.module.script.conf
 
 import cn.fd.ratziel.core.contextual.AttachedProperties
+import cn.fd.ratziel.core.contextual.SerialGroup
+import cn.fd.ratziel.core.contextual.serialKey
 import cn.fd.ratziel.module.script.ScriptManager
 
 /**
@@ -13,6 +15,11 @@ import cn.fd.ratziel.module.script.ScriptManager
 interface ScriptConfigurationKeys {
     companion object : ScriptConfigurationKeys
 }
+
+/**
+ * 注意：请与下方脚本序列化属性定义保存在同一个文件中，便于维护注册关系。
+ */
+object ScriptSerialGroup : SerialGroup()
 
 open class ScriptConfiguration(
     baseConfigurations: Iterable<AttachedProperties> = emptyList(), body: Builder.() -> Unit = {},
@@ -35,16 +42,19 @@ fun ScriptConfiguration?.with(body: ScriptConfiguration.Builder.() -> Unit): Scr
     return if (newConfiguration == this) this else newConfiguration
 }
 
-
 /**
  * 脚本导入
  */
 val ScriptConfigurationKeys.scriptImporting by AttachedProperties.key { ScriptManager.globalGroup }
 
 /**
+ * 下列 serialKey 与 [ScriptSerialGroup] 需一起维护，避免后续拆文件时遗漏序列化注册。
+ */
+
+/**
  * 脚本名称
  */
-val ScriptConfigurationKeys.scriptName by AttachedProperties.serialKey<String?>(null)
+val ScriptConfigurationKeys.scriptName by AttachedProperties.serialKey<String?>(ScriptSerialGroup, null)
 
 /**
  * 脚本缓存等级: (默认为1)
@@ -55,9 +65,9 @@ val ScriptConfigurationKeys.scriptName by AttachedProperties.serialKey<String?>(
  *   1 - AST 缓存
  *   2 - 字节码缓存
  */
-val ScriptConfigurationKeys.scriptCaching by AttachedProperties.serialKey(1)
+val ScriptConfigurationKeys.scriptCaching by AttachedProperties.serialKey(ScriptSerialGroup, 1)
 
 /**
  * 显式脚本解析 (默认为 true)
  */
-val ScriptConfigurationKeys.explicitScriptParsing by AttachedProperties.serialKey(true)
+val ScriptConfigurationKeys.explicitScriptParsing by AttachedProperties.serialKey(ScriptSerialGroup, true)
