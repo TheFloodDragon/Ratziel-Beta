@@ -1,11 +1,11 @@
 package cn.fd.ratziel.module.item.api.component.transformer
 
 import cn.altawk.nbt.tag.NbtCompound
-import cn.altawk.nbt.tag.NbtTag
-
 
 /**
- * NbtTransformer - [NbtTag] 数据类型转换
+ * NbtTransformer - 面向根 [NbtCompound] 的组件转换器
+ *
+ * 负责将组件数据写入、读取以及从根 NBT 中移除。
  *
  * @author TheFloodDragon
  * @since 2026/1/1 21:27
@@ -13,15 +13,20 @@ import cn.altawk.nbt.tag.NbtTag
 interface NbtTransformer<T> {
 
     /**
-     * 组件 -> [NbtTag]
+     * 将组件数据写入到根 [NbtCompound]。
      */
-    fun toNbtTag(component: T, root: NbtCompound): NbtTag
+    fun write(root: NbtCompound, component: T)
 
     /**
-     * [NbtTag] -> 组件
+     * 从根 [NbtCompound] 中读取组件数据。
      *
-     * @return 传入数据不合法或者没有被转换信息时, 可返回 null
+     * @return 根数据不合法或不存在该组件数据时，可返回 null
      */
-    fun fromNbtTag(tag: NbtTag): T?
+    fun read(root: NbtCompound): T?
+
+    /**
+     * 从根 [NbtCompound] 中移除该组件对应的数据。
+     */
+    fun remove(root: NbtCompound)
 
 }

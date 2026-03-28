@@ -36,30 +36,29 @@ interface ItemComponentType<T> {
     /**
      * 组件转换模块接口。
      *
-     * 不同 Minecraft 版本下可用的底层组件体系不同：
-     * - 1.20.5 以下通常使用 [NbtTransformer]
-     * - 1.20.5 及以上通常使用 [MinecraftTransformer]
-     *
-     * 对当前版本不适用的转换器访问时，允许实现抛出明确异常。
+     * 对外统一暴露 JSON、NBT 与 Minecraft 三套转换能力：
+     * - [jsonTransformer] 始终可用
+     * - [nbtTransformer] 始终直接面向物品根 NBT 进行读、写、删
+     * - [minecraftTransformer] 始终可用；旧版本可由 legacy adapter 提供默认实现
      */
     interface Transforming<T> {
 
         /**
-         * 获取 [JsonTransformer]
+         * 获取 [JsonTransformer]。
          */
         val jsonTransformer: JsonTransformer<T>
 
         /**
          * 获取 [NbtTransformer]。
          *
-         * 当当前版本不再使用 NBT 组件体系时，访问可能抛出异常。
+         * 该转换器直接面向物品根 NBT 进行读、写、删操作。
          */
         val nbtTransformer: NbtTransformer<T>
 
         /**
          * 获取 [MinecraftTransformer]。
          *
-         * 当当前版本尚未支持 Minecraft 原生组件体系时，访问可能抛出异常。
+         * 旧版本可由 legacy adapter 基于 [NbtTransformer] 提供兼容实现。
          */
         val minecraftTransformer: MinecraftTransformer<T>
 

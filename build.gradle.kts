@@ -32,21 +32,30 @@ allprojects {
         // Kotlin标准库
         compileOnly(kotlin("stdlib"))
 
+        // 测试依赖
+        testImplementation(kotlin("test-junit5"))
+
         // 项目依赖
         if (path.contains("project")) {
             // Kotlin 序列化工具
             compileOnly(rootProject.libs.kotlinx.serialization.json)
+            testImplementation(rootProject.libs.kotlinx.serialization.json)
             // Kotlin 协程工具
             compileOnly(rootProject.libs.kotlinx.coroutines.core)
+            testImplementation(rootProject.libs.kotlinx.coroutines.core)
             // Adventure API
             compileOnly(rootProject.libs.bundles.adventure)
+            testImplementation(rootProject.libs.bundles.adventure)
             // Taboolib 通用模块
             compileOnly(rootProject.libs.bundles.taboolib)
+            testImplementation(rootProject.libs.bundles.taboolib)
             // 基本依赖
             if (name != rootProject.projects.project.moduleCore.name) {
                 compileOnly(rootProject.projects.project.moduleCore)
+                testImplementation(rootProject.projects.project.moduleCore)
                 if (name != rootProject.projects.project.moduleCommon.name) {
                     compileOnly(rootProject.projects.project.moduleCommon)
+                    testImplementation(rootProject.projects.project.moduleCommon)
                 }
             }
         }
@@ -71,6 +80,10 @@ allprojects {
             jvmTarget = JvmTarget.JVM_1_8
             freeCompilerArgs.addAll("-Xallow-unstable-dependencies", "-Xnested-type-aliases", "-Xcontext-parameters")
         }
+    }
+
+    tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+        useJUnitPlatform()
     }
 
     buildDirClean()

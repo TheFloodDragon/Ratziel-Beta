@@ -1,13 +1,9 @@
 package cn.fd.ratziel.module.item.impl
 
-import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.IdentifiedItem
 import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
-import cn.fd.ratziel.module.item.api.component.transformer.SerialNbtTransformer
 import cn.fd.ratziel.module.item.internal.RefItemStack
-import cn.fd.ratziel.module.nbt.delete
-import taboolib.module.nms.MinecraftVersion
 
 /**
  * AbstractNeoItem
@@ -20,36 +16,16 @@ import taboolib.module.nms.MinecraftVersion
 abstract class AbstractNeoItem : IdentifiedItem, ItemComponentHolder {
 
     override fun <T : Any> get(type: ItemComponentType<T>): T? {
-        return if (MinecraftVersion.versionId >= 12005) {
-            val nmsItem = RefItemStack.of(this.data).nmsStack ?: return null
-            type.transforming.minecraftTransformer.read(nmsItem)
-        } else {
-            type.transforming.nbtTransformer.fromNbtTag(this.data.tag)
-        }
+        val nmsItem = RefItemStack.of(this.data).nmsStack ?: return null
+        return type.transforming.minecraftTransformer.read(nmsItem)
     }
 
     override fun <T : Any> set(type: ItemComponentType<T>, value: T) {
-        if (MinecraftVersion.versionId >= 12005) {
-            editNmsItem { type.transforming.minecraftTransformer.write(it, value) }
-            return
-        }
-        val tag = type.transforming.nbtTransformer.toNbtTag(value, this.data.tag)
-        require(tag is NbtCompound) {
-            "Legacy NbtTransformer for component '${type.id}' must produce NbtCompound."
-        }
-        this.data.tag.merge(tag, true)
+        editNmsItem { type.transforming.minecraftTransformer.write(it, value) }
     }
 
     override fun remove(type: ItemComponentType<*>) {
-        if (MinecraftVersion.versionId >= 12005) {
-            editNmsItem { type.transforming.minecraftTransformer.remove(it) }
-            return
-        }
-        val transformer = type.transforming.nbtTransformer
-        require(transformer is SerialNbtTransformer.EntryTransformer<*>) {
-            "Legacy NbtTransformer for component '${type.id}' must support path deletion."
-        }
-        this.data.tag.delete(transformer.path)
+        editNmsItem { type.transforming.minecraftTransformer.remove(it) }
     }
 
     private fun editNmsItem(action: (Any) -> Unit) {

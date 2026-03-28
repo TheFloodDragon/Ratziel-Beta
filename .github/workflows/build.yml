@@ -40,3 +40,6 @@ jobs:
           prerelease: false
           title: "自动构建最新版本"
           files: outs/*.*
+      # 模块测试
+      - name: Test All Modules
+        run: ./gradlew test
