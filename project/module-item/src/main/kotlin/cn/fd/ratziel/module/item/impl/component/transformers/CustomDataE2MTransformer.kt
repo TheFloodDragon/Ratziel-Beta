@@ -12,6 +12,7 @@ import net.minecraft.world.item.component.CustomData
  * @author TheFloodDragon
  * @since 2026/3/21 23:55
  */
+@Suppress("unused")
 class CustomDataE2MTransformer : MinecraftE2MTransformer<NbtCompound> {
 
     override fun toMinecraftObj(encapsulated: NbtCompound): Any {
