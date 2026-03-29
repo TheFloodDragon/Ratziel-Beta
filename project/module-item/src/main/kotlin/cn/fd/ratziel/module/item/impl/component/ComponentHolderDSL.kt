@@ -40,6 +40,15 @@ open class ComponentHolderDSL(holder: ItemComponentHolder) : ItemComponentHolder
     /** 物品最大耐久值 **/
     var maxDamage: Int? by composed(ItemComponents.MAX_DAMAGE)
 
+    /** 物品修复消耗 **/
+    var repairCost: Int? by composed(ItemComponents.REPAIR_COST)
+
+    /** 是否覆盖附魔光效显示 (仅 1.20.5+) **/
+    var glintOverride: Boolean by composed(ItemComponents.GLINT_OVERRIDE) { false }
+
+    /** 物品是否不可破坏 **/
+    var unbreakable: Boolean by composed(ItemComponents.UNBREAKABLE) { false }
+
 
     /**
      * 非空属性委托（有默认值）

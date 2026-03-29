@@ -6,6 +6,8 @@ import cn.fd.ratziel.module.item.ItemElement
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.api.component.transformer.*
 import kotlinx.serialization.KSerializer
+import taboolib.common.io.runningClassMapWithoutLibrary
+import taboolib.module.nms.AsmClassTranslation
 import taboolib.module.nms.MinecraftVersion
 
 /**
@@ -120,28 +122,9 @@ class ComponentTypeBuilder<T>(
      * @param key Minecraft 内部组件类型 ID（例如："minecraft:custom_name"） [net.minecraft.core.component.DataComponents]
      * @param e2mTransformer 封装对象与 Minecraft 组件对象之间的转换器
      */
-    fun minecraftKeyed(key: String, e2mTransformer: MinecraftE2MTransformer<T>) = this.apply {
+    fun minecraftKeyed(key: String, e2mTransformer: () -> MinecraftE2MTransformer<T>) = this.apply {
         if (v < 12005) return@apply // 不支持 1.20.5-
-        this.minecraftTransformer = MinecraftHandleTransformer(key, e2mTransformer)
-    }
-
-    /**
-     * 创建一个基于 Minecraft 内部组件系统的转换器。
-     *
-     * 该方法会根据提供的 Minecraft 组件类型 ID 和封装对象与 Minecraft 组件对象之间的转换器，
-     * 构建一个可直接读写 Minecraft 组件数据的转换模块。
-     *
-     * @see MinecraftHandleTransformer
-     * @param key Minecraft 内部组件类型 ID（例如："minecraft:custom_name"） [net.minecraft.core.component.DataComponents]
-     * @param e2mClass 实现目标 [MinecraftE2MTransformer] 的类名
-     */
-    fun minecraftKeyed(key: String, e2mClass: String) = minecraftKeyed(key, e2mByReflex(e2mClass))
-
-    /**
-     * 通过反射 [cn.fd.ratziel.module.item.impl.component.transformers] 中的类获取 [MinecraftE2MTransformer]
-     */
-    private fun e2mByReflex(className: String): MinecraftE2MTransformer<T> {
-        return MinecraftE2MTransformer.of("cn.fd.ratziel.module.item.impl.component.transformers.$className")
+        this.minecraftTransformer = MinecraftHandleTransformer(key, e2mTransformer())
     }
 
     /**
@@ -205,6 +188,50 @@ class ComponentTypeBuilder<T>(
                 ?: throw UnsupportedVersionException("Component '$id' is not supported in Minecraft ${MinecraftVersion.minecraftVersion}")
 
         override fun toString() = "ItemComponentType(id='$id', tserializer=$serializer, transforming=$transforming)"
+    }
+
+    companion object {
+
+        private val proxyInstanceMap = mutableMapOf<String, Any>()
+
+        /**
+         * 代理 [cn.fd.ratziel.module.item.impl.component.transformers] 中的类
+         */
+        @JvmStatic
+        fun <T : Any> proxyClass(className: String): T {
+            return nmsProxyClass("cn.fd.ratziel.module.item.impl.component.transformers.$className")
+        }
+
+        /**
+         * 通过全限定类名反射构造任意对象实例。
+         */
+        @JvmStatic
+        fun <T : Any> nmsProxyClass(fullName: String): T {
+            if (proxyInstanceMap.containsKey(fullName)) {
+                @Suppress("UNCHECKED_CAST")
+                return proxyInstanceMap[fullName] as T
+            }
+            fun createInstance(clazz: Class<*>): Any {
+                val constructor = clazz.declaredConstructors.find {
+                    it.parameterTypes.size == 0
+                }
+                if (constructor != null) {
+                    constructor.isAccessible = true
+                    return constructor.newInstance()
+                }
+                throw NoSuchMethodException("No empty constructor found: ${clazz.name}")
+            }
+
+            val proxyClass = AsmClassTranslation(fullName).createNewClass()
+            runningClassMapWithoutLibrary.filter { (name, _) -> name.startsWith("$fullName$") }.forEach { (name, _) ->
+                AsmClassTranslation(name).createNewClass()
+            }
+            @Suppress("UNCHECKED_CAST")
+            val newInstance = createInstance(proxyClass) as T
+            proxyInstanceMap[fullName] = newInstance
+            return newInstance
+        }
+
     }
 
 }

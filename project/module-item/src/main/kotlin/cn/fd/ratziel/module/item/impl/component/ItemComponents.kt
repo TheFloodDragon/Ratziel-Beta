@@ -4,8 +4,10 @@ package cn.fd.ratziel.module.item.impl.component
 
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
+import cn.fd.ratziel.module.item.impl.component.ComponentTypeBuilder.Companion.proxyClass
 import cn.fd.ratziel.module.item.impl.component.transformers.MessageE2MTransformer
 import cn.fd.ratziel.module.item.impl.component.transformers.NoneE2MTransformer
+import cn.fd.ratziel.module.item.impl.component.transformers.UnbreakableNbtTransformer
 import cn.fd.ratziel.module.item.internal.serializers.MessageComponentSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
@@ -66,6 +68,24 @@ object ItemComponents {
     @JvmField
     val MAX_DAMAGE: ItemComponentType<Int>
 
+    /**
+     * 物品修复消耗
+     */
+    @JvmField
+    val REPAIR_COST: ItemComponentType<Int>
+
+    /**
+     * 是否覆盖附魔光效显示 (仅 1.20.5+)
+     */
+    @JvmField
+    val GLINT_OVERRIDE: ItemComponentType<Boolean>
+
+    /**
+     * 物品是否不可破坏
+     */
+    @JvmField
+    val UNBREAKABLE: ItemComponentType<Boolean>
+
     // TODO .... more ... and .. more
 
     /**
@@ -75,28 +95,44 @@ object ItemComponents {
         CUSTOM_DATA = r("custom-data", NbtCompound.serializer()) {
             serialJsonEntry()
             serialNbtEntry("minecraft:custom_data")
-            minecraftKeyed("custom_data", "CustomDataE2MTransformer")
+            minecraftKeyed("custom_data") { proxyClass("CustomDataE2MTransformer") }
         }
         DISPLAY_NAME = r("display-name", MessageComponentSerializer) {
             serialJsonEntry("displayName", "name", "custom_name", "customName")
             serialNbtEntry(if (v >= 12005) "minecraft:custom_name" else "display.Name")
-            minecraftKeyed("custom_name", MessageE2MTransformer)
+            minecraftKeyed("custom_name") { MessageE2MTransformer }
         }
         ITEM_NAME = r("item-name", MessageComponentSerializer) {
             serialJsonEntry("itemName", "localized-name", "localizedName")
             serialNbtEntry(if (v >= 12005) "minecraft:item_name" else "display.LocName")
-            minecraftKeyed("item_name", MessageE2MTransformer)
+            minecraftKeyed("item_name") { MessageE2MTransformer }
         }
         LORE = r("lore", ListSerializer(MessageComponentSerializer)) {
             serialJsonEntry("lores")
             serialNbtEntry(if (v >= 12005) "minecraft:lore" else "Lore")
-            minecraftKeyed("lore", "ItemLoreE2MTransformer")
+            minecraftKeyed("lore") { proxyClass("ItemLoreE2MTransformer") }
         }
         MAX_DAMAGE = r("max-damage", Int.serializer()) {
             isSupported = v >= 12005
             serialJsonEntry("maxDamage", "maxDurability", "max-durability", "durability")
             serialNbtEntry("minecraft:max_damage")
-            minecraftKeyed("max_damage", NoneE2MTransformer())
+            minecraftKeyed("max_damage") { NoneE2MTransformer() }
+        }
+        REPAIR_COST = r("repair-cost", Int.serializer()) {
+            serialJsonEntry("repairCost")
+            serialNbtEntry(if (v >= 12005) "minecraft:repair_cost" else "RepairCost")
+            minecraftKeyed("repair_cost") { NoneE2MTransformer() }
+        }
+        GLINT_OVERRIDE = r("glint-override", Boolean.serializer()) {
+            isSupported = v >= 12005
+            serialJsonEntry("glintOverride", "glint", "enchantmentGlintOverride", "enchantment-glint-override")
+            serialNbtEntry("minecraft:enchantment_glint_override")
+            minecraftKeyed("enchantment_glint_override") { NoneE2MTransformer() }
+        }
+        UNBREAKABLE = r("unbreakable", Boolean.serializer()) {
+            serialJsonEntry("isUnbreakable")
+            nbt(UnbreakableNbtTransformer)
+            if (v >= 12005) minecraft(proxyClass("UnbreakableMinecraftTransformer"))
         }
     }
 

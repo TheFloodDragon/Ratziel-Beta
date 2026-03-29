@@ -5,6 +5,8 @@ import cn.fd.ratziel.module.item.internal.nms.NMSComponent
 
 /**
  * MinecraftHandleTransformer
+ *
+ * 仅支持 1.20.5+
  * 
  * @author TheFloodDragon
  * @since 2026/3/21 23:17
