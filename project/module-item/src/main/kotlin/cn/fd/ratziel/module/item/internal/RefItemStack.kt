@@ -110,7 +110,7 @@ class RefItemStack private constructor(
     /**
      * 提取此 [RefItemStack] 的数据到 [ItemComponentData]
      */
-    fun extractData() = SimpleData(this.material, this.tag, this.amount)
+    fun extractData(): ItemData = SimpleData(this.material, this.tag, this.amount)
 
     /**
      * 将此 [RefItemStack] 写入目标 [ItemStack]

@@ -29,7 +29,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
 
     /** 虚拟物品数据节点 **/
     @JvmStatic
-    private val VIRTUAL_PATH = RatzielItem.RATZIEL_PATH + NbtPath.NameNode("virtual")
+    private val VIRTUAL_PATH = RatzielItem.RATZIEL_PATH_D + NbtPath.NameNode("virtual")
 
     /** 变化记录节点 **/
     private const val CHANGES_NODE = "s2c_changes"

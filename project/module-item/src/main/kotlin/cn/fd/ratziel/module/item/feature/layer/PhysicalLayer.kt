@@ -31,7 +31,7 @@ class PhysicalLayer(
 
         /** 物品图层节点 **/
         @JvmStatic
-        val LAYER_PATH = RatzielItem.RATZIEL_PATH + NbtPath.NameNode("layer")
+        val LAYER_PATH = RatzielItem.RATZIEL_PATH_D + NbtPath.NameNode("layer")
 
         /** 内部信息 - 当前图层 **/
         const val CURRENT_LAYER_NAME = "current"
