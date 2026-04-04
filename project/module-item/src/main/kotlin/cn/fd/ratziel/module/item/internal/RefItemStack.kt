@@ -3,6 +3,8 @@ package cn.fd.ratziel.module.item.internal
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.api.component.ItemComponentData
+import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.impl.SimpleMaterial.Companion.toBukkit
@@ -29,7 +31,7 @@ class RefItemStack private constructor(
      * 确保 CraftItemStack.handle 不为空
      */
     private var handle: ItemStack,
-) : ItemData {
+) : ItemComponentData {
 
     private constructor() : this(newObc() as ItemStack)
 
@@ -64,6 +66,18 @@ class RefItemStack private constructor(
             handle.amount = value
         }
 
+    override fun <T : Any> get(type: ItemComponentType<T>): T? {
+        return nmsStack?.let { type.transforming.minecraftTransformer.read(it) }
+    }
+
+    override fun <T : Any> set(type: ItemComponentType<T>, value: T) {
+        nmsStack?.let { type.transforming.minecraftTransformer.write(it, value) }
+    }
+
+    override fun remove(type: ItemComponentType<*>) {
+        nmsStack?.let { type.transforming.minecraftTransformer.remove(it) }
+    }
+
     /**
      * 物品最大堆叠数量
      */
@@ -94,11 +108,9 @@ class RefItemStack private constructor(
     }
 
     /**
-     * 提取此 [RefItemStack] 的数据到 [ItemData]
+     * 提取此 [RefItemStack] 的数据到 [ItemComponentData]
      */
-    fun extractData(): ItemData {
-        return SimpleData(this.material, this.tag, this.amount)
-    }
+    fun extractData() = SimpleData(this.material, this.tag, this.amount)
 
     /**
      * 将此 [RefItemStack] 写入目标 [ItemStack]
@@ -120,7 +132,7 @@ class RefItemStack private constructor(
     /**
      * 克隆数据
      */
-    override fun clone() = RefItemStack(InternalUtil.obcCloneMethod.invoke(handle) as ItemStack)
+    override fun clone(): RefItemStack = RefItemStack(InternalUtil.obcCloneMethod.invoke(handle) as ItemStack)
 
     /**
      * 获取NMS形式实例 [net.minecraft.world.item.ItemStack]

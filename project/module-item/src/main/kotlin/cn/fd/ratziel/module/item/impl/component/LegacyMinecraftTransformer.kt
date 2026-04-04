@@ -19,20 +19,20 @@ class LegacyMinecraftTransformer<T>(
 
     override fun read(nmsItem: Any): T? {
         val ref = RefItemStack.ofNms(nmsItem)
-        return nbtTransformer.read(ref.tag)
+        return nbtTransformer.readFrom(ref.tag)
     }
 
     override fun write(nmsItem: Any, component: T) {
         val ref = RefItemStack.ofNms(nmsItem)
         val root = ref.tag
-        nbtTransformer.write(root, component)
+        nbtTransformer.writeTo(root, component)
         ref.tag = root
     }
 
     override fun remove(nmsItem: Any) {
         val ref = RefItemStack.ofNms(nmsItem)
         val root = ref.tag
-        nbtTransformer.remove(root)
+        nbtTransformer.removeFrom(root)
         ref.tag = root
     }
 

@@ -1,7 +1,7 @@
 package cn.fd.ratziel.module.item.util
 
-import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
+import cn.fd.ratziel.module.item.api.component.ItemComponentData
 import cn.fd.ratziel.module.item.internal.RefItemStack
 import org.bukkit.inventory.ItemStack
 
@@ -21,11 +21,11 @@ fun NeoItem.writeTo(itemStack: ItemStack) {
 }
 
 /**
- * 将 [ItemStack] 转化成代理数据体 [ItemData]
+ * 将 [ItemStack] 转化成代理数据体 [ItemComponentData]
  */
-fun ItemStack.asItemData(): ItemData = RefItemStack.of(this)
+fun ItemStack.asItemData(): ItemComponentData = RefItemStack.of(this)
 
 /**
  * 提取 [ItemStack] 中的数据
  */
-fun ItemStack.extractData(): ItemData  = RefItemStack.of(this).extractData()
+fun ItemStack.extractData(): ItemComponentData = RefItemStack.of(this).extractData()

@@ -99,7 +99,7 @@ class ComponentTypeBuilder<T>(
     }
 
     /**
-     * 创建一个基于指定 NBT 路径的 entry 转换器。
+     * 创建一个基于指定 NBT 路径的序列化转换器。
      *
      * 转换器会直接对物品根 NBT 的 [path] 位置执行写入、读取与删除，
      * 适合将单个组件映射到某个固定子路径下。
@@ -107,7 +107,7 @@ class ComponentTypeBuilder<T>(
      * @param path NBT 路径字符串（例如："tag.CustomData"）
      */
     fun serialNbtEntry(path: String) = this.apply {
-        this.nbtTransformer = SerialNbtTransformer.EntryTransformer(
+        this.nbtTransformer = SerialNbtTransformer(
             serializer, ItemElement.nbt, NbtPath(path)
         )
     }

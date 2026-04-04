@@ -12,14 +12,10 @@ import kotlinx.serialization.KSerializer
 /**
  * SerialNbtTransformer
  *
- * 基于 Kotlinx Serialization 的 [NbtTransformer] 默认实现。
+ * 基于 Kotlinx Serialization 的 [NbtTransformer] 路径映射实现。
  *
- * 默认行为：
- * - [write] 要求序列化结果本身就是一个 [NbtCompound]，并将其合并到根节点
- * - [read] 直接从根节点反序列化
- * - [remove] 默认不支持，因为无法可靠判断应删除哪些根节点字段
- *
- * 若组件只占用根 NBT 下的某个固定路径，请优先使用 [EntryTransformer]。
+ * 组件会被序列化为一个 [NbtTag]，并写入到根 NBT 的指定 [path]；
+ * 读取和删除也都围绕该路径进行。
  *
  * @author TheFloodDragon
  * @since 2026/1/1 22:15
@@ -27,6 +23,7 @@ import kotlinx.serialization.KSerializer
 open class SerialNbtTransformer<T>(
     val serializer: KSerializer<T>,
     val nbtFormat: NbtFormat,
+    val path: NbtPath,
 ) : NbtTransformer<T> {
 
     /**
@@ -43,60 +40,19 @@ open class SerialNbtTransformer<T>(
         return nbtFormat.decodeFromNbtTag(serializer, tag)
     }
 
-    override fun write(root: NbtCompound, component: T) {
-        val serialized = encode(component)
-        require(serialized is NbtCompound) {
-            "SerialNbtTransformer(serializer=$serializer) can only write NbtCompound to a root compound. " +
-                "Use EntryTransformer or a custom NbtTransformer for non-compound payloads."
-        }
-        root.merge(serialized, true)
+    override fun writeTo(root: NbtCompound, component: T) {
+        root.write(path, encode(component), true)
     }
 
-    override fun read(root: NbtCompound): T? {
-        return decode(root)
+    override fun readFrom(root: NbtCompound): T? {
+        val tag = root.read(path, false) ?: return null
+        return decode(tag)
     }
 
-    override fun remove(root: NbtCompound) {
-        throw UnsupportedOperationException(
-            "SerialNbtTransformer(serializer=$serializer) does not know how to remove data from the root compound. " +
-                "Use EntryTransformer or a custom NbtTransformer."
-        )
+    override fun removeFrom(root: NbtCompound) {
+        root.delete(path)
     }
 
-    override fun toString() = "SerialNbtTransformer(serializer=$serializer)"
-
-    /**
-     * EntryTransformer
-     *
-     * 将组件映射到根 NBT 下的指定路径，并提供对应的写入、读取与删除能力。
-     *
-     * @author TheFloodDragon
-     * @since 2026/1/1 21:41
-     */
-    open class EntryTransformer<T>(
-        /** 序列化器 **/
-        serializer: KSerializer<T>,
-        /** Nbt 格式 **/
-        nbtFormat: NbtFormat,
-        /** Nbt 路径 **/
-        val path: NbtPath,
-    ) : SerialNbtTransformer<T>(serializer, nbtFormat) {
-
-        override fun write(root: NbtCompound, component: T) {
-            root.write(path, encode(component), true)
-        }
-
-        override fun read(root: NbtCompound): T? {
-            val tag = root.read(path, false) ?: return null
-            return decode(tag)
-        }
-
-        override fun remove(root: NbtCompound) {
-            root.delete(path)
-        }
-
-        override fun toString() = "SerialNbtEntryTransformer(path=$path)"
-
-    }
+    override fun toString() = "SerialNbtTransformer(path=$path, serializer=$serializer)"
 
 }

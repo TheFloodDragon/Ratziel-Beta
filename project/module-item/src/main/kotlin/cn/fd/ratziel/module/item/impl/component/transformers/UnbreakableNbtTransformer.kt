@@ -21,7 +21,7 @@ object UnbreakableNbtTransformer : NbtTransformer<Boolean> {
         NbtPath.NameNode(if (versionId >= 12005) "minecraft:unbreakable" else "Unbreakable")
     )
 
-    override fun write(root: NbtCompound, component: Boolean) {
+    override fun writeTo(root: NbtCompound, component: Boolean) {
         if (versionId >= 12005) {
             if (component) root.write(path, NbtCompound(), true) else root.delete(path)
         } else {
@@ -29,7 +29,7 @@ object UnbreakableNbtTransformer : NbtTransformer<Boolean> {
         }
     }
 
-    override fun read(root: NbtCompound): Boolean? {
+    override fun readFrom(root: NbtCompound): Boolean? {
         val tag = root.read(path, false) ?: return null
         return if (versionId >= 12005) {
             when (tag) {
@@ -41,7 +41,7 @@ object UnbreakableNbtTransformer : NbtTransformer<Boolean> {
         }
     }
 
-    override fun remove(root: NbtCompound) {
+    override fun removeFrom(root: NbtCompound) {
         root.delete(path)
     }
 
