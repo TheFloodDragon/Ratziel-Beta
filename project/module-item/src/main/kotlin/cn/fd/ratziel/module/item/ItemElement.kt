@@ -8,6 +8,8 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.core.element.ElementHandler
 import cn.fd.ratziel.core.serialization.json.baseJson
 import cn.fd.ratziel.module.item.api.ItemMaterial
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
+import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.feature.action.ActionInterpreter
 import cn.fd.ratziel.module.item.feature.layer.PhysicalLayerInterpreter
 import cn.fd.ratziel.module.item.feature.template.InheritInterpreter
@@ -91,12 +93,12 @@ object ItemElement : ElementHandler.ParralHandler {
 
     init {
         // 物品解释器注册
-        ItemRegistry.registerInterpreter { ActionInterpreter }
-        ItemRegistry.registerInterpreter { InheritInterpreter }
-        ItemRegistry.registerInterpreter { DefaultResolver }
-        ItemRegistry.registerInterpreter { DataInterpreter() }
-        ItemRegistry.registerInterpreter { PhysicalLayerInterpreter }
-        ItemRegistry.registerInterpreter { ComponentInterpreter() }
+        ItemRegistry.registerInterpreter(DefaultResolver)
+        ItemRegistry.registerInterpreter(InheritInterpreter) { before(DefaultResolver::class) }
+        ItemRegistry.registerInterpreter(ActionInterpreter) { after(DefaultResolver::class) }
+        ItemRegistry.registerInterpreter(::DataInterpreter) { after(DefaultResolver::class) }
+        ItemRegistry.registerInterpreter(PhysicalLayerInterpreter) { after(DataInterpreter::class) }
+        ItemRegistry.registerInterpreter(::ComponentInterpreter) { after(PhysicalLayerInterpreter::class) }
     }
 
     init {
@@ -122,17 +124,14 @@ object ItemElement : ElementHandler.ParralHandler {
 
         // Debug
         if (isDebugMode) {
-
+            debug(generator.routeGraph())
             val item = generator.build().get()
-            println(item.data)
-
-            val ri = RefItemStack.of(item.data)
-            println(ri.tag)
-            val bi = ri.bukkitStack
-            println(bi)
-
-            debug(ItemComponents.registry.map { it })
-
+            debug(item.data)
+            RefItemStack.of(item.data).run {
+                debug(tag)
+                debug(bukkitStack)
+            }
+            debug(ItemComponents.registry.toList())
         }
     }
 
@@ -146,6 +145,23 @@ object ItemElement : ElementHandler.ParralHandler {
     private inline fun <reified T : Any> register(serializer: KSerializer<T> = serializer<T>()) {
         ItemRegistry.registerComponent(T::class.java, serializer)
     }
+
+    /**
+     * 输出物品解释路程图
+     */
+    private fun DefaultGenerator.routeGraph() = buildString {
+        appendLine("[ITEM ROUTE] ${origin.name}")
+        appendLine("├─ NativeSource")
+        compositor.interpreterGroups.forEachIndexed { index, group ->
+            appendLine("├─ [阶段 ${index + 1}] ${group.joinToString(" || ") { it.displayName() }}")
+        }
+        appendLine("└─ SourceInterpreter(${compositor.sources.joinToString(", ") { it.displayName() }.ifEmpty { "<none>" }})")
+    }
+
+    private fun ItemInterpreter.displayName() = this::class.java.simpleName.ifBlank { this::class.java.name }
+
+    private fun ItemSource.displayName() =
+        (this as? ItemSource.Named)?.names?.joinToString("/") ?: this::class.java.simpleName.ifBlank { this::class.java.name }
 
     @Awake(LifeCycle.ACTIVE)
     private fun registerSubCommand() {

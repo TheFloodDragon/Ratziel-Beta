@@ -13,7 +13,6 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @author TheFloodDragon
  * @since 2025/5/3 18:32
  */
-@ParallelInterpretation
 object DefaultResolver : ItemInterpreter {
 
     override suspend fun preFlow(stream: ItemStream) {

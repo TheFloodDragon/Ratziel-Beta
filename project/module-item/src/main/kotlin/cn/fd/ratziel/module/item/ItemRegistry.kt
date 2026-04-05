@@ -11,6 +11,7 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Supplier
+import kotlin.reflect.KClass
 
 /**
  * ItemRegistry - 物品注册表
@@ -24,30 +25,30 @@ object ItemRegistry {
      * 组件集成注册表
      */
     @JvmField
-    val registry: MutableList<ComponentIntegrated<*>> = CopyOnWriteArrayList()
+    val registry = CopyOnWriteArrayList<ComponentIntegrated<*>>()
 
     /**
      * 物品解释器注册表
      */
     @JvmField
-    val interpreters: MutableList<InterpreterIntegrated<*>> = CopyOnWriteArrayList()
+    val interpreters = CopyOnWriteArrayList<InterpreterIntegrated<*>>()
 
     /**
      * 物品源列表
      */
     @JvmField
-    val sources: MutableList<ItemSource> = CopyOnWriteArrayList()
+    val sources = CopyOnWriteArrayList<ItemSource>()
 
     /**
      * 物品解析器列表
      */
-    val sectionResolvers: MutableList<ItemSectionResolver> = CopyOnWriteArrayList()
+    val sectionResolvers = CopyOnWriteArrayList<ItemSectionResolver>()
 
     /**
      * 默认的静态物品标签解析器列表
      */
     @JvmField
-    val staticTagResolvers: MutableList<ItemTagResolver> = CopyOnWriteArrayList()
+    val staticTagResolvers = CopyOnWriteArrayList<ItemTagResolver>()
 
     /**
      * 注册组件
@@ -55,12 +56,8 @@ object ItemRegistry {
      * @param serializer 组件序列化器
      */
     @JvmStatic
-    fun <T> registerComponent(
-        type: Class<T>,
-        serializer: KSerializer<T>,
-    ) {
-        val integrated = ComponentIntegrated(type, serializer)
-        registry.add(integrated)
+    fun <T> registerComponent(type: Class<T>, serializer: KSerializer<T>) {
+        registry += ComponentIntegrated(type, serializer)
     }
 
     /**
@@ -68,36 +65,53 @@ object ItemRegistry {
      */
     @JvmStatic
     fun <T> getComponent(type: Class<T>): ComponentIntegrated<T> {
-        val integrated = registry.find { it.type == type }
-            ?: throw ComponentNotFoundException(type)
         @Suppress("UNCHECKED_CAST")
-        return integrated as ComponentIntegrated<T>
+        return (registry.find { it.type == type } ?: throw ComponentNotFoundException(type)) as ComponentIntegrated<T>
     }
+
+    /**
+     * 注册物品解释器单例
+     */
+    @JvmStatic
+    fun <T : ItemInterpreter> registerInterpreter(
+        interpreter: T,
+        order: InterpreterOrderSpec.() -> Unit = {},
+    ) = registerInterpreter(interpreter::class.java, Supplier { interpreter }, order)
+
+    /**
+     * 注册物品解释器工厂
+     */
+    @JvmStatic
+    inline fun <reified T : ItemInterpreter> registerInterpreter(
+        noinline interpreter: () -> T,
+        noinline order: InterpreterOrderSpec.() -> Unit = {},
+    ) = registerInterpreter(T::class.java, Supplier(interpreter), order)
 
     /**
      * 注册物品解释器
      */
     @JvmStatic
-    @JvmOverloads
-    inline fun <reified T : ItemInterpreter> registerInterpreter(priority: Int = 0, interpreter: Supplier<T>) {
-        registerInterpreter(priority, T::class.java, interpreter)
+    fun <T : ItemInterpreter> registerInterpreter(
+        clazz: Class<out T>,
+        interpreter: Supplier<T>,
+        order: InterpreterOrderSpec.() -> Unit = {},
+    ) {
+        check(interpreters.none { it.type == clazz }) { "Interpreter ${clazz.displayName} is already registered." }
+        interpreters += InterpreterIntegrated(clazz, interpreter, resolveInterpreterOrder(clazz, InterpreterOrderSpec().apply(order)))
     }
 
     /**
-     * 注册物品解释器
+     * 获取物品解释器列表 (按 order 分组顺序实例化)
      */
     @JvmStatic
-    fun <T : ItemInterpreter> registerInterpreter(priority: Int, clazz: Class<T>, interpreter: Supplier<T>) {
-        interpreters.add(InterpreterIntegrated(clazz, interpreter, priority))
-    }
+    fun getInterpreterInstances(): List<ItemInterpreter> = orderedInterpreterGroups.flatten().map { it.getter.get() }
 
     /**
-     * 获取物品解释器列表 (排序并获取完实例的列表)
+     * 获取按 order 分组后的物品解释器实例
      */
     @JvmStatic
-    fun getInterpreterInstances(): List<ItemInterpreter> {
-        // 按照优先级排序
-        return interpreters.sortedBy { it.priority }.map { it.getter.get() }
+    fun getInterpreterInstanceGroups(): List<List<ItemInterpreter>> = orderedInterpreterGroups.map { group ->
+        group.map { it.getter.get() }
     }
 
     /**
@@ -106,10 +120,8 @@ object ItemRegistry {
     @JvmStatic
     fun registerSource(source: ItemSource) {
         // 注册物品源名称以便其参与解析
-        if (source is ItemSource.Named) {
-            DefaultResolver.accessibleNodes.addAll(source.names)
-        }
-        this.sources.add(source)
+        if (source is ItemSource.Named) DefaultResolver.accessibleNodes.addAll(source.names)
+        sources += source
     }
 
     /**
@@ -117,7 +129,7 @@ object ItemRegistry {
      */
     @JvmStatic
     fun registerSectionResolver(resolver: ItemSectionResolver) {
-        sectionResolvers.add(resolver)
+        sectionResolvers += resolver
     }
 
     /**
@@ -125,7 +137,7 @@ object ItemRegistry {
      */
     @JvmStatic
     fun registerStaticTagResolver(resolver: ItemTagResolver) {
-        staticTagResolvers.add(resolver)
+        staticTagResolvers += resolver
     }
 
     /**
@@ -137,6 +149,66 @@ object ItemRegistry {
     }
 
     /**
+     * 按顺序分组后的解释器集成
+     */
+    private val orderedInterpreterGroups: List<List<InterpreterIntegrated<*>>>
+        get() = interpreters.groupBy { it.order }.toSortedMap().values.map { it.toList() }
+
+    /**
+     * 根据 before / after 约束解析解释器层级顺序
+     */
+    private fun resolveInterpreterOrder(source: Class<out ItemInterpreter>, spec: InterpreterOrderSpec): Int {
+        val before = spec.beforeTargets.map { it.findTargetOf(source, "before") }
+        val after = spec.afterTargets.map { it.findTargetOf(source, "after") }
+        if (before.isEmpty() && after.isEmpty()) return 0
+        if (after.isEmpty()) return before.minOf { it.order } - 1
+        if (before.isEmpty()) return after.maxOf { it.order } + 1
+
+        val lowerBound = after.maxOf { it.order } + 1
+        val upperBound = before.minOf { it.order } - 1
+        check(lowerBound <= upperBound) {
+            "Interpreter ${source.displayName} declares incompatible order constraints: " +
+                "after(${after.joinToString(", ") { it.type.displayName }}) requires >= $lowerBound, " +
+                "before(${before.joinToString(", ") { it.type.displayName }}) requires <= $upperBound."
+        }
+        return lowerBound
+    }
+
+    /**
+     * 解析顺序约束中的目标解释器
+     */
+    private fun Class<out ItemInterpreter>.findTargetOf(
+        source: Class<out ItemInterpreter>,
+        relation: String,
+    ): InterpreterIntegrated<*> {
+        check(this != source) { "Interpreter ${source.displayName} cannot declare $relation($displayName) on itself." }
+        return interpreters.find { it.type == this }
+            ?: error("Interpreter ${source.displayName} declares $relation($displayName) but $displayName is not registered yet.")
+    }
+
+    /**
+     * 获取类型显示名
+     */
+    private val Class<*>.displayName get() = simpleName.ifBlank { name }
+
+    /**
+     * 解释器顺序约束
+     */
+    class InterpreterOrderSpec {
+
+        internal val beforeTargets = linkedSetOf<Class<out ItemInterpreter>>()
+        internal val afterTargets = linkedSetOf<Class<out ItemInterpreter>>()
+
+        fun before(vararg types: Class<out ItemInterpreter>) { beforeTargets.addAll(types) }
+        fun before(vararg types: KClass<out ItemInterpreter>) = before(*types.map { it.java }.toTypedArray())
+        inline fun <reified T : ItemInterpreter> before() = before(T::class)
+
+        fun after(vararg types: Class<out ItemInterpreter>) { afterTargets.addAll(types) }
+        fun after(vararg types: KClass<out ItemInterpreter>) = after(*types.map { it.java }.toTypedArray())
+        inline fun <reified T : ItemInterpreter> after() = after(T::class)
+    }
+
+    /**
      * 物品解释器集成
      */
     class InterpreterIntegrated<T : ItemInterpreter>(
@@ -144,8 +216,8 @@ object ItemRegistry {
         val type: Class<out T>,
         /** 物品解释器构建器 **/
         val getter: Supplier<T>,
-        /** 物品解释器优先级 **/
-        val priority: Int,
+        /** 解释器层级顺序 **/
+        val order: Int,
     )
 
     /**
