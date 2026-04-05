@@ -8,6 +8,7 @@ import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
+import cn.fd.ratziel.module.item.impl.component.ItemSheet
 import cn.fd.ratziel.module.item.impl.component.dsl
 import cn.fd.ratziel.module.item.util.asComponentData
 import cn.fd.ratziel.module.item.util.modifyTag
@@ -79,8 +80,8 @@ class PhysicalLayer(
          */
         @JvmStatic
         fun writeLayers(itemData: ItemData, layers: Map<String, ItemLayer>) {
-            itemData.modifyTag {
-                it.handle(LAYER_PATH) {
+            itemData.asComponentData().dsl {
+                customData = customData.handle(LAYER_PATH) {
                     val storageLayers = NbtCompound()
                     for ((name, layer) in layers) {
                         storageLayers[name] = layer.data.tag
@@ -120,7 +121,9 @@ class PhysicalLayer(
          */
         override fun render(item: NeoItem, layer: ItemLayer) {
             item.data.modifyTag { root ->
-                root.handle(LAYER_PATH) {
+                val customData = (root[ItemSheet.CUSTOM_DATA_COMPONENT] as? NbtCompound)
+                    ?: NbtCompound().also { root[ItemSheet.CUSTOM_DATA_COMPONENT] = it }
+                customData.handle(LAYER_PATH) {
                     // 获取当前图层
                     val currentLayerName = get(CURRENT_LAYER_NAME)?.content as? String ?: DEFAULT_LAYER_NAME
                     val currentLayer = findLayer(this@handle, currentLayerName)

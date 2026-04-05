@@ -1,4 +1,8 @@
+import org.gradle.api.Project
 import java.net.URL
+
+val Project.debugMode: Boolean
+    get() = providers.gradleProperty("debug").orNull?.toBoolean() ?: false
 
 val isoInstantFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z")
 

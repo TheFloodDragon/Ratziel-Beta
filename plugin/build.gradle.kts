@@ -22,7 +22,7 @@ subprojects {
             // 镜像中央仓库
             repoCentral = "https://repo.huaweicloud.com/repository/maven/"
             // Debug Mode
-            debug = false
+            debug = debugMode
             // Isolated Mode
             enableIsolatedClassloader = true
             // Common Modules
@@ -88,8 +88,8 @@ subprojects {
             relocate("cn.gtemc.itembridge.", "${rootProject.group}.libraries.itembridge.")
             // Fluxon
             relocate("org.tabooproject.fluxon.", "${rootProject.group}.libraries.fluxon.")
-            // 测试部分
-            // exclude("cn.fd.ratziel.test.")
+            // 测试部分 (Debug 模式下保留)
+            if (!debugMode) exclude("cn.fd.ratziel.test.")
             // 排除无效的 .kotlin_module
             exclude("META-INF/j21.*")
         }
