@@ -59,7 +59,7 @@
     "test": [
       "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer"
     ],
-    "transitive": true,
+    "transitive": false,
     "ignoreOptional": true,
     "ignoreException": true,
     "scopes": [
@@ -199,7 +199,7 @@
     "test": [
       "net.kyori.adventure.text.serializer.json.JSONComponentSerializer"
     ],
-    "transitive": true,
+    "transitive": false,
     "ignoreOptional": true,
     "ignoreException": true,
     "scopes": [

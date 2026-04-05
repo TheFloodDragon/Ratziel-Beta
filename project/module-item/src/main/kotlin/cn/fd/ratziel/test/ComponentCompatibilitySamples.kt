@@ -102,7 +102,6 @@ internal fun sampleValues(type: ItemComponentType<*>): List<SampleCase> = when (
     )
 
     ItemComponents.REPAIR_COST -> listOf(
-        SampleCase("zero", 0),
         SampleCase("common", 17),
     )
 

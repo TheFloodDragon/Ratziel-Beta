@@ -23,10 +23,7 @@ import java.time.format.DateTimeFormatter
  */
 object ComponentCompatibilityTest : Test() {
 
-    private val currentVersionName: String
-        get() = MinecraftVersion.minecraftVersion.replace(Regex("[\\\\/:*?\"<>|]"), "_")
-
-    private val reportFile: File get() = File("组件一致性检查结果-$currentVersionName.txt")
+    private val reportFile: File get() = File("组件一致性检查结果-${MinecraftVersion.versionId}.txt")
 
     override fun check(): List<Result> {
         return ItemComponents.registry
