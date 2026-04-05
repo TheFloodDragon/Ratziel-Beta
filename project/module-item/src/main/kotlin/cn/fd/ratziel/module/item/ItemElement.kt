@@ -16,6 +16,7 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
+import cn.fd.ratziel.test.ComponentCompatibilityTest
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.RefItemStack
 import cn.fd.ratziel.module.item.internal.command.ItemCommand
@@ -178,6 +179,8 @@ object ItemElement : ElementHandler.ParralHandler {
     override fun onStart(elements: Collection<Element>) {
         // 清除注册的物品
         ItemManager.registry.clear()
+        // 主动触发组件一致性检查
+        ComponentCompatibilityTest.runAtEnable()
     }
 
     private inline fun <reified T : Any> register(serializer: KSerializer<T> = serializer<T>()) {

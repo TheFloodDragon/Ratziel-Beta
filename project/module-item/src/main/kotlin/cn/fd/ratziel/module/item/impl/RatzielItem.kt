@@ -213,7 +213,7 @@ open class RatzielItem private constructor(
          * 写入指定数据
          */
         override fun set(name: String, data: Any) {
-            val customData = data[ItemComponents.CUSTOM_DATA] ?: NbtCompound()
+            val customData = this.data[ItemComponents.CUSTOM_DATA] ?: NbtCompound()
             customData.handle(RATZIEL_DATA_PATH) { put(name, NbtAdapter.box(data)) }
             this.data[ItemComponents.CUSTOM_DATA] = customData
         }
