@@ -131,7 +131,6 @@ object ItemElement : ElementHandler.ParralHandler {
                 debug(tag)
                 debug(bukkitStack)
             }
-            debug(ItemComponents.registry.toList())
         }
     }
 
@@ -140,6 +139,7 @@ object ItemElement : ElementHandler.ParralHandler {
         ItemManager.registry.clear()
         // 主动触发组件一致性检查
         cn.fd.ratziel.test.ComponentCompatibilityTest.runTest()
+        debug(ItemComponents.registry.toList())
     }
 
     private inline fun <reified T : Any> register(serializer: KSerializer<T> = serializer<T>()) {

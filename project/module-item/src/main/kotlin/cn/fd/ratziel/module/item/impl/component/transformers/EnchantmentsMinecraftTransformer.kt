@@ -3,6 +3,7 @@ package cn.fd.ratziel.module.item.impl.component.transformers
 import cn.fd.ratziel.module.item.api.component.transformer.MinecraftTransformer
 import cn.fd.ratziel.module.item.impl.component.type.ItemEnchantmentMap
 import cn.fd.ratziel.module.item.internal.RefItemStack
+import org.bukkit.inventory.meta.ItemMeta
 
 /**
  * EnchantmentsMinecraftTransformer
@@ -27,7 +28,7 @@ object EnchantmentsMinecraftTransformer : MinecraftTransformer<ItemEnchantmentMa
     override fun write(nmsItem: Any, component: ItemEnchantmentMap) {
         val bukkitStack = RefItemStack.ofNms(nmsItem).bukkitStack
         val itemMeta = bukkitStack.itemMeta ?: return
-        itemMeta.removeEnchantments()
+        itemMeta.clearEnchantments()
         component.toBukkitMap().forEach { (enchantment, level) ->
             itemMeta.addEnchant(enchantment, level, true)
         }
@@ -40,8 +41,16 @@ object EnchantmentsMinecraftTransformer : MinecraftTransformer<ItemEnchantmentMa
         if (itemMeta.enchants.isEmpty()) {
             return
         }
-        itemMeta.removeEnchantments()
+        itemMeta.clearEnchantments()
         bukkitStack.itemMeta = itemMeta
+    }
+
+    private fun ItemMeta.clearEnchantments() {
+        try {
+            removeEnchantments()
+        } catch (_: NoSuchMethodError) {
+            enchants.keys.toList().forEach(::removeEnchant)
+        }
     }
 
 }
