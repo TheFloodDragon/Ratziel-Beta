@@ -74,7 +74,7 @@ fun JsonElement.toAttachedProperties(
  * 建议将分组对象与对应的 [SerialKey] 属性放在同一个 Kotlin 文件中维护，
  * 以避免后续重构时遗漏注册定义。
  */
-open class SerialGroup {
+open class SerialGroup(private val independentName: String? = null) {
 
     private val keysByNodeName = LinkedHashMap<String, SerialKey<*>>()
     private val attachedPropertiesSerializer by lazy(LazyThreadSafetyMode.PUBLICATION) { AttachedPropertiesKSerializer(this) }
@@ -96,7 +96,7 @@ open class SerialGroup {
 
     internal fun typedSerializer(): AttachedPropertiesKSerializer = attachedPropertiesSerializer
 
-    override fun toString(): String = javaClass.simpleName
+    override fun toString(): String = independentName ?: javaClass.simpleName.takeUnless { it.isBlank() } ?: javaClass.name
 
     private fun registerNodeName(nodeName: String, key: SerialKey<*>) {
         val existing = keysByNodeName[nodeName]

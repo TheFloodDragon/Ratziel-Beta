@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+
 package cn.fd.ratziel.core.contextual
 
 import cn.fd.ratziel.core.serialization.json.baseJson
@@ -42,6 +44,11 @@ private val SecondGroupKeys.shared by AttachedProperties.serialKey(SecondGroup, 
 private val AliasGroupKeys.value by AttachedProperties.serialKey(AliasGroup, 0)
 
 class AttachedPropertiesSerialTest {
+
+    @Test
+    fun `serial group can use an independent display name`() {
+        assertEquals("ElementGroup", SerialGroup("ElementGroup").toString())
+    }
 
     @Test
     fun `serial keys with same name from different groups are isolated in maps`() {

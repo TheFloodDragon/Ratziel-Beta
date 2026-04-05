@@ -7,10 +7,10 @@ Workspaces:
     filter: '^[^#!].*'
     # 若开启则会监听工作空间内的文件变化,并自动重新加载变化文件
     listen: true
-    # 是否使用文件名称当做元素名称
-    use-filename: false
-    # 统一元素类型 (None 代表不统一)
-    unified-type: None
+    # 默认按文件名解析为单元素时使用 $fn
+    # elementName: '$fn'
+    # 默认元素类型 (None 代表不指定)
+    elementType: None
 
 Message:
   # 是否在消息组件序列化的过程中默认取消斜体

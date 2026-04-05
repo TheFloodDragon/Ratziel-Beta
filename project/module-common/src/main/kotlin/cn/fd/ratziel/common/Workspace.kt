@@ -1,8 +1,11 @@
 package cn.fd.ratziel.common
 
-import cn.fd.ratziel.common.element.ElementMatcher
-import cn.fd.ratziel.core.element.ElementType
-import taboolib.common5.cbool
+import cn.fd.ratziel.core.element.ElementConfiguration
+import cn.fd.ratziel.core.element.ElementConfigurationKeys
+import cn.fd.ratziel.core.element.FILE_NAME_ELEMENT_NAME
+import cn.fd.ratziel.core.element.elementName
+import cn.fd.ratziel.core.element.filter
+import cn.fd.ratziel.core.element.listen
 import java.io.File
 
 /**
@@ -17,10 +20,19 @@ data class Workspace(
      */
     val folder: File,
     /**
-     * 工作空间选项表
+     * 工作空间默认元素配置
      */
-    val options: Map<String, Any?>,
+    val configuration: ElementConfiguration,
 ) {
+
+    init {
+        val configuredElementName = with(ElementConfigurationKeys) {
+            configuration.getNoDefault(elementName)
+        }
+        require(configuredElementName == null || configuredElementName == FILE_NAME_ELEMENT_NAME) {
+            "Workspace elementName must be '$FILE_NAME_ELEMENT_NAME' or omitted, but was '$configuredElementName'."
+        }
+    }
 
     /**
      * 工作空间文件列表 (未过滤)
@@ -35,23 +47,14 @@ data class Workspace(
     /**
      * 元素文件过滤器
      */
-    val filter = options["filter"]?.toString()?.toRegex() ?: Regex("^[^#!].*")
+    val filter: Regex = with(ElementConfigurationKeys) {
+        configuration.getNoDefault(filter)
+    }?.toRegex() ?: Regex("^[^#!].*")
 
     /**
      * 是否监听此工作空间内的文件变更
      */
-    val listen = options["listen"]?.cbool ?: true
-
-    /**
-     * 是否使用文件名称作为元素名称
-     */
-    val useFileNameAsElementName = options["use-filename"].cbool
-
-    /**
-     * 统一的元素类型, 空代表不统一类型
-     */
-    val unifiedElementType: ElementType? = options["unified-type"]?.toString()
-        ?.takeUnless { it.equals("None", true) }
-        ?.let { ElementMatcher.matchTypeOrNull(it) }
-
+    val listen: Boolean = with(ElementConfigurationKeys) {
+        configuration.getNoDefault(listen)
+    } ?: true
 }
