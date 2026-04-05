@@ -125,6 +125,20 @@
     "external": true
   },
   {
+    "value": "net.kyori:option:1.1.0",
+    "test": [
+      "net.kyori.option.OptionState"
+    ],
+    "transitive": false,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
     "value": "net.kyori:adventure-text-serializer-bungeecord:$adventurePlatform",
     "test": [
       "net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer"

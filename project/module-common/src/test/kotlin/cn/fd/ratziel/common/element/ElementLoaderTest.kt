@@ -120,7 +120,7 @@ class ElementLoaderTest {
 
         val elements = DefaultElementLoader.parseElements(
             workspace {
-                elementType("loader-test:demo")
+                ElementConfiguration.elementType("loader-test:demo")
             },
             json,
             File("workspace-type.yml")
@@ -143,8 +143,8 @@ class ElementLoaderTest {
 
         val elements = DefaultElementLoader.parseElements(
             workspace {
-                elementName(FILE_NAME_ELEMENT_NAME)
-                elementType("loader-test:demo")
+                ElementConfiguration.elementName(FILE_NAME_ELEMENT_NAME)
+                ElementConfiguration.elementType("loader-test:demo")
             },
             json,
             File("workspace-default.yml")
@@ -171,8 +171,8 @@ class ElementLoaderTest {
 
         val elements = DefaultElementLoader.parseElements(
             workspace {
-                elementName(FILE_NAME_ELEMENT_NAME)
-                elementType("loader-test:demo")
+                ElementConfiguration.elementName(FILE_NAME_ELEMENT_NAME)
+                ElementConfiguration.elementType("loader-test:demo")
             },
             json,
             File("workspace-override.yml")
@@ -196,7 +196,7 @@ class ElementLoaderTest {
 
         val elements = DefaultElementLoader.parseElements(
             workspace {
-                elementType("loader-test:demo")
+                ElementConfiguration.elementType("loader-test:demo")
             },
             json,
             File("workspace-none.yml")
@@ -212,7 +212,7 @@ class ElementLoaderTest {
     fun `rejects workspace element name values other than file name placeholder`() {
         val exception = assertFailsWith<IllegalArgumentException> {
             workspace {
-                elementName("merged")
+                ElementConfiguration.elementName("merged")
             }
         }
 

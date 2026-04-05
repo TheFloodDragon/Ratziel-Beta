@@ -7,11 +7,11 @@ import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
 import cn.fd.ratziel.module.item.internal.RefItemStack
-import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import taboolib.common.Test
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
+import taboolib.module.nms.MinecraftVersion
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -23,23 +23,36 @@ import java.time.format.DateTimeFormatter
  */
 object ComponentCompatibilityTest : Test() {
 
-    private val reportFile: File get() = File("组件一致性检查结果.txt")
+    private val currentVersionName: String
+        get() = MinecraftVersion.minecraftVersion.replace(Regex("[\\\\/:*?\"<>|]"), "_")
+
+    private val reportFile: File get() = File("组件一致性检查结果-$currentVersionName.txt")
 
     override fun check(): List<Result> {
         return ItemComponents.registry
             .sortedBy { it.id }
-            .map { type ->
+            .flatMap { type ->
                 val componentId = type.id
-                val sample = sampleValue(componentId)
-                    ?: return@map Unsupported("$componentId (暂未提供稳定样例值)")
-                try {
-                    @Suppress("UNCHECKED_CAST")
-                    assertTransformerConsistency(type as ItemComponentType<Any>, sample)
-                    Success(componentId)
+                val samples = sampleValues(type)
+                if (samples.isEmpty()) {
+                    return@flatMap listOf(Unsupported("$componentId (暂未提供稳定样例值)"))
+                }
+
+                @Suppress("UNCHECKED_CAST")
+                val typedType = type as ItemComponentType<Any>
+                val transforming = try {
+                    typedType.transforming
                 } catch (ex: UnsupportedVersionException) {
-                    Unsupported("$componentId (${ex.message ?: "当前版本不支持"})")
-                } catch (ex: Throwable) {
-                    Failure.of(componentId, ex)
+                    return@flatMap listOf(Unsupported("$componentId (${ex.message ?: "当前版本不支持"})"))
+                }
+
+                samples.map { sample ->
+                    try {
+                        assertTransformerConsistency(typedType, transforming, sample)
+                        Success("$componentId [${sample.name}]")
+                    } catch (ex: Throwable) {
+                        Failure.of("$componentId [${sample.name}]", ex)
+                    }
                 }
             }
     }
@@ -57,28 +70,31 @@ object ComponentCompatibilityTest : Test() {
         }
     }
 
-    private fun assertTransformerConsistency(type: ItemComponentType<Any>, component: Any) {
+    private fun assertTransformerConsistency(
+        type: ItemComponentType<Any>,
+        transforming: ItemComponentType.Transforming<Any>,
+        sample: SampleCase,
+    ) {
         val baseline = createBaseline()
         val originalTag = baseline.originalTag.clone()
 
         val minecraftSandbox = RefItemStack.of(baseline.data.clone())
         val nbtSandbox = baseline.data.clone()
 
-        val transforming = type.transforming
         val nmsItem = requireNotNull(minecraftSandbox.nmsStack) {
             "组件 '${type.id}' 的 Minecraft 沙箱未能创建 NMS ItemStack。"
         }
 
-        transforming.minecraftTransformer.write(nmsItem, component)
+        transforming.minecraftTransformer.write(nmsItem, sample.value)
         val nbtWriteRoot = nbtSandbox.tag.clone()
-        transforming.nbtTransformer.writeTo(nbtWriteRoot, component)
+        transforming.nbtTransformer.writeTo(nbtWriteRoot, sample.value)
         nbtSandbox.tag = nbtWriteRoot
 
         val minecraftWrittenTag = minecraftSandbox.tag
         val nbtWrittenTag = nbtSandbox.tag
         val writeDiff = diffTags(minecraftWrittenTag, nbtWrittenTag)
         check(writeDiff.isEmpty()) {
-            buildWriteFailureMessage(type.id, component, minecraftWrittenTag, nbtWrittenTag, writeDiff)
+            buildWriteFailureMessage(type.id, sample, minecraftWrittenTag, nbtWrittenTag, writeDiff)
         }
 
         transforming.minecraftTransformer.remove(nmsItem)
@@ -94,7 +110,7 @@ object ComponentCompatibilityTest : Test() {
         check(minecraftRemoveDiff.isEmpty() && nbtRemoveDiff.isEmpty()) {
             buildRemoveFailureMessage(
                 componentId = type.id,
-                component = component,
+                sample = sample,
                 originalTag = originalTag,
                 minecraftTag = minecraftRemovedTag,
                 nbtTag = nbtRemovedTag,
@@ -113,44 +129,6 @@ object ComponentCompatibilityTest : Test() {
             data = baselineData,
             originalTag = baselineRef.tag.clone(),
         )
-    }
-
-    private fun sampleValue(componentId: String): Any? = when (componentId) {
-        "custom-data" -> NbtCompound {
-            put("marker", NbtString("component-consistency"))
-            put("level", NbtInt(7))
-            put("nested", NbtCompound {
-                put("enabled", NbtByte(true))
-                put("note", NbtString("write-remove"))
-            })
-            put("entries", NbtList {
-                add(NbtCompound {
-                    put("kind", NbtString("alpha"))
-                    put("index", NbtInt(1))
-                })
-                add(NbtCompound {
-                    put("kind", NbtString("beta"))
-                    put("index", NbtInt(2))
-                })
-                add(NbtCompound {
-                    put("kind", NbtString("leaf"))
-                    put("index", NbtInt(3))
-                })
-            })
-        }
-
-        "display-name" -> Component.text("compat-display-name")
-        "item-name" -> Component.text("compat-item-name")
-        "lore" -> listOf(
-            Component.text("compat-lore-line-1"),
-            Component.text("compat-lore-line-2"),
-        )
-
-        "max-damage" -> 233
-        "repair-cost" -> 17
-        "glint-override" -> true
-        "unbreakable" -> true
-        else -> null
     }
 
     private fun buildReport(batch: Companion.BatchResult): String {
@@ -182,14 +160,15 @@ object ComponentCompatibilityTest : Test() {
 
     private fun buildWriteFailureMessage(
         componentId: String,
-        component: Any,
+        sample: SampleCase,
         minecraftTag: NbtCompound,
         nbtTag: NbtCompound,
         diff: List<String>,
     ): String {
         return buildString {
             appendLine("组件 '$componentId' 写入后一致性检查失败。")
-            appendLine("样例值: $component")
+            appendLine("样本: ${sample.name}")
+            appendLine("样例值: ${sample.value}")
             appendLine("Minecraft tag: $minecraftTag")
             appendLine("NBT tag: $nbtTag")
             appendLine("差异:")
@@ -199,7 +178,7 @@ object ComponentCompatibilityTest : Test() {
 
     private fun buildRemoveFailureMessage(
         componentId: String,
-        component: Any,
+        sample: SampleCase,
         originalTag: NbtCompound,
         minecraftTag: NbtCompound,
         nbtTag: NbtCompound,
@@ -208,7 +187,8 @@ object ComponentCompatibilityTest : Test() {
     ): String {
         return buildString {
             appendLine("组件 '$componentId' 删除后未能恢复到原始 tag。")
-            appendLine("样例值: $component")
+            appendLine("样本: ${sample.name}")
+            appendLine("样例值: ${sample.value}")
             appendLine("原始 tag: $originalTag")
             appendLine("Minecraft 删除后 tag: $minecraftTag")
             appendLine("NBT 删除后 tag: $nbtTag")
@@ -281,12 +261,6 @@ object ComponentCompatibilityTest : Test() {
 
     private fun compareValue(path: String, left: Any?, right: Any?): List<String> {
         return if (left == right) emptyList() else listOf("$path 值不同：$left != $right")
-    }
-
-    private fun cleanRemoved(tag: NbtTag): NbtTag {
-        return if (tag is NbtCompound) {
-            NbtCompound(tag.filterNot { it.key.startsWith("!") }.toMutableMap())
-        } else tag
     }
 
     private data class Baseline(
