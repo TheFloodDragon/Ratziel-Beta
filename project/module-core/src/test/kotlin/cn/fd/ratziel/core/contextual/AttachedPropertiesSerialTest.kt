@@ -8,11 +8,7 @@ import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertSame
+import kotlin.test.*
 
 private object FirstGroup : SerialGroup()
 private object SecondGroup : SerialGroup()
@@ -52,10 +48,10 @@ class AttachedPropertiesSerialTest {
 
     @Test
     fun `serial keys with same name from different groups are isolated in maps`() {
-        val properties = AttachedProperties.Mutable().apply {
+        val properties = AttachedProperties.Builder().apply {
             this[FirstGroupKeys.shared] = true
             this[SecondGroupKeys.shared] = 7
-        }.toImmutable()
+        }.build()
 
         assertFalse(FirstGroupKeys.shared == SecondGroupKeys.shared)
         assertEquals(2, properties.entries.size)
@@ -71,10 +67,10 @@ class AttachedPropertiesSerialTest {
 
     @Test
     fun `group serializer is stable and only serializes its own keys`() {
-        val properties = AttachedProperties.Mutable().apply {
+        val properties = AttachedProperties.Builder().apply {
             this[FirstGroupKeys.shared] = true
             this[SecondGroupKeys.shared] = 7
-        }.toImmutable()
+        }.build()
 
         assertSame(FirstGroup.serializer(), FirstGroup.serializer())
 
@@ -96,9 +92,9 @@ class AttachedPropertiesSerialTest {
 
         assertEquals(9, deserialized[AliasGroupKeys.value])
 
-        val serialized = AttachedProperties.Mutable().apply {
+        val serialized = AttachedProperties.Builder().apply {
             this[AliasGroupKeys.value] = 12
-        }.toImmutable().serializeToJson(AliasGroup)
+        }.build().serializeToJson(AliasGroup)
 
         assertEquals(setOf("renamed"), serialized.keys)
         assertEquals(JsonPrimitive(12), serialized["renamed"])

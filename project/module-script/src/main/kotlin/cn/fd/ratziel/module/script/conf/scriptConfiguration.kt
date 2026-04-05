@@ -25,7 +25,7 @@ open class ScriptConfiguration(
     baseConfigurations: Iterable<AttachedProperties> = emptyList(), body: Builder.() -> Unit = {},
 ) : AttachedProperties(Builder(baseConfigurations).apply { body(this) }), ScriptConfigurationKeys {
 
-    class Builder(baseConfigurations: Iterable<AttachedProperties> = emptyList()) : Mutable(baseConfigurations), ScriptConfigurationKeys
+    class Builder(baseConfigurations: Iterable<AttachedProperties> = emptyList()) : AttachedProperties.Builder(baseConfigurations), ScriptConfigurationKeys
 
     object Default : ScriptConfiguration()
 

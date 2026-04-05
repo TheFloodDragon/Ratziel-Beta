@@ -13,18 +13,12 @@ import kotlinx.serialization.json.JsonNames
  * @author TheFloodDragon
  * @since 2026/4/5 13:11
  */
-interface ElementConfigurationKeys {
-    companion object : ElementConfigurationKeys
-}
-
-open class ElementConfiguration(
+class ElementConfiguration(
     baseConfigurations: Iterable<AttachedProperties> = emptyList(),
     builder: Builder.() -> Unit = {},
-) : AttachedProperties(Builder(baseConfigurations).apply(builder)), ElementConfigurationKeys {
+) : AttachedProperties(Builder(baseConfigurations).apply(builder)) {
 
-    class Builder(baseConfigurations: Iterable<AttachedProperties> = emptyList()) : Mutable(baseConfigurations), ElementConfigurationKeys
-
-    object Default : ElementConfiguration()
+    class Builder(baseConfigurations: Iterable<AttachedProperties> = emptyList()) : AttachedProperties.Builder(baseConfigurations)
 
     companion object {
 
@@ -35,10 +29,7 @@ open class ElementConfiguration(
         val GROUP = SerialGroup("ElementGroup")
 
         init {
-            ElementConfigurationKeys.elementName
-            ElementConfigurationKeys.elementType
-            ElementConfigurationKeys.filter
-            ElementConfigurationKeys.listen
+            elementName; elementType; filter; listen
         }
 
     }
@@ -58,27 +49,30 @@ fun ElementConfiguration?.with(builder: ElementConfiguration.Builder.() -> Unit)
 /**
  * 使用文件名作为单元素解析名称时的表达式。
  */
-const val FILE_NAME_ELEMENT_NAME = "\$fn"
+const val FILE_NAME_ELEMENT_NAME = $$"$fn"
+
+
+private typealias Keys = ElementConfiguration.Companion
 
 /**
  * 指定整个文件解析为单个元素时的元素名称。
  *
  * 工作空间级配置仅允许使用 [FILE_NAME_ELEMENT_NAME]。
  */
-val ElementConfigurationKeys.elementName by AttachedProperties.serialKey<String?>(ElementConfiguration.GROUP, null)
+val Keys.elementName by AttachedProperties.serialKey<String?>(ElementConfiguration.GROUP, null)
 
 /**
  * 指定当前文件或工作空间默认使用的元素类型。
  */
 @JsonNames("unified-type")
-val ElementConfigurationKeys.elementType by AttachedProperties.serialKey<String?>(ElementConfiguration.GROUP, null)
+val Keys.elementType by AttachedProperties.serialKey<String?>(ElementConfiguration.GROUP, null)
 
 /**
  * 指定工作空间文件过滤器。
  */
-val ElementConfigurationKeys.filter by AttachedProperties.serialKey<String?>(ElementConfiguration.GROUP, null)
+val Keys.filter by AttachedProperties.serialKey<String?>(ElementConfiguration.GROUP, null)
 
 /**
  * 指定是否监听工作空间文件变更。
  */
-val ElementConfigurationKeys.listen by AttachedProperties.serialKey<Boolean?>(ElementConfiguration.GROUP, null)
+val Keys.listen by AttachedProperties.serialKey<Boolean?>(ElementConfiguration.GROUP, null)

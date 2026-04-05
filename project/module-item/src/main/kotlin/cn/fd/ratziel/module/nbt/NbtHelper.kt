@@ -18,9 +18,11 @@ object NbtHelper {
      * @param path 路径 (最后一个节点必须为 [NbtPath.NameNode])
      */
     @JvmStatic
-    fun handle(tag: NbtTag, path: Iterable<NbtPath.Node>, create: Boolean, action: NbtCompound.() -> Unit) {
-        val find = read(tag, path, create) as? NbtCompound ?: return
+    fun handle(tag: NbtCompound, path: Iterable<NbtPath.Node>, create: Boolean, action: NbtCompound.() -> Unit): NbtCompound {
+        val find = read(tag, path, create) as? NbtCompound
+            ?: return tag // 读取不到还不创建, 返回
         action(find)
+        return tag
     }
 
     /**
@@ -51,7 +53,7 @@ object NbtHelper {
      * 通过路径写入 [NbtTag]
      */
     @JvmStatic
-    fun write(tag: NbtTag, path: List<NbtPath.Node>, target: NbtTag, create: Boolean) {
+    fun write(tag: NbtCompound, path: List<NbtPath.Node>, target: NbtTag, create: Boolean): NbtCompound {
         val find = read(tag, path.dropLast(1), create)
         val last = path.last()
         if (find is NbtCompound && last is NbtPath.NameNode) {
@@ -59,13 +61,14 @@ object NbtHelper {
         } else if (find is NbtList && last is NbtPath.IndexNode) {
             find[last.index] = target
         }
+        return tag
     }
 
     /**
      * 删除指定路径的数据
      */
     @JvmStatic
-    fun delete(tag: NbtTag, path: List<NbtPath.Node>) {
+    fun delete(tag: NbtCompound, path: List<NbtPath.Node>): NbtCompound {
         val find = read(tag, path.dropLast(1), false)
         val last = path.last()
         if (find is NbtCompound && last is NbtPath.NameNode) {
@@ -73,6 +76,7 @@ object NbtHelper {
         } else if (find is NbtList && last is NbtPath.IndexNode) {
             find.removeAt(last.index)
         }
+        return tag
     }
 
 }

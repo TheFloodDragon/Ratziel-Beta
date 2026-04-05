@@ -204,12 +204,12 @@ class AttachedPropertiesKSerializer(private val group: SerialGroup) : KSerialize
     fun deserializeFromJson(json: Json, element: JsonElement): AttachedProperties {
         val jsonObject = element as? JsonObject
             ?: throw SerializationException("AttachedProperties must be deserialized from JsonObject, but was ${element::class.simpleName}")
-        val mutable = AttachedProperties.Mutable()
+        val builder = AttachedProperties.Builder()
         jsonObject.forEach { (serialName, jsonElement) ->
             val key = group[serialName] ?: return@forEach
-            mutable.putSerialValue(key, json, jsonElement)
+            builder.putSerialValue(key, json, jsonElement)
         }
-        return mutable.toImmutable()
+        return builder.build()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -219,7 +219,7 @@ class AttachedPropertiesKSerializer(private val group: SerialGroup) : KSerialize
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun AttachedProperties.Mutable.putSerialValue(
+    private fun AttachedProperties.Builder.putSerialValue(
         key: SerialKey<*>,
         json: Json,
         element: JsonElement,

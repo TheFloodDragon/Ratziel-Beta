@@ -13,6 +13,7 @@ import net.minecraft.world.item.component.CustomData
 import org.bukkit.craftbukkit.v1_21_R4.CraftRegistry
 import taboolib.common.platform.function.severe
 import taboolib.library.reflex.ReflexClass
+import taboolib.module.nms.MinecraftVersion
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
 /**
@@ -23,6 +24,12 @@ import net.minecraft.world.item.ItemStack as NMSItemStack
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class NMSItemImpl2 : NMSItem() {
+
+    /**
+     * 是否支持最新的 NbtOps 解析 (1.20.5+ : 物品数据改组件存之后)
+     * Tips: 这玩意会随版本变, 所以只能支持最后一个修改的版本及以上
+     */
+    private val isModern = MinecraftVersion.versionId >= MODERN_VERSION
 
     val nmsOps: RegistryOps<NBTBase> by lazy {
         CraftRegistry.getMinecraftRegistry().createSerializationContext(DynamicOpsNBT.INSTANCE)
@@ -62,6 +69,22 @@ class NMSItemImpl2 : NMSItem() {
             severe(ex.stackTraceToString())
             return
         }
+        // 设置组件数据
+        setPatch(nmsItem, patch)
+    }
+
+    override fun copyItem(nmsItem: Any): Any {
+        return (nmsItem as NMSItemStack).copy()
+    }
+
+    override fun rewriteTag(nmsItem: Any, target: Any?) {
+        // 目标物品组件数据
+        val patch = (target as? NMSItemStack)?.componentsPatch ?: DataComponentPatch.EMPTY
+        // 设置组件数据
+        setPatch(nmsItem, patch)
+    }
+
+    fun setPatch(nmsItem: Any, patch: DataComponentPatch) {
         // 源物品组件
         val components = (nmsItem as NMSItemStack).components
         // 源物品的组件不为空
@@ -71,10 +94,6 @@ class NMSItemImpl2 : NMSItem() {
             val newPatchedMap = PatchedDataComponentMap.fromPatch(nmsItem.prototype, patch)
             componentsField.set(nmsItem, newPatchedMap) // 直接设置
         }
-    }
-
-    override fun copyItem(nmsItem: Any): Any {
-        return (nmsItem as NMSItemStack).copy()
     }
 
     fun <T> parseFromTag(codec: Codec<T>, tag: NbtTag): T {

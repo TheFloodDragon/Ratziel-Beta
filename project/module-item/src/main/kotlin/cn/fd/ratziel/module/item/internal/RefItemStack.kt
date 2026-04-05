@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package cn.fd.ratziel.module.item.internal
 
 import cn.altawk.nbt.tag.NbtCompound
@@ -36,16 +38,16 @@ class RefItemStack private constructor(
     private constructor() : this(newObc() as ItemStack)
 
     /**
-     * 物品总标签数据
+     * 物品总标签数据 (副本)
      * @see cn.fd.ratziel.module.item.internal.nms.NMSItem.getTag
      * @see cn.fd.ratziel.module.item.internal.nms.NMSItem.setTag
      */
     override var tag: NbtCompound
         get() {
-            return nmsStack?.let { NMSItem.Companion.INSTANCE.getTag(it) } ?: NbtCompound()
+            return nmsStack?.let { NMSItem.INSTANCE.getTag(it) } ?: NbtCompound()
         }
         set(value) {
-            NMSItem.Companion.INSTANCE.setTag(nmsStack ?: return, value)
+            NMSItem.INSTANCE.setTag(nmsStack ?: return, value)
         }
 
     /**
@@ -67,15 +69,15 @@ class RefItemStack private constructor(
         }
 
     override fun <T : Any> get(type: ItemComponentType<T>): T? {
-        return nmsStack?.let { type.transforming.minecraftTransformer.read(it) }
+        return type.transforming.minecraftTransformer.read(nmsStack ?: return null)
     }
 
     override fun <T : Any> set(type: ItemComponentType<T>, value: T) {
-        nmsStack?.let { type.transforming.minecraftTransformer.write(it, value) }
+        type.transforming.minecraftTransformer.write(nmsStack ?: return, value)
     }
 
     override fun remove(type: ItemComponentType<*>) {
-        nmsStack?.let { type.transforming.minecraftTransformer.remove(it) }
+        type.transforming.minecraftTransformer.remove(nmsStack ?: return)
     }
 
     /**
@@ -93,22 +95,7 @@ class RefItemStack private constructor(
         }
 
     /**
-     * 应用物品数据
-     */
-    fun applyData(data: ItemData): RefItemStack {
-        if (data.material.isEmpty()) {
-            // 直接设置材质不会改变 CraftItemStack#handle , 故设置数量
-            this.amount = 0
-        } else {
-            this.material = data.material
-            this.tag = data.tag
-            this.amount = data.amount
-        }
-        return this
-    }
-
-    /**
-     * 提取此 [RefItemStack] 的数据到 [ItemComponentData]
+     * 提取此 [RefItemStack] 纯粹的标签数据
      */
     fun extractData(): ItemData = SimpleData(this.material, this.tag, this.amount)
 
@@ -116,10 +103,15 @@ class RefItemStack private constructor(
      * 将此 [RefItemStack] 写入目标 [ItemStack]
      */
     fun writeTo(itemStack: ItemStack) {
+        if (itemStack == this.bukkitStack) return // 哪有我改我自己的道理
         // 写入标签数据
         if (isObcClass(itemStack::class.java)) {
             // CraftItemStack 直接写入
-            RefItemStack(itemStack).applyData(this)
+            val ref = RefItemStack(itemStack)
+            ref.material = this.material
+            // 调用 rewriteTag 更高效, 因为高版本是直接写入组件数据, 低版本是写入整个标签
+            ref.nmsStack?.let { NMSItem.INSTANCE.rewriteTag(it, this.nmsStack) }
+            ref.amount = this.amount
         } else {
             // 一般的 BukkitItemStack 写入 ItemMeta
             itemStack.itemMeta = this.bukkitStack.itemMeta
@@ -162,7 +154,11 @@ class RefItemStack private constructor(
          * 通过 [ItemData] 创建一个 [RefItemStack]
          */
         @JvmStatic
-        fun of(data: ItemData) = RefItemStack().applyData(data)
+        fun of(data: ItemData) = RefItemStack().apply {
+            this.material = data.material
+            this.tag = data.tag
+            this.amount = data.amount
+        }
 
         /**
          * 通过 [ItemStack] 创建一个 [RefItemStack]
@@ -255,34 +251,34 @@ class RefItemStack private constructor(
 
         @JvmStatic
         val nmsItemStackEmptyConstructor by lazy {
-            ReflexClass.Companion.of(nmsClass).structure.getConstructorByType(Void::class.java)
+            ReflexClass.of(nmsClass).structure.getConstructorByType(Void::class.java)
         }
 
         @JvmStatic
         val asNMSCopyMethod by lazy {
-            ReflexClass.Companion.of(obcClass).structure.getMethodByType("asNMSCopy", ItemStack::class.java)
+            ReflexClass.of(obcClass).structure.getMethodByType("asNMSCopy", ItemStack::class.java)
         }
 
         @JvmStatic
         val asBukkitCopyMethod by lazy {
-            ReflexClass.Companion.of(obcClass).structure.getMethodByType("asBukkitCopy", nmsClass)
+            ReflexClass.of(obcClass).structure.getMethodByType("asBukkitCopy", nmsClass)
         }
 
         @JvmStatic
         val asCraftCopyMethod by lazy {
-            ReflexClass.Companion.of(obcClass).structure.getMethodByType("asCraftCopy", ItemStack::class.java)
+            ReflexClass.of(obcClass).structure.getMethodByType("asCraftCopy", ItemStack::class.java)
         }
 
         // net.minecraft.world.item.ItemStack handle;
         @JvmStatic
         val obcHandleField by lazy {
-            ReflexClass.Companion.of(obcClass).structure.getField("handle")
+            ReflexClass.of(obcClass).structure.getField("handle")
         }
 
         // public CraftItemStack clone()
         @JvmStatic
         val obcCloneMethod by lazy {
-            ReflexClass.Companion.of(obcClass).structure.getMethod("clone")
+            ReflexClass.of(obcClass).structure.getMethod("clone")
         }
 
     }

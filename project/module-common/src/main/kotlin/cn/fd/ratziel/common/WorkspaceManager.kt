@@ -10,7 +10,6 @@ import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.getJarFile
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
-import taboolib.module.configuration.Type
 import java.io.File
 import java.util.jar.JarFile
 
@@ -57,7 +56,7 @@ object WorkspaceManager {
         } else {
             folder.mkdirs()
         }
-        val json = Configuration.loadFromOther(settings, Type.JSON).toJsonElement()
+        val json = Configuration.loadFromOther(settings).toJsonElement()
         return Workspace(folder, ElementConfiguration(listOf(json.toAttachedProperties(ElementConfiguration.GROUP))))
     }
 

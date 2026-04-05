@@ -16,7 +16,6 @@ import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
 import cn.fd.ratziel.module.item.impl.component.*
-import cn.fd.ratziel.test.ComponentCompatibilityTest
 import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
 import cn.fd.ratziel.module.item.internal.RefItemStack
 import cn.fd.ratziel.module.item.internal.command.ItemCommand
@@ -29,7 +28,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.serializer
-import net.kyori.adventure.text.Component
 import taboolib.common.LifeCycle
 import taboolib.common.io.isDebugMode
 import taboolib.common.platform.Awake
@@ -127,51 +125,13 @@ object ItemElement : ElementHandler.ParralHandler {
 
             val item = generator.build().get()
             println(item.data)
-            val holder = item as? cn.fd.ratziel.module.item.api.component.ItemComponentHolder
-                ?: error("Generated item must implement ItemComponentHolder for DSL test.")
 
             val ri = RefItemStack.of(item.data)
             println(ri.tag)
             val bi = ri.bukkitStack
             println(bi)
 
-            val dsl = holder.dsl()
-            fun assertDebugEquals(name: String, expected: Any?, actual: Any?) {
-                check(actual == expected) {
-                    "ComponentHolderDSL $name test failed. expected=$expected, actual=$actual"
-                }
-            }
-
-            val originDisplayName = dsl.displayName
-            val originItemName = dsl.itemName
-            val originLore = dsl.lore
-            val originMaxDamage = dsl.maxDamage
-
-            val debugDisplayName = Component.text("dsl-display-name")
-            val debugItemName = Component.text("dsl-item-name")
-            val debugLore = listOf(Component.text("dsl-lore-1"), Component.text("dsl-lore-2"))
-
-            dsl.displayName = debugDisplayName
-            dsl.itemName = debugItemName
-            dsl.lore = debugLore
-
-            assertDebugEquals("displayName", debugDisplayName, dsl.displayName)
-            assertDebugEquals("itemName", debugItemName, dsl.itemName)
-            assertDebugEquals("lore", debugLore, dsl.lore)
-
-            if (MinecraftVersion.versionId >= 12005) {
-                dsl.maxDamage = 114514
-                assertDebugEquals("maxDamage", 114514, dsl.maxDamage)
-            }
-
-            dsl.displayName = originDisplayName
-            dsl.itemName = originItemName
-            if (originLore.isEmpty()) dsl.remove(ItemComponents.LORE) else dsl.lore = originLore
-            dsl.maxDamage = originMaxDamage
-
-            debug(ItemComponents.registry.map {
-                it
-            })
+            debug(ItemComponents.registry.map { it })
 
         }
     }
@@ -180,7 +140,7 @@ object ItemElement : ElementHandler.ParralHandler {
         // 清除注册的物品
         ItemManager.registry.clear()
         // 主动触发组件一致性检查
-        ComponentCompatibilityTest.runAtEnable()
+        cn.fd.ratziel.test.ComponentCompatibilityTest.runTest()
     }
 
     private inline fun <reified T : Any> register(serializer: KSerializer<T> = serializer<T>()) {

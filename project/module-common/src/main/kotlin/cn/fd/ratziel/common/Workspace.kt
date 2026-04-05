@@ -1,11 +1,6 @@
 package cn.fd.ratziel.common
 
-import cn.fd.ratziel.core.element.ElementConfiguration
-import cn.fd.ratziel.core.element.ElementConfigurationKeys
-import cn.fd.ratziel.core.element.FILE_NAME_ELEMENT_NAME
-import cn.fd.ratziel.core.element.elementName
-import cn.fd.ratziel.core.element.filter
-import cn.fd.ratziel.core.element.listen
+import cn.fd.ratziel.core.element.*
 import java.io.File
 
 /**
@@ -26,11 +21,9 @@ data class Workspace(
 ) {
 
     init {
-        val configuredElementName = with(ElementConfigurationKeys) {
-            configuration.getNoDefault(elementName)
-        }
-        require(configuredElementName == null || configuredElementName == FILE_NAME_ELEMENT_NAME) {
-            "Workspace elementName must be '$FILE_NAME_ELEMENT_NAME' or omitted, but was '$configuredElementName'."
+        val elementName = configuration[ElementConfiguration.elementName]
+        require(elementName == null || elementName == FILE_NAME_ELEMENT_NAME) {
+            "Workspace elementName must be '$FILE_NAME_ELEMENT_NAME' or omitted, but was '$elementName'."
         }
     }
 
@@ -47,14 +40,11 @@ data class Workspace(
     /**
      * 元素文件过滤器
      */
-    val filter: Regex = with(ElementConfigurationKeys) {
-        configuration.getNoDefault(filter)
-    }?.toRegex() ?: Regex("^[^#!].*")
+    val filter: Regex = configuration[ElementConfiguration.filter]?.toRegex() ?: Regex("^[^#!].*")
 
     /**
      * 是否监听此工作空间内的文件变更
      */
-    val listen: Boolean = with(ElementConfigurationKeys) {
-        configuration.getNoDefault(listen)
-    } ?: true
+    val listen: Boolean = configuration[ElementConfiguration.listen] ?: true
+
 }

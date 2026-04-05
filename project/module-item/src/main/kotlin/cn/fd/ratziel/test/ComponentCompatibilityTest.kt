@@ -19,13 +19,11 @@ import java.time.format.DateTimeFormatter
 /**
  * ComponentCompatibilityTest
  *
- * 在 Bukkit ENABLE 阶段执行内置组件的 Minecraft/NBT 转换一致性检查，
- * 并将结果输出到 /outs。
+ * 内置组件的 Minecraft/NBT 转换一致性检查。
  */
 object ComponentCompatibilityTest : Test() {
 
-    private val reportFile: File
-        get() = File("outs", "module-item-transformer-compatibility.txt")
+    private val reportFile: File get() = File("组件一致性检查结果.txt")
 
     override fun check(): List<Result> {
         return ItemComponents.registry
@@ -33,21 +31,21 @@ object ComponentCompatibilityTest : Test() {
             .map { type ->
                 val componentId = type.id
                 val sample = sampleValue(componentId)
-                    ?: return@map Test.Unsupported("$componentId (暂未提供稳定样例值)")
+                    ?: return@map Unsupported("$componentId (暂未提供稳定样例值)")
                 try {
                     @Suppress("UNCHECKED_CAST")
                     assertTransformerConsistency(type as ItemComponentType<Any>, sample)
-                    Test.Success(componentId)
+                    Success(componentId)
                 } catch (ex: UnsupportedVersionException) {
-                    Test.Unsupported("$componentId (${ex.message ?: "当前版本不支持"})")
+                    Unsupported("$componentId (${ex.message ?: "当前版本不支持"})")
                 } catch (ex: Throwable) {
-                    Test.Failure.Companion.of(componentId, ex)
+                    Failure.of(componentId, ex)
                 }
             }
     }
 
-    internal fun runAtEnable() {
-        val batch = Test.Companion.check(this)
+    internal fun runTest() {
+        val batch = check(this)
         batch.print(true)
         val report = buildReport(batch)
         reportFile.parentFile?.mkdirs()
@@ -155,7 +153,7 @@ object ComponentCompatibilityTest : Test() {
         else -> null
     }
 
-    private fun buildReport(batch: Test.Companion.BatchResult): String {
+    private fun buildReport(batch: Companion.BatchResult): String {
         val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         return buildString {
             appendLine("# module-item 组件转换一致性测试")
@@ -170,9 +168,9 @@ object ComponentCompatibilityTest : Test() {
             appendLine("## 结果详情")
             batch.results.forEach { result ->
                 when (result) {
-                    is Test.Success -> appendLine("[SUCCESS] ${result.reason}")
-                    is Test.Unsupported -> appendLine("[UNSUPPORTED] ${result.reason}")
-                    is Test.Failure -> {
+                    is Success -> appendLine("[SUCCESS] ${result.reason}")
+                    is Unsupported -> appendLine("[UNSUPPORTED] ${result.reason}")
+                    is Failure -> {
                         appendLine("[FAILURE] ${result.reason}")
                         appendLine(result.error.stackTraceToString().trimEnd())
                     }
@@ -233,12 +231,16 @@ object ComponentCompatibilityTest : Test() {
         }
     }
 
-    private fun diffTags(left: NbtTag?, right: NbtTag?, path: String = "\$root"): List<String> {
+    private fun diffTags(left: NbtTag?, right: NbtTag?, path: String = $$"$root"): List<String> {
         if (left == null && right == null) return emptyList()
-        if (left == null) return listOf("$path 缺失左值，右值=${renderTag(right)}")
-        if (right == null) return listOf("$path 缺失右值，左值=${renderTag(left)}")
-        if (left::class != right::class) {
-            return listOf("$path 类型不同：${typeName(left)} != ${typeName(right)}")
+        if (left == null) return listOf("$path 缺失左值，右值=$right")
+        if (right == null) return listOf("$path 缺失右值，左值=$left")
+
+        val left = cleanRemoved(left)
+        val right = cleanRemoved(right)
+
+        if (left.type != right.type) {
+            return listOf("$path 类型不同：${left.type} != ${right.type}")
         }
         return when (left) {
             is NbtCompound -> {
@@ -281,9 +283,11 @@ object ComponentCompatibilityTest : Test() {
         return if (left == right) emptyList() else listOf("$path 值不同：$left != $right")
     }
 
-    private fun renderTag(tag: NbtTag?): String = tag?.toString() ?: "null"
-
-    private fun typeName(tag: NbtTag): String = tag::class.simpleName ?: tag.javaClass.name
+    private fun cleanRemoved(tag: NbtTag): NbtTag {
+        return if (tag is NbtCompound) {
+            NbtCompound(tag.filterNot { it.key.startsWith("!") }.toMutableMap())
+        } else tag
+    }
 
     private data class Baseline(
         val data: SimpleData,

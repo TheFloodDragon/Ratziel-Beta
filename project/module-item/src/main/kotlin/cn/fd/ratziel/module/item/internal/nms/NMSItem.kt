@@ -5,8 +5,8 @@ import cn.fd.ratziel.module.item.internal.RefItemStack
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
+import net.minecraft.server.v1_12_R1.ItemStack as NMSItemStack
 import net.minecraft.server.v1_12_R1.NBTTagCompound as NBTTagCompound12
-import net.minecraft.world.item.ItemStack as NMSItemStack
 
 /**
  * NMSItem
@@ -32,14 +32,12 @@ abstract class NMSItem {
      */
     abstract fun copyItem(nmsItem: Any): Any
 
-    companion object {
+    /**
+     * 重写 [nmsItem] 的 NBT数据 (组件数据) 为 [target] 的 NBT数据 (组件数据)
+     */
+    abstract fun rewriteTag(nmsItem: Any, target: Any?)
 
-        /**
-         * 是否支持最新的 NbtOps 解析 (1.20.5+ : 物品数据改组件存之后)
-         * Tips: 这玩意会随版本变, 所以只能支持最后一个修改的版本及以上
-         */
-        @JvmField
-        val isModern = MinecraftVersion.versionId >= MODERN_VERSION
+    companion object {
 
         const val MODERN_VERSION = 12105
 
@@ -72,6 +70,15 @@ class NMSItemImpl1 : NMSItem() {
 
     override fun copyItem(nmsItem: Any): Any {
         return nmsCloneMethod.invoke(nmsItem)!!
+    }
+
+    override fun rewriteTag(nmsItem: Any, target: Any?) {
+        val tag = target?.let { getTag(it) }
+        if (tag == null) {
+            nmsTagField.set(nmsItem, null) // 删除原物品的标签
+        } else {
+            setTag(nmsItem, tag)
+        }
     }
 
     /**

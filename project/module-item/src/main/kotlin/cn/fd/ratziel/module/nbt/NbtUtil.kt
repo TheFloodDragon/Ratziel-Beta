@@ -29,12 +29,12 @@ inline fun NbtCompound.write(
     path: List<NbtPath.Node>,
     target: NbtTag,
     create: Boolean = true,
-) = NbtHelper.write(this, path, target, create)
+): NbtCompound = NbtHelper.write(this, path, target, create)
 
 /**
  * 删除指定路径的数据
  */
-inline fun NbtCompound.delete(path: List<NbtPath.Node>) = NbtHelper.delete(this, path)
+inline fun NbtCompound.delete(path: List<NbtPath.Node>): NbtCompound = NbtHelper.delete(this, path)
 
 /**
  * 通过路径获取 [NbtCompound] 并进行处理
@@ -43,7 +43,7 @@ inline fun NbtCompound.handle(
     path: Iterable<NbtPath.Node>,
     create: Boolean = true,
     noinline action: NbtCompound.() -> Unit,
-) = NbtHelper.handle(this, path, create, action)
+): NbtCompound = NbtHelper.handle(this, path, create, action)
 
 /**
  * 读取 [String]

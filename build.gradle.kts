@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -86,8 +87,14 @@ allprojects {
         }
     }
 
-    tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+    tasks.withType<Test>().configureEach {
         useJUnitPlatform()
+        testLogging {
+            showStackTraces = true
+            showCauses = true
+            showExceptions = true
+            exceptionFormat = TestExceptionFormat.FULL
+        }
     }
 
     buildDirClean()

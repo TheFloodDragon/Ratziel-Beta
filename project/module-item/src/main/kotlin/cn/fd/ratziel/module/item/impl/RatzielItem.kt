@@ -10,7 +10,7 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.component.ItemComponentData
 import cn.fd.ratziel.module.item.api.service.ItemServiceManager
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
-import cn.fd.ratziel.module.item.impl.component.ItemSheet
+import cn.fd.ratziel.module.item.impl.component.dsl
 import cn.fd.ratziel.module.item.util.asComponentData
 import cn.fd.ratziel.module.item.util.asItemData
 import cn.fd.ratziel.module.item.util.writeTo
@@ -18,7 +18,6 @@ import cn.fd.ratziel.module.nbt.NbtAdapter
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
 import org.bukkit.inventory.ItemStack
-import taboolib.platform.util.isAir
 
 /**
  * RatzielItem
@@ -61,15 +60,6 @@ open class RatzielItem private constructor(
     companion object {
 
         /**
-         * 物品节点（完整路径，含 custom_data 根）
-         */
-        @JvmStatic
-        val RATZIEL_PATH_D = NbtPath(
-            NbtPath.NameNode(ItemSheet.CUSTOM_DATA_COMPONENT),
-            NbtPath.NameNode("Ratziel")
-        )
-
-        /**
          * 物品节点（Ratziel 内部路径，不含 custom_data 根）
          */
         @JvmStatic
@@ -90,10 +80,9 @@ open class RatzielItem private constructor(
          */
         @JvmStatic
         fun of(info: Info, data: ItemData, copy: Boolean = false): RatzielItem {
-            val itemData = if (copy) data.clone() else data
-            val componentData = itemData.asComponentData()
-            Info.write(info, componentData)
-            return RatzielItem(info, componentData)
+            val itemData = (if (copy) data.clone() else data).asComponentData()
+            Info.write(info, itemData)
+            return RatzielItem(info, itemData)
         }
 
         /**
@@ -104,19 +93,18 @@ open class RatzielItem private constructor(
          */
         @JvmStatic
         fun of(data: ItemData, copy: Boolean = false): RatzielItem? {
-            val itemData = if (copy) data.clone() else data
+            val itemData = (if (copy) data.clone() else data).asComponentData()
             val info = Info.read(itemData) ?: return null
-            return RatzielItem(info, itemData.asComponentData())
+            return RatzielItem(info, itemData)
         }
 
         /**
          * 将目标 (复制后的) [ItemStack] 转为 [RatzielItem]
          *
-         * @return 若目标不是 [RatzielItem], 返回空
+         * @return 若目标不是 [RatzielItem], 返回空, 反之返回带着 [itemStack] 副本 的 [RatzielItem]
          */
         @JvmStatic
         fun of(itemStack: ItemStack): RatzielItem? {
-            if (itemStack.isAir()) return null
             val itemData = itemStack.asItemData()
             return of(itemData, true)
         }
@@ -129,7 +117,7 @@ open class RatzielItem private constructor(
         @JvmStatic
         fun sourced(source: ItemStack?, overwrite: Boolean = true): Sourced? {
             if (source == null) return null
-            val neoItem = of(source) ?: return null
+            val neoItem = of(source.asItemData(), false) ?: return null
             return Sourced(neoItem, source, overwrite)
         }
 
@@ -140,7 +128,7 @@ open class RatzielItem private constructor(
          */
         @JvmStatic
         fun isRatzielItem(data: ItemData): Boolean {
-            return Info.read(data) != null
+            return Info.read(data.asComponentData()) != null
         }
 
         /**
@@ -172,9 +160,6 @@ open class RatzielItem private constructor(
         @JvmField
         var overwrite: Boolean = true,
     ) : RatzielItem(neoItem.info, neoItem.data) {
-
-        override val info get() = neoItem.info
-        override val data get() = neoItem.data
 
         /**
          * 尝试重写 源物品 [source]
@@ -266,10 +251,9 @@ open class RatzielItem private constructor(
              * 从 [ItemData] 中读取信息
              */
             @JvmStatic
-            fun read(data: ItemData): Info? {
-                val componentData = data.asComponentData()
-                val customData = componentData[ItemComponents.CUSTOM_DATA] ?: return null
-                val internal = customData.read(INTERNAL_PATH) as? NbtCompound ?: return null
+            fun read(data: ItemComponentData): Info? {
+                val internal = data[ItemComponents.CUSTOM_DATA]
+                    ?.read(INTERNAL_PATH) as? NbtCompound ?: return null
                 // 读取类型
                 val type = internal[INFO_ID] as? NbtString ?: return null
                 // 读取版本信息
@@ -282,16 +266,15 @@ open class RatzielItem private constructor(
              * 将信息写入到 [ItemData]
              */
             @JvmStatic
-            fun write(info: Info, data: ItemData) {
-                val componentData = data.asComponentData()
-                val customData = componentData[ItemComponents.CUSTOM_DATA] ?: NbtCompound()
-                customData.handle(INTERNAL_PATH) {
-                    // 写入类型
-                    put(INFO_ID, NbtString(info.identity.content))
-                    // 写入版本信息
-                    put(INFO_HASH, NbtString(info.hash))
+            fun write(info: Info, data: ItemComponentData) {
+                data.dsl {
+                    customData = customData.handle(INTERNAL_PATH) {
+                        // 写入类型
+                        put(INFO_ID, NbtString(info.identity.content))
+                        // 写入版本信息
+                        put(INFO_HASH, NbtString(info.hash))
+                    }
                 }
-                componentData[ItemComponents.CUSTOM_DATA] = customData
             }
 
         }

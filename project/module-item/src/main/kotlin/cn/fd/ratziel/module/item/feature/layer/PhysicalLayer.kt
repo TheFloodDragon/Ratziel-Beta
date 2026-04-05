@@ -7,6 +7,10 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleData
+import cn.fd.ratziel.module.item.impl.component.ItemComponents
+import cn.fd.ratziel.module.item.impl.component.dsl
+import cn.fd.ratziel.module.item.util.asComponentData
+import cn.fd.ratziel.module.item.util.modifyTag
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
 
@@ -31,7 +35,7 @@ class PhysicalLayer(
 
         /** 物品图层节点 **/
         @JvmStatic
-        val LAYER_PATH = RatzielItem.RATZIEL_PATH_D + NbtPath.NameNode("layer")
+        val LAYER_PATH = RatzielItem.RATZIEL_PATH + NbtPath.NameNode("layer")
 
         /** 内部信息 - 当前图层 **/
         const val CURRENT_LAYER_NAME = "current"
@@ -47,7 +51,8 @@ class PhysicalLayer(
          */
         @JvmStatic
         fun getLayer(itemData: ItemData, name: String): ItemLayer? {
-            val layerInfo = itemData.tag.read(LAYER_PATH, true) as NbtCompound
+            val customData = itemData.asComponentData().dsl().customData
+            val layerInfo = customData.read(LAYER_PATH, true) as NbtCompound
             return if (name == DEFAULT_LAYER_NAME) {
                 findLayer(layerInfo, name)
             } else {
@@ -62,8 +67,9 @@ class PhysicalLayer(
          */
         @JvmStatic
         fun readLayers(itemData: ItemData): Map<String, ItemLayer> {
-            val storageLayers = (itemData.tag.read(LAYER_PATH) as? NbtCompound)
-                ?.get(STORAGE_LAYERS_NAME) as? NbtCompound ?: return emptyMap()
+            val layerData = itemData.asComponentData()[ItemComponents.CUSTOM_DATA]
+                ?.read(LAYER_PATH) as? NbtCompound ?: return emptyMap()
+            val storageLayers = layerData[STORAGE_LAYERS_NAME] as? NbtCompound ?: return emptyMap()
 
             return storageLayers.mapValues { PhysicalLayer(it.key, it.value as NbtCompound) }
         }
@@ -73,12 +79,14 @@ class PhysicalLayer(
          */
         @JvmStatic
         fun writeLayers(itemData: ItemData, layers: Map<String, ItemLayer>) {
-            itemData.tag.handle(LAYER_PATH) {
-                val storageLayers = NbtCompound()
-                for ((name, layer) in layers) {
-                    storageLayers[name] = layer.data.tag
+            itemData.modifyTag {
+                it.handle(LAYER_PATH) {
+                    val storageLayers = NbtCompound()
+                    for ((name, layer) in layers) {
+                        storageLayers[name] = layer.data.tag
+                    }
+                    put(STORAGE_LAYERS_NAME, storageLayers)
                 }
-                put(STORAGE_LAYERS_NAME, storageLayers)
             }
         }
 
@@ -111,33 +119,34 @@ class PhysicalLayer(
          * @param layer 图层实例
          */
         override fun render(item: NeoItem, layer: ItemLayer) {
-            val root = item.data.tag // 物品数据根
-            root.handle(LAYER_PATH) {
-                // 获取当前图层
-                val currentLayerName = get(CURRENT_LAYER_NAME)?.content as? String ?: DEFAULT_LAYER_NAME
-                val currentLayer = findLayer(this@handle, currentLayerName)
+            item.data.modifyTag { root ->
+                root.handle(LAYER_PATH) {
+                    // 获取当前图层
+                    val currentLayerName = get(CURRENT_LAYER_NAME)?.content as? String ?: DEFAULT_LAYER_NAME
+                    val currentLayer = findLayer(this@handle, currentLayerName)
 
-                // 将当前图层的数据存到 存储的图层表 中
-                val currentLayerData = currentLayer.data.tag
-                if (currentLayerData.isEmpty() && currentLayerName == DEFAULT_LAYER_NAME) {
-                    // 默认图层在 存储的图层表 中一开始没有, 故需要通过 要设置的图层 来初始化
-                    for ((key, _) in layer.data.tag) {
-                        currentLayerData[key] = root[key] ?: REMOVE_MARK
+                    // 将当前图层的数据存到 存储的图层表 中
+                    val currentLayerData = currentLayer.data.tag
+                    if (currentLayerData.isEmpty() && currentLayerName == DEFAULT_LAYER_NAME) {
+                        // 默认图层在 存储的图层表 中一开始没有, 故需要通过 要设置的图层 来初始化
+                        for ((key, _) in layer.data.tag) {
+                            currentLayerData[key] = root[key] ?: REMOVE_MARK
+                        }
+                    } else {
+                        for ((key, _) in currentLayerData) {
+                            currentLayerData[key] = root[key] ?: REMOVE_MARK
+                        }
                     }
-                } else {
-                    for ((key, _) in currentLayerData) {
-                        currentLayerData[key] = root[key] ?: REMOVE_MARK
+
+                    // 更换图层
+                    for ((key, value) in layer.data.tag) {
+                        // 写入新图层数据
+                        if (value == REMOVE_MARK) root.remove(key) else root[key] = value
                     }
-                }
 
-                // 更换图层
-                for ((key, value) in layer.data.tag) {
-                    // 写入新图层数据
-                    if (value == REMOVE_MARK) root.remove(key) else root[key] = value
+                    // 设置当前图层
+                    put(CURRENT_LAYER_NAME, layer.name)
                 }
-
-                // 设置当前图层
-                put(CURRENT_LAYER_NAME, layer.name)
             }
         }
 

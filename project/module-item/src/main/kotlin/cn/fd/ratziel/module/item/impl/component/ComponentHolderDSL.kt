@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package cn.fd.ratziel.module.item.impl.component
 
 import cn.altawk.nbt.tag.NbtCompound
@@ -10,12 +12,12 @@ import kotlin.reflect.KProperty
 /**
  * 直接将 [ItemComponentHolder] 转化为 [ComponentHolderDSL] 以便使用
  */
-fun ItemComponentHolder.dsl() = ComponentHolderDSL(this)
+inline fun ItemComponentHolder.dsl() = ComponentHolderDSL(this)
 
 /**
  * 直接在 [ItemComponentHolder] 上使用 DSL 块
  */
-inline fun ItemComponentHolder.dsl(block: ComponentHolderDSL.() -> Unit) = dsl().apply(block)
+inline fun ItemComponentHolder.dsl(block: ComponentHolderDSL.() -> Unit) = ComponentHolderDSL(this).apply(block)
 
 /**
  * ComponentHolderDSL

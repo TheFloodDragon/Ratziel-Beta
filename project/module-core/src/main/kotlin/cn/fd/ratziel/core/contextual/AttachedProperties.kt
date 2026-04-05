@@ -64,7 +64,7 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
     /**
      * 创建可供编辑的副本
      */
-    open fun toMutable(): Mutable = Mutable(listOf(this))
+    open fun createBuilder(): Builder = Builder(listOf(this))
 
     fun <T> containsKey(key: Key<T>) = properties.containsKey(key)
 
@@ -80,9 +80,9 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
         override operator fun getValue(thisRef: Any?, property: KProperty<*>) = Key(property.name, getDefaultValue)
     }
 
-    class PropertyValueDelegate<T>(private val getDefaultValue: AttachedProperties.() -> T) : ReadWriteProperty<Mutable, T> {
-        override operator fun getValue(thisRef: Mutable, property: KProperty<*>) = thisRef[Key(property.name, getDefaultValue)]
-        override fun setValue(thisRef: Mutable, property: KProperty<*>, value: T) = thisRef.set(Key(property.name, getDefaultValue), value)
+    class PropertyValueDelegate<T>(private val getDefaultValue: AttachedProperties.() -> T) : ReadWriteProperty<Builder, T> {
+        override operator fun getValue(thisRef: Builder, property: KProperty<*>) = thisRef[Key(property.name, getDefaultValue)]
+        override fun setValue(thisRef: Builder, property: KProperty<*>, value: T) = thisRef.set(Key(property.name, getDefaultValue), value)
     }
 
     companion object {
@@ -98,7 +98,7 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
 
     }
 
-    open class Mutable(baseConfigurations: Iterable<AttachedProperties> = emptyList()) : AttachedProperties() {
+    open class Builder(baseConfigurations: Iterable<AttachedProperties> = emptyList()) : AttachedProperties() {
 
         /** 可变属性 **/
         override val properties: MutableMap<Key<*>, Any?> = LinkedHashMap<Key<*>, Any?>().apply {
@@ -106,9 +106,9 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
         }
 
         /**
-         * 创建不可变副本
+         * 构建不可变实例
          */
-        open fun toImmutable() = AttachedProperties(HashMap(properties))
+        open fun build() = AttachedProperties(HashMap(properties))
 
         // generic for all properties
 
@@ -213,9 +213,9 @@ open class AttachedProperties(protected open val properties: Map<Key<*>, Any?> =
         private fun <T : Any> tolerantGet(key: Key<in T>): T? = properties[key]?.let { it as T }
 
         // include another builder
-        operator fun <T : Mutable> T.invoke(body: T.() -> Unit) {
+        operator fun <T : Builder> T.invoke(body: T.() -> Unit) {
             this.body()
-            this@Mutable.properties.putAll(this.properties)
+            this@Builder.properties.putAll(this.properties)
         }
 
     }

@@ -16,7 +16,7 @@ import kotlin.reflect.KProperty
  */
 open class BlockConfiguration(
     baseConfigurations: Iterable<BlockConfiguration> = emptyList(), body: BlockConfiguration.() -> Unit = {},
-) : BlockConfigurationKeys, AttachedProperties.Mutable(baseConfigurations) {
+) : BlockConfigurationKeys, AttachedProperties.Builder(baseConfigurations) {
 
     init {
         // 应用初始化配置

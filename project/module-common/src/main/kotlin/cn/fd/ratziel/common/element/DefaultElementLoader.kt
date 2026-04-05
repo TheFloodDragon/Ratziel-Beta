@@ -2,13 +2,7 @@ package cn.fd.ratziel.common.element
 
 import cn.fd.ratziel.common.Workspace
 import cn.fd.ratziel.core.contextual.toAttachedProperties
-import cn.fd.ratziel.core.element.Element
-import cn.fd.ratziel.core.element.ElementConfiguration
-import cn.fd.ratziel.core.element.ElementConfigurationKeys
-import cn.fd.ratziel.core.element.ElementType
-import cn.fd.ratziel.core.element.FILE_NAME_ELEMENT_NAME
-import cn.fd.ratziel.core.element.elementName
-import cn.fd.ratziel.core.element.elementType
+import cn.fd.ratziel.core.element.*
 import cn.fd.ratziel.core.util.toJsonElement
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -51,14 +45,10 @@ object DefaultElementLoader : ElementLoader {
 
         val configuration = parseConfiguration(workspace, json[INTERNAL_NODE], file)
         val content = json.removeInternalNode()
-        val configuredElementName = with(ElementConfigurationKeys) {
-            configuration.getNoDefault(elementName)
-        }?.let {
+        val configuredElementName = configuration[ElementConfiguration.elementName]?.let {
             if (it == FILE_NAME_ELEMENT_NAME) file.nameWithoutExtension else it
         }
-        val resolvedConfiguredType = with(ElementConfigurationKeys) {
-            configuration.getNoDefault(elementType)
-        }?.takeUnless {
+        val resolvedConfiguredType = configuration[ElementConfiguration.elementType]?.takeUnless {
             it.equals("None", true)
         }?.let {
             resolveConfiguredType(it, file) ?: return emptyList()

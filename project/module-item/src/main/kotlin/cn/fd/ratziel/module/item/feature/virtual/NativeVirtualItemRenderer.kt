@@ -10,7 +10,10 @@ import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.feature.virtual.ComponentChange.OperationType.*
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
-import cn.fd.ratziel.module.item.impl.component.ItemSheet
+import cn.fd.ratziel.module.item.impl.component.ItemComponents
+import cn.fd.ratziel.module.item.impl.component.dsl
+import cn.fd.ratziel.module.item.util.asComponentData
+import cn.fd.ratziel.module.item.util.modifyTag
 import cn.fd.ratziel.module.nbt.delete
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
@@ -29,7 +32,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
 
     /** 虚拟物品数据节点 **/
     @JvmStatic
-    private val VIRTUAL_PATH = RatzielItem.RATZIEL_PATH_D + NbtPath.NameNode("virtual")
+    private val VIRTUAL_PATH = RatzielItem.RATZIEL_PATH + NbtPath.NameNode("virtual")
 
     /** 变化记录节点 **/
     private const val CHANGES_NODE = "s2c_changes"
@@ -45,7 +48,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
     fun render(actual: IdentifiedItem, player: Player) = this.render(actual, createContext(actual, player))
 
     override fun render(actual: NeoItem, context: ArgumentContext) {
-        val before = actual.data.clone()
+        val before = actual.data.clone().asComponentData()
 
         // 接收器工作
         var count = 0
@@ -64,17 +67,17 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         if (count == 0) return
 
         // 修改后的数据
-        val now = actual.data
+        val now = actual.data.asComponentData()
         // 自定义数据禁止修改
-        val beforeCustomTag = before.tag[ItemSheet.CUSTOM_DATA_COMPONENT]
-        if (beforeCustomTag == null) now.tag.remove(ItemSheet.CUSTOM_DATA_COMPONENT)
-        else now.tag[ItemSheet.CUSTOM_DATA_COMPONENT] = beforeCustomTag
+        val beforeCustomTag = before[ItemComponents.CUSTOM_DATA]
+        if (beforeCustomTag == null) now.remove(ItemComponents.CUSTOM_DATA)
+        else now[ItemComponents.CUSTOM_DATA] = beforeCustomTag
         // 材质不能为空
         if (now.material.isEmpty()) now.material = before.material
 
         // 标记变化
         val changes = ComponentChange.compareChanges(now.tag, before.tag)
-        now.tag.handle(VIRTUAL_PATH) {
+        now.dsl().customData.handle(VIRTUAL_PATH) {
             // 清除之前的数据
             clear()
             // 记录修改的数据
@@ -91,9 +94,12 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
     }
 
     override fun recover(virtual: NeoItem) {
-        val virtualData = virtual.data.tag.read(VIRTUAL_PATH) as? NbtCompound ?: return
-        // 删除虚拟数据, 因为服务端物品没有这个
-        virtual.data.tag.delete(VIRTUAL_PATH)
+        val virtual = virtual.data.asComponentData() // 简便操作对象
+        // 获取虚拟部分的数据 (没有直接返回, 就需要恢复了)
+        val virtualData = virtual[ItemComponents.CUSTOM_DATA]?.read(VIRTUAL_PATH) as? NbtCompound ?: return
+
+        // 抛去虚拟数据, 因为服务端物品没有这个
+        virtual[ItemComponents.CUSTOM_DATA]?.delete(VIRTUAL_PATH)
 
         // 获取修改数据的记录
         val changes = (virtualData[CHANGES_NODE] as? NbtCompound)?.map {
@@ -103,13 +109,16 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         } ?: emptyList()
 
         for (change in changes) {
-            when (change.operation) {
-                ADD -> virtual.data.tag.remove(change.typeId)
-                SET, REMOVE -> {
-                    val from = requireNotNull(change.value) {
-                        "Operation ${change.operation} with typeId '${change.typeId}' must have 'value' data!"
+            virtual.modifyTag {
+                when (change.operation) {
+                    // TODO: 使用组件而非tag
+                    ADD -> it.remove(change.typeId)
+                    SET, REMOVE -> {
+                        val from = requireNotNull(change.value) {
+                            "Operation ${change.operation} with typeId '${change.typeId}' must have 'value' data!"
+                        }
+                        it[change.typeId] = from
                     }
-                    virtual.data.tag[change.typeId] = from
                 }
             }
         }
@@ -118,7 +127,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
         val material = virtualData.readString(SERVER_MATERIAL_NAME)?.let { SimpleMaterial(it) }
 
         if (material != null && !material.isEmpty()) {
-            virtual.data.material = material
+            virtual.material = material
         }
     }
 
