@@ -88,6 +88,8 @@ subprojects {
             relocate("cn.gtemc.itembridge.", "${rootProject.group}.libraries.itembridge.")
             // Fluxon
             relocate("org.tabooproject.fluxon.", "${rootProject.group}.libraries.fluxon.")
+            // 测试部分
+            // exclude("cn.fd.ratziel.test.")
             // 排除无效的 .kotlin_module
             exclude("META-INF/j21.*")
         }
