@@ -5,6 +5,7 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
+import cn.fd.ratziel.module.item.impl.component.type.ItemEnchantmentMap
 import net.kyori.adventure.text.Component
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -45,12 +46,14 @@ open class ComponentHolderDSL(holder: ItemComponentHolder) : ItemComponentHolder
     /** 物品修复消耗 **/
     var repairCost: Int? by composed(ItemComponents.REPAIR_COST)
 
+    /** 物品附魔 **/
+    var enchantments: ItemEnchantmentMap by composed(ItemComponents.ENCHANTMENTS) { ItemEnchantmentMap() }
+
     /** 是否覆盖附魔光效显示 (仅 1.20.5+) **/
     var glintOverride: Boolean by composed(ItemComponents.GLINT_OVERRIDE) { false }
 
     /** 物品是否不可破坏 **/
     var unbreakable: Boolean by composed(ItemComponents.UNBREAKABLE) { false }
-
 
     /**
      * 非空属性委托（有默认值）

@@ -3,6 +3,8 @@ package cn.fd.ratziel.test
 import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
+import cn.fd.ratziel.module.item.impl.component.type.ItemEnchantmentMap
+import cn.fd.ratziel.module.item.util.MetaMatcher
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -105,6 +107,17 @@ internal fun sampleValues(type: ItemComponentType<*>): List<SampleCase> = when (
         SampleCase("common", 17),
     )
 
+    ItemComponents.ENCHANTMENTS -> listOf(
+        SampleCase("single-enchantment", sampleEnchantments("sharpness" to 5)),
+        SampleCase(
+            "multiple-enchantments",
+            sampleEnchantments(
+                "sharpness" to 5,
+                "unbreaking" to 3,
+            ),
+        ),
+    )
+
     ItemComponents.GLINT_OVERRIDE -> listOf(
         SampleCase("enabled", true),
         SampleCase("disabled", false),
@@ -131,6 +144,14 @@ internal fun cleanRemoved(tag: NbtTag): NbtTag {
         }
     }
     return cleaned
+}
+
+private fun sampleEnchantments(vararg entries: Pair<String, Int>): ItemEnchantmentMap {
+    return ItemEnchantmentMap().apply {
+        entries.forEach { (key, level) ->
+            set(MetaMatcher.matchEnchantment(key), level)
+        }
+    }
 }
 
 private fun compositeComponent(prefix: String, middle: String, suffix: String): Component {

@@ -5,9 +5,8 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.component.ComponentTypeBuilder.Companion.proxyClass
-import cn.fd.ratziel.module.item.impl.component.transformers.MessageE2MTransformer
-import cn.fd.ratziel.module.item.impl.component.transformers.NoneE2MTransformer
-import cn.fd.ratziel.module.item.impl.component.transformers.UnbreakableNbtTransformer
+import cn.fd.ratziel.module.item.impl.component.transformers.*
+import cn.fd.ratziel.module.item.impl.component.type.ItemEnchantmentMap
 import cn.fd.ratziel.module.item.internal.serializers.MessageComponentSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
@@ -75,6 +74,12 @@ object ItemComponents {
     val REPAIR_COST: ItemComponentType<Int>
 
     /**
+     * 物品附魔
+     */
+    @JvmField
+    val ENCHANTMENTS: ItemComponentType<ItemEnchantmentMap>
+
+    /**
      * 是否覆盖附魔光效显示 (仅 1.20.5+)
      */
     @JvmField
@@ -122,6 +127,11 @@ object ItemComponents {
             serialJsonEntry("repairCost")
             serialNbtEntry(if (v >= 12005) "minecraft:repair_cost" else "RepairCost")
             minecraftKeyed("repair_cost") { NoneE2MTransformer() }
+        }
+        ENCHANTMENTS = r("enchantments", ItemEnchantmentMap.serializer()) {
+            serialJsonEntry("enchant", "enchants", "enchantment")
+            nbt(EnchantmentsNbtTransformer)
+            minecraft(EnchantmentsMinecraftTransformer)
         }
         GLINT_OVERRIDE = r("glint-override", Boolean.serializer()) {
             isSupported = v >= 12005

@@ -2,14 +2,11 @@
 
 package cn.fd.ratziel.module.item.impl.component
 
-import cn.fd.ratziel.module.item.internal.serializers.EnchantmentSerializer
+import cn.fd.ratziel.module.item.impl.component.type.EnchantmentType
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
-import taboolib.library.xseries.XEnchantment
 import taboolib.module.nms.MinecraftVersion
-
-typealias EnchantmentType = @Serializable(EnchantmentSerializer::class) XEnchantment
 
 /**
  * ItemEnchant
