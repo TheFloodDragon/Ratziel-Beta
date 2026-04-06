@@ -59,12 +59,13 @@ private typealias Keys = ElementConfiguration.Companion
  *
  * 工作空间级配置仅允许使用 [FILE_NAME_ELEMENT_NAME]。
  */
+@JsonNames("element-name", "name")
 val Keys.elementName by AttachedProperties.serialKey<String?>(ElementConfiguration.GROUP, null)
 
 /**
  * 指定当前文件或工作空间默认使用的元素类型。
  */
-@JsonNames("unified-type")
+@JsonNames("element-type", "unified-type", "type")
 val Keys.elementType by AttachedProperties.serialKey<String?>(ElementConfiguration.GROUP, null)
 
 /**

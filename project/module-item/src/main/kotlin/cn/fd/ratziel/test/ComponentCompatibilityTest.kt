@@ -7,6 +7,8 @@ import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
 import cn.fd.ratziel.module.item.internal.RefItemStack
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import org.bukkit.Bukkit
 import taboolib.common.Test
 import taboolib.common.platform.function.info
@@ -254,6 +256,22 @@ object ComponentCompatibilityTest : Test() {
 
     private fun compareArray(path: String, left: String, right: String): List<String> {
         return if (left == right) emptyList() else listOf("$path 数组值不同：$left != $right")
+    }
+
+    private fun compareStringValue(path: String, left: String, right: String): List<String> {
+        if (left == right) {
+            return emptyList()
+        }
+        val leftJson = parseJsonOrNull(left)
+        val rightJson = parseJsonOrNull(right)
+        if (leftJson != null && rightJson != null && leftJson == rightJson) {
+            return emptyList()
+        }
+        return listOf("$path 值不同：\"$left\" != \"$right\"")
+    }
+
+    private fun parseJsonOrNull(content: String): JsonElement? {
+        return runCatching { Json.parseToJsonElement(content) }.getOrNull()
     }
 
     private fun compareValue(path: String, left: Any?, right: Any?): List<String> {
