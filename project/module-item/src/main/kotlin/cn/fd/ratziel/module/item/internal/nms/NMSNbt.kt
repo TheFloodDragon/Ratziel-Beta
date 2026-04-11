@@ -8,7 +8,7 @@ import taboolib.module.nms.nmsProxy
 import java.lang.invoke.MethodHandle
 
 /**
- * NMSUtil
+ * NMSNbt
  *
  * @author TheFloodDragon
  * @since 2024/9/1 12:41
@@ -128,7 +128,7 @@ class NMSNbtImpl1 : NMSNbt {
             }
         }
 
-        is NbtCompound -> NBTTagCompound().also { src ->
+        is NbtCompound -> NBTTagCompound12().also { src ->
             // 反射获取字段：
             // private final Map<String, NbtBase> map
             val map = nbtTagCompoundGetter.get<MutableMap<String, Any>>(src)

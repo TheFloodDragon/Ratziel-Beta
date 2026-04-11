@@ -3,8 +3,15 @@ package cn.fd.ratziel.module.item.util
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.internal.RefItemStack
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import taboolib.platform.util.isAir
 import java.util.function.Consumer
+
+fun ItemStack.modifyMeta(action: ItemMeta.() -> Unit) {
+    val now = this.itemMeta ?: return
+    now.apply(action)
+    this.itemMeta = now
+}
 
 /**
  * 根据物品栏位操作物品NBT数据

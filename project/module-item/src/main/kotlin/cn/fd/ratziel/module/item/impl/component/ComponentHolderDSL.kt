@@ -50,7 +50,7 @@ open class ComponentHolderDSL(holder: ItemComponentHolder) : ItemComponentHolder
     var enchantments: ItemEnchantmentMap by composed(ItemComponents.ENCHANTMENTS) { ItemEnchantmentMap() }
 
     /** 物品隐藏标签 **/
-    var hideFlags: Set<HideFlag> by composed(ItemComponents.HIDE_FLAGS) { linkedSetOf() }
+    var hideFlags: Set<HideFlag> by composed(ItemComponents.HIDE_FLAGS) { emptySet() }
 
     /** 是否覆盖附魔光效显示 (仅 1.20.5+) **/
     var glintOverride: Boolean by composed(ItemComponents.GLINT_OVERRIDE) { false }

@@ -14,6 +14,7 @@ dependencies {
     compileOnly(projects.project.moduleItem)
     compileOnly("com.mojang:datafixerupper:8.0.16")
     compileOnly("com.google.guava:guava:32.1.2-jre")
+    compileCore(260100)
     compileCore(12105, mapped = true)
     compileOnly(fileTree("libs"))
 }

@@ -6,11 +6,10 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.PatchedDataComponentMap
-import net.minecraft.nbt.DynamicOpsNBT
-import net.minecraft.nbt.NBTBase
-import net.minecraft.resources.RegistryOps
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtOps
 import net.minecraft.world.item.component.CustomData
-import org.bukkit.craftbukkit.v1_21_R4.CraftRegistry
+import org.bukkit.craftbukkit.CraftRegistry
 import taboolib.common.platform.function.severe
 import taboolib.library.reflex.ReflexClass
 import taboolib.module.nms.MinecraftVersion
@@ -31,16 +30,16 @@ class NMSItemImpl2 : NMSItem() {
      */
     private val isModern = MinecraftVersion.versionId >= MODERN_VERSION
 
-    val nmsOps: RegistryOps<NBTBase> by lazy {
-        CraftRegistry.getMinecraftRegistry().createSerializationContext(DynamicOpsNBT.INSTANCE)
+    val nmsOps by lazy {
+        CraftRegistry.getMinecraftRegistry().createSerializationContext(NbtOps.INSTANCE)
     }
 
-    val modernOps: RegistryOps<NbtTag> by lazy {
+    val modernOps by lazy {
         CraftRegistry.getMinecraftRegistry().createSerializationContext(ModernNbtOps)
     }
 
     val customDataConstructor by lazy {
-        ReflexClass.of(CustomData::class.java).structure.getConstructorByType(NBTTagCompound::class.java)
+        ReflexClass.of(CustomData::class.java).structure.getConstructorByType(CompoundTag::class.java)
     }
 
     val componentsField by lazy {
@@ -100,7 +99,7 @@ class NMSItemImpl2 : NMSItem() {
         val result: DataResult<T> = if (isModern) {
             codec.parse(modernOps, tag)
         } else {
-            val nmsTag = NMSNbt.INSTANCE.toNms(tag) as NBTBase
+            val nmsTag = NMSNbt.INSTANCE.toNms(tag) as net.minecraft.nbt.Tag
             codec.parse(nmsOps, nmsTag)
         }
         return result.getOrThrow { IllegalStateException("Failed to parse: $it") }

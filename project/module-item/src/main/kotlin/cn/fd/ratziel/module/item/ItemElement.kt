@@ -95,10 +95,10 @@ object ItemElement : ElementHandler.ParralHandler {
         // 物品解释器注册
         ItemRegistry.registerInterpreter(DefaultResolver)
         ItemRegistry.registerInterpreter(InheritInterpreter) { before(DefaultResolver::class) }
-        ItemRegistry.registerInterpreter(ActionInterpreter) { after(DefaultResolver::class) }
-        ItemRegistry.registerInterpreter(::DataInterpreter) { after(DefaultResolver::class) }
+        ItemRegistry.registerInterpreter(ActionInterpreter)
+        ItemRegistry.registerInterpreter(::DataInterpreter)
         ItemRegistry.registerInterpreter(PhysicalLayerInterpreter) { after(DataInterpreter::class) }
-        ItemRegistry.registerInterpreter(::ComponentInterpreter) { after(PhysicalLayerInterpreter::class) }
+        ItemRegistry.registerInterpreter(::ComponentInterpreter) { after(*ItemRegistry.interpreters.map { it.type }.toTypedArray()) }
     }
 
     init {

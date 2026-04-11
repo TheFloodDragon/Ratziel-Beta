@@ -138,18 +138,13 @@ object ItemComponents {
         }
         ENCHANTMENTS = r("enchantments", ItemEnchantmentMap.serializer()) {
             serialJsonEntry("enchant", "enchants", "enchantment")
-            nbt(EnchantmentsNbtTransformer)
-            minecraft(EnchantmentsMinecraftTransformer)
+            nbt(EnchantmentsTransformer)
+            minecraft(EnchantmentsTransformer)
         }
-        @Suppress("UNCHECKED_CAST")
-        HIDE_FLAGS = r(
-            "hide-flags",
-            Set::class.java as Class<Set<HideFlag>>,
-            SetSerializer(HideFlagSerializer),
-        ) {
+        HIDE_FLAGS = r("hide-flags", SetSerializer(HideFlagSerializer)) {
             serialJsonEntry("hideflag", "hideflags", "hideFlag", "hideFlags")
-            nbt(HideFlagsNbtTransformer)
-            minecraft(HideFlagsMinecraftTransformer)
+            nbt(HideFlagTransformer)
+            minecraft(HideFlagTransformer)
         }
         GLINT_OVERRIDE = r("glint-override", Boolean.serializer()) {
             isSupported = v >= 12005

@@ -65,9 +65,9 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
      */
     class ProxyHashedStack(val hashedStack: HashedStack, val player: Player) : HashedStack {
 
-        override fun matches(serverItem: ItemStack, hashGenerator: HashedPatchMap.a): Boolean {
+        override fun matches(serverItem: ItemStack, hashGenerator: HashedPatchMap.HashGenerator): Boolean {
             // 数量不一样必须同步 (材料不要求)
-            if (hashedStack is HashedStack.a && hashedStack.count != serverItem.count) return false
+            if (hashedStack is HashedStack.ActualItem && hashedStack.count != serverItem.count) return false
             var itemToMatch = serverItem
 
             // 判断是不是本插件的物品

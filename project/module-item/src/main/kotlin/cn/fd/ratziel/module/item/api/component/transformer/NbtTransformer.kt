@@ -13,16 +13,16 @@ import cn.altawk.nbt.tag.NbtCompound
 interface NbtTransformer<T> {
 
     /**
-     * 将组件数据写入到根 [NbtCompound]。
-     */
-    fun writeTo(root: NbtCompound, component: T)
-
-    /**
      * 从根 [NbtCompound] 中读取组件数据。
      *
      * @return 根数据不合法或不存在该组件数据时，可返回 null
      */
     fun readFrom(root: NbtCompound): T?
+
+    /**
+     * 将组件数据写入到根 [NbtCompound]。
+     */
+    fun writeTo(root: NbtCompound, component: T)
 
     /**
      * 从根 [NbtCompound] 中移除该组件对应的数据。

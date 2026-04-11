@@ -2,7 +2,7 @@ package cn.fd.ratziel.platform.bukkit.nms
 
 import cn.fd.ratziel.common.message.Message
 import net.kyori.adventure.text.Component
-import taboolib.module.nms.MinecraftVersion.versionId
+import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
 
 /**
@@ -33,17 +33,17 @@ class NMSMessageImpl : NMSMessage() {
     private typealias ChatSerializer12 = net.minecraft.server.v1_12_R1.IChatBaseComponent.ChatSerializer
     private typealias ChatSerializer16 = net.minecraft.server.v1_16_R1.IChatBaseComponent.ChatSerializer
     private typealias CraftChatMessage21 = org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage
+    private typealias CraftChatMessageUnObf = org.bukkit.craftbukkit.util.CraftChatMessage
     private typealias IChatBaseComponent21 = net.minecraft.network.chat.IChatBaseComponent
 
     override fun toMinecraftComponent(component: Component): Any {
         return try {
             val jsonMessage = Message.transformToJson(component)
-            if (versionId >= 11604) {
-                CraftChatMessage21.fromJSON(jsonMessage)
-            } else if (versionId >= 11600) {
-                ChatSerializer16.a(jsonMessage)!!
-            } else {
-                ChatSerializer12.a(jsonMessage)!!
+            when {
+                MinecraftVersion.isUnobfuscated -> CraftChatMessageUnObf.fromJSON(jsonMessage)
+                MinecraftVersion.versionId >= 11604 -> CraftChatMessage21.fromJSON(jsonMessage)
+                MinecraftVersion.versionId >= 11600 -> ChatSerializer16.a(jsonMessage)!!
+                else -> ChatSerializer12.a(jsonMessage)!!
             }
         } catch (t: Throwable) {
             throw IllegalStateException("Got an error translating component! Please report!", t)
@@ -52,10 +52,10 @@ class NMSMessageImpl : NMSMessage() {
 
     override fun fromMinecraftComponent(minecraftComponent: Any): Component {
         val json = try {
-            if (versionId >= 11604) {
-                CraftChatMessage21.toJSON(minecraftComponent as IChatBaseComponent21)
-            } else {
-                ChatSerializer12.a(minecraftComponent as IChatBaseComponent12)!!
+            when {
+                MinecraftVersion.isUnobfuscated -> CraftChatMessageUnObf.toJSON(minecraftComponent as net.minecraft.network.chat.Component)
+                MinecraftVersion.versionId >= 11604 -> CraftChatMessage21.toJSON(minecraftComponent as IChatBaseComponent21)
+                else -> ChatSerializer12.a(minecraftComponent as IChatBaseComponent12)!!
             }
         } catch (t: Throwable) {
             throw IllegalStateException("Got an error translating component!Please report!", t)

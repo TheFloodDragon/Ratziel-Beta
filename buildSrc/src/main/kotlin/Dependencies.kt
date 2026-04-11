@@ -23,6 +23,12 @@ fun DependencyHandler.compileCore(
     mapped: Boolean = false,
     complete: Boolean = false,
 ) {
+    if (version >= 260000) {
+        val notation =
+            "ink.ptms.core:v$version:$version${if (minimize) "minimize-" else ""}"
+        add(JvmConstants.COMPILE_ONLY_CONFIGURATION_NAME, notation)
+        return
+    }
     val notation =
         "ink.ptms.core:v$version:$version${if (!complete && minimize) "-minimize" else ""}${if (complete) "" else if (mapped) ":mapped" else ":universal"}"
     add(JvmConstants.COMPILE_ONLY_CONFIGURATION_NAME, notation)
