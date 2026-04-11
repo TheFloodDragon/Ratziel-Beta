@@ -7,9 +7,11 @@ import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.component.ComponentTypeBuilder.Companion.proxyClass
 import cn.fd.ratziel.module.item.impl.component.transformers.*
 import cn.fd.ratziel.module.item.impl.component.type.ItemEnchantmentMap
+import cn.fd.ratziel.module.item.internal.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.item.internal.serializers.MessageComponentSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.SetSerializer
 import kotlinx.serialization.builtins.serializer
 import net.kyori.adventure.text.Component
 import java.util.concurrent.CopyOnWriteArraySet
@@ -80,6 +82,12 @@ object ItemComponents {
     val ENCHANTMENTS: ItemComponentType<ItemEnchantmentMap>
 
     /**
+     * 物品隐藏标签
+     */
+    @JvmField
+    val HIDE_FLAGS: ItemComponentType<Set<HideFlag>>
+
+    /**
      * 是否覆盖附魔光效显示 (仅 1.20.5+)
      */
     @JvmField
@@ -132,6 +140,16 @@ object ItemComponents {
             serialJsonEntry("enchant", "enchants", "enchantment")
             nbt(EnchantmentsNbtTransformer)
             minecraft(EnchantmentsMinecraftTransformer)
+        }
+        @Suppress("UNCHECKED_CAST")
+        HIDE_FLAGS = r(
+            "hide-flags",
+            Set::class.java as Class<Set<HideFlag>>,
+            SetSerializer(HideFlagSerializer),
+        ) {
+            serialJsonEntry("hideflag", "hideflags", "hideFlag", "hideFlags")
+            nbt(HideFlagsNbtTransformer)
+            minecraft(HideFlagsMinecraftTransformer)
         }
         GLINT_OVERRIDE = r("glint-override", Boolean.serializer()) {
             isSupported = v >= 12005

@@ -3,12 +3,14 @@ package cn.fd.ratziel.test
 import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
+import cn.fd.ratziel.module.item.impl.component.HideFlag
 import cn.fd.ratziel.module.item.impl.component.type.ItemEnchantmentMap
 import cn.fd.ratziel.module.item.util.MetaMatcher
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import taboolib.module.nms.MinecraftVersion
+import java.util.LinkedHashSet
 
 internal fun sampleValues(type: ItemComponentType<*>): List<SampleCase> = when (type) {
     ItemComponents.CUSTOM_DATA -> listOf(
@@ -118,6 +120,11 @@ internal fun sampleValues(type: ItemComponentType<*>): List<SampleCase> = when (
         ),
     )
 
+    ItemComponents.HIDE_FLAGS -> listOf(
+        SampleCase("single-hide-flag", sampleHideFlags("hide_enchants")),
+        SampleCase("multiple-hide-flags", sampleHideFlags("hide_enchants", "hide_attributes")),
+    )
+
     ItemComponents.GLINT_OVERRIDE -> listOf(
         SampleCase("enabled", true),
         SampleCase("disabled", false),
@@ -150,6 +157,14 @@ private fun sampleEnchantments(vararg entries: Pair<String, Int>): ItemEnchantme
     return ItemEnchantmentMap().apply {
         entries.forEach { (key, level) ->
             set(MetaMatcher.matchEnchantment(key), level)
+        }
+    }
+}
+
+private fun sampleHideFlags(vararg entries: String): Set<HideFlag> {
+    return LinkedHashSet<HideFlag>(entries.size).apply {
+        entries.forEach { flag ->
+            add(MetaMatcher.matchHideFlag(flag))
         }
     }
 }

@@ -22,7 +22,7 @@ fun CommandComponent.slot(
     optional: Boolean = false,
     permission: String = "",
     dynamic: CommandComponentDynamic.() -> Unit = {},
-) = dynamic(comment, optional, permission, dynamic).suggestSlots(suggest)
+) = this.dynamic(comment, optional, permission, "", dynamic).suggestSlots(suggest)
 
 /**
  * 创建参数补全（仅物品栏位）

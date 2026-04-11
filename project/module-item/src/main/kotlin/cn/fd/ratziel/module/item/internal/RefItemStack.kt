@@ -182,7 +182,7 @@ class RefItemStack private constructor(
          *   1.17- net.minecraft.server.$VERSION.ItemStack
          */
         @JvmStatic
-        val nmsClass by lazy { nmsClass("ItemStack") }
+        val nmsClass by lazy { nmsClass("world.item.ItemStack") }
 
         /**
          * obc.ItemStack
