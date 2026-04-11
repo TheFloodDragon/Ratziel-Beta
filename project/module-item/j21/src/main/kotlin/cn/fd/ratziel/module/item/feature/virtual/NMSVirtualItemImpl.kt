@@ -83,8 +83,8 @@ class NMSVirtualItemImpl : NMSVirtualItem() {
             return hashedStack.matches(itemToMatch, hashGenerator)
         }
 
-        private fun asCustomItem(nmsItem: Any): RatzielItem? {
-            return RatzielItem.of(RefItemStack.ofNms(nmsItem).extractData())
+        private fun asCustomItem(serverItem: Any): RatzielItem? {
+            return RatzielItem.of(RefItemStack.ofNms(serverItem), true)
         }
 
     }

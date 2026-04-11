@@ -82,7 +82,7 @@ object ItemComponents {
     val ENCHANTMENTS: ItemComponentType<ItemEnchantmentMap>
 
     /**
-     * 物品隐藏标签
+     * 物品隐藏标签 (高版本这玩意贼分散。)
      */
     @JvmField
     val HIDE_FLAGS: ItemComponentType<Set<HideFlag>>

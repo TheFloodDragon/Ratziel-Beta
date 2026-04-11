@@ -187,7 +187,7 @@ class ComponentTypeBuilder<T>(
             get() = _transforming
                 ?: throw UnsupportedVersionException("Component '$id' is not supported in Minecraft ${MinecraftVersion.minecraftVersion}")
 
-        override fun toString() = "ItemComponentType(id='$id', tserializer=$serializer, transforming=$transforming)"
+        override fun toString() = "ItemComponentType(id='$id', tserializer=$serializer, transforming=$_transforming)"
     }
 
     companion object {

@@ -15,7 +15,7 @@ dependencies {
     compileOnly("com.mojang:datafixerupper:8.0.16")
     compileOnly("com.google.guava:guava:32.1.2-jre")
     compileCore(260100)
-    compileCore(12105, mapped = true)
+    compileOnly("paper:v12107:12107:core")
     compileOnly(fileTree("libs"))
 }
 

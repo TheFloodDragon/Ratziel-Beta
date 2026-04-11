@@ -93,9 +93,9 @@ open class RatzielItem private constructor(
          */
         @JvmStatic
         fun of(data: ItemData, copy: Boolean = false): RatzielItem? {
-            val itemData = (if (copy) data.clone() else data).asComponentData()
+            val itemData = data.asComponentData()
             val info = Info.read(itemData) ?: return null
-            return RatzielItem(info, itemData)
+            return RatzielItem(info, if (copy) itemData.clone() else itemData)
         }
 
         /**
