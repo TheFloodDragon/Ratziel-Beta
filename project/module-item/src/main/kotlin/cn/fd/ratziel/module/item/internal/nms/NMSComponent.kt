@@ -39,17 +39,19 @@ abstract class NMSComponent {
     abstract fun removeComponent(nmsItem: Any, type: Any)
 
     /**
-     * 通过 [net.minecraft.resources.Identifier] (MinecraftKey) 形式的 ID 获取 [DataComponentType]
+     * 通过 [net.minecraft.resources.MinecraftKey] 形式的 ID 获取 [DataComponentType]
      */
     abstract fun getType(key: String): Any
 
     companion object {
 
+        @JvmField
+        val isEnabled = MinecraftVersion.versionId >= 12005
+
         @JvmStatic
         val INSTANCE by lazy {
-            if (MinecraftVersion.versionId >= 12005)
-                nmsProxy<NMSComponent>("{name}Impl")
-            else throw UnsupportedVersionException("NMSComponent only supports Minecraft 1.20.5+")
+            if (!isEnabled) throw UnsupportedVersionException("NMSComponent only supports Minecraft 1.20.5+")
+            nmsProxy<NMSComponent>("{name}Impl")
         }
 
     }

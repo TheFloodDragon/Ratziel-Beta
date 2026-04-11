@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.feature.virtual
 
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.internal.RefItemStack
-import cn.fd.ratziel.module.item.util.writeTo
 import cn.fd.ratziel.platform.bukkit.util.readOrThrow
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -116,14 +115,10 @@ object VirtualItemPacketHandler {
      * @param nmsItem NMS 物品实例
      */
     fun handleItem(nmsItem: Any, consumer: Consumer<RatzielItem>) {
-        val refItem = RefItemStack.ofNms(nmsItem)
         // 生成 RatzielItem 实例 (如果不是就跳过处理)
-        val ratzielItem = RatzielItem.of(refItem.extractData()) ?: return
+        val ratzielItem = RatzielItem.of(RefItemStack.ofNms(nmsItem), false) ?: return
         // 消费物品
         consumer.accept(ratzielItem)
-
-        // 最后写回物品数据
-        ratzielItem.writeTo(refItem.bukkitStack)
     }
 
 }

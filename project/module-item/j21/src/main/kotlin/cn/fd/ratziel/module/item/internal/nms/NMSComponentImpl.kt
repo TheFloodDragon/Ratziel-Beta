@@ -4,10 +4,9 @@ import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.item.ItemStack
 import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.remap.DynamicOpcode.INVOKESTATIC
-import taboolib.module.nms.remap.DynamicOpcode.INVOKEVIRTUAL
+import taboolib.module.nms.remap.DynamicOpcode
 import taboolib.module.nms.remap.dynamic
-import java.util.Optional
+import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -41,33 +40,17 @@ class NMSComponentImpl : NMSComponent() {
     }
 
     override fun getType(key: String): Any {
-        @Suppress("UNCHECKED_CAST")
-        val opt = if (MinecraftVersion.isUnobfuscated) {
-            val minecraftKey = dynamic(
-                INVOKESTATIC,
-                "net.minecraft.resources.Identifier#tryParse(java.lang.String;)net.minecraft.resources.Identifier;",
-                key
-            ) ?: error("Invalid MinecraftKey: $key")
-            dynamic(
-                INVOKEVIRTUAL,
-                "net.minecraft.core.Registry#get(net.minecraft.resources.Identifier;)java.util.Optional;",
-                BuiltInRegistries.DATA_COMPONENT_TYPE,
-                minecraftKey
-            ) as Optional<Any>
+        val opt: Optional<*> = if (MinecraftVersion.isUnobfuscated) {
+            val minecraftKey = net.minecraft.resources.Identifier.tryParse(key) ?: error("Invalid MinecraftKey: $key")
+            BuiltInRegistries.DATA_COMPONENT_TYPE.getOptional(minecraftKey)
         } else {
-            val minecraftKey = dynamic(
-                INVOKESTATIC,
-                "net.minecraft.resources.ResourceLocation#tryParse(java.lang.String;)net.minecraft.resources.ResourceLocation;",
-                key
-            ) ?: error("Invalid MinecraftKey: $key")
-            dynamic(
-                INVOKEVIRTUAL,
-                "net.minecraft.core.Registry#get(net.minecraft.resources.ResourceLocation;)java.util.Optional;",
-                BuiltInRegistries.DATA_COMPONENT_TYPE,
-                minecraftKey
-            ) as Optional<Any>
+            val minecraftKey = net.minecraft.resources.MinecraftKey.tryParse(key) ?: error("Invalid MinecraftKey: $key")
+            @Suppress("UNCHECKED_CAST") val type = dynamic(
+                DynamicOpcode.GETSTATIC,
+                "net.minecraft.core.registries.BuiltInRegistries#DATA_COMPONENT_TYPE:net.minecraft.core.IRegistry",
+            ) as net.minecraft.core.IRegistry<DataComponentType<*>>
+            type.getOptional(minecraftKey)
         }
-
         return opt.getOrNull() ?: error("DataComponentType not found for key: $key")
     }
 

@@ -34,21 +34,25 @@ fun Audience.sendTitle(title: String?, subtitle: String?, fadeIn: Duration, stay
 }
 
 /**
- * 按照指定字符将 Adventure [Component] 拆分为多段。
+ * 按照指定字符串将 Adventure [Component] 拆分为多段。
  */
-fun Component.splitBy(separator: Char): List<Component> {
+fun Component.splitBy(separator: String): List<Component> {
+    if (separator.isEmpty()) return listOf(this)
+
     fun split(component: Component): List<Component> {
         val segments = when (component) {
             is TextComponent -> buildList {
                 val content = component.content()
                 var startIndex = 0
-                content.forEachIndexed { index, char ->
-                    if (char == separator) {
-                        add(component.content(content.substring(startIndex, index)).children(emptyList()))
-                        startIndex = index + 1
+                while (true) {
+                    val separatorIndex = content.indexOf(separator, startIndex)
+                    if (separatorIndex < 0) {
+                        add(component.content(content.substring(startIndex)).children(emptyList()))
+                        break
                     }
+                    add(component.content(content.substring(startIndex, separatorIndex)).children(emptyList()))
+                    startIndex = separatorIndex + separator.length
                 }
-                add(component.content(content.substring(startIndex)).children(emptyList()))
             }
 
             else -> listOf(component.children(emptyList()))
@@ -65,11 +69,4 @@ fun Component.splitBy(separator: Char): List<Component> {
     }
 
     return split(this)
-}
-
-/**
- * 按照换行符将 Adventure [Component] 拆分为多行。
- */
-fun Component.splitByNewline(): List<Component> {
-    return splitBy('\n')
 }
