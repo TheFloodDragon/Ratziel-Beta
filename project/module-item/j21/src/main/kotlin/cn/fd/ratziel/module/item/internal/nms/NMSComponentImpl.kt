@@ -49,7 +49,11 @@ class NMSComponentImpl : NMSComponent() {
                 DynamicOpcode.GETSTATIC,
                 "net.minecraft.core.registries.BuiltInRegistries#DATA_COMPONENT_TYPE:net.minecraft.core.IRegistry",
             ) as net.minecraft.core.IRegistry<DataComponentType<*>>
-            type.getOptional(minecraftKey)
+            dynamic(
+                DynamicOpcode.INVOKEVIRTUAL,
+                "net.minecraft.core.IRegistry#get(net.minecraft.resources.MinecraftKey;)java.util.Optional;",
+                type, minecraftKey
+            ) as Optional<*>
         }
         return opt.getOrNull() ?: error("DataComponentType not found for key: $key")
     }
