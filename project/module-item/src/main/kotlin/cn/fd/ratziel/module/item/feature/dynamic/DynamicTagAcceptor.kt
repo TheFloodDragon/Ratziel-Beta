@@ -44,7 +44,7 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
             dsl.itemName = itemName?.run { async { replaceText(replacementConfig) } }?.await()
             if (lore.isNotEmpty()) {
                 dsl.lore = lore.map { async { it.replaceText(replacementConfig) } }.awaitAll()
-                    .flatMap { it.splitBy("\n") }
+                    .flatMap { it.splitBy("\\n") }
             }
         }
     }
