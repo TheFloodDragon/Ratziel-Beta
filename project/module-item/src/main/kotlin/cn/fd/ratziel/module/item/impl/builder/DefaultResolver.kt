@@ -3,8 +3,13 @@ package cn.fd.ratziel.module.item.impl.builder
 import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.core.serialization.json.JsonTree
 import cn.fd.ratziel.module.item.ItemRegistry
-import cn.fd.ratziel.module.item.api.builder.*
+import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
+import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
+import cn.fd.ratziel.module.item.api.builder.ItemStream
+import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
+import cn.fd.ratziel.module.item.api.component.transformer.SerialJsonTransformer
 import cn.fd.ratziel.module.item.impl.builder.provided.TaggedSectionResolver
+import cn.fd.ratziel.module.item.impl.component.ItemComponents
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -36,7 +41,11 @@ object DefaultResolver : ItemInterpreter {
      * 允许访问的节点列表, 仅在 限制性解析 时使用
      */
     val accessibleNodes: MutableSet<String> by lazy {
-        CopyOnWriteArraySet(ItemRegistry.registry.flatMap { it.elementNodes })
+        CopyOnWriteArraySet(ItemComponents.registrySupported.flatMap {
+            val transformer = it.transforming.jsonTransformer
+                    as? SerialJsonTransformer.EntryTransformer ?: return@flatMap emptySet()
+            listOf(transformer.serialName).plus(transformer.alias)
+        })
     }
 
     /**

@@ -90,6 +90,7 @@ allprojects {
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
         testLogging {
+            events("passed", "failed")
             showStackTraces = true
             showCauses = true
             showExceptions = true

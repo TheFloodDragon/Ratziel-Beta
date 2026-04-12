@@ -11,8 +11,8 @@ dependencies {
     compileOnly(projects.project.moduleCompatCore)
     compileOnly("com.google.guava:guava:32.1.2-jre")
     compileNMS()
-    compileOnly("paper:v12006:12006:core")
     compileCore(12005, mapped = true)
+    compileOnly("paper:v12006:12006:core")
 }
 
 tasks.jar {

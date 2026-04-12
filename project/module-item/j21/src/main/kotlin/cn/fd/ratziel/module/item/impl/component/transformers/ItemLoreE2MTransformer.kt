@@ -7,7 +7,7 @@ import net.minecraft.world.item.component.ItemLore
 
 /**
  * ItemLoreE2MTransformer
- * 
+ *
  * @author TheFloodDragon
  * @since 2026/3/21 23:41
  */

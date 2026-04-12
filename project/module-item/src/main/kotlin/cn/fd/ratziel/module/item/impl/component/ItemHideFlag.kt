@@ -25,6 +25,7 @@ typealias HideFlag = @Serializable(HideFlagSerializer::class) XItemFlag
  * @author TheFloodDragon
  * @since 2025/4/30 21:55
  */
+@Deprecated("被新组件系统替代")
 @Serializable(ItemHideFlag.Serializer::class)
 @KeepGeneratedSerializer
 class ItemHideFlag(

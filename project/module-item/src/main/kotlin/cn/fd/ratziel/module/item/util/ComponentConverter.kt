@@ -12,6 +12,7 @@ import taboolib.common.platform.function.severe
  * @author TheFloodDragon
  * @since 2025/7/6 15:03
  */
+@Deprecated("被新组件系统替代")
 object ComponentConverter {
 
     /**

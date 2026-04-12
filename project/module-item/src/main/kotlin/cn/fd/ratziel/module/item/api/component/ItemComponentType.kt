@@ -34,6 +34,11 @@ interface ItemComponentType<T> {
     val transforming: Transforming<T>
 
     /**
+     * 是否支持当前版本
+     */
+    val isSupported: Boolean
+
+    /**
      * 组件转换模块接口。
      *
      * 对外统一暴露 JSON、NBT 与 Minecraft 三套转换能力：

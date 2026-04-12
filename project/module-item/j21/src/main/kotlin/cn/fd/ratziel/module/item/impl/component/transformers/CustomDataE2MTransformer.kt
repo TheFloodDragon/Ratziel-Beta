@@ -8,7 +8,7 @@ import net.minecraft.world.item.component.CustomData
 
 /**
  * CustomDataE2MTransformer
- * 
+ *
  * @author TheFloodDragon
  * @since 2026/3/21 23:55
  */
@@ -23,7 +23,7 @@ class CustomDataE2MTransformer : MinecraftE2MTransformer<NbtCompound> {
     override fun fromMinecraftObj(minecraftObj: Any): NbtCompound {
         minecraftObj as CustomData
         @Suppress("DEPRECATION")
-        val nmsTag = minecraftObj.unsafe
+        val nmsTag = minecraftObj.copyTag()
         return NMSNbt.INSTANCE.fromNms(nmsTag) as NbtCompound
     }
 

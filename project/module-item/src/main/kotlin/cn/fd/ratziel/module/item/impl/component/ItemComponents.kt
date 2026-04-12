@@ -35,6 +35,11 @@ object ItemComponents {
      */
     val registry: MutableCollection<ItemComponentType<*>> = CopyOnWriteArraySet()
 
+    /**
+     * 物品组件注册表
+     */
+    val registrySupported: Collection<ItemComponentType<*>> get() = this.registry.filter { it.isSupported }
+
     // ** 添加后请同时在 ComponentHolderDSL 中添加委托属性 **
 
     /**
@@ -98,8 +103,6 @@ object ItemComponents {
      */
     @JvmField
     val UNBREAKABLE: ItemComponentType<Boolean>
-
-    // TODO .... more ... and .. more
 
     /**
      * 注册内置组件类型。

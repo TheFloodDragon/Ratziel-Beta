@@ -17,6 +17,7 @@ typealias MessageComponent = @Serializable(MessageComponentSerializer::class) Co
  * @author TheFloodDragon
  * @since 2024/3/16 11:27
  */
+@Deprecated("被新组件系统替代")
 @Serializable
 class ItemDisplay(
     /**

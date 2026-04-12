@@ -12,6 +12,7 @@ import taboolib.module.nms.MinecraftVersion
  * @author TheFloodDragon
  * @since 2025/4/4 1:04
  */
+@Deprecated("被新组件系统替代")
 object ItemSheet {
 
     val mappings: BiMap<Pair<String, String>, String> by lazy {

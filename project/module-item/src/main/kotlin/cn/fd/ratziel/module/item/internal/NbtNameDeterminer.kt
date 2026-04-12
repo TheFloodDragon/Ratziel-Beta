@@ -10,6 +10,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
  * @author TheFloodDragon
  * @since 2025/3/22 16:35
  */
+@Deprecated("被新组件系统替代")
 internal object NbtNameDeterminer : SerialNameDeterminer {
 
     private const val EOF = "\u0000"

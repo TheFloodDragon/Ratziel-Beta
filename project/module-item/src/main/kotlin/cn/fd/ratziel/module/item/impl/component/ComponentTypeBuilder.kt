@@ -183,6 +183,7 @@ class ComponentTypeBuilder<T>(
         /** 转换模块；当前版本不支持该组件时为 null。 **/
         private val _transforming: ItemComponentType.Transforming<T>?,
     ) : ItemComponentType<T> {
+        override val isSupported: Boolean = _transforming != null
         override val transforming: ItemComponentType.Transforming<T>
             get() = _transforming
                 ?: throw UnsupportedVersionException("Component '$id' is not supported in Minecraft ${MinecraftVersion.minecraftVersion}")

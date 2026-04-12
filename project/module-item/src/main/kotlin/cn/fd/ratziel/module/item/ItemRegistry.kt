@@ -55,6 +55,7 @@ object ItemRegistry {
      *
      * @param serializer 组件序列化器
      */
+    @Deprecated("被新组件系统替代")
     @JvmStatic
     fun <T> registerComponent(type: Class<T>, serializer: KSerializer<T>) {
         registry += ComponentIntegrated(type, serializer)
@@ -63,6 +64,7 @@ object ItemRegistry {
     /**
      * 获取组件集成构建器
      */
+    @Deprecated("被新组件系统替代")
     @JvmStatic
     fun <T> getComponent(type: Class<T>): ComponentIntegrated<T> {
         @Suppress("UNCHECKED_CAST")
@@ -76,7 +78,7 @@ object ItemRegistry {
     fun <T : ItemInterpreter> registerInterpreter(
         interpreter: T,
         order: InterpreterOrderSpec.() -> Unit = {},
-    ) = registerInterpreter(interpreter::class.java, Supplier { interpreter }, order)
+    ) = registerInterpreter(interpreter::class.java, { interpreter }, order)
 
     /**
      * 注册物品解释器工厂
@@ -96,23 +98,15 @@ object ItemRegistry {
         interpreter: Supplier<T>,
         order: InterpreterOrderSpec.() -> Unit = {},
     ) {
-        check(interpreters.none { it.type == clazz }) { "Interpreter ${clazz.displayName} is already registered." }
+        check(interpreters.none { it.type == clazz }) { "Interpreter ${clazz.simpleName} is already registered." }
         interpreters += InterpreterIntegrated(clazz, interpreter, resolveInterpreterOrder(clazz, InterpreterOrderSpec().apply(order)))
     }
-
-    /**
-     * 获取物品解释器列表 (按 order 分组顺序实例化)
-     */
-    @JvmStatic
-    fun getInterpreterInstances(): List<ItemInterpreter> = orderedInterpreterGroups.flatten().map { it.getter.get() }
 
     /**
      * 获取按 order 分组后的物品解释器实例
      */
     @JvmStatic
-    fun getInterpreterInstanceGroups(): List<List<ItemInterpreter>> = orderedInterpreterGroups.map { group ->
-        group.map { it.getter.get() }
-    }
+    fun getInterpreterInstanceGroups(): List<List<ItemInterpreter>> = orderedInterpreterGroups.map { group -> group.map { it.getter.get() } }
 
     /**
      * 注册物品源
@@ -167,9 +161,9 @@ object ItemRegistry {
         val lowerBound = after.maxOf { it.order } + 1
         val upperBound = before.minOf { it.order } - 1
         check(lowerBound <= upperBound) {
-            "Interpreter ${source.displayName} declares incompatible order constraints: " +
-                "after(${after.joinToString(", ") { it.type.displayName }}) requires >= $lowerBound, " +
-                "before(${before.joinToString(", ") { it.type.displayName }}) requires <= $upperBound."
+            "Interpreter ${source.simpleName} declares incompatible order constraints: " +
+                    "after(${after.joinToString(", ") { it.type.simpleName }}) requires >= $lowerBound, " +
+                    "before(${before.joinToString(", ") { it.type.simpleName }}) requires <= $upperBound."
         }
         return lowerBound
     }
@@ -177,19 +171,11 @@ object ItemRegistry {
     /**
      * 解析顺序约束中的目标解释器
      */
-    private fun Class<out ItemInterpreter>.findTargetOf(
-        source: Class<out ItemInterpreter>,
-        relation: String,
-    ): InterpreterIntegrated<*> {
-        check(this != source) { "Interpreter ${source.displayName} cannot declare $relation($displayName) on itself." }
+    private fun Class<out ItemInterpreter>.findTargetOf(source: Class<out ItemInterpreter>, relation: String): InterpreterIntegrated<*> {
+        check(this != source) { "Interpreter ${source.simpleName} cannot declare $relation($simpleName) on itself." }
         return interpreters.find { it.type == this }
-            ?: error("Interpreter ${source.displayName} declares $relation($displayName) but $displayName is not registered yet.")
+            ?: error("Interpreter ${source.simpleName} declares $relation($simpleName) but $simpleName is not registered yet.")
     }
-
-    /**
-     * 获取类型显示名
-     */
-    private val Class<*>.displayName get() = simpleName.ifBlank { name }
 
     /**
      * 解释器顺序约束
@@ -199,11 +185,17 @@ object ItemRegistry {
         internal val beforeTargets = linkedSetOf<Class<out ItemInterpreter>>()
         internal val afterTargets = linkedSetOf<Class<out ItemInterpreter>>()
 
-        fun before(vararg types: Class<out ItemInterpreter>) { beforeTargets.addAll(types) }
+        fun before(vararg types: Class<out ItemInterpreter>) {
+            beforeTargets.addAll(types)
+        }
+
         fun before(vararg types: KClass<out ItemInterpreter>) = before(*types.map { it.java }.toTypedArray())
         inline fun <reified T : ItemInterpreter> before() = before(T::class)
 
-        fun after(vararg types: Class<out ItemInterpreter>) { afterTargets.addAll(types) }
+        fun after(vararg types: Class<out ItemInterpreter>) {
+            afterTargets.addAll(types)
+        }
+
         fun after(vararg types: KClass<out ItemInterpreter>) = after(*types.map { it.java }.toTypedArray())
         inline fun <reified T : ItemInterpreter> after() = after(T::class)
     }
@@ -224,6 +216,7 @@ object ItemRegistry {
      * 物品组件集成
      * @param serializer 序列化器
      */
+    @Deprecated("被新组件系统替代")
     class ComponentIntegrated<T>(
         /** 物品组件类型 **/
         val type: Class<T>,

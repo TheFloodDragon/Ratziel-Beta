@@ -21,6 +21,7 @@ import taboolib.module.nms.MinecraftVersion
  * @author TheFloodDragon
  * @since 2024/4/13 16:05
  */
+@Deprecated("被新组件系统替代")
 @Serializable
 class ItemDurability(
     /**

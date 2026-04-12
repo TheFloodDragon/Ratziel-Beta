@@ -14,6 +14,7 @@ import taboolib.module.nms.MinecraftVersion
  * @author TheFloodDragon
  * @since 2025/6/7 09:19
  */
+@Deprecated("被新组件系统替代")
 @Serializable
 class ItemEnchant(
     /**

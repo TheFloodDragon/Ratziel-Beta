@@ -98,7 +98,7 @@ object ItemElement : ElementHandler.ParralHandler {
         ItemRegistry.registerInterpreter(ActionInterpreter)
         ItemRegistry.registerInterpreter(::DataInterpreter)
         ItemRegistry.registerInterpreter(PhysicalLayerInterpreter) { after(DataInterpreter::class) }
-        ItemRegistry.registerInterpreter(::ComponentInterpreter) { after(*ItemRegistry.interpreters.map { it.type }.toTypedArray()) }
+        ItemRegistry.registerInterpreter(ComponentInterpreter) { after(*ItemRegistry.interpreters.map { it.type }.toTypedArray()) }
     }
 
     init {

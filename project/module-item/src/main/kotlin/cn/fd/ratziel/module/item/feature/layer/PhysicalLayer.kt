@@ -8,10 +8,8 @@ import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
-import cn.fd.ratziel.module.item.impl.component.ItemSheet
 import cn.fd.ratziel.module.item.impl.component.dsl
 import cn.fd.ratziel.module.item.util.asComponentData
-import cn.fd.ratziel.module.item.util.modifyTag
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
 
@@ -120,36 +118,33 @@ class PhysicalLayer(
          * @param layer 图层实例
          */
         override fun render(item: NeoItem, layer: ItemLayer) {
-            item.data.modifyTag { root ->
-                val customData = (root[ItemSheet.CUSTOM_DATA_COMPONENT] as? NbtCompound)
-                    ?: NbtCompound().also { root[ItemSheet.CUSTOM_DATA_COMPONENT] = it }
-                customData.handle(LAYER_PATH) {
-                    // 获取当前图层
-                    val currentLayerName = get(CURRENT_LAYER_NAME)?.content as? String ?: DEFAULT_LAYER_NAME
-                    val currentLayer = findLayer(this@handle, currentLayerName)
+            val data = item.data.asComponentData().dsl()
+            data.customData = data.customData.handle(LAYER_PATH) {
+                // 获取当前图层
+                val currentLayerName = get(CURRENT_LAYER_NAME)?.content as? String ?: DEFAULT_LAYER_NAME
+                val currentLayer = findLayer(this@handle, currentLayerName)
 
-                    // 将当前图层的数据存到 存储的图层表 中
-                    val currentLayerData = currentLayer.data.tag
-                    if (currentLayerData.isEmpty() && currentLayerName == DEFAULT_LAYER_NAME) {
-                        // 默认图层在 存储的图层表 中一开始没有, 故需要通过 要设置的图层 来初始化
-                        for ((key, _) in layer.data.tag) {
-                            currentLayerData[key] = root[key] ?: REMOVE_MARK
-                        }
-                    } else {
-                        for ((key, _) in currentLayerData) {
-                            currentLayerData[key] = root[key] ?: REMOVE_MARK
-                        }
+                // 将当前图层的数据存到 存储的图层表 中
+                val currentLayerData = currentLayer.data.tag
+                if (currentLayerData.isEmpty() && currentLayerName == DEFAULT_LAYER_NAME) {
+                    // 默认图层在 存储的图层表 中一开始没有, 故需要通过 要设置的图层 来初始化
+                    for ((key, _) in layer.data.tag) {
+                        currentLayerData[key] = this[key] ?: REMOVE_MARK
                     }
-
-                    // 更换图层
-                    for ((key, value) in layer.data.tag) {
-                        // 写入新图层数据
-                        if (value == REMOVE_MARK) root.remove(key) else root[key] = value
+                } else {
+                    for ((key, _) in currentLayerData) {
+                        currentLayerData[key] = this[key] ?: REMOVE_MARK
                     }
-
-                    // 设置当前图层
-                    put(CURRENT_LAYER_NAME, layer.name)
                 }
+
+                // 更换图层
+                for ((key, value) in layer.data.tag) {
+                    // 写入新图层数据
+                    if (value == REMOVE_MARK) this.remove(key) else this[key] = value
+                }
+
+                // 设置当前图层
+                put(CURRENT_LAYER_NAME, layer.name)
             }
         }
 

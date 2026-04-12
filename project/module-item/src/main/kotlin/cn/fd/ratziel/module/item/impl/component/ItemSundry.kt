@@ -19,6 +19,7 @@ typealias AttributeModifier = @Serializable(AttributeModifierSerializer::class) 
  * @author TheFloodDragon
  * @since 2024/5/3 21:06
  */
+@Deprecated("被新组件系统替代")
 @Serializable
 data class ItemSundry(
     /**
