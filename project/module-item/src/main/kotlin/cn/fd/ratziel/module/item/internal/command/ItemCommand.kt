@@ -9,11 +9,10 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.command.*
 import taboolib.common.platform.function.debug
-import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.severe
 import taboolib.expansion.createHelper
 import taboolib.module.lang.sendLang
 import taboolib.platform.util.giveItem
-import java.util.concurrent.CompletableFuture
 import kotlin.time.TimeSource
 
 /**
@@ -57,48 +56,41 @@ object ItemCommand {
         }
     }
 
-    private fun giveById(player: Player, id: String, amount: Int): CompletableFuture<ItemStack?> {
-        val future = CompletableFuture<ItemStack?>()
+    private fun giveById(player: Player, id: String, amount: Int) {
         // 获取物品生成器
-        val generator = ItemManager.registry[id] ?: return CompletableFuture.completedFuture(null)
+        val generator = ItemManager.registry[id] ?: return
         // 上下文参数
         val args = SimpleContext(player)
         // 开始生成物品
         val time = TimeSource.Monotonic.markNow()
-        generator.build(args).handle { item, throwable ->
+        try {
+            val item = generator.build(args).get()
+            // 时间记录
             val duration = time.elapsedNow()
             debug("[TIME MARK] Generated item '$id' in ${duration.inWholeMilliseconds}ms.")
-            if (throwable == null) {
-                // 将生成结果打包成 BukkitItemStack
-                val itemStack = item.toItemStack().apply { setAmount(amount) }
-                submit {
-                    // 给予物品
-                    player.giveItem(itemStack)
-                    future.complete(itemStack)
-                }
-            } else {
-                throwable.printStackTrace()
-            }
+            // 将生成结果打包成 BukkitItemStack
+            val itemStack = item.toItemStack().apply { setAmount(amount) }
+            // 给予物品
+            player.giveItem(itemStack)
+        } catch (ex: Throwable) {
+            severe(ex.stackTraceToString())
         }
-        return future
     }
 
     private fun cmdGive(sender: ProxyCommandSender, players: List<ProxyPlayer>, id: String, amount: Int) {
         if (players.size == 1) {
             val player = players[0]
-            giveById(player.cast(), id, amount).join()
+            giveById(player.cast(), id, amount)
             // 发送给命名发送者
             sender.sendLang("Item-Give", player.name, id, amount)
             // 发送给物品接收者
             if (sender.name != player.name) player.sendLang("Item-Get", id, amount)
         } else {
-            val futures = players.map { player ->
-                giveById(player.cast(), id, amount).thenRun {
-                    // 发送给物品接收者
-                    if (sender.name != player.name) player.sendLang("Item-Get", id, amount)
-                }
+            players.forEach { player ->
+                giveById(player.cast(), id, amount)
+                // 发送给物品接收者
+                if (sender.name != player.name) player.sendLang("Item-Get", id, amount)
             }
-            CompletableFuture.allOf(*futures.toTypedArray()).join()
             sender.sendLang("Item-Give-All", id, amount)
         }
     }

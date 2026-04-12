@@ -77,7 +77,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
 
         // 标记变化
         val changes = ComponentChange.compareChanges(now.tag, before.tag)
-        now.dsl().customData.handle(VIRTUAL_PATH) {
+        now[ItemComponents.CUSTOM_DATA] = now.dsl().customData.handle(VIRTUAL_PATH) {
             // 清除之前的数据
             clear()
             // 记录修改的数据

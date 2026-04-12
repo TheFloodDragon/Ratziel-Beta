@@ -154,10 +154,12 @@ class RefItemStack private constructor(
          * 通过 [ItemData] 创建一个 [RefItemStack]
          */
         @JvmStatic
-        fun of(data: ItemData) = RefItemStack().apply {
-            this.material = data.material
-            this.tag = data.tag
-            this.amount = data.amount
+        fun of(data: ItemData) = if (data is RefItemStack) of(data.bukkitStack) else {
+            RefItemStack().apply {
+                this.material = data.material
+                this.tag = data.tag
+                this.amount = data.amount
+            }
         }
 
         /**
