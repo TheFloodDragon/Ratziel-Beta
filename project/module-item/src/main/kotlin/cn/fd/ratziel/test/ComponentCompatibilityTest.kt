@@ -244,7 +244,7 @@ object ComponentCompatibilityTest : Test() {
             is NbtByteArray -> compareArray(path, left.content.contentToString(), (right as NbtByteArray).content.contentToString())
             is NbtIntArray -> compareArray(path, left.content.contentToString(), (right as NbtIntArray).content.contentToString())
             is NbtLongArray -> compareArray(path, left.content.contentToString(), (right as NbtLongArray).content.contentToString())
-            is NbtString -> compareValue(path, left.content, (right as NbtString).content)
+            is NbtString -> compareStringValue(path, left.content, (right as NbtString).content)
             is NbtByte -> compareValue(path, left.content, (right as NbtByte).content)
             is NbtShort -> compareValue(path, left.content, (right as NbtShort).content)
             is NbtInt -> compareValue(path, left.content, (right as NbtInt).content)

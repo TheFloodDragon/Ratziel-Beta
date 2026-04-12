@@ -1,14 +1,11 @@
 package cn.fd.ratziel.module.item
 
-import cn.fd.ratziel.core.serialization.elementNodes
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemSectionResolver
 import cn.fd.ratziel.module.item.api.builder.ItemSource
 import cn.fd.ratziel.module.item.api.builder.ItemTagResolver
-import cn.fd.ratziel.module.item.api.exception.ComponentNotFoundException
 import cn.fd.ratziel.module.item.feature.dynamic.DynamicTagService
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
-import kotlinx.serialization.KSerializer
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Supplier
 import kotlin.reflect.KClass
@@ -20,12 +17,6 @@ import kotlin.reflect.KClass
  * @since 2024/10/1 15:03
  */
 object ItemRegistry {
-
-    /**
-     * 组件集成注册表
-     */
-    @JvmField
-    val registry = CopyOnWriteArrayList<ComponentIntegrated<*>>()
 
     /**
      * 物品解释器注册表
@@ -49,27 +40,6 @@ object ItemRegistry {
      */
     @JvmField
     val staticTagResolvers = CopyOnWriteArrayList<ItemTagResolver>()
-
-    /**
-     * 注册组件
-     *
-     * @param serializer 组件序列化器
-     */
-    @Deprecated("被新组件系统替代")
-    @JvmStatic
-    fun <T> registerComponent(type: Class<T>, serializer: KSerializer<T>) {
-        registry += ComponentIntegrated(type, serializer)
-    }
-
-    /**
-     * 获取组件集成构建器
-     */
-    @Deprecated("被新组件系统替代")
-    @JvmStatic
-    fun <T> getComponent(type: Class<T>): ComponentIntegrated<T> {
-        @Suppress("UNCHECKED_CAST")
-        return (registry.find { it.type == type } ?: throw ComponentNotFoundException(type)) as ComponentIntegrated<T>
-    }
 
     /**
      * 注册物品解释器单例
@@ -211,24 +181,5 @@ object ItemRegistry {
         /** 解释器层级顺序 **/
         val order: Int,
     )
-
-    /**
-     * 物品组件集成
-     * @param serializer 序列化器
-     */
-    @Deprecated("被新组件系统替代")
-    class ComponentIntegrated<T>(
-        /** 物品组件类型 **/
-        val type: Class<T>,
-        /** 物品组件序列化器 **/
-        val serializer: KSerializer<T>,
-    ) {
-
-        /**
-         * 使用到的所有元素的所有节点名称
-         */
-        val elementNodes = serializer.descriptor.elementNodes
-
-    }
 
 }

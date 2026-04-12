@@ -17,25 +17,26 @@ import cn.fd.ratziel.module.item.feature.template.TemplateElement
 import cn.fd.ratziel.module.item.impl.builder.DefaultGenerator
 import cn.fd.ratziel.module.item.impl.builder.DefaultResolver
 import cn.fd.ratziel.module.item.impl.builder.provided.*
-import cn.fd.ratziel.module.item.impl.component.*
-import cn.fd.ratziel.module.item.internal.NbtNameDeterminer
+import cn.fd.ratziel.module.item.impl.component.ItemComponents
+import cn.fd.ratziel.module.item.impl.component.type.HideFlag
 import cn.fd.ratziel.module.item.internal.RefItemStack
 import cn.fd.ratziel.module.item.internal.command.ItemCommand
-import cn.fd.ratziel.module.item.internal.serializers.*
+import cn.fd.ratziel.module.item.internal.serializers.AttributeModifierSerializer
+import cn.fd.ratziel.module.item.internal.serializers.AttributeSerializer
+import cn.fd.ratziel.module.item.internal.serializers.HideFlagSerializer
+import cn.fd.ratziel.module.item.internal.serializers.ItemMaterialSerializer
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
-import kotlinx.serialization.serializer
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import taboolib.common.LifeCycle
 import taboolib.common.io.isDebugMode
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.debug
-import taboolib.library.xseries.XItemFlag
-import taboolib.module.nms.MinecraftVersion
 
 /**
  * ItemElement
@@ -70,7 +71,7 @@ object ItemElement : ElementHandler.ParralHandler {
             // Common Serializers
             contextual(ItemMaterial::class, ItemMaterialSerializer)
             // Bukkit Serializers
-            contextual(XItemFlag::class, HideFlagSerializer)
+            contextual(HideFlag::class, HideFlagSerializer)
             contextual(Attribute::class, AttributeSerializer)
             contextual(AttributeModifier::class, AttributeModifierSerializer)
         }
@@ -79,17 +80,7 @@ object ItemElement : ElementHandler.ParralHandler {
     /**
      * [NbtFormat]
      */
-    val nbt = NbtFormat {
-        nameDeterminer = NbtNameDeterminer
-    }
-
-    init {
-        // 注册默认组件
-        register(if (MinecraftVersion.versionId >= 12005) ItemDisplay.serializer() else LegacyItemDisplaySerializer)
-        register<ItemDurability>()
-        register<ItemHideFlag>()
-        register<ItemEnchant>()
-    }
+    val nbt = NbtFormat {}
 
     init {
         // 物品解释器注册
@@ -137,13 +128,17 @@ object ItemElement : ElementHandler.ParralHandler {
     override fun onStart(elements: Collection<Element>) {
         // 清除注册的物品
         ItemManager.registry.clear()
-        // 主动触发组件一致性检查
-        cn.fd.ratziel.test.ComponentCompatibilityTest.runTest()
-        debug(ItemComponents.registry.toList())
+        if (isDebugMode) {
+            // 主动触发组件一致性检查
+            cn.fd.ratziel.test.ComponentCompatibilityTest.runTest()
+            debug(ItemComponents.registry.toList())
+        }
     }
 
-    private inline fun <reified T : Any> register(serializer: KSerializer<T> = serializer<T>()) {
-        ItemRegistry.registerComponent(T::class.java, serializer)
+    @Awake(LifeCycle.ACTIVE)
+    private fun registerSubCommand() {
+        // 子命令注册
+        CommandMain.registerSubCommand(ItemCommand::class.java, "item")
     }
 
     /**
@@ -163,10 +158,5 @@ object ItemElement : ElementHandler.ParralHandler {
     private fun ItemSource.displayName() =
         (this as? ItemSource.Named)?.names?.joinToString("/") ?: this::class.java.simpleName.ifBlank { this::class.java.name }
 
-    @Awake(LifeCycle.ACTIVE)
-    private fun registerSubCommand() {
-        // 子命令注册
-        CommandMain.registerSubCommand(ItemCommand::class.java, "item")
-    }
 
 }

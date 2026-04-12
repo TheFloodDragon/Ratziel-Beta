@@ -3,7 +3,7 @@ package cn.fd.ratziel.test
 import cn.altawk.nbt.tag.*
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
-import cn.fd.ratziel.module.item.impl.component.HideFlag
+import cn.fd.ratziel.module.item.impl.component.type.HideFlag
 import cn.fd.ratziel.module.item.impl.component.type.ItemEnchantmentMap
 import cn.fd.ratziel.module.item.util.MetaMatcher
 import net.kyori.adventure.text.Component

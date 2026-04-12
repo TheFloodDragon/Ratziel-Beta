@@ -5,6 +5,7 @@ package cn.fd.ratziel.module.item.impl.component
 import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
+import cn.fd.ratziel.module.item.impl.component.type.HideFlag
 import cn.fd.ratziel.module.item.impl.component.type.ItemEnchantmentMap
 import net.kyori.adventure.text.Component
 import kotlin.properties.ReadWriteProperty

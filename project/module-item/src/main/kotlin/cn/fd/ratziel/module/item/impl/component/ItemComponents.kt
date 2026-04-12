@@ -6,6 +6,7 @@ import cn.altawk.nbt.tag.NbtCompound
 import cn.fd.ratziel.module.item.api.component.ItemComponentType
 import cn.fd.ratziel.module.item.impl.component.ComponentTypeBuilder.Companion.proxyClass
 import cn.fd.ratziel.module.item.impl.component.transformers.*
+import cn.fd.ratziel.module.item.impl.component.type.HideFlag
 import cn.fd.ratziel.module.item.impl.component.type.ItemEnchantmentMap
 import cn.fd.ratziel.module.item.internal.serializers.HideFlagSerializer
 import cn.fd.ratziel.module.item.internal.serializers.MessageComponentSerializer
