@@ -9,7 +9,7 @@ on:
         type: boolean
         default: false
       gradle_args:
-        description: Tasks/Args to run
+        description: Gradle tasks/args to run with
         required: false
         type: string
         default: test
@@ -29,29 +29,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
-      - name: Generate JFR Init Script
-        if: ${{ inputs.enable-jfr }}
-        run: |
-          mkdir -p outs/jfr
-          cat <<'EOF' > .jfr-test.init.gradle.kts
-          import org.gradle.api.tasks.testing.Test
-
-          gradle.beforeProject {
-              tasks.withType<Test>().configureEach {
-                  val sanitizedProjectPath = project.path.trim(':').replace(':', '-').ifEmpty { "root" }
-                  val jfrDir = rootProject.layout.projectDirectory.dir("outs/jfr").asFile
-                  val jfrFile = jfrDir.resolve("${sanitizedProjectPath}-${name}.jfr")
-
-                  doFirst {
-                      jfrFile.parentFile.mkdirs()
-                  }
-
-                  jvmArgs(
-                      "-XX:StartFlightRecording=filename=${jfrFile.absolutePath},settings=profile,dumponexit=true"
-                  )
-              }
-          }
-          EOF
       - name: Run Gradle Tests
         run: |
           if [ "${{ inputs.enable-jfr }}" = "true" ]; then
@@ -64,5 +41,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jfr-${{ github.run_id }}-${{ github.run_attempt }}
-          path: outs/jfr/**/*.jfr
+          path: outs/jfr/*
           if-no-files-found: ignore

@@ -1,6 +1,6 @@
 var list = new('java.util.ArrayList');
 var i = 0;
-while (i < 10000) {
+while (i < __ITER__) {
     list.add(i);
     i = i + 1;
 }

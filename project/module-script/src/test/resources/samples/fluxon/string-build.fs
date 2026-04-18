@@ -1,3 +1,3 @@
-r = 0..<10000
+r = 0..<__ITER__
 letters = &r :: map(|| "a")
 &letters :: join("")

@@ -1,5 +1,5 @@
-val list = ArrayList<Int>(10000)
-for (i in 0 until 10000) {
+val list = ArrayList<Int>(__ITER__)
+for (i in 0 until __ITER__) {
     list.add(i)
 }
 list

@@ -1,6 +1,6 @@
 var builder = new('java.lang.StringBuilder');
 var i = 0;
-while (i < 10000) {
+while (i < __ITER__) {
     builder.append('a');
     i = i + 1;
 }

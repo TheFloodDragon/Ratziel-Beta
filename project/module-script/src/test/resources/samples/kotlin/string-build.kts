@@ -1,5 +1,5 @@
-val builder = StringBuilder(10000)
-repeat(10000) {
+val builder = StringBuilder(__ITER__)
+repeat(__ITER__) {
     builder.append('a')
 }
 builder.toString()

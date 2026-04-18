@@ -1,6 +1,6 @@
 var total = 0L;
 var i = 0;
-while (i < 10000) {
+while (i < __ITER__) {
     total = total + (((base + i) * (multiplier - (i % modulus))) + offset) / divisor + (bias * (i % 3));
     i = i + 1;
 }

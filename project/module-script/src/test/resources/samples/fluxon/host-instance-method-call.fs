@@ -1,5 +1,5 @@
 sum = 0
-for i in 0..<10000 {
+for i in 0..<__ITER__ {
  sum += &text.indexOf("mark")
 }
 &sum

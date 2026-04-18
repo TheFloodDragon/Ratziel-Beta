@@ -1,8 +1,8 @@
-var score = 0L
-for (i in 0L until 10000L) {
-    if (i % 2L == 0L) {
+var score = 0
+for (i in 0 until __ITER__) {
+    if (i % 2 == 0) {
         score += i
-    } else if (i % 3L == 0L) {
+    } else if (i % 3 == 0) {
         score -= i
     } else {
         score += 1

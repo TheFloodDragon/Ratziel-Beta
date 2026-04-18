@@ -1,5 +1,5 @@
 var sum = 0L
-repeat(10000) {
-    sum += text.indexOf("mark").toLong()
+repeat(__ITER__) {
+    sum += text.indexOf("mark")
 }
 sum

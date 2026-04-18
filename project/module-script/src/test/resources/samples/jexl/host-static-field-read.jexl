@@ -1,6 +1,6 @@
 var sum = 0L;
 var i = 0;
-while (i < 10000) {
+while (i < __ITER__) {
     sum = sum + integerClass.MAX_VALUE;
     i = i + 1;
 }

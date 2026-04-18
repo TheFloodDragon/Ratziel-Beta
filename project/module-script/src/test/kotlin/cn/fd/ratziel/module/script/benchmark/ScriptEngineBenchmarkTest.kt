@@ -56,7 +56,7 @@ private fun <R> runBenchmark(
     render: (List<R>, BenchmarkSettings) -> String,
     failureMessage: (Int) -> String,
 ) {
-    val settings = BenchmarkSettings.fromSystemProperties()
+    val settings = BENCHMARK_SETTINGS
     val execution = collect(settings)
 
     println(render(execution.results, settings))
@@ -73,30 +73,6 @@ private val BENCHMARK_CASES = listOf(
     KotlinScriptingBenchmarkCase,
     FluxonBenchmarkCase,
 )
-
-private data class BenchmarkSettings(
-    val buildWarmupIterations: Int,
-    val buildMeasuredIterations: Int,
-    val hotWarmupIterations: Int,
-    val hotMeasuredIterations: Int,
-    val hotInvocationCount: Int,
-    val coldWarmupIterations: Int,
-    val coldMeasuredIterations: Int,
-) {
-
-    companion object {
-        fun fromSystemProperties() = BenchmarkSettings(
-            buildWarmupIterations = System.getProperty("ratziel.performance.build.warmup")?.toIntOrNull() ?: 10_000,
-            buildMeasuredIterations = System.getProperty("ratziel.performance.build.iterations")?.toIntOrNull() ?: 10_000,
-            hotWarmupIterations = System.getProperty("ratziel.performance.eval.warmup")?.toIntOrNull() ?: 10_000,
-            hotMeasuredIterations = System.getProperty("ratziel.performance.eval.iterations")?.toIntOrNull() ?: 10_000,
-            hotInvocationCount = System.getProperty("ratziel.performance.eval.invocations")?.toIntOrNull() ?: 10_000,
-            coldWarmupIterations = System.getProperty("ratziel.performance.cold.warmup")?.toIntOrNull() ?: 10_000,
-            coldMeasuredIterations = System.getProperty("ratziel.performance.cold.iterations")?.toIntOrNull() ?: 10_000,
-        )
-    }
-
-}
 
 private enum class BenchmarkPhase(val displayName: String) {
     COMPILE("编译/预处理"),
@@ -237,12 +213,6 @@ private fun <P : Any> benchmarkCompile(
 ): CompileBenchmarkResult {
     val sample = case.sample(scriptCase)
 
-    repeat(settings.buildWarmupIterations) {
-        case.withPrepared(sample) { prepared ->
-            case.execute(prepared)
-        }
-    }
-
     val samples = buildList {
         repeat(settings.buildMeasuredIterations) {
             var prepared: P? = null
@@ -273,13 +243,13 @@ private fun <P : Any> benchmarkHot(
         case.execute(prepared)
 
         repeat(settings.hotWarmupIterations) {
-            runExecutionBatch(case, prepared, settings.hotInvocationCount)
+            runExecutionBatch(case, prepared, settings.iterations)
         }
 
         val samples = buildList {
             repeat(settings.hotMeasuredIterations) {
                 val elapsed = measureNanoTime {
-                    runExecutionBatch(case, prepared, settings.hotInvocationCount)
+                    runExecutionBatch(case, prepared, settings.iterations)
                 }
                 add(elapsed)
             }
@@ -290,7 +260,7 @@ private fun <P : Any> benchmarkHot(
             scriptCaseName = scriptCase.displayName,
             samplePath = sample.path,
             samplesNs = samples,
-            invocationCount = settings.hotInvocationCount,
+            invocationCount = settings.iterations,
         )
     } finally {
         case.dispose(prepared)
@@ -343,7 +313,7 @@ private fun <P : Any> runExecutionBatch(case: BenchmarkCase<P>, prepared: P, inv
 private fun renderCompileReport(results: List<CompileBenchmarkResult>, settings: BenchmarkSettings): String {
     return buildString {
         appendLine("=== 脚本模块 编译/预处理基准测试 ===")
-        appendLine("workload=fixed in samples, buildWarmup=${settings.buildWarmupIterations}, buildMeasure=${settings.buildMeasuredIterations}")
+        appendLine("iterations=${settings.iterations}, buildMeasure=${settings.buildMeasuredIterations}")
         BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<CompileBenchmarkResult> {
@@ -393,8 +363,8 @@ private fun renderCompileReport(results: List<CompileBenchmarkResult>, settings:
 private fun renderHotReport(results: List<HotBenchmarkResult>, settings: BenchmarkSettings): String {
     return buildString {
         appendLine("=== 脚本模块 热执行基准测试 ===")
-        appendLine("workload=fixed in samples, evalWarmup=${settings.hotWarmupIterations}, evalMeasure=${settings.hotMeasuredIterations}, evalInvocations=${settings.hotInvocationCount}")
-        appendLine("说明：复用已编译/预处理的脚本对象，按案例统计热执行开销；吞吐(op/s)按 evalInvocations=${settings.hotInvocationCount} 同步换算。")
+        appendLine("iterations=${settings.iterations}, evalWarmup=${settings.hotWarmupIterations}, evalMeasure=${settings.hotMeasuredIterations}")
+        appendLine("说明：复用已编译/预处理的脚本对象，按每轮 ${settings.iterations} 次执行统计热执行开销；吞吐(op/s)按该次数换算。")
         BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<HotBenchmarkResult> {
@@ -446,7 +416,7 @@ private fun renderHotReport(results: List<HotBenchmarkResult>, settings: Benchma
 private fun renderColdReport(results: List<ColdBenchmarkResult>, settings: BenchmarkSettings): String {
     return buildString {
         appendLine("=== 脚本模块 冷启动基准测试 ===")
-        appendLine("workload=fixed in samples, coldWarmup=${settings.coldWarmupIterations}, coldMeasure=${settings.coldMeasuredIterations}")
+        appendLine("iterations=${settings.iterations}, coldWarmup=${settings.coldWarmupIterations}, coldMeasure=${settings.coldMeasuredIterations}")
         appendLine("说明：每次采样优先直接解释执行一次；不支持解释运行的引擎会回退到 prepare + 首次 eval；吞吐(op/s)按每次采样 1 次操作换算。")
         BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {

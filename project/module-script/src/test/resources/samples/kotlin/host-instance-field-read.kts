@@ -1,5 +1,5 @@
 var sum = 0L
-repeat(10000) {
-    sum += point.x.toLong()
+repeat(__ITER__) {
+    sum += point.x
 }
 sum

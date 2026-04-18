@@ -1,5 +1,5 @@
-var list = new java.util.ArrayList(10000);
-for (var i = 0; i < 10000; i++) {
+var list = new java.util.ArrayList(__ITER__);
+for (var i = 0; i < __ITER__; i++) {
     list.add(i);
 }
 list;

@@ -10,12 +10,12 @@ private fun javaApiBindings(): MutableMap<String, Any?> = linkedMapOf(
 )
 
 private fun variableExpressionBindings(): MutableMap<String, Any?> = linkedMapOf(
-    "base" to 17L,
-    "multiplier" to 29L,
-    "modulus" to 7L,
-    "offset" to 43L,
-    "divisor" to 3L,
-    "bias" to 5L,
+    "base" to 17,
+    "multiplier" to 29,
+    "modulus" to 7,
+    "offset" to 43,
+    "divisor" to 3,
+    "bias" to 5,
 )
 
 internal val BENCHMARK_SCRIPT_CASES = listOf(

@@ -57,5 +57,9 @@ private fun loadSampleOrNull(
     bindingsFactory: () -> MutableMap<String, Any?>,
 ): ScriptSample? {
     val content = BenchmarkCase::class.java.getResource(path)?.readText() ?: return null
-    return ScriptSample(path = path, content = content, bindingsFactory = bindingsFactory)
+    return ScriptSample(
+        path = path,
+        content = BENCHMARK_SETTINGS.apply(content),
+        bindingsFactory = bindingsFactory,
+    )
 }
