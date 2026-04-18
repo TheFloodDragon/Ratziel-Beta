@@ -5,8 +5,11 @@ import cn.fd.ratziel.module.script.benchmark.engine.GraalJsBenchmarkCase
 import cn.fd.ratziel.module.script.benchmark.engine.JexlBenchmarkCase
 import cn.fd.ratziel.module.script.benchmark.engine.KotlinScriptingBenchmarkCase
 import cn.fd.ratziel.module.script.benchmark.engine.NashornBenchmarkCase
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 import java.util.Comparator
 import java.util.Locale
 import kotlin.system.measureNanoTime
@@ -14,9 +17,11 @@ import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.DurationUnit
 
 @Tag("benchmark")
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class ScriptEngineBenchmarkTest {
 
     @Test
+    @Order(1)
     fun `benchmarks script hot execution latency`() {
         runBenchmark(
             collect = ::collectHotResults,
@@ -26,6 +31,7 @@ class ScriptEngineBenchmarkTest {
     }
 
     @Test
+    @Order(2)
     fun `benchmarks script cold startup latency`() {
         runBenchmark(
             collect = ::collectColdResults,
@@ -35,6 +41,7 @@ class ScriptEngineBenchmarkTest {
     }
 
     @Test
+    @Order(3)
     fun `benchmarks script compile latency`() {
         runBenchmark(
             collect = ::collectCompileResults,
@@ -292,24 +299,15 @@ private fun <P : Any> benchmarkCold(
     val sample = case.sample(scriptCase)
 
     repeat(settings.coldWarmupIterations) {
-        case.withPrepared(sample) { prepared ->
-            case.execute(prepared)
-        }
+        case.evaluate(sample)
     }
 
     val samples = buildList {
         repeat(settings.coldMeasuredIterations) {
-            var prepared: P? = null
-            try {
-                val elapsed = measureNanoTime {
-                    val ready = case.prepare(sample)
-                    prepared = ready
-                    case.execute(ready)
-                }
-                add(elapsed)
-            } finally {
-                prepared?.let(case::dispose)
+            val elapsed = measureNanoTime {
+                case.evaluate(sample)
             }
+            add(elapsed)
         }
     }
 
@@ -390,7 +388,7 @@ private fun renderHotReport(results: List<HotBenchmarkResult>, settings: Benchma
     return buildString {
         appendLine("=== 脚本模块 热执行基准测试 ===")
         appendLine("workload=fixed in samples, evalWarmup=${settings.hotWarmupIterations}, evalMeasure=${settings.hotMeasuredIterations}, evalInvocations=${settings.hotInvocationCount}")
-        appendLine("说明：复用已准备好的脚本对象，按案例统计热执行开销。")
+        appendLine("说明：复用已编译/预处理的脚本对象，按案例统计热执行开销。")
         BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<HotBenchmarkResult> {
@@ -443,7 +441,7 @@ private fun renderColdReport(results: List<ColdBenchmarkResult>, settings: Bench
     return buildString {
         appendLine("=== 脚本模块 冷启动基准测试 ===")
         appendLine("workload=fixed in samples, coldWarmup=${settings.coldWarmupIterations}, coldMeasure=${settings.coldMeasuredIterations}")
-        appendLine("说明：每次采样都包含 prepare + 首次 eval，用于比较单次启动成本。")
+        appendLine("说明：每次采样优先直接解释执行一次；不支持解释运行的引擎会回退到 prepare + 首次 eval。")
         BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<ColdBenchmarkResult> {

@@ -26,6 +26,15 @@ internal interface BenchmarkCase<P : Any> {
 
     fun execute(prepared: P): Any?
 
+    fun evaluate(sample: ScriptSample): Any? {
+        val prepared = prepare(sample)
+        try {
+            return execute(prepared)
+        } finally {
+            dispose(prepared)
+        }
+    }
+
     fun dispose(prepared: P) = Unit
 
 }

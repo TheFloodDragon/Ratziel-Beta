@@ -31,6 +31,15 @@ internal object NashornBenchmarkCase : BenchmarkCase<NashornPreparedScript> {
     override fun execute(prepared: NashornPreparedScript): Any? {
         return prepared.script.eval(prepared.engine.context)
     }
+
+    override fun evaluate(sample: ScriptSample): Any? {
+        val engine = factory.getScriptEngine(
+            arrayOf("-Dnashorn.args=--language=es6"),
+            this::class.java.classLoader,
+        )
+        engine.setBindings(SimpleBindings(sample.bindingsFactory()), ScriptContext.GLOBAL_SCOPE)
+        return engine.eval(sample.content)
+    }
 }
 
 internal data class NashornPreparedScript(

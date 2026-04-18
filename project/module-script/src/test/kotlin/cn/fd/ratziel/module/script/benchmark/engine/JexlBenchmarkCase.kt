@@ -31,6 +31,11 @@ internal object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
     override fun execute(prepared: JexlPreparedScript): Any? {
         return prepared.script.execute(prepared.context)
     }
+
+    override fun evaluate(sample: ScriptSample): Any? {
+        return engine.createExpression(sample.content)
+            .evaluate(BenchmarkJexlContext(sample.bindingsFactory()))
+    }
 }
 
 internal data class JexlPreparedScript(

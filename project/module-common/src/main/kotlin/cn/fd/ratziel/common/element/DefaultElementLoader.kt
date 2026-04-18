@@ -19,7 +19,8 @@ import java.io.File
  */
 object DefaultElementLoader : ElementLoader {
 
-    private const val INTERNAL_NODE = "_internal"
+    private const val INTERNAL_NODE = "internal"
+    private const val IGNORANCE_PREFIX = "_"
 
     override fun accepts(file: File, workspace: Workspace): Boolean {
         return Configuration.getTypeFromExtensionOrNull(file.extension) != null
@@ -44,7 +45,7 @@ object DefaultElementLoader : ElementLoader {
         }
 
         val configuration = parseConfiguration(workspace, json[INTERNAL_NODE], file)
-        val content = json.removeInternalNode()
+        val content = json.removeInternals()
         val configuredElementName = configuration[ElementConfiguration.elementName]?.let {
             if (it == FILE_NAME_ELEMENT_NAME) file.nameWithoutExtension else it
         }
@@ -96,9 +97,7 @@ object DefaultElementLoader : ElementLoader {
         }
     }
 
-    private fun JsonObject.removeInternalNode(): JsonObject {
-        return if (INTERNAL_NODE in this) JsonObject(filterKeys { it != INTERNAL_NODE }) else this
-    }
+    private fun JsonObject.removeInternals() = JsonObject(filterKeys { it != INTERNAL_NODE && !it.startsWith(IGNORANCE_PREFIX) })
 
     private fun parseType(element: JsonObject): Pair<ElementType, JsonElement>? {
         val entry = element.entries.firstOrNull()

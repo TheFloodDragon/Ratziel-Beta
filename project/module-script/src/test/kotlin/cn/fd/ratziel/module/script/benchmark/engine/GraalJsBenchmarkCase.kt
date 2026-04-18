@@ -38,6 +38,25 @@ internal object GraalJsBenchmarkCase : BenchmarkCase<GraalPreparedScript> {
         return prepared.context.eval(prepared.source).`as`(Any::class.java)
     }
 
+    override fun evaluate(sample: ScriptSample): Any? {
+        val context = Context.newBuilder("js")
+            .allowAllAccess(true)
+            .engine(sharedEngine)
+            .build()
+        try {
+            val bindings = context.getBindings("js")
+            sample.bindingsFactory().forEach { (key, value) ->
+                bindings.putMember(key, value)
+            }
+            val source = Source.newBuilder("js", sample.content, sample.path)
+                .cached(false)
+                .build()
+            return context.eval(source).`as`(Any::class.java)
+        } finally {
+            context.close()
+        }
+    }
+
     override fun dispose(prepared: GraalPreparedScript) {
         prepared.close()
     }
