@@ -8,6 +8,11 @@ on:
         required: false
         type: boolean
         default: false
+      gradle_args:
+        description: Tasks/Args to run
+        required: false
+        type: string
+        default: test
 
 jobs:
   test:
@@ -47,15 +52,17 @@ jobs:
               }
           }
           EOF
-      - name: Test All Modules
+      - name: Run Gradle Tests
         run: |
           if [ "${{ inputs.enable-jfr }}" = "true" ]; then
-            ./gradlew test -I .jfr-test.init.gradle.kts
+            ./gradlew ${{ inputs.gradle_args }} -I .jfr-test.init.gradle.kts
           else
-            ./gradlew test
+            ./gradlew ${{ inputs.gradle_args }}
           fi
       - name: Upload JFR Artifacts
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: jfr-${{ github.run_id }}-${{ github.run_attempt }}
-          path: outs/jfr/*
+          path: outs/jfr/**/*.jfr
+          if-no-files-found: ignore

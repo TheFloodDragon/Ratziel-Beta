@@ -33,8 +33,8 @@ internal object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
     }
 
     override fun evaluate(sample: ScriptSample): Any? {
-        return engine.createExpression(sample.content)
-            .evaluate(BenchmarkJexlContext(sample.bindingsFactory()))
+        return engine.createScript(sample.content)
+            .execute(BenchmarkJexlContext(sample.bindingsFactory()))
     }
 }
 

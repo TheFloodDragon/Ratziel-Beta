@@ -1,6 +1,6 @@
 var map = new('java.util.LinkedHashMap');
 var i = 0;
-while (i < 2048) {
+while (i < 10000) {
     map.put('k' + i, i);
     i = i + 1;
 }

@@ -1,6 +1,6 @@
 var total = 0L;
 var i = 0;
-while (i < 100000) {
+while (i < 10000) {
     total = total + (((base + i) * (multiplier - (i % modulus))) + offset) / divisor + (bias * (i % 3));
     i = i + 1;
 }

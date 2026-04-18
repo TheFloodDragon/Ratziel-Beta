@@ -1,6 +1,6 @@
 var sum = 0L;
 var i = 0;
-while (i < 100000) {
+while (i < 10000) {
     sum = sum + text.indexOf('mark');
     i = i + 1;
 }

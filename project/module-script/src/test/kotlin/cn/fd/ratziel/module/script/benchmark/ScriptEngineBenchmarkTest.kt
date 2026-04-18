@@ -86,13 +86,13 @@ private data class BenchmarkSettings(
 
     companion object {
         fun fromSystemProperties() = BenchmarkSettings(
-            buildWarmupIterations = System.getProperty("ratziel.performance.build.warmup")?.toIntOrNull() ?: 1,
-            buildMeasuredIterations = System.getProperty("ratziel.performance.build.iterations")?.toIntOrNull() ?: 2,
-            hotWarmupIterations = System.getProperty("ratziel.performance.eval.warmup")?.toIntOrNull() ?: 1,
-            hotMeasuredIterations = System.getProperty("ratziel.performance.eval.iterations")?.toIntOrNull() ?: 3,
-            hotInvocationCount = System.getProperty("ratziel.performance.eval.invocations")?.toIntOrNull() ?: 200,
-            coldWarmupIterations = System.getProperty("ratziel.performance.cold.warmup")?.toIntOrNull() ?: 1,
-            coldMeasuredIterations = System.getProperty("ratziel.performance.cold.iterations")?.toIntOrNull() ?: 2,
+            buildWarmupIterations = System.getProperty("ratziel.performance.build.warmup")?.toIntOrNull() ?: 10_000,
+            buildMeasuredIterations = System.getProperty("ratziel.performance.build.iterations")?.toIntOrNull() ?: 10_000,
+            hotWarmupIterations = System.getProperty("ratziel.performance.eval.warmup")?.toIntOrNull() ?: 10_000,
+            hotMeasuredIterations = System.getProperty("ratziel.performance.eval.iterations")?.toIntOrNull() ?: 10_000,
+            hotInvocationCount = System.getProperty("ratziel.performance.eval.invocations")?.toIntOrNull() ?: 10_000,
+            coldWarmupIterations = System.getProperty("ratziel.performance.cold.warmup")?.toIntOrNull() ?: 10_000,
+            coldMeasuredIterations = System.getProperty("ratziel.performance.cold.iterations")?.toIntOrNull() ?: 10_000,
         )
     }
 
@@ -141,7 +141,7 @@ private data class HotBenchmarkResult(
     val averageUsPerOp: Double get() = samplesNs.average().nanoseconds.toDouble(DurationUnit.MICROSECONDS) / invocationCount
     val bestUsPerOp: Double get() = (samplesNs.minOrNull() ?: 0L).nanoseconds.toDouble(DurationUnit.MICROSECONDS) / invocationCount
     val worstUsPerOp: Double get() = (samplesNs.maxOrNull() ?: 0L).nanoseconds.toDouble(DurationUnit.MICROSECONDS) / invocationCount
-    val throughputOpsPerSec: Double get() = if (averageUsPerOp == 0.0) Double.POSITIVE_INFINITY else 1_000_000.0 / averageUsPerOp
+    val throughputOpsPerSec: Double get() = samplesNs.average().toOpsPerSecond(invocationCount)
 
 }
 
@@ -150,13 +150,19 @@ private data class ColdBenchmarkResult(
     val scriptCaseName: String,
     val samplePath: String,
     val samplesNs: List<Long>,
+    val operationsPerSample: Int = 1,
 ) {
 
     val averageMs: Double get() = samplesNs.average().nanoseconds.toDouble(DurationUnit.MILLISECONDS)
     val bestMs: Double get() = (samplesNs.minOrNull() ?: 0L).nanoseconds.toDouble(DurationUnit.MILLISECONDS)
     val worstMs: Double get() = (samplesNs.maxOrNull() ?: 0L).nanoseconds.toDouble(DurationUnit.MILLISECONDS)
-    val throughputOpsPerSec: Double get() = if (averageMs == 0.0) Double.POSITIVE_INFINITY else 1_000.0 / averageMs
+    val throughputOpsPerSec: Double get() = samplesNs.average().toOpsPerSecond(operationsPerSample)
 
+}
+
+private fun Double.toOpsPerSecond(operationCount: Int): Double {
+    if (this == 0.0) return Double.POSITIVE_INFINITY
+    return operationCount * 1_000_000_000.0 / this
 }
 
 private fun collectCompileResults(settings: BenchmarkSettings): BenchmarkExecution<CompileBenchmarkResult> {
@@ -388,7 +394,7 @@ private fun renderHotReport(results: List<HotBenchmarkResult>, settings: Benchma
     return buildString {
         appendLine("=== 脚本模块 热执行基准测试 ===")
         appendLine("workload=fixed in samples, evalWarmup=${settings.hotWarmupIterations}, evalMeasure=${settings.hotMeasuredIterations}, evalInvocations=${settings.hotInvocationCount}")
-        appendLine("说明：复用已编译/预处理的脚本对象，按案例统计热执行开销。")
+        appendLine("说明：复用已编译/预处理的脚本对象，按案例统计热执行开销；吞吐(op/s)按 evalInvocations=${settings.hotInvocationCount} 同步换算。")
         BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<HotBenchmarkResult> {
@@ -441,7 +447,7 @@ private fun renderColdReport(results: List<ColdBenchmarkResult>, settings: Bench
     return buildString {
         appendLine("=== 脚本模块 冷启动基准测试 ===")
         appendLine("workload=fixed in samples, coldWarmup=${settings.coldWarmupIterations}, coldMeasure=${settings.coldMeasuredIterations}")
-        appendLine("说明：每次采样优先直接解释执行一次；不支持解释运行的引擎会回退到 prepare + 首次 eval。")
+        appendLine("说明：每次采样优先直接解释执行一次；不支持解释运行的引擎会回退到 prepare + 首次 eval；吞吐(op/s)按每次采样 1 次操作换算。")
         BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<ColdBenchmarkResult> {

@@ -1,3 +1,3 @@
-r = 0..<4096
+r = 0..<10000
 letters = &r :: map(|| "a")
 &letters :: join("")

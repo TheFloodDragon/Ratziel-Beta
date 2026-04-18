@@ -1,5 +1,5 @@
 score = 0
-for i in 0..<100000 {
+for i in 0..<10000 {
  if &i % 2 == 0 {
   score += &i
  } else if &i % 3 == 0 {
