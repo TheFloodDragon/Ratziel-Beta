@@ -19,10 +19,7 @@ internal object NashornBenchmarkCase : BenchmarkCase<NashornPreparedScript> {
     override val samples: Map<String, ScriptSample> = engineSamples("javascript", ".js")
 
     override fun prepare(sample: ScriptSample): NashornPreparedScript {
-        val engine = factory.getScriptEngine(
-            arrayOf("-Dnashorn.args=--language=es6"),
-            this::class.java.classLoader,
-        )
+        val engine = newEngine()
         engine.setBindings(SimpleBindings(sample.bindingsFactory()), ScriptContext.GLOBAL_SCOPE)
         val compiled = (engine as Compilable).compile(sample.content)
         return NashornPreparedScript(engine, compiled)
@@ -33,13 +30,16 @@ internal object NashornBenchmarkCase : BenchmarkCase<NashornPreparedScript> {
     }
 
     override fun evaluate(sample: ScriptSample): Any? {
-        val engine = factory.getScriptEngine(
-            arrayOf("-Dnashorn.args=--language=es6"),
-            this::class.java.classLoader,
-        )
+        val engine = newEngine()
         engine.setBindings(SimpleBindings(sample.bindingsFactory()), ScriptContext.GLOBAL_SCOPE)
         return engine.eval(sample.content)
     }
+
+    fun newEngine() = factory.getScriptEngine(
+        arrayOf("-Dnashorn.args=--language=es6"),
+        this::class.java.classLoader,
+    )
+
 }
 
 internal data class NashornPreparedScript(

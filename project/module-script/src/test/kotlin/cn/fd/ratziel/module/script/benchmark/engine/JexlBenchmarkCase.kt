@@ -18,7 +18,7 @@ internal object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
         .permissions(JexlPermissions.UNRESTRICTED)
         .create()
 
-    override val engineName: String = "JEXL"
+    override val engineName: String = "Jexl"
 
     override val samples: Map<String, ScriptSample> = engineSamples("jexl", ".jexl")
 

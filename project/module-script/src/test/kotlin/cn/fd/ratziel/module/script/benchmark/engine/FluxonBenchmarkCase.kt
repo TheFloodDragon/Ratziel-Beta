@@ -35,6 +35,12 @@ internal object FluxonBenchmarkCase : BenchmarkCase<FluxonPreparedScript> {
         return runtime.eval(newEnvironment(prepared.bindingsFactory()))
     }
 
+    override fun evaluate(sample: ScriptSample): Any? {
+        val interpretEnv = FluxonRuntime.getInstance().newEnvironment()
+        val interpretCtx = newCompilationContext(sample.content, sample.path)
+        return Fluxon.parse(interpretCtx, interpretEnv).eval(interpretEnv)
+    }
+
     private fun newCompilationContext(source: String, path: String): CompilationContext {
         return CompilationContext(source, path.substringAfterLast('/')).apply {
             setAllowJavaConstruction(true)

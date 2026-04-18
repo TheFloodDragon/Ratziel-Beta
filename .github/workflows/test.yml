@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Java
         uses: graalvm/setup-graalvm@v1
         with:
@@ -32,7 +32,7 @@ jobs:
       - name: Run Gradle Tests
         run: |
           if [ "${{ inputs.enable-jfr }}" = "true" ]; then
-            ./gradlew ${{ inputs.gradle_args }} -I .jfr-test.init.gradle.kts
+            ./gradlew ${{ inputs.gradle_args }} -I jfr.init.gradle.kts
           else
             ./gradlew ${{ inputs.gradle_args }}
           fi
