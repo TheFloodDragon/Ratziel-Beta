@@ -59,7 +59,7 @@ class ElementLoaderTest {
         val json = Json.parseToJsonElement(
             """
             {
-              "_internal": {"elementType": "loader-test:demo"},
+              "internal": {"elementType": "loader-test:demo"},
               "first": {"value": 1},
               "second": {"value": 2}
             }
@@ -79,7 +79,7 @@ class ElementLoaderTest {
         val json = Json.parseToJsonElement(
             """
             {
-              "_internal": {
+              "internal": {
                 "elementName": "merged",
                 "elementType": "loader-test:demo"
               },
@@ -160,7 +160,7 @@ class ElementLoaderTest {
         val json = Json.parseToJsonElement(
             """
             {
-              "_internal": {
+              "internal": {
                 "elementName": "override",
                 "elementType": "loader-test:demo"
               },
@@ -188,7 +188,7 @@ class ElementLoaderTest {
         val json = Json.parseToJsonElement(
             """
             {
-              "_internal": {"elementType": "None"},
+              "internal": {"elementType": "None"},
               "first": {"loader-test:demo": {"value": 1}}
             }
             """.trimIndent()

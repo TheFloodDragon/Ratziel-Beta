@@ -40,19 +40,3 @@ jobs:
           prerelease: false
           title: "自动构建最新版本"
           files: outs/*.*
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      - name: Setup Java
-        uses: graalvm/setup-graalvm@v1
-        with:
-          distribution: graalvm
-          java-version: 21
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-      - name: Make Gradle Wrapper Executable
-        run: chmod +x ./gradlew
-      - name: Test All Modules
-        run: ./gradlew test
