@@ -214,7 +214,7 @@ private fun <P : Any> benchmarkCompile(
     val sample = case.sample(scriptCase)
 
     val samples = buildList {
-        repeat(settings.buildMeasuredIterations) {
+        repeat(settings.buildIterations) {
             var prepared: P? = null
             val elapsed = measureNanoTime {
                 prepared = case.prepare(sample)
@@ -313,7 +313,7 @@ private fun <P : Any> runExecutionBatch(case: BenchmarkCase<P>, prepared: P, inv
 private fun renderCompileReport(results: List<CompileBenchmarkResult>, settings: BenchmarkSettings): String {
     return buildString {
         appendLine("=== 脚本模块 编译/预处理基准测试 ===")
-        appendLine("iterations=${settings.iterations}, buildMeasure=${settings.buildMeasuredIterations}")
+        appendLine("iterations=${settings.iterations}, buildMeasure=${settings.buildIterations}")
         BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<CompileBenchmarkResult> {
