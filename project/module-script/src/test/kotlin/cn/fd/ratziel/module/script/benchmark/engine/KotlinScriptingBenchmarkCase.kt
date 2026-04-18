@@ -14,7 +14,7 @@ internal object KotlinScriptingBenchmarkCase : BenchmarkCase<KotlinPreparedScrip
 
     override val engineName: String = "KotlinScripting"
 
-    override val samples: Map<String, ScriptSample> = engineSamples("kotlin")
+    override val samples: Map<String, ScriptSample> = engineSamples("kotlin", ".kts")
 
     override fun prepare(sample: ScriptSample): KotlinPreparedScript {
         val engine = KtsScriptEngineFactory.getScriptEngine()
@@ -26,7 +26,6 @@ internal object KotlinScriptingBenchmarkCase : BenchmarkCase<KotlinPreparedScrip
     override fun execute(prepared: KotlinPreparedScript): Any? {
         return prepared.script.eval(prepared.engine.context)
     }
-
 }
 
 internal data class KotlinPreparedScript(

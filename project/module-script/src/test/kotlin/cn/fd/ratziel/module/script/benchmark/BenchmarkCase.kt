@@ -9,7 +9,6 @@ internal data class ScriptSample(
 internal data class BenchmarkScriptCase(
     val id: String,
     val displayName: String,
-    val fileNames: Map<String, String>,
     val bindingsFactory: () -> MutableMap<String, Any?> = { linkedMapOf() },
 )
 
@@ -33,12 +32,12 @@ internal interface BenchmarkCase<P : Any> {
 
 internal fun engineSamples(
     sampleDirectory: String,
+    sampleExtension: String,
     scriptCases: List<BenchmarkScriptCase> = BENCHMARK_SCRIPT_CASES,
 ): Map<String, ScriptSample> {
     return scriptCases.mapNotNull { scriptCase ->
-        val fileName = scriptCase.fileNames[sampleDirectory] ?: return@mapNotNull null
         loadSampleOrNull(
-            path = "/samples/$sampleDirectory/$fileName",
+            path = "/samples/$sampleDirectory/${scriptCase.id}$sampleExtension",
             bindingsFactory = scriptCase.bindingsFactory,
         )?.let { scriptCase.id to it }
     }.toMap()

@@ -16,7 +16,7 @@ internal object NashornBenchmarkCase : BenchmarkCase<NashornPreparedScript> {
 
     override val engineName: String = "Nashorn"
 
-    override val samples: Map<String, ScriptSample> = engineSamples("javascript")
+    override val samples: Map<String, ScriptSample> = engineSamples("javascript", ".js")
 
     override fun prepare(sample: ScriptSample): NashornPreparedScript {
         val engine = factory.getScriptEngine(
@@ -31,7 +31,6 @@ internal object NashornBenchmarkCase : BenchmarkCase<NashornPreparedScript> {
     override fun execute(prepared: NashornPreparedScript): Any? {
         return prepared.script.eval(prepared.engine.context)
     }
-
 }
 
 internal data class NashornPreparedScript(

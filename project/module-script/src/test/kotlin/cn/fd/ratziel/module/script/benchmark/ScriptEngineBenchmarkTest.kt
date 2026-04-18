@@ -5,7 +5,6 @@ import cn.fd.ratziel.module.script.benchmark.engine.GraalJsBenchmarkCase
 import cn.fd.ratziel.module.script.benchmark.engine.JexlBenchmarkCase
 import cn.fd.ratziel.module.script.benchmark.engine.KotlinScriptingBenchmarkCase
 import cn.fd.ratziel.module.script.benchmark.engine.NashornBenchmarkCase
-import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.util.Comparator
@@ -19,40 +18,45 @@ class ScriptEngineBenchmarkTest {
 
     @Test
     fun `benchmarks script hot execution latency`() {
-        val settings = BenchmarkSettings.fromSystemProperties()
-        val execution = collectHotResults(settings)
-
-        println(renderHotReport(execution.results, settings))
-        if (execution.failures.isNotEmpty()) {
-            println(renderFailureReport(execution.failures))
-            fail("热执行基准存在 ${execution.failures.size} 个失败项")
-        }
+        runBenchmark(
+            collect = ::collectHotResults,
+            render = ::renderHotReport,
+            failureMessage = { "热执行基准存在 $it 个失败项" },
+        )
     }
 
     @Test
     fun `benchmarks script cold startup latency`() {
-        val settings = BenchmarkSettings.fromSystemProperties()
-        val execution = collectColdResults(settings)
-
-        println(renderColdReport(execution.results, settings))
-        if (execution.failures.isNotEmpty()) {
-            println(renderFailureReport(execution.failures))
-            fail("冷启动基准存在 ${execution.failures.size} 个失败项")
-        }
+        runBenchmark(
+            collect = ::collectColdResults,
+            render = ::renderColdReport,
+            failureMessage = { "冷启动基准存在 $it 个失败项" },
+        )
     }
 
     @Test
     fun `benchmarks script compile latency`() {
-        val settings = BenchmarkSettings.fromSystemProperties()
-        val execution = collectCompileResults(settings)
-
-        println(renderCompileReport(execution.results, settings))
-        if (execution.failures.isNotEmpty()) {
-            println(renderFailureReport(execution.failures))
-            fail("编译基准存在 ${execution.failures.size} 个失败项")
-        }
+        runBenchmark(
+            collect = ::collectCompileResults,
+            render = ::renderCompileReport,
+            failureMessage = { "编译基准存在 $it 个失败项" },
+        )
     }
+}
 
+private fun <R> runBenchmark(
+    collect: (BenchmarkSettings) -> BenchmarkExecution<R>,
+    render: (List<R>, BenchmarkSettings) -> String,
+    failureMessage: (Int) -> String,
+) {
+    val settings = BenchmarkSettings.fromSystemProperties()
+    val execution = collect(settings)
+
+    println(render(execution.results, settings))
+    if (execution.failures.isNotEmpty()) {
+        println(renderFailureReport(execution.failures))
+        throw AssertionError(failureMessage(execution.failures.size))
+    }
 }
 
 private val BENCHMARK_CASES = listOf(
@@ -210,7 +214,7 @@ private inline fun <P : Any, R> collectResult(
 }
 
 private fun <P : Any> BenchmarkCase<P>.samplePathOf(scriptCase: BenchmarkScriptCase): String {
-    return samples[scriptCase.id]?.path ?: scriptCase.fileNames.entries.firstOrNull()?.value ?: scriptCase.id
+    return samples[scriptCase.id]?.path ?: scriptCase.id
 }
 
 private fun <P : Any> benchmarkCompile(
@@ -511,3 +515,4 @@ private fun Throwable.renderSummary(): String {
     val message = message?.replace('\n', ' ')?.takeIf { it.isNotBlank() } ?: "无详细信息"
     return "${this::class.qualifiedName}: $message"
 }
+

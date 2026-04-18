@@ -17,7 +17,7 @@ internal object GraalJsBenchmarkCase : BenchmarkCase<GraalPreparedScript> {
 
     override val engineName: String = "GraalJS"
 
-    override val samples: Map<String, ScriptSample> = engineSamples("javascript")
+    override val samples: Map<String, ScriptSample> = engineSamples("javascript", ".js")
 
     override fun prepare(sample: ScriptSample): GraalPreparedScript {
         val context = Context.newBuilder("js")
@@ -41,7 +41,6 @@ internal object GraalJsBenchmarkCase : BenchmarkCase<GraalPreparedScript> {
     override fun dispose(prepared: GraalPreparedScript) {
         prepared.close()
     }
-
 }
 
 internal data class GraalPreparedScript(

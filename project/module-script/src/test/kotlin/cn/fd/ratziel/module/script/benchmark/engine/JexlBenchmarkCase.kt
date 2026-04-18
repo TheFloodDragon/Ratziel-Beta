@@ -20,7 +20,7 @@ internal object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
 
     override val engineName: String = "JEXL"
 
-    override val samples: Map<String, ScriptSample> = engineSamples("jexl")
+    override val samples: Map<String, ScriptSample> = engineSamples("jexl", ".jexl")
 
     override fun prepare(sample: ScriptSample): JexlPreparedScript {
         val script = engine.createScript(sample.content)
@@ -35,7 +35,6 @@ internal object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
     override fun execute(prepared: JexlPreparedScript): Any? {
         return prepared.script.execute(prepared.context)
     }
-
 }
 
 internal data class JexlPreparedScript(

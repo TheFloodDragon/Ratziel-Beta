@@ -1,11 +1,11 @@
 package cn.fd.ratziel.module.script.benchmark.engine
 
-import cn.fd.ratziel.module.script.benchmark.BenchmarkCase
-import cn.fd.ratziel.module.script.benchmark.ScriptSample
-import cn.fd.ratziel.module.script.benchmark.engineSamples
 import cn.fd.ratziel.module.script.api.CompiledScript
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
+import cn.fd.ratziel.module.script.benchmark.BenchmarkCase
+import cn.fd.ratziel.module.script.benchmark.ScriptSample
+import cn.fd.ratziel.module.script.benchmark.engineSamples
 import cn.fd.ratziel.module.script.conf.ScriptConfiguration
 import cn.fd.ratziel.module.script.conf.ScriptConfigurationKeys
 import cn.fd.ratziel.module.script.conf.scriptCaching
@@ -24,7 +24,7 @@ internal object FluxonBenchmarkCase : BenchmarkCase<FluxonPreparedScript> {
 
     override val engineName: String = "Fluxon"
 
-    override val samples: Map<String, ScriptSample> = engineSamples("fluxon")
+    override val samples: Map<String, ScriptSample> = engineSamples("fluxon", ".fs")
 
     override fun prepare(sample: ScriptSample): FluxonPreparedScript {
         val environment = ScriptEnvironment(
@@ -43,7 +43,6 @@ internal object FluxonBenchmarkCase : BenchmarkCase<FluxonPreparedScript> {
     override fun execute(prepared: FluxonPreparedScript): Any? {
         return prepared.script.eval(prepared.environment)
     }
-
 }
 
 internal data class FluxonPreparedScript(
