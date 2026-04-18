@@ -1,5 +1,8 @@
-package cn.fd.ratziel.module.script.performance
+package cn.fd.ratziel.module.script.benchmark.engine
 
+import cn.fd.ratziel.module.script.benchmark.BenchmarkCase
+import cn.fd.ratziel.module.script.benchmark.ScriptSample
+import cn.fd.ratziel.module.script.benchmark.engineSamples
 import cn.fd.ratziel.module.script.api.CompiledScript
 import cn.fd.ratziel.module.script.api.ScriptEnvironment
 import cn.fd.ratziel.module.script.api.ScriptSource
@@ -24,7 +27,10 @@ internal object FluxonBenchmarkCase : BenchmarkCase<FluxonPreparedScript> {
     override val samples: Map<String, ScriptSample> = engineSamples("fluxon")
 
     override fun prepare(sample: ScriptSample): FluxonPreparedScript {
-        val environment = ScriptEnvironment(configuration = configuration)
+        val environment = ScriptEnvironment(
+            bindings = sample.bindingsFactory(),
+            configuration = configuration,
+        )
         val source = ScriptSource.literal(
             sample.content,
             FluxonLang,

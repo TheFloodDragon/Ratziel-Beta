@@ -1,5 +1,8 @@
-package cn.fd.ratziel.module.script.performance
+package cn.fd.ratziel.module.script.benchmark.engine
 
+import cn.fd.ratziel.module.script.benchmark.BenchmarkCase
+import cn.fd.ratziel.module.script.benchmark.ScriptSample
+import cn.fd.ratziel.module.script.benchmark.engineSamples
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Engine
 import org.graalvm.polyglot.Source
@@ -21,6 +24,10 @@ internal object GraalJsBenchmarkCase : BenchmarkCase<GraalPreparedScript> {
             .allowAllAccess(true)
             .engine(sharedEngine)
             .build()
+        val bindings = context.getBindings("js")
+        sample.bindingsFactory().forEach { (key, value) ->
+            bindings.putMember(key, value)
+        }
         val source = Source.newBuilder("js", sample.content, sample.path)
             .cached(true)
             .build()

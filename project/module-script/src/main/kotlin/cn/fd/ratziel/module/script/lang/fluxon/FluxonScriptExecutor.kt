@@ -30,7 +30,10 @@ class FluxonScriptExecutor : IntegratedScriptExecutor() {
 
     override fun compile(source: ScriptSource, environment: ScriptEnvironment): CompiledScript {
         // 编译配置
-        val compilation = CompilationContext(source.content, source.name ?: "<main>")
+        val compilation = CompilationContext(source.content, source.name ?: "<main>").apply {
+            setAllowJavaConstruction(true)
+            setAllowReflectionAccess(true)
+        }
 
         // 可选择多级缓存编译
         return when (configuration[ScriptConfigurationKeys.scriptCaching]) {

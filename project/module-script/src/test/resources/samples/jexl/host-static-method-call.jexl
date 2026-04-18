@@ -1,0 +1,7 @@
+var sum = 0L;
+var i = 0;
+while (i < 100000) {
+    sum = sum + mathClass.abs(-123456);
+    i = i + 1;
+}
+sum

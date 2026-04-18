@@ -1,5 +1,11 @@
-package cn.fd.ratziel.module.script.performance
+package cn.fd.ratziel.module.script.benchmark
 
+import cn.fd.ratziel.module.script.benchmark.engine.FluxonBenchmarkCase
+import cn.fd.ratziel.module.script.benchmark.engine.GraalJsBenchmarkCase
+import cn.fd.ratziel.module.script.benchmark.engine.JexlBenchmarkCase
+import cn.fd.ratziel.module.script.benchmark.engine.KotlinScriptingBenchmarkCase
+import cn.fd.ratziel.module.script.benchmark.engine.NashornBenchmarkCase
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.util.Comparator
@@ -8,37 +14,43 @@ import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.DurationUnit
 
-@Tag("performance")
-class ScriptEnginePerformanceTest {
-
-    @Test
-    fun `benchmarks script compile latency`() {
-        val settings = BenchmarkSettings.fromSystemProperties()
-        val results = PERFORMANCE_SCRIPT_CASES.flatMap { scriptCase ->
-            BENCHMARK_CASES.filter { it.supports(scriptCase) }.map { benchmarkCompile(it, scriptCase, settings) }
-        }
-
-        println(renderCompileReport(results, settings))
-    }
+@Tag("benchmark")
+class ScriptEngineBenchmarkTest {
 
     @Test
     fun `benchmarks script hot execution latency`() {
         val settings = BenchmarkSettings.fromSystemProperties()
-        val results = PERFORMANCE_SCRIPT_CASES.flatMap { scriptCase ->
-            BENCHMARK_CASES.filter { it.supports(scriptCase) }.map { benchmarkHot(it, scriptCase, settings) }
-        }
+        val execution = collectHotResults(settings)
 
-        println(renderHotReport(results, settings))
+        println(renderHotReport(execution.results, settings))
+        if (execution.failures.isNotEmpty()) {
+            println(renderFailureReport(execution.failures))
+            fail("热执行基准存在 ${execution.failures.size} 个失败项")
+        }
     }
 
     @Test
     fun `benchmarks script cold startup latency`() {
         val settings = BenchmarkSettings.fromSystemProperties()
-        val results = PERFORMANCE_SCRIPT_CASES.flatMap { scriptCase ->
-            BENCHMARK_CASES.filter { it.supports(scriptCase) }.map { benchmarkCold(it, scriptCase, settings) }
-        }
+        val execution = collectColdResults(settings)
 
-        println(renderColdReport(results, settings))
+        println(renderColdReport(execution.results, settings))
+        if (execution.failures.isNotEmpty()) {
+            println(renderFailureReport(execution.failures))
+            fail("冷启动基准存在 ${execution.failures.size} 个失败项")
+        }
+    }
+
+    @Test
+    fun `benchmarks script compile latency`() {
+        val settings = BenchmarkSettings.fromSystemProperties()
+        val execution = collectCompileResults(settings)
+
+        println(renderCompileReport(execution.results, settings))
+        if (execution.failures.isNotEmpty()) {
+            println(renderFailureReport(execution.failures))
+            fail("编译基准存在 ${execution.failures.size} 个失败项")
+        }
     }
 
 }
@@ -61,16 +73,6 @@ private data class BenchmarkSettings(
     val coldMeasuredIterations: Int,
 ) {
 
-    init {
-        require(buildWarmupIterations >= 0) { "buildWarmupIterations 不能小于 0" }
-        require(buildMeasuredIterations > 0) { "buildMeasuredIterations 必须大于 0" }
-        require(hotWarmupIterations >= 0) { "hotWarmupIterations 不能小于 0" }
-        require(hotMeasuredIterations > 0) { "hotMeasuredIterations 必须大于 0" }
-        require(hotInvocationCount > 0) { "hotInvocationCount 必须大于 0" }
-        require(coldWarmupIterations >= 0) { "coldWarmupIterations 不能小于 0" }
-        require(coldMeasuredIterations > 0) { "coldMeasuredIterations 必须大于 0" }
-    }
-
     companion object {
         fun fromSystemProperties() = BenchmarkSettings(
             buildWarmupIterations = System.getProperty("ratziel.performance.build.warmup")?.toIntOrNull() ?: 1,
@@ -84,6 +86,25 @@ private data class BenchmarkSettings(
     }
 
 }
+
+private enum class BenchmarkPhase(val displayName: String) {
+    COMPILE("编译/预处理"),
+    HOT("热执行"),
+    COLD("冷启动"),
+}
+
+private data class BenchmarkExecution<T>(
+    val results: List<T>,
+    val failures: List<BenchmarkFailure>,
+)
+
+private data class BenchmarkFailure(
+    val phase: BenchmarkPhase,
+    val engineName: String,
+    val scriptCaseName: String,
+    val samplePath: String,
+    val throwable: Throwable,
+)
 
 private data class CompileBenchmarkResult(
     val engineName: String,
@@ -127,9 +148,74 @@ private data class ColdBenchmarkResult(
 
 }
 
+private fun collectCompileResults(settings: BenchmarkSettings): BenchmarkExecution<CompileBenchmarkResult> {
+    val results = mutableListOf<CompileBenchmarkResult>()
+    val failures = mutableListOf<BenchmarkFailure>()
+    BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
+        BENCHMARK_CASES.filter { it.supports(scriptCase) }.forEach { case ->
+            collectResult(case, scriptCase, BenchmarkPhase.COMPILE, results, failures) {
+                benchmarkCompile(it, scriptCase, settings)
+            }
+        }
+    }
+    return BenchmarkExecution(results, failures)
+}
+
+private fun collectHotResults(settings: BenchmarkSettings): BenchmarkExecution<HotBenchmarkResult> {
+    val results = mutableListOf<HotBenchmarkResult>()
+    val failures = mutableListOf<BenchmarkFailure>()
+    BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
+        BENCHMARK_CASES.filter { it.supports(scriptCase) }.forEach { case ->
+            collectResult(case, scriptCase, BenchmarkPhase.HOT, results, failures) {
+                benchmarkHot(it, scriptCase, settings)
+            }
+        }
+    }
+    return BenchmarkExecution(results, failures)
+}
+
+private fun collectColdResults(settings: BenchmarkSettings): BenchmarkExecution<ColdBenchmarkResult> {
+    val results = mutableListOf<ColdBenchmarkResult>()
+    val failures = mutableListOf<BenchmarkFailure>()
+    BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
+        BENCHMARK_CASES.filter { it.supports(scriptCase) }.forEach { case ->
+            collectResult(case, scriptCase, BenchmarkPhase.COLD, results, failures) {
+                benchmarkCold(it, scriptCase, settings)
+            }
+        }
+    }
+    return BenchmarkExecution(results, failures)
+}
+
+private inline fun <P : Any, R> collectResult(
+    case: BenchmarkCase<P>,
+    scriptCase: BenchmarkScriptCase,
+    phase: BenchmarkPhase,
+    results: MutableList<R>,
+    failures: MutableList<BenchmarkFailure>,
+    block: (BenchmarkCase<P>) -> R,
+) {
+    runCatching {
+        block(case)
+    }.onSuccess(results::add)
+        .onFailure { throwable ->
+            failures += BenchmarkFailure(
+                phase = phase,
+                engineName = case.engineName,
+                scriptCaseName = scriptCase.displayName,
+                samplePath = case.samplePathOf(scriptCase),
+                throwable = throwable,
+            )
+        }
+}
+
+private fun <P : Any> BenchmarkCase<P>.samplePathOf(scriptCase: BenchmarkScriptCase): String {
+    return samples[scriptCase.id]?.path ?: scriptCase.fileNames.entries.firstOrNull()?.value ?: scriptCase.id
+}
+
 private fun <P : Any> benchmarkCompile(
     case: BenchmarkCase<P>,
-    scriptCase: PerformanceScriptCase,
+    scriptCase: BenchmarkScriptCase,
     settings: BenchmarkSettings,
 ): CompileBenchmarkResult {
     val sample = case.sample(scriptCase)
@@ -161,7 +247,7 @@ private fun <P : Any> benchmarkCompile(
 
 private fun <P : Any> benchmarkHot(
     case: BenchmarkCase<P>,
-    scriptCase: PerformanceScriptCase,
+    scriptCase: BenchmarkScriptCase,
     settings: BenchmarkSettings,
 ): HotBenchmarkResult {
     val sample = case.sample(scriptCase)
@@ -196,7 +282,7 @@ private fun <P : Any> benchmarkHot(
 
 private fun <P : Any> benchmarkCold(
     case: BenchmarkCase<P>,
-    scriptCase: PerformanceScriptCase,
+    scriptCase: BenchmarkScriptCase,
     settings: BenchmarkSettings,
 ): ColdBenchmarkResult {
     val sample = case.sample(scriptCase)
@@ -248,9 +334,9 @@ private fun <P : Any> runExecutionBatch(case: BenchmarkCase<P>, prepared: P, inv
 
 private fun renderCompileReport(results: List<CompileBenchmarkResult>, settings: BenchmarkSettings): String {
     return buildString {
-        appendLine("=== module-script 编译/预处理性能测试 ===")
+        appendLine("=== 脚本模块 编译/预处理基准测试 ===")
         appendLine("workload=fixed in samples, buildWarmup=${settings.buildWarmupIterations}, buildMeasure=${settings.buildMeasuredIterations}")
-        PERFORMANCE_SCRIPT_CASES.forEach { scriptCase ->
+        BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<CompileBenchmarkResult> {
                     override fun compare(left: CompileBenchmarkResult, right: CompileBenchmarkResult): Int {
@@ -258,9 +344,13 @@ private fun renderCompileReport(results: List<CompileBenchmarkResult>, settings:
                     }
                 })
             }
-            val fastest = caseResults.firstOrNull()?.averageMs ?: 0.0
             appendLine()
             appendLine("-- ${scriptCase.displayName} --")
+            if (caseResults.isEmpty()) {
+                appendLine("无成功结果")
+                return@forEach
+            }
+            val fastest = caseResults.first().averageMs
             appendLine(
                 String.format(
                     Locale.ROOT,
@@ -294,10 +384,10 @@ private fun renderCompileReport(results: List<CompileBenchmarkResult>, settings:
 
 private fun renderHotReport(results: List<HotBenchmarkResult>, settings: BenchmarkSettings): String {
     return buildString {
-        appendLine("=== module-script 热执行性能测试 ===")
+        appendLine("=== 脚本模块 热执行基准测试 ===")
         appendLine("workload=fixed in samples, evalWarmup=${settings.hotWarmupIterations}, evalMeasure=${settings.hotMeasuredIterations}, evalInvocations=${settings.hotInvocationCount}")
         appendLine("说明：复用已准备好的脚本对象，按案例统计热执行开销。")
-        PERFORMANCE_SCRIPT_CASES.forEach { scriptCase ->
+        BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<HotBenchmarkResult> {
                     override fun compare(left: HotBenchmarkResult, right: HotBenchmarkResult): Int {
@@ -305,9 +395,13 @@ private fun renderHotReport(results: List<HotBenchmarkResult>, settings: Benchma
                     }
                 })
             }
-            val fastest = caseResults.firstOrNull()?.averageUsPerOp ?: 0.0
             appendLine()
             appendLine("-- ${scriptCase.displayName} --")
+            if (caseResults.isEmpty()) {
+                appendLine("无成功结果")
+                return@forEach
+            }
+            val fastest = caseResults.first().averageUsPerOp
             appendLine(
                 String.format(
                     Locale.ROOT,
@@ -343,10 +437,10 @@ private fun renderHotReport(results: List<HotBenchmarkResult>, settings: Benchma
 
 private fun renderColdReport(results: List<ColdBenchmarkResult>, settings: BenchmarkSettings): String {
     return buildString {
-        appendLine("=== module-script 冷启动性能测试 ===")
+        appendLine("=== 脚本模块 冷启动基准测试 ===")
         appendLine("workload=fixed in samples, coldWarmup=${settings.coldWarmupIterations}, coldMeasure=${settings.coldMeasuredIterations}")
         appendLine("说明：每次采样都包含 prepare + 首次 eval，用于比较单次启动成本。")
-        PERFORMANCE_SCRIPT_CASES.forEach { scriptCase ->
+        BENCHMARK_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<ColdBenchmarkResult> {
                     override fun compare(left: ColdBenchmarkResult, right: ColdBenchmarkResult): Int {
@@ -354,9 +448,13 @@ private fun renderColdReport(results: List<ColdBenchmarkResult>, settings: Bench
                     }
                 })
             }
-            val fastest = caseResults.firstOrNull()?.averageMs ?: 0.0
             appendLine()
             appendLine("-- ${scriptCase.displayName} --")
+            if (caseResults.isEmpty()) {
+                appendLine("无成功结果")
+                return@forEach
+            }
+            val fastest = caseResults.first().averageMs
             appendLine(
                 String.format(
                     Locale.ROOT,
@@ -390,3 +488,26 @@ private fun renderColdReport(results: List<ColdBenchmarkResult>, settings: Bench
     }
 }
 
+private fun renderFailureReport(failures: List<BenchmarkFailure>): String {
+    return buildString {
+        appendLine("=== 失败项汇总 ===")
+        failures.forEach { failure ->
+            appendLine(
+                String.format(
+                    Locale.ROOT,
+                    "[%s] %s | %s | %s | %s",
+                    failure.phase.displayName,
+                    failure.engineName,
+                    failure.scriptCaseName,
+                    failure.samplePath,
+                    failure.throwable.renderSummary(),
+                )
+            )
+        }
+    }
+}
+
+private fun Throwable.renderSummary(): String {
+    val message = message?.replace('\n', ' ')?.takeIf { it.isNotBlank() } ?: "无详细信息"
+    return "${this::class.qualifiedName}: $message"
+}
