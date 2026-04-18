@@ -91,6 +91,7 @@ allprojects {
         useJUnitPlatform()
         testLogging {
             events("passed", "failed")
+            showStandardStreams = true
             showStackTraces = true
             showCauses = true
             showExceptions = true
