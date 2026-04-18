@@ -14,9 +14,7 @@ internal object GraalJsBenchmarkCase : BenchmarkCase<GraalPreparedScript> {
 
     override val engineName: String = "GraalJS"
 
-    override val dialect: ScriptDialect = ScriptDialect.JavaScript
-
-    override val samples: Map<String, ScriptSample> = engineSamples(dialect)
+    override val samples: Map<String, ScriptSample> = engineSamples("javascript")
 
     override fun prepare(sample: ScriptSample): GraalPreparedScript {
         val context = Context.newBuilder("js")

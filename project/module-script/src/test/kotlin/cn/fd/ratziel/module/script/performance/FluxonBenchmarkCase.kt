@@ -21,12 +21,7 @@ internal object FluxonBenchmarkCase : BenchmarkCase<FluxonPreparedScript> {
 
     override val engineName: String = "Fluxon"
 
-    override val dialect: ScriptDialect = ScriptDialect.Fluxon
-
-    override val samples: Map<String, ScriptSample> = engineSamples(
-        dialect,
-        PERFORMANCE_SCRIPT_CASES.filter { it.id != "map-build" },
-    )
+    override val samples: Map<String, ScriptSample> = engineSamples("fluxon")
 
     override fun prepare(sample: ScriptSample): FluxonPreparedScript {
         val environment = ScriptEnvironment(configuration = configuration)

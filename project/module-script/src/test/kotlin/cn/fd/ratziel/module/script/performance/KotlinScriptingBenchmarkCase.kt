@@ -17,9 +17,7 @@ internal object KotlinScriptingBenchmarkCase : BenchmarkCase<KotlinPreparedScrip
 
     override val engineName: String = "KotlinScripting"
 
-    override val dialect: ScriptDialect = ScriptDialect.Kotlin
-
-    override val samples: Map<String, ScriptSample> = engineSamples(dialect)
+    override val samples: Map<String, ScriptSample> = engineSamples("kotlin")
 
     override fun prepare(sample: ScriptSample): KotlinPreparedScript {
         val compiled = host.compile(

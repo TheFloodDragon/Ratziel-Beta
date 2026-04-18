@@ -1,12 +1,5 @@
 package cn.fd.ratziel.module.script.performance
 
-internal enum class ScriptDialect(val directory: String) {
-    JavaScript("javascript"),
-    Jexl("jexl"),
-    Kotlin("kotlin"),
-    Fluxon("fluxon"),
-}
-
 internal data class ScriptSample(
     val path: String,
     val content: String,
@@ -15,18 +8,12 @@ internal data class ScriptSample(
 internal data class PerformanceScriptCase(
     val id: String,
     val displayName: String,
-    val fileNames: Map<ScriptDialect, String>,
-) {
-
-    fun fileName(dialect: ScriptDialect): String = fileNames.getValue(dialect)
-
-}
+    val fileNames: Map<String, String>,
+)
 
 internal interface BenchmarkCase<P : Any> {
 
     val engineName: String
-
-    val dialect: ScriptDialect
 
     val samples: Map<String, ScriptSample>
 
@@ -43,16 +30,17 @@ internal interface BenchmarkCase<P : Any> {
 }
 
 internal fun engineSamples(
-    dialect: ScriptDialect,
+    sampleDirectory: String,
     scriptCases: List<PerformanceScriptCase> = PERFORMANCE_SCRIPT_CASES,
 ): Map<String, ScriptSample> {
-    return scriptCases.associate { scriptCase ->
-        scriptCase.id to loadSample("/performance-samples/${dialect.directory}/${scriptCase.fileName(dialect)}")
-    }
+    return scriptCases.mapNotNull { scriptCase ->
+        val fileName = scriptCase.fileNames[sampleDirectory] ?: return@mapNotNull null
+        loadSampleOrNull("/performance-samples/$sampleDirectory/$fileName")
+            ?.let { scriptCase.id to it }
+    }.toMap()
 }
 
-private fun loadSample(path: String): ScriptSample {
-    val content = ScriptEnginePerformanceTest::class.java.getResource(path)?.readText()
-        ?: error("无法读取脚本样本: $path")
+private fun loadSampleOrNull(path: String): ScriptSample? {
+    val content = ScriptEnginePerformanceTest::class.java.getResource(path)?.readText() ?: return null
     return ScriptSample(path = path, content = content)
 }
