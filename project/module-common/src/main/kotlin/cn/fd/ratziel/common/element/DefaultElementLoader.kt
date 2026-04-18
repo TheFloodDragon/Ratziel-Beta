@@ -44,7 +44,7 @@ object DefaultElementLoader : ElementLoader {
             return emptyList()
         }
 
-        val configuration = parseConfiguration(workspace, json[INTERNAL_NODE], file)
+        val configuration = parseConfiguration(workspace, json.findInternalConfiguration(), file)
         val content = json.removeInternals()
         val configuredElementName = configuration[ElementConfiguration.elementName]?.let {
             if (it == FILE_NAME_ELEMENT_NAME) file.nameWithoutExtension else it
@@ -57,7 +57,7 @@ object DefaultElementLoader : ElementLoader {
 
         if (configuredElementName != null) {
             if (resolvedConfiguredType == null) {
-                warning("Element file '${file.name}' declares elementName but misses elementType after merging workspace and _internal configuration.")
+                warning("Element file '${file.name}' declares elementName but misses elementType after merging workspace and internal configuration.")
                 return emptyList()
             }
             return listOf(Element(configuredElementName, resolvedConfiguredType, file, content))
@@ -82,7 +82,7 @@ object DefaultElementLoader : ElementLoader {
     private fun parseConfiguration(workspace: Workspace, internal: JsonElement?, file: File): ElementConfiguration {
         val internalObject = internal ?: return workspace.configuration
         if (internalObject !is JsonObject) {
-            warning("Invalid _internal config in '${file.name}': $internalObject")
+            warning("Invalid internal config in '${file.name}': $internalObject")
             return workspace.configuration
         }
         return ElementConfiguration(listOf(workspace.configuration, internalObject.toAttachedProperties(ElementConfiguration.GROUP)))
@@ -95,6 +95,10 @@ object DefaultElementLoader : ElementLoader {
             warning("Unknown merged elementType '$expression' in '${file.name}': ${ex.message}")
             null
         }
+    }
+
+    private fun JsonObject.findInternalConfiguration(): JsonElement? {
+        return this[INTERNAL_NODE]
     }
 
     private fun JsonObject.removeInternals() = JsonObject(filterKeys { it != INTERNAL_NODE && !it.startsWith(IGNORANCE_PREFIX) })

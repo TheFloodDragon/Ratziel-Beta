@@ -1,5 +1,5 @@
 # 文件内部元素解析设置
-_internal:
+internal:
   type: item # 指定元素类型
 
 BlackApple:

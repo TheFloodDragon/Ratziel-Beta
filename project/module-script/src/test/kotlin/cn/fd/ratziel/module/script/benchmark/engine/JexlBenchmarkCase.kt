@@ -11,12 +11,7 @@ import org.apache.commons.jexl3.introspection.JexlPermissions
 
 internal object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
 
-    private val engine = JexlBuilder()
-        .cache(16)
-        .strict(true)
-        .features(JexlFeatures.createAll())
-        .permissions(JexlPermissions.UNRESTRICTED)
-        .create()
+    private val engine = JexlBuilder().create()
 
     override val engineName: String = "JEXL"
 
