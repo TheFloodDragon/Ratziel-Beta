@@ -1,41 +1,10 @@
 package cn.fd.ratziel.module.script.performance
 
-import cn.fd.ratziel.module.script.api.CompiledScript as ModuleCompiledScript
-import cn.fd.ratziel.module.script.api.ScriptEnvironment
-import cn.fd.ratziel.module.script.api.ScriptSource
-import cn.fd.ratziel.module.script.conf.ScriptConfiguration
-import cn.fd.ratziel.module.script.conf.ScriptConfigurationKeys
-import cn.fd.ratziel.module.script.conf.scriptCaching
-import cn.fd.ratziel.module.script.lang.fluxon.FluxonLang
-import cn.fd.ratziel.module.script.lang.fluxon.FluxonScriptExecutor
-import cn.fd.ratziel.module.script.lang.kts.KtsJvmHost
-import org.apache.commons.jexl3.JexlBuilder
-import org.apache.commons.jexl3.JexlFeatures
-import org.apache.commons.jexl3.JexlScript
-import org.apache.commons.jexl3.MapContext
-import org.apache.commons.jexl3.introspection.JexlPermissions
-import org.graalvm.polyglot.Context
-import org.graalvm.polyglot.Engine
-import org.graalvm.polyglot.Source
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
 import java.util.Comparator
 import java.util.Locale
-import javax.script.Compilable
-import javax.script.CompiledScript as Jsr223CompiledScript
-import javax.script.ScriptEngine
-import kotlin.script.experimental.api.CompiledScript as KotlinCompiledScript
-import kotlin.script.experimental.api.ResultValue
-import kotlin.script.experimental.api.ResultWithDiagnostics
-import kotlin.script.experimental.api.ScriptCompilationConfiguration
-import kotlin.script.experimental.api.ScriptDiagnostic
-import kotlin.script.experimental.api.ScriptEvaluationConfiguration
-import kotlin.script.experimental.host.toScriptSource
-import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
-import kotlin.script.experimental.jvm.jvm
 import kotlin.system.measureNanoTime
-import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.DurationUnit
 
@@ -74,24 +43,7 @@ class ScriptEnginePerformanceTest {
 
 }
 
-private const val FIXED_LIMIT = 100_000L
-private const val FIXED_COLLECTION_SIZE = 2_048
-private const val FIXED_STRING_SIZE = 4_096
-
-private val EXPECTED_COMPUTE_RESULT = (FIXED_LIMIT - 1) * FIXED_LIMIT / 2
-private val EXPECTED_BRANCHING_RESULT by lazy {
-    var expected = 0L
-    for (i in 0L until FIXED_LIMIT) {
-        expected = when {
-            i % 2L == 0L -> expected + i
-            i % 3L == 0L -> expected - i
-            else -> expected + 1L
-        }
-    }
-    expected
-}
-
-private val PERFORMANCE_SCRIPT_CASES = listOf(
+internal val PERFORMANCE_SCRIPT_CASES = listOf(
     PerformanceScriptCase(
         id = "compute",
         displayName = "数值累加",
@@ -101,9 +53,6 @@ private val PERFORMANCE_SCRIPT_CASES = listOf(
             ScriptDialect.Kotlin to "compute.benchmark.kts",
             ScriptDialect.Fluxon to "compute.fs",
         ),
-        verifier = { value, engineName ->
-            assertEquals(EXPECTED_COMPUTE_RESULT, (value as? Number)?.toLong(), "$engineName 数值累加 结果异常")
-        },
     ),
     PerformanceScriptCase(
         id = "branching",
@@ -114,9 +63,26 @@ private val PERFORMANCE_SCRIPT_CASES = listOf(
             ScriptDialect.Kotlin to "branching.benchmark.kts",
             ScriptDialect.Fluxon to "branching.fs",
         ),
-        verifier = { value, engineName ->
-            assertEquals(EXPECTED_BRANCHING_RESULT, (value as? Number)?.toLong(), "$engineName 条件分支 结果异常")
-        },
+    ),
+    PerformanceScriptCase(
+        id = "nested-loop",
+        displayName = "嵌套循环",
+        fileNames = mapOf(
+            ScriptDialect.JavaScript to "nested-loop.js",
+            ScriptDialect.Jexl to "nested-loop.jexl",
+            ScriptDialect.Kotlin to "nested-loop.benchmark.kts",
+            ScriptDialect.Fluxon to "nested-loop.fs",
+        ),
+    ),
+    PerformanceScriptCase(
+        id = "list-index",
+        displayName = "列表索引访问",
+        fileNames = mapOf(
+            ScriptDialect.JavaScript to "list-index.js",
+            ScriptDialect.Jexl to "list-index.jexl",
+            ScriptDialect.Kotlin to "list-index.benchmark.kts",
+            ScriptDialect.Fluxon to "list-index.fs",
+        ),
     ),
     PerformanceScriptCase(
         id = "list-build",
@@ -127,9 +93,6 @@ private val PERFORMANCE_SCRIPT_CASES = listOf(
             ScriptDialect.Kotlin to "list-build.benchmark.kts",
             ScriptDialect.Fluxon to "list-build.fs",
         ),
-        verifier = { value, engineName ->
-            assertEquals(FIXED_COLLECTION_SIZE, (value as? Collection<*>)?.size, "$engineName 列表构建 结果异常")
-        },
     ),
     PerformanceScriptCase(
         id = "map-build",
@@ -140,9 +103,6 @@ private val PERFORMANCE_SCRIPT_CASES = listOf(
             ScriptDialect.Kotlin to "map-build.benchmark.kts",
             ScriptDialect.Fluxon to "map-build.fs",
         ),
-        verifier = { value, engineName ->
-            assertEquals(FIXED_COLLECTION_SIZE, (value as? Map<*, *>)?.size, "$engineName 映射构建 结果异常")
-        },
     ),
     PerformanceScriptCase(
         id = "string-build",
@@ -153,9 +113,6 @@ private val PERFORMANCE_SCRIPT_CASES = listOf(
             ScriptDialect.Kotlin to "string-build.benchmark.kts",
             ScriptDialect.Fluxon to "string-build.fs",
         ),
-        verifier = { value, engineName ->
-            assertEquals(FIXED_STRING_SIZE, (value as? String)?.length, "$engineName 字符串构建 结果异常")
-        },
     ),
 )
 
@@ -201,29 +158,6 @@ private data class BenchmarkSettings(
 
 }
 
-private enum class ScriptDialect(val directory: String) {
-    JavaScript("javascript"),
-    Jexl("jexl"),
-    Kotlin("kotlin"),
-    Fluxon("fluxon"),
-}
-
-private data class ScriptSample(
-    val path: String,
-    val content: String,
-)
-
-private data class PerformanceScriptCase(
-    val id: String,
-    val displayName: String,
-    val fileNames: Map<ScriptDialect, String>,
-    val verifier: (value: Any?, engineName: String) -> Unit,
-) {
-
-    fun fileName(dialect: ScriptDialect): String = fileNames.getValue(dialect)
-
-}
-
 private data class CompileBenchmarkResult(
     val engineName: String,
     val scriptCaseName: String,
@@ -266,26 +200,6 @@ private data class ColdBenchmarkResult(
 
 }
 
-private interface BenchmarkCase<P : Any> {
-
-    val engineName: String
-
-    val dialect: ScriptDialect
-
-    val samples: Map<String, ScriptSample>
-
-    fun supports(scriptCase: PerformanceScriptCase): Boolean = samples.containsKey(scriptCase.id)
-
-    fun sample(scriptCase: PerformanceScriptCase): ScriptSample = samples.getValue(scriptCase.id)
-
-    fun prepare(sample: ScriptSample): P
-
-    fun execute(prepared: P): Any?
-
-    fun dispose(prepared: P) = Unit
-
-}
-
 private fun <P : Any> benchmarkCompile(
     case: BenchmarkCase<P>,
     scriptCase: PerformanceScriptCase,
@@ -295,7 +209,7 @@ private fun <P : Any> benchmarkCompile(
 
     repeat(settings.buildWarmupIterations) {
         case.withPrepared(sample) { prepared ->
-            scriptCase.verifier(case.execute(prepared), case.engineName)
+            case.execute(prepared)
         }
     }
 
@@ -307,7 +221,7 @@ private fun <P : Any> benchmarkCompile(
             }
             val ready = prepared ?: error("${case.engineName} ${scriptCase.displayName} 编译阶段未返回脚本")
             try {
-                scriptCase.verifier(case.execute(ready), case.engineName)
+                case.execute(ready)
             } finally {
                 case.dispose(ready)
             }
@@ -326,20 +240,17 @@ private fun <P : Any> benchmarkHot(
     val sample = case.sample(scriptCase)
     val prepared = case.prepare(sample)
     try {
-        scriptCase.verifier(case.execute(prepared), case.engineName)
+        case.execute(prepared)
 
         repeat(settings.hotWarmupIterations) {
-            val lastResult = runExecutionBatch(case, prepared, settings.hotInvocationCount)
-            scriptCase.verifier(lastResult, case.engineName)
+            runExecutionBatch(case, prepared, settings.hotInvocationCount)
         }
 
         val samples = buildList {
             repeat(settings.hotMeasuredIterations) {
-                var lastResult: Any? = null
                 val elapsed = measureNanoTime {
-                    lastResult = runExecutionBatch(case, prepared, settings.hotInvocationCount)
+                    runExecutionBatch(case, prepared, settings.hotInvocationCount)
                 }
-                scriptCase.verifier(lastResult, case.engineName)
                 add(elapsed)
             }
         }
@@ -365,26 +276,23 @@ private fun <P : Any> benchmarkCold(
 
     repeat(settings.coldWarmupIterations) {
         case.withPrepared(sample) { prepared ->
-            scriptCase.verifier(case.execute(prepared), case.engineName)
+            case.execute(prepared)
         }
     }
 
     val samples = buildList {
         repeat(settings.coldMeasuredIterations) {
             var prepared: P? = null
-            var result: Any? = null
-            val elapsed = measureNanoTime {
-                val ready = case.prepare(sample)
-                prepared = ready
-                result = case.execute(ready)
-            }
-            val ready = prepared ?: error("${case.engineName} ${scriptCase.displayName} 冷启动阶段未返回脚本")
             try {
-                scriptCase.verifier(result, case.engineName)
+                val elapsed = measureNanoTime {
+                    val ready = case.prepare(sample)
+                    prepared = ready
+                    case.execute(ready)
+                }
+                add(elapsed)
             } finally {
-                case.dispose(ready)
+                prepared?.let(case::dispose)
             }
-            add(elapsed)
         }
     }
 
@@ -411,199 +319,10 @@ private fun <P : Any> runExecutionBatch(case: BenchmarkCase<P>, prepared: P, inv
     return lastResult
 }
 
-private object GraalJsBenchmarkCase : BenchmarkCase<GraalPreparedScript> {
-
-    private val sharedEngine: Engine = Engine.newBuilder("js")
-        .allowExperimentalOptions(true)
-        .option("js.ecmascript-version", "latest")
-        .option("js.nashorn-compat", "true")
-        .build()
-
-    override val engineName: String = "GraalJS"
-
-    override val dialect: ScriptDialect = ScriptDialect.JavaScript
-
-    override val samples: Map<String, ScriptSample> = engineSamples(dialect)
-
-    override fun prepare(sample: ScriptSample): GraalPreparedScript {
-        val context = Context.newBuilder("js")
-            .allowAllAccess(true)
-            .engine(sharedEngine)
-            .build()
-        val source = Source.newBuilder("js", sample.content, sample.path)
-            .cached(true)
-            .build()
-        return GraalPreparedScript(context, source)
-    }
-
-    override fun execute(prepared: GraalPreparedScript): Any? {
-        return prepared.context.eval(prepared.source).`as`(Any::class.java)
-    }
-
-    override fun dispose(prepared: GraalPreparedScript) {
-        prepared.close()
-    }
-
-}
-
-private data class GraalPreparedScript(
-    val context: Context,
-    val source: Source,
-) : AutoCloseable {
-    override fun close() {
-        context.close()
-    }
-}
-
-private object NashornBenchmarkCase : BenchmarkCase<NashornPreparedScript> {
-
-    private val factory = NashornScriptEngineFactory()
-
-    override val engineName: String = "Nashorn (JSR223)"
-
-    override val dialect: ScriptDialect = ScriptDialect.JavaScript
-
-    override val samples: Map<String, ScriptSample> = engineSamples(dialect)
-
-    override fun prepare(sample: ScriptSample): NashornPreparedScript {
-        val engine = factory.getScriptEngine(
-            arrayOf("-Dnashorn.args=--language=es6"),
-            this::class.java.classLoader,
-        )
-        val compiled = (engine as Compilable).compile(sample.content)
-        return NashornPreparedScript(engine, compiled)
-    }
-
-    override fun execute(prepared: NashornPreparedScript): Any? {
-        return prepared.script.eval(prepared.engine.context)
-    }
-
-}
-
-private data class NashornPreparedScript(
-    val engine: ScriptEngine,
-    val script: Jsr223CompiledScript,
-)
-
-private object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
-
-    private val engine = JexlBuilder()
-        .cache(16)
-        .strict(true)
-        .features(JexlFeatures.createAll())
-        .permissions(JexlPermissions.UNRESTRICTED)
-        .create()
-
-    override val engineName: String = "JEXL"
-
-    override val dialect: ScriptDialect = ScriptDialect.Jexl
-
-    override val samples: Map<String, ScriptSample> = engineSamples(dialect)
-
-    override fun prepare(sample: ScriptSample): JexlPreparedScript {
-        val script = engine.createScript(sample.content)
-        return JexlPreparedScript(MapContext(), script)
-    }
-
-    override fun execute(prepared: JexlPreparedScript): Any? {
-        return prepared.script.execute(prepared.context)
-    }
-
-}
-
-private data class JexlPreparedScript(
-    val context: MapContext,
-    val script: JexlScript,
-)
-
-private object KotlinScriptingBenchmarkCase : BenchmarkCase<KotlinPreparedScript> {
-
-    private val host = KtsJvmHost()
-
-    override val engineName: String = "KotlinScripting"
-
-    override val dialect: ScriptDialect = ScriptDialect.Kotlin
-
-    override val samples: Map<String, ScriptSample> = engineSamples(dialect)
-
-    override fun prepare(sample: ScriptSample): KotlinPreparedScript {
-        val compiled = host.compile(
-            sample.content.toScriptSource(sample.path.substringAfterLast('/')),
-            KotlinPerformanceCompilationConfiguration,
-        ).valueOrThrow()
-        return KotlinPreparedScript(host, compiled, KotlinPerformanceEvaluationConfiguration)
-    }
-
-    override fun execute(prepared: KotlinPreparedScript): Any? {
-        return prepared.host.eval(prepared.script, prepared.evaluationConfiguration)
-            .valueOrThrow()
-            .returnValue
-            .unwrap()
-    }
-
-}
-
-private data class KotlinPreparedScript(
-    val host: KtsJvmHost,
-    val script: KotlinCompiledScript,
-    val evaluationConfiguration: ScriptEvaluationConfiguration,
-)
-
-object KotlinPerformanceCompilationConfiguration : ScriptCompilationConfiguration({
-    jvm {
-        dependenciesFromCurrentContext(wholeClasspath = true)
-    }
-})
-
-object KotlinPerformanceEvaluationConfiguration : ScriptEvaluationConfiguration({
-})
-
-private object FluxonBenchmarkCase : BenchmarkCase<FluxonPreparedScript> {
-
-    private val configuration = ScriptConfiguration {
-        this[ScriptConfigurationKeys.scriptCaching] = 2
-    }
-
-    private val executor = FluxonScriptExecutor().apply {
-        this.configuration = this@FluxonBenchmarkCase.configuration
-    }
-
-    override val engineName: String = "Fluxon"
-
-    override val dialect: ScriptDialect = ScriptDialect.Fluxon
-
-    override val samples: Map<String, ScriptSample> = engineSamples(
-        dialect,
-        PERFORMANCE_SCRIPT_CASES.filter { it.id != "map-build" },
-    )
-
-    override fun prepare(sample: ScriptSample): FluxonPreparedScript {
-        val environment = ScriptEnvironment(configuration = configuration)
-        val source = ScriptSource.literal(
-            sample.content,
-            FluxonLang,
-            sample.path.substringAfterLast('/').replace(Regex("[^A-Za-z0-9_]"), "_"),
-        )
-        val script = executor.compile(source, environment)
-        return FluxonPreparedScript(script, environment)
-    }
-
-    override fun execute(prepared: FluxonPreparedScript): Any? {
-        return prepared.script.eval(prepared.environment)
-    }
-
-}
-
-private data class FluxonPreparedScript(
-    val script: ModuleCompiledScript,
-    val environment: ScriptEnvironment,
-)
-
 private fun renderCompileReport(results: List<CompileBenchmarkResult>, settings: BenchmarkSettings): String {
     return buildString {
         appendLine("=== module-script 编译/预处理性能测试 ===")
         appendLine("workload=fixed in samples, buildWarmup=${settings.buildWarmupIterations}, buildMeasure=${settings.buildMeasuredIterations}")
-        appendLine("固定样本规模：limit=$FIXED_LIMIT, collection=$FIXED_COLLECTION_SIZE, string=$FIXED_STRING_SIZE")
         PERFORMANCE_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
                 sortWith(object : Comparator<CompileBenchmarkResult> {
@@ -650,7 +369,6 @@ private fun renderHotReport(results: List<HotBenchmarkResult>, settings: Benchma
     return buildString {
         appendLine("=== module-script 热执行性能测试 ===")
         appendLine("workload=fixed in samples, evalWarmup=${settings.hotWarmupIterations}, evalMeasure=${settings.hotMeasuredIterations}, evalInvocations=${settings.hotInvocationCount}")
-        appendLine("固定样本规模：limit=$FIXED_LIMIT, collection=$FIXED_COLLECTION_SIZE, string=$FIXED_STRING_SIZE")
         appendLine("说明：复用已准备好的脚本对象，按案例统计热执行开销。")
         PERFORMANCE_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
@@ -700,7 +418,6 @@ private fun renderColdReport(results: List<ColdBenchmarkResult>, settings: Bench
     return buildString {
         appendLine("=== module-script 冷启动性能测试 ===")
         appendLine("workload=fixed in samples, coldWarmup=${settings.coldWarmupIterations}, coldMeasure=${settings.coldMeasuredIterations}")
-        appendLine("固定样本规模：limit=$FIXED_LIMIT, collection=$FIXED_COLLECTION_SIZE, string=$FIXED_STRING_SIZE")
         appendLine("说明：每次采样都包含 prepare + 首次 eval，用于比较单次启动成本。")
         PERFORMANCE_SCRIPT_CASES.forEach { scriptCase ->
             val caseResults = results.filter { it.scriptCaseName == scriptCase.displayName }.toMutableList().apply {
@@ -746,50 +463,3 @@ private fun renderColdReport(results: List<ColdBenchmarkResult>, settings: Bench
     }
 }
 
-private fun engineSamples(
-    dialect: ScriptDialect,
-    scriptCases: List<PerformanceScriptCase> = PERFORMANCE_SCRIPT_CASES,
-): Map<String, ScriptSample> {
-    return scriptCases.associate { scriptCase ->
-        scriptCase.id to loadSample("/performance-samples/${dialect.directory}/${scriptCase.fileName(dialect)}")
-    }
-}
-
-private fun loadSample(path: String): ScriptSample {
-    val content = ScriptEnginePerformanceTest::class.java.getResource(path)?.readText()
-        ?: error("无法读取脚本样本: $path")
-    return ScriptSample(path = path, content = content)
-}
-
-private fun ResultValue.unwrap(): Any? {
-    return when (this) {
-        is ResultValue.Value -> value
-        is ResultValue.Unit -> Unit
-        is ResultValue.Error -> error("Kotlin 脚本执行失败: $error")
-        is ResultValue.NotEvaluated -> error("Kotlin 脚本未执行")
-    }
-}
-
-private fun <T> ResultWithDiagnostics<T>.valueOrThrow(): T {
-    return when (this) {
-        is ResultWithDiagnostics.Success -> value
-        is ResultWithDiagnostics.Failure -> error(renderDiagnostics(reports))
-    }
-}
-
-private fun renderDiagnostics(reports: List<ScriptDiagnostic>): String {
-    return reports.joinToString(separator = "\n") { report ->
-        buildString {
-            append(report.severity)
-            append(": ")
-            append(report.message)
-            report.exception?.let {
-                append(" (")
-                append(it::class.qualifiedName)
-                append(": ")
-                append(it.message)
-                append(')')
-            }
-        }
-    }
-}

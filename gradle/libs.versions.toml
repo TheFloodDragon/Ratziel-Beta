@@ -9,7 +9,7 @@ adventurePlatform = "4.4.1"
 nbt = "6f9229c235"
 shadowPlugin = "9.3.0"
 nashorn = "15.7"
-graaljs = "24.2.1"
+graaljs = "25.0.2"
 fluxon = "-SNAPSHOT"
 jexl = "3.6.1"
 
