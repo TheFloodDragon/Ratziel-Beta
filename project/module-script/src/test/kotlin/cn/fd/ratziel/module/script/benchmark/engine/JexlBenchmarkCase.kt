@@ -4,9 +4,9 @@ import cn.fd.ratziel.module.script.benchmark.BenchmarkCase
 import cn.fd.ratziel.module.script.benchmark.ScriptSample
 import cn.fd.ratziel.module.script.benchmark.engineSamples
 import org.apache.commons.jexl3.JexlBuilder
+import org.apache.commons.jexl3.JexlContext
 import org.apache.commons.jexl3.JexlFeatures
 import org.apache.commons.jexl3.JexlScript
-import org.apache.commons.jexl3.MapContext
 import org.apache.commons.jexl3.introspection.JexlPermissions
 
 internal object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
@@ -24,11 +24,7 @@ internal object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
 
     override fun prepare(sample: ScriptSample): JexlPreparedScript {
         val script = engine.createScript(sample.content)
-        val context = MapContext().apply {
-            sample.bindingsFactory().forEach { (key, value) ->
-                set(key, value)
-            }
-        }
+        val context = BenchmarkJexlContext(sample.bindingsFactory())
         return JexlPreparedScript(context, script)
     }
 
@@ -38,6 +34,19 @@ internal object JexlBenchmarkCase : BenchmarkCase<JexlPreparedScript> {
 }
 
 internal data class JexlPreparedScript(
-    val context: MapContext,
+    val context: BenchmarkJexlContext,
     val script: JexlScript,
 )
+
+internal class BenchmarkJexlContext(
+    private val bindings: MutableMap<String, Any?> = linkedMapOf(),
+) : JexlContext {
+
+    override fun get(name: String): Any? = bindings[name]
+
+    override fun has(name: String): Boolean = bindings.containsKey(name)
+
+    override fun set(name: String, value: Any?) {
+        bindings[name] = value
+    }
+}
