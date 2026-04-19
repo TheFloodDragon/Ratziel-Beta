@@ -315,7 +315,7 @@ private inline fun <S> measureBenchmark(
                 }
             }
             measuredSamples += forkSamples
-            forkScores += forkSamples.averageOrZero()
+            forkScores += forkSamples.averageNsOrZero()
         } finally {
             destroyState(state)
         }
@@ -517,7 +517,7 @@ private fun Throwable.renderSummary(): String {
     return "${this::class.qualifiedName}: $message"
 }
 
-private fun List<Long>.averageOrZero(): Double {
+private fun List<Long>.averageNsOrZero(): Double {
     return if (isEmpty()) 0.0 else average()
 }
 
