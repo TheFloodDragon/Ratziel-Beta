@@ -1,5 +1,6 @@
 var total = 0;
 for (var i = 0; i < __ITER__; i++) {
-    total += (((base + i) * (multiplier - (i % modulus))) + offset) / divisor + (bias * (i % 3));
+    var numerator = ((base + i) * (multiplier - (i % modulus))) + offset;
+    total += ((numerator - (numerator % divisor)) / divisor) + (bias * (i % 3));
 }
 total;

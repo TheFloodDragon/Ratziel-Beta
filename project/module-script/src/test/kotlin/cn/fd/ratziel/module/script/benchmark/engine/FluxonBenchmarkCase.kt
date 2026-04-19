@@ -18,7 +18,7 @@ internal object FluxonBenchmarkCase : BenchmarkCase<FluxonPreparedScript> {
 
     override val samples: Map<String, ScriptSample> = engineSamples("fluxon", ".fs")
 
-    override fun prepare(sample: ScriptSample): FluxonPreparedScript {
+    override fun compile(sample: ScriptSample): FluxonPreparedScript {
         val className = sample.path.substringAfterLast('/').replace(Regex("[^A-Za-z0-9_]"), "_") + randomUuid().digest()
         val compiled = Fluxon.compile(
             newEnvironment(sample.bindingsFactory()),
@@ -27,16 +27,16 @@ internal object FluxonBenchmarkCase : BenchmarkCase<FluxonPreparedScript> {
             this::class.java.classLoader,
         )
         val definedClass = compiled.defineClass(FluxonClassLoader())
-        return FluxonPreparedScript(definedClass, sample.bindingsFactory)
+        val runtime = definedClass.getDeclaredConstructor().newInstance() as RuntimeScriptBase
+        return FluxonPreparedScript(runtime, sample.bindingsFactory)
     }
 
-    override fun execute(prepared: FluxonPreparedScript): Any? {
-        val runtime = prepared.definedClass.getDeclaredConstructor().newInstance() as RuntimeScriptBase
-        return runtime.eval(newEnvironment(prepared.bindingsFactory()))
+    override fun runCompiled(compiled: FluxonPreparedScript): Any? {
+        return compiled.runtime.eval(newEnvironment(compiled.bindingsFactory()))
     }
 
-    override fun evaluate(sample: ScriptSample): Any? {
-        val interpretEnv = FluxonRuntime.getInstance().newEnvironment()
+    override fun interpret(sample: ScriptSample): Any? {
+        val interpretEnv = newEnvironment(sample.bindingsFactory())
         val interpretCtx = newCompilationContext(sample.content, sample.path)
         return Fluxon.parse(interpretCtx, interpretEnv).eval(interpretEnv)
     }
@@ -56,6 +56,6 @@ internal object FluxonBenchmarkCase : BenchmarkCase<FluxonPreparedScript> {
 }
 
 internal data class FluxonPreparedScript(
-    val definedClass: Class<*>,
+    val runtime: RuntimeScriptBase,
     val bindingsFactory: () -> MutableMap<String, Any?>,
 )

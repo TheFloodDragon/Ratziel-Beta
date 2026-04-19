@@ -22,21 +22,13 @@ internal interface BenchmarkCase<P : Any> {
 
     fun sample(scriptCase: BenchmarkScriptCase): ScriptSample = samples.getValue(scriptCase.id)
 
-    fun prepare(sample: ScriptSample): P
+    fun compile(sample: ScriptSample): P
 
-    fun execute(prepared: P): Any?
+    fun runCompiled(compiled: P): Any?
 
-    fun evaluate(sample: ScriptSample): Any? {
-        val prepared = prepare(sample)
-        try {
-            return execute(prepared)
-        } finally {
-            dispose(prepared)
-        }
-    }
+    fun interpret(sample: ScriptSample): Any?
 
-    fun dispose(prepared: P) = Unit
-
+    fun disposeCompiled(compiled: P) = Unit
 }
 
 internal fun engineSamples(

@@ -1,7 +1,7 @@
 var sum = 0L;
 var i = 0;
 while (i < __ITER__) {
-    sum = sum + integerClass.name.length();
+    sum = sum + integerClass.getName().length();
     i = i + 1;
 }
 sum

@@ -1,6 +1,5 @@
 var sum = 0;
 for (var i = 0; i < __ITER__; i++) {
-    var clazz = Java.type("java.lang.Integer");
-    sum += clazz.TYPE.getName().length;
+    sum += integerClass.getName().length;
 }
 sum;

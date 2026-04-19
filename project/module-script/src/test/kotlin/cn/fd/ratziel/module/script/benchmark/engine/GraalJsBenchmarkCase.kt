@@ -19,7 +19,7 @@ internal object GraalJsBenchmarkCase : BenchmarkCase<GraalPreparedScript> {
 
     override val samples: Map<String, ScriptSample> = engineSamples("javascript", ".js")
 
-    override fun prepare(sample: ScriptSample): GraalPreparedScript {
+    override fun compile(sample: ScriptSample): GraalPreparedScript {
         val context = Context.newBuilder("js")
             .allowAllAccess(true)
             .engine(sharedEngine)
@@ -34,11 +34,11 @@ internal object GraalJsBenchmarkCase : BenchmarkCase<GraalPreparedScript> {
         return GraalPreparedScript(context, source)
     }
 
-    override fun execute(prepared: GraalPreparedScript): Any? {
-        return prepared.context.eval(prepared.source).`as`(Any::class.java)
+    override fun runCompiled(compiled: GraalPreparedScript): Any? {
+        return compiled.context.eval(compiled.source).`as`(Any::class.java)
     }
 
-    override fun evaluate(sample: ScriptSample): Any? {
+    override fun interpret(sample: ScriptSample): Any? {
         val context = Context.newBuilder("js")
             .allowAllAccess(true)
             .engine(sharedEngine)
@@ -57,8 +57,8 @@ internal object GraalJsBenchmarkCase : BenchmarkCase<GraalPreparedScript> {
         }
     }
 
-    override fun dispose(prepared: GraalPreparedScript) {
-        prepared.close()
+    override fun disposeCompiled(compiled: GraalPreparedScript) {
+        compiled.close()
     }
 }
 

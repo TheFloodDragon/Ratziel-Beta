@@ -12,6 +12,7 @@ import kotlin.script.experimental.api.ResultWithDiagnostics
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.ScriptEvaluationConfiguration
+import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.providedProperties
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
@@ -24,18 +25,29 @@ internal object KotlinScriptingBenchmarkCase : BenchmarkCase<KotlinPreparedScrip
 
     override val samples: Map<String, ScriptSample> = engineSamples("kotlin", ".kts")
 
-    override fun prepare(sample: ScriptSample): KotlinPreparedScript {
+    override fun compile(sample: ScriptSample): KotlinPreparedScript {
         val bindings = sample.bindingsFactory()
         val compiled = BenchmarkKtsHost.compile(
-            sample.content.toScriptSource(sample.path.substringAfterLast('/')),
+            sample.toSourceCode(),
             benchmarkCompilationConfiguration(bindings),
         ).valueOrThrow()
         return KotlinPreparedScript(compiled, benchmarkEvaluationConfiguration(bindings))
     }
 
-    override fun execute(prepared: KotlinPreparedScript): Any? {
-        return BenchmarkKtsHost.eval(prepared.script, prepared.evaluationConfiguration)
+    override fun runCompiled(compiled: KotlinPreparedScript): Any? {
+        return BenchmarkKtsHost.evalCompiled(compiled.script, compiled.evaluationConfiguration)
             .valueOrThrow()
+            .returnValue
+            .unwrap()
+    }
+
+    override fun interpret(sample: ScriptSample): Any? {
+        val bindings = sample.bindingsFactory()
+        return BenchmarkKtsHost.evalSource(
+            sample.toSourceCode(),
+            benchmarkCompilationConfiguration(bindings),
+            benchmarkEvaluationConfiguration(bindings),
+        ).valueOrThrow()
             .returnValue
             .unwrap()
     }
@@ -49,18 +61,30 @@ internal data class KotlinPreparedScript(
 private object BenchmarkKtsHost : BasicJvmScriptingHost() {
 
     fun compile(
-        script: kotlin.script.experimental.api.SourceCode,
+        script: SourceCode,
         compilationConfiguration: ScriptCompilationConfiguration,
     ): ResultWithDiagnostics<KotlinCompiledScript> = runInCoroutineContext {
         compiler(script, compilationConfiguration)
     }
 
-    fun eval(
+    fun evalCompiled(
         compiled: KotlinCompiledScript,
         evaluationConfiguration: ScriptEvaluationConfiguration,
     ): ResultWithDiagnostics<EvaluationResult> = runInCoroutineContext {
         evaluator(compiled, evaluationConfiguration)
     }
+
+    fun evalSource(
+        script: SourceCode,
+        compilationConfiguration: ScriptCompilationConfiguration,
+        evaluationConfiguration: ScriptEvaluationConfiguration,
+    ): ResultWithDiagnostics<EvaluationResult> = runInCoroutineContext {
+        eval(script, compilationConfiguration, evaluationConfiguration)
+    }
+}
+
+private fun ScriptSample.toSourceCode(): SourceCode {
+    return content.toScriptSource(path.substringAfterLast('/'))
 }
 
 private fun benchmarkCompilationConfiguration(bindings: Map<String, Any?>): ScriptCompilationConfiguration {

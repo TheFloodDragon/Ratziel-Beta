@@ -1,3 +1,5 @@
-r = 0..<__ITER__
-letters = &r :: map(|| "a")
-&letters :: join("")
+builder = new java.lang.StringBuilder(__ITER__)
+for i in 0..<__ITER__ {
+ &builder.append("a")
+}
+&builder.toString()
