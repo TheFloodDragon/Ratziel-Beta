@@ -3,6 +3,11 @@ name: Plugin Test
 on:
   workflow_dispatch:
     inputs:
+      logging-info:
+        description: Info Logging Level
+        required: false
+        type: boolean
+        default: false
       enable-jfr:
         description: Enable JFR
         required: false
@@ -31,15 +36,18 @@ jobs:
         run: chmod +x ./gradlew
       - name: Run Gradle Tests
         run: |
+          ARGS="${{ inputs.gradle_args }}"
           if [ "${{ inputs.enable-jfr }}" = "true" ]; then
-            ./gradlew ${{ inputs.gradle_args }} -I jfr.init.gradle.kts
-          else
-            ./gradlew ${{ inputs.gradle_args }}
+            ARGS="$ARGS -I jfr.init.gradle.kts"
           fi
-      - name: Upload JFR Artifacts
+          if [ "${{ inputs.logging-info }}" = "true" ]; then
+            ARGS="$ARGS --info"
+          fi
+          ./gradlew $ARGS
+      - name: Upload Artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: jfr-${{ github.run_id }}-${{ github.run_attempt }}
-          path: outs/jfr/*
+          name: bench-${{ github.run_id }}-${{ github.run_attempt }}
+          path: outs/*
           if-no-files-found: ignore
