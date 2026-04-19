@@ -3,16 +3,16 @@ name: Plugin Test
 on:
   workflow_dispatch:
     inputs:
-      enable-jfr:
-        description: Enable JFR
-        required: false
-        type: boolean
-        default: false
       gradle_args:
         description: Gradle tasks/args to run with
         required: false
         type: string
         default: test
+      enable-jfr:
+        description: Enable JFR
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   test:
@@ -29,17 +29,17 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
-      - name: Run Gradle Tests
+      - name: Run Gradle
         run: |
           if [ "${{ inputs.enable-jfr }}" = "true" ]; then
             ./gradlew ${{ inputs.gradle_args }} -I jfr.init.gradle.kts
           else
             ./gradlew ${{ inputs.gradle_args }}
           fi
-      - name: Upload JFR Artifacts
+      - name: Upload Benchmark Artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: jfr-${{ github.run_id }}-${{ github.run_attempt }}
-          path: outs/jfr/*
+          name: bench-${{ github.run_id }}-${{ github.run_attempt }}
+          path: outs/*
           if-no-files-found: ignore
