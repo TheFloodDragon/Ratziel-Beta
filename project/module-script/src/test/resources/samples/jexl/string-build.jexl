@@ -1,7 +1,0 @@
-var builder = new('java.lang.StringBuilder', __ITER__);
-var i = 0;
-while (i < __ITER__) {
-    builder.append("a");
-    i = i + 1;
-}
-builder.toString()

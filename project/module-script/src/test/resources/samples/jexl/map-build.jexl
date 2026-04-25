@@ -1,7 +1,0 @@
-var map = new('java.util.LinkedHashMap', __ITER__);
-var i = 0;
-while (i < __ITER__) {
-    map.put('k' + i, i);
-    i = i + 1;
-}
-map
