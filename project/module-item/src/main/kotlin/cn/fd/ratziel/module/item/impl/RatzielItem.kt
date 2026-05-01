@@ -10,7 +10,7 @@ import cn.fd.ratziel.module.item.api.ItemData
 import cn.fd.ratziel.module.item.api.component.ItemComponentData
 import cn.fd.ratziel.module.item.api.service.ItemServiceManager
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
-import cn.fd.ratziel.module.item.impl.component.dsl
+import cn.fd.ratziel.module.item.impl.component.compose
 import cn.fd.ratziel.module.item.util.asComponentData
 import cn.fd.ratziel.module.item.util.asItemData
 import cn.fd.ratziel.module.item.util.writeTo
@@ -267,7 +267,7 @@ open class RatzielItem private constructor(
              */
             @JvmStatic
             fun write(info: Info, data: ItemComponentData) {
-                data.dsl {
+                data.compose {
                     customData = customData.handle(INTERNAL_PATH) {
                         // 写入类型
                         put(INFO_ID, NbtString(info.identity.content))

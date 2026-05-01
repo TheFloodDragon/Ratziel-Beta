@@ -23,7 +23,7 @@ interface ItemCompositor {
     /**
      * 获取物品解释器.
      */
-    fun <T : ItemInterpreter> getInterpreter(type: Class<T>): T
+    fun <T : ItemInterpreter> interpreter(type: Class<T>): T
 
     /**
      * StreamCompositor

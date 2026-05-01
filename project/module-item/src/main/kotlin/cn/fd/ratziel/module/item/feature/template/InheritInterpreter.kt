@@ -22,10 +22,12 @@ object InheritInterpreter : ItemInterpreter {
 
     val templateActions = AttachedContext.catcherOf { emptyMap<Template, List<ActionMap>>() }
 
-    override suspend fun preFlow(stream: ItemStream) {
+    override suspend fun preFlow(stream: ItemStream): Boolean {
+        var enabled = false
         stream.tree.withValue { tree ->
             // 处理树
             val templates = resolveTree(tree)
+            enabled = templates.isNotEmpty()
 
             // 处理标签
             val self = stream.origin.copyOf(tree.toElement())
@@ -53,6 +55,7 @@ object InheritInterpreter : ItemInterpreter {
                 }
             }
         }
+        return enabled
     }
 
     /**

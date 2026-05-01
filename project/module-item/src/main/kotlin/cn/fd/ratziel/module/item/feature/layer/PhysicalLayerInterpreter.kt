@@ -2,7 +2,6 @@ package cn.fd.ratziel.module.item.feature.layer
 
 import cn.fd.ratziel.core.functional.MutexedValue
 import cn.fd.ratziel.core.util.getBy
-import cn.fd.ratziel.module.item.ItemManager
 import cn.fd.ratziel.module.item.api.builder.ItemInterpreter
 import cn.fd.ratziel.module.item.api.builder.ItemStream
 import cn.fd.ratziel.module.item.impl.SimpleItem
@@ -37,7 +36,7 @@ object PhysicalLayerInterpreter : ItemInterpreter {
         val layerElements = property.getBy(*LAYER_ALIAS)?.jsonObject ?: return
 
         // 组件解析器
-        val interpreter = ItemManager.generatorInterpreter<ComponentInterpreter>(stream.identifier)
+        val interpreter = stream.compositor.interpreter(ComponentInterpreter::class.java)
 
         coroutineScope {
             // 序列化图层

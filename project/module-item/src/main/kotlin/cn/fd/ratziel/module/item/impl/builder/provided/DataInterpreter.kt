@@ -60,7 +60,7 @@ class DataInterpreter : ItemInterpreter {
      */
     val computationBlocks: MutableMap<String, ExecutableBlock> = ConcurrentHashMap()
 
-    override suspend fun preFlow(stream: ItemStream): Unit = coroutineScope {
+    override suspend fun preFlow(stream: ItemStream): Boolean = coroutineScope {
         val element = stream.fetchElement()
 
         // 常量层 (只执行一次)
@@ -91,6 +91,7 @@ class DataInterpreter : ItemInterpreter {
             computationBlocks.putAll(blocks)
         }
 
+        return@coroutineScope properties.isNotEmpty() || dataBlocks.isNotEmpty() || computationBlocks.isNotEmpty()
     }
 
     override suspend fun interpret(stream: ItemStream) {

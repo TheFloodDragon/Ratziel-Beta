@@ -20,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArraySet
  */
 object DefaultResolver : ItemInterpreter {
 
-    override suspend fun preFlow(stream: ItemStream) {
+    override suspend fun preFlow(stream: ItemStream): Boolean {
         stream.tree.withValue { tree ->
             tree.root.unfold {
                 for (resolver in ItemRegistry.sectionResolvers) {
@@ -29,6 +29,7 @@ object DefaultResolver : ItemInterpreter {
                 }
             }
         }
+        return true // 目前始终保持启用
     }
 
     override suspend fun interpret(stream: ItemStream) {

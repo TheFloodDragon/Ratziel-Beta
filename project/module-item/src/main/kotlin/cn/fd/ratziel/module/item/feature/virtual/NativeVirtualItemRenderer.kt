@@ -11,7 +11,7 @@ import cn.fd.ratziel.module.item.feature.virtual.ComponentChange.OperationType.*
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleMaterial
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
-import cn.fd.ratziel.module.item.impl.component.dsl
+import cn.fd.ratziel.module.item.impl.component.compose
 import cn.fd.ratziel.module.item.util.asComponentData
 import cn.fd.ratziel.module.item.util.modifyTag
 import cn.fd.ratziel.module.nbt.delete
@@ -77,7 +77,7 @@ object NativeVirtualItemRenderer : VirtualItemRenderer {
 
         // 标记变化
         val changes = ComponentChange.compareChanges(now.tag, before.tag)
-        now[ItemComponents.CUSTOM_DATA] = now.dsl().customData.handle(VIRTUAL_PATH) {
+        now[ItemComponents.CUSTOM_DATA] = now.compose().customData.handle(VIRTUAL_PATH) {
             // 清除之前的数据
             clear()
             // 记录修改的数据

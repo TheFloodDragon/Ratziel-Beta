@@ -6,7 +6,7 @@ import cn.fd.ratziel.core.contextual.ArgumentContext
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.api.component.ItemComponentHolder
 import cn.fd.ratziel.module.item.feature.virtual.VirtualItemRenderer
-import cn.fd.ratziel.module.item.impl.component.dsl
+import cn.fd.ratziel.module.item.impl.component.compose
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -30,7 +30,7 @@ object DynamicTagAcceptor : VirtualItemRenderer.Acceptor {
     override fun accept(actual: NeoItem, context: ArgumentContext) {
         if (actual !is ItemComponentHolder) return
 
-        val dsl = actual.dsl()
+        val dsl = actual.compose()
         val displayName = dsl.displayName
         val itemName = dsl.itemName
         val lore = dsl.lore

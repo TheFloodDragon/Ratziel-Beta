@@ -12,22 +12,22 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
- * 直接将 [ItemComponentHolder] 转化为 [ComponentHolderDSL] 以便使用
+ * 直接将 [ItemComponentHolder] 转化为 [ComponentComposer] 以便使用
  */
-inline fun ItemComponentHolder.dsl() = ComponentHolderDSL(this)
+inline fun ItemComponentHolder.compose() = ComponentComposer(this)
 
 /**
  * 直接在 [ItemComponentHolder] 上使用 DSL 块
  */
-inline fun ItemComponentHolder.dsl(block: ComponentHolderDSL.() -> Unit) = ComponentHolderDSL(this).apply(block)
+inline fun ItemComponentHolder.compose(block: ComponentComposer.() -> Unit) = ComponentComposer(this).apply(block)
 
 /**
- * ComponentHolderDSL
+ * ComponentComposer
  * 
  * @author TheFloodDragon
  * @since 2026/3/22 00:07
  */
-open class ComponentHolderDSL(holder: ItemComponentHolder) : ItemComponentHolder by holder {
+open class ComponentComposer(holder: ItemComponentHolder) : ItemComponentHolder by holder {
 
     /** 物品自定义数据 **/
     var customData: NbtCompound by composed(ItemComponents.CUSTOM_DATA, setIfAbsent = true) { NbtCompound() }

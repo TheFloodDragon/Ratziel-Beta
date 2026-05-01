@@ -24,11 +24,12 @@ object ActionInterpreter : ItemInterpreter {
      */
     val nodeNames = arrayOf("action", "actions", "event", "events")
 
-    override suspend fun preFlow(stream: ItemStream) {
+    override suspend fun preFlow(stream: ItemStream): Boolean {
         // 解析动作表
-        val actionMap = parseElement(stream.identifier, stream.fetchElement()) ?: return
+        val actionMap = parseElement(stream.identifier, stream.fetchElement()) ?: return false
         // 加入到服务里
         ActionManager.service[stream.identifier] = actionMap
+        return true
     }
 
     /**

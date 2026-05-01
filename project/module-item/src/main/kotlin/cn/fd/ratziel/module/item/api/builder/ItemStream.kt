@@ -27,6 +27,11 @@ interface ItemStream {
     val identifier: Identifier
 
     /**
+     * 所属解释器编排器
+     */
+    val compositor: ItemCompositor
+
+    /**
      * [JsonElement] 树
      * 由解释器处理, 供序列化使用
      */

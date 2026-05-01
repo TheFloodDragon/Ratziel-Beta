@@ -150,7 +150,7 @@ object ItemElement : ElementHandler.ParralHandler {
         compositor.interpreterGroups.forEachIndexed { index, group ->
             appendLine("├─ [阶段 ${index + 1}] ${group.joinToString(" || ") { it.displayName() }}")
         }
-        appendLine("└─ SourceInterpreter(${compositor.sources.joinToString(", ") { it.displayName() }.ifEmpty { "<none>" }})")
+        appendLine("└─ SourceInterpreter(${ItemRegistry.sources.joinToString(", ") { it.displayName() }.ifEmpty { "<none>" }})")
     }
 
     private fun ItemInterpreter.displayName() = this::class.java.simpleName.ifBlank { this::class.java.name }

@@ -8,7 +8,7 @@ import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.module.item.impl.RatzielItem
 import cn.fd.ratziel.module.item.impl.SimpleData
 import cn.fd.ratziel.module.item.impl.component.ItemComponents
-import cn.fd.ratziel.module.item.impl.component.dsl
+import cn.fd.ratziel.module.item.impl.component.compose
 import cn.fd.ratziel.module.item.util.asComponentData
 import cn.fd.ratziel.module.nbt.handle
 import cn.fd.ratziel.module.nbt.read
@@ -50,7 +50,7 @@ class PhysicalLayer(
          */
         @JvmStatic
         fun getLayer(itemData: ItemData, name: String): ItemLayer? {
-            val customData = itemData.asComponentData().dsl().customData
+            val customData = itemData.asComponentData().compose().customData
             val layerInfo = customData.read(LAYER_PATH, true) as NbtCompound
             return if (name == DEFAULT_LAYER_NAME) {
                 findLayer(layerInfo, name)
@@ -78,7 +78,7 @@ class PhysicalLayer(
          */
         @JvmStatic
         fun writeLayers(itemData: ItemData, layers: Map<String, ItemLayer>) {
-            itemData.asComponentData().dsl {
+            itemData.asComponentData().compose {
                 customData = customData.handle(LAYER_PATH) {
                     val storageLayers = NbtCompound()
                     for ((name, layer) in layers) {
@@ -118,7 +118,7 @@ class PhysicalLayer(
          * @param layer 图层实例
          */
         override fun render(item: NeoItem, layer: ItemLayer) {
-            val data = item.data.asComponentData().dsl()
+            val data = item.data.asComponentData().compose()
             data.customData = data.customData.handle(LAYER_PATH) {
                 // 获取当前图层
                 val currentLayerName = get(CURRENT_LAYER_NAME)?.content as? String ?: DEFAULT_LAYER_NAME

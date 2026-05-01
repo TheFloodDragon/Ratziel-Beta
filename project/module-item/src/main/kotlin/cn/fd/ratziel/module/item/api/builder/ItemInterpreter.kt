@@ -10,8 +10,10 @@ interface ItemInterpreter {
 
     /**
      * 预解释
+     *
+     * @return 该解释器是否应该被启用
      */
-    suspend fun preFlow(stream: ItemStream) = Unit
+    suspend fun preFlow(stream: ItemStream): Boolean = true
 
     /**
      * 解释物品流

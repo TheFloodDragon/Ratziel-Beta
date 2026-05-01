@@ -43,7 +43,7 @@ object ItemManager {
      * 获取物品生成器的指定类型的解释器
      */
     fun <T : ItemInterpreter> generatorInterpreter(type: Class<T>, identifier: Identifier): T {
-        return this.generator(identifier).compositor.getInterpreter(type)
+        return this.generator(identifier).compositor.interpreter(type)
     }
 
 }
