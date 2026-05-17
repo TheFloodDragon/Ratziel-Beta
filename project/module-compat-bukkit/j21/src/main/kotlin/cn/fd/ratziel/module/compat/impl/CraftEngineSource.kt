@@ -5,8 +5,6 @@ import cn.fd.ratziel.core.element.Element
 import cn.fd.ratziel.module.item.api.NeoItem
 import cn.fd.ratziel.platform.bukkit.util.player
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems
-import net.momirealms.craftengine.bukkit.plugin.BukkitCraftEngine
-import net.momirealms.craftengine.core.util.Key
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -21,16 +19,15 @@ object CraftEngineSource : CompatibleItemSource(
     "ce"
 ) {
 
-    override fun generateItem(element: Element, context: ArgumentContext): NeoItem? {
-        // 获取名称
-        val name = readName(element.property) ?: return null
-        // 生成物品
-        val player = (context.player() as? Player)?.let { BukkitCraftEngine.instance().adapt(it) }
-        val customItem = CraftEngineItems.byId(Key.of(name))
-            .warnOnNull(name) ?: return null
-        val itemStack = customItem.buildItemStack(player)
-        return itemStack.asCompatible()
-    }
+    override fun generateItem(element: Element, context: ArgumentContext): NeoItem? =
+        readName(element.property)
+            ?.let { CraftEngineItems.byId(it).warnOnNull(it) }
+            ?.let { item ->
+                ((context.player() as? Player)
+                    ?.let { item.buildBukkitItem(it) }
+                    ?: item.buildBukkitItem())
+                    .asCompatible()
+            }
 
     override fun isMine(item: ItemStack) = CraftEngineItems.isCustomItem(item)
 
